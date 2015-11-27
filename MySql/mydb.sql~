@@ -35,7 +35,7 @@ CREATE TABLE `tests` (
   `id_file` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
   `time_of_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `test_parameter` int(11) NOT NULL,
+  `test_table` varchar(45) NOT NULL,
   `run` tinyint(1) NOT NULL,
   `ended` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
@@ -59,3 +59,5 @@ CREATE TABLE `results` (
 
 INSERT INTO `users` (`id`, `user_name`, `user_password`) VALUES
 (1, 'admin', 'admin');
+insert into files (id_user, hash, name, file_system_path) VALUES (1,"AS654HASH","subor1","/home/jozef/Dokumenty/s1.txt");
+insert into files (id_user, hash, name, file_system_path) VALUES (1,"AS654HASH","subor1","/home/jozef/Dokumenty/niečo s medzerou a ľščťžýáí.txt");

@@ -47,8 +47,12 @@ using namespace std;
 
 int main(void) {
     IFileManager* fileManager = new MySqlFileManager();
-    File f = fileManager->getFileById(1);
-    cout << f.id() << " " << f.userId() << " " << f.hash() << " " << f.name() << " " << f.fileSystemPath() << endl;
+    File f;
+    bool res = fileManager->getFileById(2,&f);
+    if (res)
+        cout << f.id() << " " << f.userId() << " " << f.hash() << " " << f.name() << " " << f.fileSystemPath() << endl;
+    else
+        cout << "Error" << endl;
     delete fileManager;
     return 0;
 }

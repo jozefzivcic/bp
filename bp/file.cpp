@@ -2,6 +2,14 @@
 
 File::File(): _id(0), _userId(0), _hash(""), _name(""), _fileSystemPath("") {}
 
+File::File(const File& f) {
+    _id = f._id;
+    _userId = f._userId;
+    _hash = f._hash;
+    _name = f._name;
+    _fileSystemPath = f._fileSystemPath;
+}
+
 int File::userId() const
 {
     return _userId;
@@ -40,6 +48,15 @@ std::string File::fileSystemPath() const
 void File::setFileSystemPath(const std::string &fileSystemPath)
 {
     _fileSystemPath = fileSystemPath;
+}
+
+void File::setFile(const File &f)
+{
+    _id = f._id;
+    _userId = f._userId;
+    _hash = f._hash;
+    _name = f._name;
+    _fileSystemPath = f._fileSystemPath;
 }
 
 int File::id() const

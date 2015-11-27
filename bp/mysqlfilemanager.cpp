@@ -13,35 +13,39 @@ using namespace sql;
 MySqlFileManager::MySqlFileManager() {
     Driver *driver;
     driver = get_driver_instance();
-    con = driver->connect(Constants::DATABASE, Constants::USERNAME, Constants::USER_PASSWORD);
-    con->setSchema(Constants::SCHEMA);
+    _con = driver->connect(Constants::DATABASE, Constants::USERNAME, Constants::USER_PASSWORD);
+    _con->setSchema(Constants::SCHEMA);
 }
 
-File MySqlFileManager::getFileById(int id) const {
+bool MySqlFileManager::getFileById(int id, File *file) const {
     PreparedStatement* preparedStmt;
     ResultSet *res;
-    File f;
+    File tempFile;
     try {
-        preparedStmt = con->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ? ;");
+        preparedStmt = _con->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ? ;");
         preparedStmt->setInt(1,id);
         res = preparedStmt->executeQuery();
-        res->next();
-        cout << res->getInt("id");
-        f.setId(res->getInt("id"));
-        f.setUserId(res->getInt("id_user"));
-        f.setHash(res->getString("hash"));
-        f.setName(res->getString("name"));
-        f.setFileSystemPath(res->getString("file_system_path"));
+        int i = 0;
+        while (res->next()) {
+            tempFile.setId(res->getInt("id"));
+            tempFile.setUserId(res->getInt("id_user"));
+            tempFile.setHash(res->getString("hash"));
+            tempFile.setName(res->getString("name"));
+            tempFile.setFileSystemPath(res->getString("file_system_path"));
+            i++;
+        }
+        if (i == 1)
+            file->setFile(tempFile);
         delete res;
         delete preparedStmt;
-        return f;
-    }catch(InvalidArgumentException) {
+        return (i == 1) ? true : false;
+    }catch(exception) {
         delete res;
         delete preparedStmt;
-        return f;
+        return false;
     }
 }
 
 MySqlFileManager::~MySqlFileManager() {
-    delete con;
+    delete _con;
 }

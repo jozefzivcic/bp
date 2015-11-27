@@ -9,10 +9,10 @@
 
 class MySqlFileManager : public IFileManager {
 private:
-    sql::Connection *con;
+    sql::Connection* _con;
 public:
     MySqlFileManager();
-    File getFileById(int id) const override;
+    bool getFileById(int id, File* file) const override;
     ~MySqlFileManager();
 };
 

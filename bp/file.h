@@ -9,6 +9,8 @@ class File {
     std::string _fileSystemPath;
 public:
     File();
+    File(const File&);
+    /* Getters and setters */
     int id() const;
     void setId(int id);
     int userId() const;
@@ -19,6 +21,14 @@ public:
     void setName(const std::string &name);
     std::string fileSystemPath() const;
     void setFileSystemPath(const std::string &fileSystemPath);
+    /* ----- */
+
+    /**
+     * @brief setFile Sets attributes of file given as parameter according to actual object's
+     * parameters.
+     * @param f
+     */
+    void setFile(const File& f);
 };
 
 #endif // IFILE
