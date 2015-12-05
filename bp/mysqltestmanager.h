@@ -15,6 +15,8 @@ public:
     MySqlTestManager();
     ~MySqlTestManager();
     virtual std::list<Test> getAllTestsReadyForRunning() override;
+    virtual bool setTestHasStarted(Test t) override;
+    virtual bool setTestHasFinished(Test t) override;
 private:
     void deleteStatementAndResSet(sql::PreparedStatement* p, sql::ResultSet* r);
 };

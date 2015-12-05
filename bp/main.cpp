@@ -4,7 +4,16 @@
 #include "itestmanager.h"
 #include "mysqltestmanager.h"
 #include <list>
+#include "icurrentlyrunningmanager.h"
+#include "mysqlcurrentlyrunningmanager.h"
+
 using namespace std;
+
+void printTests(list<Test> l) {
+    for (Test t : l) {
+        cout << t.id() << " " << t.idFile() << " " << t.idUser() << " " << t.timeOfAdd() << " " << t.testTable() << endl;
+    }
+}
 
 int main(void) {
     IFileManager* fileManager = new MySqlFileManager();
@@ -16,9 +25,15 @@ int main(void) {
         cout << "Error" << endl;
     delete fileManager;
     ITestManager* testManager = new MySqlTestManager();
-    list<Test> list = testManager->getAllTestsReadyForRunning();
-    for (Test t : list) {
-        cout << t.id() << " " << t.idFile() << " " << t.idUser() << " " << t.timeOfAdd() << " " << t.testTable() << endl;
-    }
+    list<Test> l = testManager->getAllTestsReadyForRunning();
+    printTests(l);
+    ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager();
+    crManager->insertTest(l.front());
+    testManager->setTestHasStarted(l.front());
+    printTests(testManager->getAllTestsReadyForRunning());
+    getchar();
+    crManager->removeTest(l.front());
+    delete testManager;
+    delete crManager;
     return 0;
 }

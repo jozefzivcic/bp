@@ -44,6 +44,42 @@ std::list<Test> MySqlTestManager::getAllTestsReadyForRunning()
     }
 }
 
+bool MySqlTestManager::setTestHasStarted(Test t)
+{
+    PreparedStatement* preparedStmt;
+    try {
+        preparedStmt = _con->prepareStatement("UPDATE tests SET run = ? WHERE id = ?");
+        preparedStmt->setInt(1,1);
+        preparedStmt->setInt(2,t.id());
+        int count = preparedStmt->executeUpdate();
+        if (preparedStmt != nullptr)
+            delete preparedStmt;
+        return count == 1 ? true : false;
+    }catch(exception) {
+        if (preparedStmt != nullptr)
+            delete preparedStmt;
+        return false;
+    }
+}
+
+bool MySqlTestManager::setTestHasFinished(Test t)
+{
+    PreparedStatement* preparedStmt;
+    try {
+        preparedStmt = _con->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?");
+        preparedStmt->setInt(1,1);
+        preparedStmt->setInt(2,t.id());
+        int count = preparedStmt->executeUpdate();
+        if (preparedStmt != nullptr)
+            delete preparedStmt;
+        return count == 1 ? true : false;
+    }catch(exception) {
+        if (preparedStmt != nullptr)
+            delete preparedStmt;
+        return false;
+    }
+}
+
 void MySqlTestManager::deleteStatementAndResSet(PreparedStatement* p, ResultSet* r)
 {
     if (p != nullptr)
