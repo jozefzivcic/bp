@@ -11,7 +11,7 @@ public:
      * @param file File which will be set according to data in database.
      * @return true is everything goes normally else false.
      */
-    virtual bool getFileById(int id, File* file) const = 0;
+    virtual bool getFileById(int id, File* file) = 0;
     virtual ~IFileManager() {}
 };
 #endif // IFILEMANAGER

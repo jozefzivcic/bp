@@ -1,10 +1,10 @@
 #ifndef ITESTMANAGER
 #define ITESTMANAGER
 #include "test.h"
-#include <vector>
+#include <list>
 class ITestManager {
 public:
-    virtual std::vector<Test> getAllTestsReadyForRunning() const = 0;
+    virtual std::list<Test> getAllTestsReadyForRunning() = 0;
     virtual ~ITestManager() {}
 };
 

@@ -1,48 +1,9 @@
-//#include "mysql_connection.h"
-//#include <cppconn/driver.h>
-//#include <cppconn/exception.h>
-//#include <cppconn/resultset.h>
-//#include <cppconn/statement.h>
-
-//using namespace std;
-
-//int main(void)
-//{
-//try {
-//  sql::Driver *driver;
-//  sql::Connection *con;
-//  sql::Statement *stmt;
-//  sql::ResultSet *res;
-//  /* Create a connection */
-//  driver = get_driver_instance();
-//  con = driver->connect("tcp://localhost:3306", "root", "admin");
-//  /* Connect to the MySQL test database */
-//  con->setSchema("mydb");
-
-//  stmt = con->createStatement();
-//  res = stmt->executeQuery("SELECT * FROM users");
-//  while (res->next()) {
-//    cout << res->getString("user_name") << endl;
-//    cout << res->getString("user_password") << endl;
-//  }
-//  delete res;
-//  delete stmt;
-//  delete con;
-
-//} catch (sql::SQLException &e) {
-//  cout << "# ERR: SQLException in " << __FILE__;
-//  //cout << "(" << __FUNCTION__ << ") on line " » << __LINE__ << endl;
-//  cout << "# ERR: " << e.what();
-//  cout << " (MySQL error code: " << e.getErrorCode();
-//  cout << ", SQLState: " << e.getSQLState() << " )" << endl;
-//}
-
-
-//return EXIT_SUCCESS;
-//}
 #include <iostream>
 #include "ifilemanager.h"
 #include "mysqlfilemanager.h"
+#include "itestmanager.h"
+#include "mysqltestmanager.h"
+#include <list>
 using namespace std;
 
 int main(void) {
@@ -54,5 +15,10 @@ int main(void) {
     else
         cout << "Error" << endl;
     delete fileManager;
+    ITestManager* testManager = new MySqlTestManager();
+    list<Test> list = testManager->getAllTestsReadyForRunning();
+    for (Test t : list) {
+        cout << t.id() << " " << t.idFile() << " " << t.idUser() << " " << t.timeOfAdd() << " " << t.testTable() << endl;
+    }
     return 0;
 }

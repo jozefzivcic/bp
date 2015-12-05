@@ -59,8 +59,4 @@ CREATE TABLE `results` (
   CONSTRAINT results_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;
 
-INSERT INTO `users` (`user_name`, `user_password`) VALUES ('admin', 'admin');
-INSERT INTO files (id_user, hash, name, file_system_path) VALUES (1,"AS654HASH","subor1","/home/jozef/Dokumenty/s1.txt");
-INSERT INTO files (id_user, hash, name, file_system_path) VALUES (1,"AS654HASH","subor1","/home/jozef/Dokumenty/niečo s medzerou a ľščťžýáí.txt");
-INSERT INTO tests (id, id_file, id_user, test_table, run, ended) VALUES (1,1,1,"nist",0,0);
--- SELECT id, id_file, id_user, time_of_add, test_table, run, ended from tests;
+\. insertTestValues.sql

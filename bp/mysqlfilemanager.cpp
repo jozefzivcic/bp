@@ -17,7 +17,7 @@ MySqlFileManager::MySqlFileManager() {
     _con->setSchema(Constants::SCHEMA);
 }
 
-bool MySqlFileManager::getFileById(int id, File *file) const {
+bool MySqlFileManager::getFileById(int id, File *file) {
     PreparedStatement* preparedStmt;
     ResultSet *res;
     File tempFile;
@@ -36,16 +36,23 @@ bool MySqlFileManager::getFileById(int id, File *file) const {
         }
         if (i == 1)
             file->setFile(tempFile);
-        delete res;
-        delete preparedStmt;
+        deleteStatementAndResSet(preparedStmt,res);
         return (i == 1) ? true : false;
     }catch(exception) {
-        delete res;
-        delete preparedStmt;
+        deleteStatementAndResSet(preparedStmt,res);
         return false;
     }
 }
 
 MySqlFileManager::~MySqlFileManager() {
-    delete _con;
+    if (_con != nullptr)
+        delete _con;
+}
+
+void MySqlFileManager::deleteStatementAndResSet(PreparedStatement* p, ResultSet* r)
+{
+    if (p != nullptr)
+        delete p;
+    if (r != nullptr)
+        delete r;
 }
