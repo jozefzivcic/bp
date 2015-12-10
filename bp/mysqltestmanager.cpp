@@ -18,7 +18,7 @@ MySqlTestManager::~MySqlTestManager()
         delete _con;
 }
 
-std::list<Test> MySqlTestManager::getAllTestsReadyForRunning()
+bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
 {
     PreparedStatement* preparedStmt;
     ResultSet* res;
@@ -36,11 +36,11 @@ std::list<Test> MySqlTestManager::getAllTestsReadyForRunning()
             l.push_back(t);
         }
         deleteStatementAndResSet(preparedStmt,res);
-        return l;
+        t.insert(t.end(), l.begin(), l.end());
+        return true;
     }catch(exception) {
         deleteStatementAndResSet(preparedStmt,res);
-        l.clear();
-        return l;
+        return false;
     }
 }
 
@@ -48,9 +48,10 @@ bool MySqlTestManager::setTestHasStarted(Test t)
 {
     PreparedStatement* preparedStmt;
     try {
-        preparedStmt = _con->prepareStatement("UPDATE tests SET run = ? WHERE id = ?");
+        preparedStmt = _con->prepareStatement("UPDATE tests SET run = ?, ended = ? WHERE id = ?");
         preparedStmt->setInt(1,1);
-        preparedStmt->setInt(2,t.id());
+        preparedStmt->setInt(2,0);
+        preparedStmt->setInt(3,t.id());
         int count = preparedStmt->executeUpdate();
         if (preparedStmt != nullptr)
             delete preparedStmt;
@@ -66,9 +67,10 @@ bool MySqlTestManager::setTestHasFinished(Test t)
 {
     PreparedStatement* preparedStmt;
     try {
-        preparedStmt = _con->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?");
+        preparedStmt = _con->prepareStatement("UPDATE tests SET ended = ? WHERE id = ? AND run = ?");
         preparedStmt->setInt(1,1);
         preparedStmt->setInt(2,t.id());
+        preparedStmt->setInt(3,1);
         int count = preparedStmt->executeUpdate();
         if (preparedStmt != nullptr)
             delete preparedStmt;

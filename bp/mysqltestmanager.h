@@ -14,7 +14,7 @@ private:
 public:
     MySqlTestManager();
     ~MySqlTestManager();
-    virtual std::list<Test> getAllTestsReadyForRunning() override;
+    virtual bool getAllTestsReadyForRunning(std::list<Test>& t) override;
     virtual bool setTestHasStarted(Test t) override;
     virtual bool setTestHasFinished(Test t) override;
 private:

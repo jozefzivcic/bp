@@ -37,7 +37,7 @@ bool MySqlCurrentlyRunningManager::insertTest(Test t)
     }catch(exception) {
         if (preparedStmt != nullptr)
             delete preparedStmt;
-        return true;
+        return false;
     }
 }
 
@@ -54,6 +54,6 @@ bool MySqlCurrentlyRunningManager::removeTest(Test t)
     }catch(exception) {
         if (preparedStmt != nullptr)
             delete preparedStmt;
-        return true;
+        return false;
     }
 }
