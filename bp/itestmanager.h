@@ -7,7 +7,7 @@ public:
 
     /**
      * @brief getAllTestsReadyForRunning If function succeeds, appends all tests ready for running
-     * into parameter t.
+     * into parameter t. This tests are sorted by time of add ascending.
      * @param t List of tests, which is filled with tests ready for running.
      * @return If function succeeds and no error occurs, return value is true, false otherwise.
      */

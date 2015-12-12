@@ -6,7 +6,12 @@
 #include <list>
 #include "icurrentlyrunningmanager.h"
 #include "mysqlcurrentlyrunningmanager.h"
-
+#include <thread>
+#include "queuecomparator.h"
+#include "prioritycomparator.h"
+#include <queue>
+#include <vector>
+#include "scheduler.h"
 using namespace std;
 
 void printTests(list<Test> l) {
@@ -20,6 +25,7 @@ void printFile(File f) {
 }
 
 int main(void) {
+    /*
     IFileManager* fileManager = new MySqlFileManager();
     File f;
     bool res = fileManager->getFileById(2,&f);
@@ -50,5 +56,7 @@ int main(void) {
     crManager->removeTest(l.front());
     delete testManager;
     delete crManager;
+*/
+    Scheduler s;
     return 0;
 }
