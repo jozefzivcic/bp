@@ -57,6 +57,8 @@ int main(void) {
     delete testManager;
     delete crManager;
 */
-    Scheduler s;
+    IPriorityComparator* pri = new PriorityComparator();
+    Scheduler s(pri);
+    s.getTestForRunning();
     return 0;
 }

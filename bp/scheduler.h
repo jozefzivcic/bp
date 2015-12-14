@@ -14,10 +14,9 @@ private:
     int numberOfProcessors;
     int maxProcessesRunningParallel;
     int currentlyRunningProcesses;
-    IPriorityComparator* pri = new PriorityComparator();
-    std::priority_queue<Test, std::vector<Test>, QueueComparator> queue(pri);
+    std::priority_queue<Test, std::vector<Test>, QueueComparator> queue;
 public:
-    Scheduler();
+    Scheduler(IPriorityComparator * pri);
     ~Scheduler(){}
     virtual Test getTestForRunning() override;
     virtual bool addTestsReadyForRunning() override;
