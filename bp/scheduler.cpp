@@ -1,9 +1,10 @@
 #include "scheduler.h"
 #include <stdexcept>
+#include <list>
 
 using namespace std;
 
-Scheduler::Scheduler(IPriorityComparator *pri) : currentlyRunningProcesses(0), queue(pri)
+Scheduler::Scheduler(IPriorityComparator *pri) : currentlyRunningProcesses(0), queue(pri), state(0)
 {
     numberOfProcessors = std::thread::hardware_concurrency();
     if (numberOfProcessors == 0) {
@@ -32,6 +33,27 @@ bool Scheduler::getTestForRunning(Test &t)
 
 bool Scheduler::addTestsReadyForRunning()
 {
+    list<Test> l;
+    if (!testManager->getAllTestsReadyForRunning(l))
+        return false;
+    for (Test t : l) {
+        queue.push(t);
+    }
     return true;
+}
+
+void Scheduler::run()
+{
+    while(1) {
+        if (queue.size() <= maxProcessesRunningParallel + numberOfProcessors) {
+
+        }
+        sleep(1);
+    }
+}
+
+bool Scheduler::isStateChanged()
+{
+
 }
 

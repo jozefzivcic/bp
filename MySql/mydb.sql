@@ -12,6 +12,8 @@ DROP TABLE IF EXISTS `results`;
 DROP TABLE IF EXISTS `tests`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `nist_tests`;
+DROP TABLE IF EXISTS `change_table`;
+DROP TRIGGER IF EXISTS `test_update`;
 
 -- creating tables
 CREATE TABLE `users` (
@@ -35,6 +37,7 @@ CREATE TABLE `tests` (
   `id_user` int(11) NOT NULL,
   `time_of_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `test_table` varchar(45) NOT NULL, /*name of table with test parameters*/
+  `loaded` tinyint(1) NOT NULL,  /*if test was loaded by external programm*/
   `run` tinyint(1) NOT NULL,  /*if test has already run*/
   `ended` tinyint(1) NOT NULL, /*if test ran and ended successfully*/
   CONSTRAINT tests_fk_id_user FOREIGN KEY (`id_user`) REFERENCES `users`(`id`),
@@ -58,5 +61,22 @@ CREATE TABLE `results` (
   `path2` varchar(1024) NOT NULL,
   CONSTRAINT results_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;
+
+CREATE TABLE `change_table` (
+  `id` INT(11) DEFAULT 0,
+  `change_number` int(11) DEFAULT 0
+)DEFAULT CHARSET=utf8;
+
+INSERT INTO `change_table` (id,change_number) VALUES (0,0);
+
+-- trigger for setting DB last state after insertion on tests
+DELIMITER $$
+CREATE TRIGGER `test_update` AFTER INSERT ON `tests` FOR EACH ROW
+BEGIN
+  DECLARE old_number INT;
+  SELECT `change_number` INTO old_number FROM `change_table`;
+  UPDATE `change_table` SET `change_number` = old_number + 1 WHERE `id` = 0;
+END$$
+DELIMITER ;
 
 \. insertTestValues.sql

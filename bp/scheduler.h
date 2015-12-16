@@ -18,11 +18,14 @@ private:
     int currentlyRunningProcesses;
     std::priority_queue<Test, std::vector<Test>, QueueComparator> queue;
     ITestManager* testManager;
+    int state;
 public:
     Scheduler(IPriorityComparator * pri);
     ~Scheduler();
     virtual bool getTestForRunning(Test& t) override;
     virtual bool addTestsReadyForRunning() override;
+    virtual void run() override;
+    virtual bool isStateChanged() override;
 };
 
 #endif // SCHEDULER_H

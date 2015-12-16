@@ -7,7 +7,7 @@ public:
 
     /**
      * @brief getAllTestsReadyForRunning If function succeeds, appends all tests ready for running
-     * into parameter t. This tests are sorted by time of add ascending.
+     * into parameter t.
      * @param t List of tests, which is filled with tests ready for running.
      * @return If function succeeds and no error occurs, return value is true, false otherwise.
      */
@@ -28,6 +28,14 @@ public:
      * return value is false, true otherwise.
      */
     virtual bool setTestHasFinished(Test t) = 0;
+
+    /**
+     * @brief setTestAsLoaded Sets flag in database, that given test has already been loaded.
+     * @param t Test which is marked as loaded.
+     * @return If given test does not exists, is already loaded, or an error occurs,
+     * return value is false, true otherwise.
+     */
+    virtual bool setTestAsLoaded(const Test& t) = 0;
 
     /**
      * @brief ~ITestManager
