@@ -14,6 +14,7 @@ private:
     //bool _ended;
 public:
     Test();
+    Test(const Test& t);
     int id() const;
     void setId(int id);
     int idFile() const;
@@ -24,6 +25,10 @@ public:
     void setTimeOfAdd(const time_t &timeOfAdd);
     std::string testTable() const;
     void setTestTable(const std::string &testTable);
+    Test& operator =(Test other);
+    friend std::ostream& operator <<(std::ostream& out, const Test& t);
+private:
+    void swap(Test& t);
 };
 
 #endif // TEST_H

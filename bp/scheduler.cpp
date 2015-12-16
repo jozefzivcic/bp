@@ -10,25 +10,24 @@ Scheduler::Scheduler(IPriorityComparator *pri) : currentlyRunningProcesses(0), q
         throw runtime_error("hardware_concurrency: number of processors = 0");
     }
     maxProcessesRunningParallel = numberOfProcessors + 2;
+    testManager = new MySqlTestManager();
+}
+
+Scheduler::~Scheduler()
+{
+    if (testManager != nullptr)
+        delete testManager;
 
 }
 
-Test Scheduler::getTestForRunning()
+bool Scheduler::getTestForRunning(Test &t)
 {
-    Test t1, t2, t3;
-    t1.setTimeOfAdd(12);
-    t2.setTimeOfAdd(13);
-    t3.setTimeOfAdd(10);
-    queue.push(t2);
-    queue.push(t1);
-    queue.push(t3);
-    cout << queue.top().timeOfAdd() << endl;
-    queue.pop();
-    cout << queue.top().timeOfAdd() << endl;
-    queue.pop();
-    cout << queue.top().timeOfAdd() << endl;
-    queue.pop();
-    return Test();
+    if (!queue.empty()) {
+        t = queue.top();
+        queue.pop();
+        return true;
+    }
+    return false;
 }
 
 bool Scheduler::addTestsReadyForRunning()

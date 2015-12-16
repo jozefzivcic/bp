@@ -7,6 +7,8 @@
 #include "ischeduler.h"
 #include "queuecomparator.h"
 #include "prioritycomparator.h"
+#include "itestmanager.h"
+#include "mysqltestmanager.h"
 
 class Scheduler : public IScheduler
 {
@@ -15,10 +17,11 @@ private:
     int maxProcessesRunningParallel;
     int currentlyRunningProcesses;
     std::priority_queue<Test, std::vector<Test>, QueueComparator> queue;
+    ITestManager* testManager;
 public:
     Scheduler(IPriorityComparator * pri);
-    ~Scheduler(){}
-    virtual Test getTestForRunning() override;
+    ~Scheduler();
+    virtual bool getTestForRunning(Test& t) override;
     virtual bool addTestsReadyForRunning() override;
 };
 

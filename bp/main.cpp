@@ -59,6 +59,9 @@ int main(void) {
 */
     IPriorityComparator* pri = new PriorityComparator();
     Scheduler s(pri);
-    s.getTestForRunning();
+    Test t;
+    cout << ((s.getTestForRunning(t)) ? "true" : "false") << endl;
+    cout << t << endl;
+    delete pri;
     return 0;
 }
