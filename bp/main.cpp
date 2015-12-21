@@ -24,6 +24,7 @@ void printFile(File f) {
     cout << f.id() << " " << f.userId() << " " << f.hash() << " " << f.name() << " " << f.fileSystemPath() << endl;
 }
 
+//http://stackoverflow.com/questions/876605/multiple-child-process
 int main(void) {
     /*
     IFileManager* fileManager = new MySqlFileManager();

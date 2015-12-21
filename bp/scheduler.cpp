@@ -48,8 +48,8 @@ bool Scheduler::addTestsReadyForRunning()
 void Scheduler::run()
 {
     while(1) {
-        if (queue.size() <= maxProcessesRunningParallel + numberOfProcessors) {
-
+        if ((queue.size() <= maxProcessesRunningParallel + numberOfProcessors) && isStateChanged()) {
+            addTestsReadyForRunning();
         }
         sleep(1);
     }
