@@ -1,6 +1,8 @@
 #include "scheduler.h"
 #include <stdexcept>
 #include <list>
+#include "ichangestatemanager.h"
+#include "mysqlchangestatemanager.h"
 
 using namespace std;
 
@@ -12,6 +14,7 @@ Scheduler::Scheduler(IPriorityComparator *pri) : currentlyRunningProcesses(0), q
     }
     maxProcessesRunningParallel = numberOfProcessors + 2;
     testManager = new MySqlTestManager();
+    stateManager = new MySqlChangeStateManager();
 }
 
 Scheduler::~Scheduler()
@@ -54,6 +57,11 @@ void Scheduler::run()
 
 bool Scheduler::isStateChanged()
 {
-
+    int dbState;
+    stateManager->getDBState(dbState);
+    if (dbState != state)
+        return false;
+    state = dbState;
+    return true;
 }
 

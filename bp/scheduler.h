@@ -9,15 +9,18 @@
 #include "prioritycomparator.h"
 #include "itestmanager.h"
 #include "mysqltestmanager.h"
+#include "ichangestatemanager.h"
+#include "mysqlchangestatemanager.h"
 
 class Scheduler : public IScheduler
 {
 private:
-    int numberOfProcessors;
-    int maxProcessesRunningParallel;
-    int currentlyRunningProcesses;
+    unsigned int numberOfProcessors;
+    unsigned int maxProcessesRunningParallel;
+    unsigned int currentlyRunningProcesses;
     std::priority_queue<Test, std::vector<Test>, QueueComparator> queue;
     ITestManager* testManager;
+    IChangeStateManager* stateManager;
     int state;
 public:
     Scheduler(IPriorityComparator * pri);
