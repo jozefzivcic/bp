@@ -1,8 +1,19 @@
 #include "testhandler.h"
+using namespace std;
 
-TestHandler::TestHandler() : numberOfRunningTests(0)
+TestHandler::TestHandler(int num) : maxNumberOfTests(num), numberOfRunningTests(0), endThreads(false)
 {
+    for(int i = 0; i < num; i++) {
+        threads.push_back(thread(threadFunction,this));
+    }
+}
 
+TestHandler::~TestHandler()
+{
+    endThreads = true;
+    for(int i = 0; i < maxNumberOfTests; i++) {
+        threads[i].join();
+    }
 }
 
 bool TestHandler::createNistTest(Test t)
@@ -33,3 +44,8 @@ void TestHandler::subtractOneTest()
     numberOfRunningTestsMutex.unlock();
 }
 
+
+void threadFunction(TestHandler* handler)
+{
+
+}

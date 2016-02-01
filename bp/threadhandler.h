@@ -9,10 +9,11 @@ class ThreadHandler
 private:
     int number;
     std::vector<Test> tests;
-    std::vector<std::condition_variable> vars;
+    //std::vector<std::condition_variable> vars;
     bool endThreads;
 public:
-    ThreadHandler();
+    ThreadHandler(int n);
+    bool setTestAndStartThread(int index, Test t);
 };
 
 #endif // THREADHANDLER_H
