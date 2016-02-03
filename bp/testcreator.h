@@ -5,9 +5,11 @@
 class TestCreator : public ITestCreator
 {
 public:
-    TestCreator();
     virtual bool createTest(Test t) override;
     virtual bool createNistTest(Test t) override;
+private:
+    bool execNist(Test t);
+    bool waitOnChild(pid_t pid);
 };
 
 #endif // TESTCREATOR_H
