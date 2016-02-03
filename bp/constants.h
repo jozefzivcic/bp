@@ -27,6 +27,8 @@ public:
      * @brief NIST Name of table, which contains parameters for NIST tests.
      */
     static const std::string NIST;
+
+    static const std::string PATH_TO_NIST_BINARY;
 };
 
 #endif // CONSTANTS

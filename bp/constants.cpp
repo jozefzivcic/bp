@@ -4,3 +4,4 @@ const std::string Constants::USERNAME = "root";
 const std::string Constants::USER_PASSWORD = "admin";
 const std::string Constants::SCHEMA = "mydb";
 const std::string Constants::NIST = "nist";
+const std::string Constants::PATH_TO_NIST_BINARY = "../";
