@@ -6,9 +6,10 @@
 #include <condition_variable>
 #include "itesthandler.h"
 #include "test.h"
-#
+#include "threadhandler.h"
+
 class TestHandler;
-void threadFunction(TestHandler* handler);
+void threadFunction(TestHandler* handler, int i);
 
 class TestHandler : public ITestHandler
 {
@@ -16,14 +17,15 @@ private:
     int maxNumberOfTests;
     int numberOfRunningTests;
     std::mutex numberOfRunningTestsMutex;
-    Test test;
-    bool endThreads;
     std::vector<std::thread> threads;
-    std::condition_variable var;
+    std::mutex* mutexes;
+    std::condition_variable* vars;
+    ThreadHandler thHandler;
 public:
+    friend void threadFunction(TestHandler* handler, int i);
     TestHandler(int num);
     virtual ~TestHandler();
-    virtual bool createNistTest(Test t) override;
+    virtual bool createTest(Test t) override;
     virtual int getNumberOfRunningTests() override;
 private:
     void addOneTest();

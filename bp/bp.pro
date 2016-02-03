@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     prioritycomparator.cpp \
     mysqlchangestatemanager.cpp \
     testhandler.cpp \
-    threadhandler.cpp
+    threadhandler.cpp \
+    testcreator.cpp
 
 HEADERS += \
     ifilemanager.h \
@@ -37,5 +38,7 @@ HEADERS += \
     mysqlchangestatemanager.h \
     itesthandler.h \
     testhandler.h \
-    threadhandler.h
+    threadhandler.h \
+    itestcreator.h \
+    testcreator.h
 

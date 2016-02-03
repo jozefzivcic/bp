@@ -2,60 +2,70 @@
 
 using namespace std;
 
-ThreadHandler::ThreadHandler(int n) : number(n), endThreads(false)
+ThreadHandler::ThreadHandler(int n) : maxNumberOfTests(n), endThreads(false)
 {
     tests = new Test[n];
-    mutexes = new mutex[n];
-    vars = new condition_variable[n];
     isThreadReady = new bool[n];
+    for (int i = 0; i < n; i++) {
+        isThreadReady[i] = true;
+    }
     endThreads = false;
 }
 
 ThreadHandler::~ThreadHandler()
 {
     delete[] tests;
-    delete[] mutexes;
-    delete[] vars;
     delete[] isThreadReady;
 }
 
 bool ThreadHandler::setTestAtPosition(int position, Test t)
 {
-    if (position >= number)
+    if (position >= maxNumberOfTests)
         return false;
     tests[position] = t;
     return true;
 }
 
-bool ThreadHandler::getMutexAtPosition(int position, mutex &m)
+bool ThreadHandler::getTestAtPosition(int position, Test& t)
 {
-
-}
-
-bool ThreadHandler::getConditionVariableAtPosition(int position, condition_variable &var)
-{
-
+    if (position >= maxNumberOfTests)
+        return false;
+    t = tests[position];
+    return true;
 }
 
 bool ThreadHandler::setThreadAtPositionIsReady(int position)
 {
-
+    if (position >= maxNumberOfTests)
+        return false;
+    isThreadReady[position] = true;
+    return true;
 }
 
 bool ThreadHandler::setThreadAtPositionIsBusy(int position)
 {
-
+    if (position >= maxNumberOfTests)
+        return false;
+    isThreadReady[position] = false;
+    return true;
 }
 
-int ThreadHandler::findFreeThread()
+int ThreadHandler::getIndexOfFreeThread()
 {
+    int i = 0;
+    while (!isThreadReady[i] && i < maxNumberOfTests)
+        i++;
+    if (i != maxNumberOfTests)
+        return i;
+    return -1;
+}
 
+bool ThreadHandler::shouldThreadStopped()
+{
+    return endThreads;
 }
 
 void ThreadHandler::stopAllThreads()
 {
-
+    endThreads = true;
 }
-
-
-

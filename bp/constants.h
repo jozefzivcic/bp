@@ -22,6 +22,11 @@ public:
      * @brief SCHEMA Database schema which contains tables for this programm.
      */
     static const std::string SCHEMA;
+
+    /**
+     * @brief NIST Name of table, which contains parameters for NIST tests.
+     */
+    static const std::string NIST;
 };
 
 #endif // CONSTANTS

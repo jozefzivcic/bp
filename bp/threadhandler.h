@@ -8,21 +8,19 @@
 class ThreadHandler
 {
 private:
-    int number;
+    int maxNumberOfTests;
     Test* tests;
-    std::mutex* mutexes;
-    std::condition_variable* vars;
     bool* isThreadReady;
     bool endThreads;
 public:
     ThreadHandler(int n);
     ~ThreadHandler();
     bool setTestAtPosition(int position, Test t);
-    bool getMutexAtPosition(int position, std::mutex& m);
-    bool getConditionVariableAtPosition(int position, std::condition_variable& var);
+    bool getTestAtPosition(int position, Test &t);
     bool setThreadAtPositionIsReady(int position);
     bool setThreadAtPositionIsBusy(int position);
-    int findFreeThread();
+    int getIndexOfFreeThread();
+    bool shouldThreadStopped();
     void stopAllThreads();
 
 };
