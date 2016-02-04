@@ -4,7 +4,20 @@
 
 class ITestCreator {
 public:
+
+    /**
+     * @brief createTest Creates test as a new process. Select what type of process will be
+     * created according to test table - test attribute.
+     * @param t Test, which holds all data needed for test creation.
+     * @return If an error occurs false, true otherwise.
+     */
     virtual bool createTest(Test t) = 0;
+
+    /**
+     * @brief createNistTest Creates a NIST test.
+     * @param t Data for test.
+     * @return If an error occurs false, true otherwise.
+     */
     virtual bool createNistTest(Test t) = 0;
 };
 
