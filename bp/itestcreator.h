@@ -19,6 +19,11 @@ public:
      * @return If an error occurs false, true otherwise.
      */
     virtual bool createNistTest(Test t) = 0;
+
+    /**
+     * @brief ~ITestCreator Virtual destructor.
+     */
+    virtual ~ITestCreator() {}
 };
 
 #endif // ITESTCREATOR

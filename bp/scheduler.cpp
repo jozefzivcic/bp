@@ -5,10 +5,10 @@
 #include "mysqlchangestatemanager.h"
 
 using namespace std;
-
+extern bool endProgram;
 Scheduler::Scheduler(IPriorityComparator *pri) : currentlyRunningProcesses(0), queue(pri), state(0)
 {
-    numberOfProcessors = std::thread::hardware_concurrency();
+    numberOfProcessors = thread::hardware_concurrency();
     if (numberOfProcessors == 0) {
         throw runtime_error("hardware_concurrency: number of processors = 0");
     }
@@ -47,12 +47,13 @@ bool Scheduler::addTestsReadyForRunning()
 
 void Scheduler::run()
 {
-    while(1) {
-        if ((queue.size() <= maxProcessesRunningParallel + numberOfProcessors) && isStateChanged()) {
+    while(!endProgram) {
+        /*if ((queue.size() <= maxProcessesRunningParallel + numberOfProcessors) && isStateChanged()) {
             addTestsReadyForRunning();
-        }
+        }*/
         sleep(1);
     }
+    cout << endProgram << endl;
 }
 
 bool Scheduler::isStateChanged()

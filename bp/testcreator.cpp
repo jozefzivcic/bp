@@ -24,7 +24,6 @@ bool TestCreator::createNistTest(Test t)
         waitOnChild(pid);
         break;
     }
-
     return true;
 }
 
@@ -39,4 +38,3 @@ bool TestCreator::waitOnChild(pid_t pid)
     pid_t returnedPid = waitpid(pid,NULL,0);
     return returnedPid != -1;
 }
-

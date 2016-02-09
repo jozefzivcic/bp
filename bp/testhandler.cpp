@@ -1,6 +1,8 @@
 #include "testhandler.h"
 #include "itestcreator.h"
 #include "testcreator.h"
+#include "icurrentlyrunningmanager.h"
+#include "mysqlcurrentlyrunningmanager.h"
 
 using namespace std;
 
@@ -15,6 +17,10 @@ TestHandler::TestHandler(int num) : maxNumberOfTests(num), numberOfRunningTests(
 
 TestHandler::~TestHandler()
 {
+    thHandler.stopAllThreads();
+    for (int i = 0; i < maxNumberOfTests; i++) {
+        vars[i].notify_one();
+    }
     for(int i = 0; i < maxNumberOfTests; i++) {
         threads[i].join();
     }
@@ -24,7 +30,19 @@ TestHandler::~TestHandler()
 
 bool TestHandler::createTest(Test t)
 {
-
+    if (getNumberOfRunningTests() >= maxNumberOfTests)
+        return false;
+    int index = thHandler.getIndexOfFreeThread();
+    if (index == -1)
+       return false;
+    addOneTest();
+    thHandler.setTestAtPosition(index,t);
+    thHandler.setThreadAtPositionIsBusy(index);
+    ICurrentlyRunningManager* manager = new MySqlCurrentlyRunningManager();
+    manager->insertTest(t);
+    delete manager;
+    vars[index].notify_one();
+    return true;
 }
 
 int TestHandler::getNumberOfRunningTests()
@@ -55,6 +73,7 @@ void threadFunction(TestHandler* handler, int i)
 {
     unique_lock<mutex>lck(handler->mutexes[i]);
     ITestCreator* testCreator = new TestCreator();
+    ICurrentlyRunningManager* manager = new MySqlCurrentlyRunningManager();
     while(handler->thHandler.shouldThreadStopped()) {
         handler->vars[i].wait(lck);
         if (handler->thHandler.shouldThreadStopped())
@@ -62,6 +81,10 @@ void threadFunction(TestHandler* handler, int i)
         Test myTest;
         handler->thHandler.getTestAtPosition(i,myTest);
         testCreator->createTest(myTest);
+        manager->removeTest(myTest);
+        handler->subtractOneTest();
         handler->thHandler.setThreadAtPositionIsReady(i);
     }
+    delete testCreator;
+    delete manager;
 }

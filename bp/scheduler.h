@@ -23,6 +23,7 @@ private:
     IChangeStateManager* stateManager;
     int state;
 public:
+    friend void interruptHandler(int sig);
     Scheduler(IPriorityComparator * pri);
     ~Scheduler();
     virtual bool getTestForRunning(Test& t) override;
