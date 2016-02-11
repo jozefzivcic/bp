@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     mysqlchangestatemanager.cpp \
     testhandler.cpp \
     threadhandler.cpp \
-    testcreator.cpp
+    testcreator.cpp \
+    nistcmdparamscreator.cpp
 
 HEADERS += \
     ifilemanager.h \
@@ -40,5 +41,6 @@ HEADERS += \
     testhandler.h \
     threadhandler.h \
     itestcreator.h \
-    testcreator.h
+    testcreator.h \
+    nistcmdparamscreator.h
 
