@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     testhandler.cpp \
     threadhandler.cpp \
     testcreator.cpp \
-    nistcmdparamscreator.cpp
+    nistcmdparamscreator.cpp \
+    configparser.cpp
 
 HEADERS += \
     ifilemanager.h \
@@ -42,5 +43,6 @@ HEADERS += \
     threadhandler.h \
     itestcreator.h \
     testcreator.h \
-    nistcmdparamscreator.h
+    nistcmdparamscreator.h \
+    configparser.h
 
