@@ -32,7 +32,7 @@ void NistCmdParamsCreator::setFile(string file)
 
 void NistCmdParamsCreator::setStreams(long streams)
 {
-    string temp = " - streams ";
+    string temp = " -streams ";
     temp += convertLongToString(streams);
     params += temp;
 }
