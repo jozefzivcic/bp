@@ -1,0 +1,7 @@
+# This file must be in the same folder as executable file of scheduler.
+"DATABASE"="tcp://localhost:3306"
+"USERNAME"="root"
+"USER_PASSWORD"="admin"
+"SCHEMA"="mydb"
+"NIST"="nist"
+"PATH_TO_NIST_BINARY"="../tests/run"
