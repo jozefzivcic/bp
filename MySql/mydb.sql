@@ -51,14 +51,16 @@ CREATE TABLE `currently_running` (
 
 CREATE TABLE `nist_tests` (
   `id_test` int(11) NOT NULL,
-  `parameter` int(11),
+  `length` int(11) NOT NULL,
+  `testnumber` int(5) NOT NULL,
+  `streams` int(11),
+  `special_parameter` int(11),
   CONSTRAINT nist_tests_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;
 
 CREATE TABLE `results` (
   `id_test` int(11) NOT NULL,
-  `path1` varchar(1024) NOT NULL,
-  `path2` varchar(1024) NOT NULL,
+  `directory` varchar(1024) NOT NULL,
   CONSTRAINT results_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;
 
