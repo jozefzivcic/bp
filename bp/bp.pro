@@ -20,7 +20,9 @@ SOURCES += main.cpp \
     nistcmdparamscreator.cpp \
     configparser.cpp \
     configstorage.cpp \
-    mainclass.cpp
+    mainclass.cpp \
+    nisttestparameter.cpp \
+    mysqlnisttestsmanager.cpp
 
 HEADERS += \
     ifilemanager.h \
@@ -46,5 +48,8 @@ HEADERS += \
     nistcmdparamscreator.h \
     configparser.h \
     configstorage.h \
-    mainclass.h
+    mainclass.h \
+    nisttestparameter.h \
+    inisttestsmanager.h \
+    mysqlnisttestsmanager.h
 
