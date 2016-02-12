@@ -7,7 +7,6 @@ LIBS += -lmysqlcppconn -pthread
 SOURCES += main.cpp \
     mysqlfilemanager.cpp \
     file.cpp \
-    constants.cpp \
     mysqltestmanager.cpp \
     test.cpp \
     mysqlcurrentlyrunningmanager.cpp \
@@ -19,12 +18,13 @@ SOURCES += main.cpp \
     threadhandler.cpp \
     testcreator.cpp \
     nistcmdparamscreator.cpp \
-    configparser.cpp
+    configparser.cpp \
+    configstorage.cpp \
+    mainclass.cpp
 
 HEADERS += \
     ifilemanager.h \
     file.h \
-    constants.h \
     mysqlfilemanager.h \
     itestmanager.h \
     mysqltestmanager.h \
@@ -44,5 +44,7 @@ HEADERS += \
     itestcreator.h \
     testcreator.h \
     nistcmdparamscreator.h \
-    configparser.h
+    configparser.h \
+    configstorage.h \
+    mainclass.h
 

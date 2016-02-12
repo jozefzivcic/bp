@@ -4,14 +4,13 @@
 
 using namespace std;
 using namespace sql;
-MySqlTestManager::MySqlTestManager()
+MySqlTestManager::MySqlTestManager(const ConfigStorage *storage)
 {
     Driver *driver;
     driver = get_driver_instance();
-    _con = driver->connect(Constants::DATABASE, Constants::USERNAME, Constants::USER_PASSWORD);
-    _con->setSchema(Constants::SCHEMA);
+    _con = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
+    _con->setSchema(storage->getSchema());
 }
-
 MySqlTestManager::~MySqlTestManager()
 {
     if (_con != nullptr)

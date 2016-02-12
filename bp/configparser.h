@@ -32,7 +32,7 @@ public:
      * @return If key was found in dictionary, then associated value, if key was not
      * found in dictionary, then empty string.
      */
-    std::string getValue(std::string key);
+    std::string getValue(std::string key) const;
 
     /**
      * @brief reset Resets actual loaded config file.

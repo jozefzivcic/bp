@@ -6,15 +6,16 @@
 
 using namespace std;
 extern bool endProgram;
-Scheduler::Scheduler(IPriorityComparator *pri) : currentlyRunningProcesses(0), queue(pri), state(0)
+Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor)
+    : currentlyRunningProcesses(0), queue(pri), state(0), storage(stor)
 {
     numberOfProcessors = thread::hardware_concurrency();
     if (numberOfProcessors == 0) {
         throw runtime_error("hardware_concurrency: number of processors = 0");
     }
     maxProcessesRunningParallel = numberOfProcessors + 2;
-    testManager = new MySqlTestManager();
-    stateManager = new MySqlChangeStateManager();
+    testManager = new MySqlTestManager(stor);
+    stateManager = new MySqlChangeStateManager(stor);
 }
 
 Scheduler::~Scheduler()

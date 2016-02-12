@@ -43,9 +43,9 @@ bool ConfigParser::parseFile(string file)
     return true;
 }
 
-string ConfigParser::getValue(string key)
+string ConfigParser::getValue(string key) const
 {
-    map<string, string>::iterator it;
+    map<string, string>::const_iterator it;
     it = dictionary.find(key);
     if (it == dictionary.end())
         return "";

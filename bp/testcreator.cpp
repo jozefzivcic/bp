@@ -4,9 +4,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor) {}
+
 bool TestCreator::createTest(Test t)
 {
-    if (t.testTable() == Constants::NIST)
+    if (t.testTable() == storage->getNist())
         return createNistTest(t);
     return false;
 }
@@ -29,7 +31,7 @@ bool TestCreator::createNistTest(Test t)
 
 bool TestCreator::execNist(Test t)
 {
-    int ret = execl(Constants::PATH_TO_NIST_BINARY.c_str(), Constants::PATH_TO_NIST_BINARY.c_str(), NULL);
+    int ret = execl(storage->getPathToNistBinary().c_str(), storage->getPathToNistBinary().c_str(), NULL);
     return ret != -1;
 }
 

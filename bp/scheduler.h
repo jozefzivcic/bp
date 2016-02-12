@@ -11,7 +11,7 @@
 #include "mysqltestmanager.h"
 #include "ichangestatemanager.h"
 #include "mysqlchangestatemanager.h"
-
+#include "configstorage.h"
 class Scheduler : public IScheduler
 {
 private:
@@ -22,9 +22,10 @@ private:
     ITestManager* testManager;
     IChangeStateManager* stateManager;
     int state;
+    const ConfigStorage* storage;
 public:
     friend void interruptHandler(int sig);
-    Scheduler(IPriorityComparator * pri);
+    Scheduler(IPriorityComparator * pri, const ConfigStorage* stor);
     ~Scheduler();
     virtual bool getTestForRunning(Test& t) override;
     virtual bool addTestsReadyForRunning() override;

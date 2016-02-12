@@ -1,9 +1,6 @@
 #include <iostream>
 #include <signal.h>
-#include "iprioritycomparator.h"
-#include "prioritycomparator.h"
-#include "ischeduler.h"
-#include "scheduler.h"
+#include "mainclass.h"
 
 using namespace std;
 
@@ -18,10 +15,12 @@ void interruptHandler(int sig)
 
 int main(void) {
     signal(SIGINT,interruptHandler);
-    IPriorityComparator* pri = new PriorityComparator();
-    IScheduler* scheduler = new Scheduler(pri);
-    scheduler->run();
-    delete scheduler;
-    delete pri;
+    try {
+        MainClass mainClass;
+        mainClass.run();
+    }catch(exception ex) {
+        cout << "Unexpected program end" << endl;
+        cout << ex.what() << endl;
+    }
     return 0;
 }

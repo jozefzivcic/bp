@@ -6,7 +6,8 @@
 
 using namespace std;
 
-TestHandler::TestHandler(int num) : maxNumberOfTests(num), numberOfRunningTests(0), thHandler(num)
+TestHandler::TestHandler(int num, const ConfigStorage *stor):
+    maxNumberOfTests(num), numberOfRunningTests(0), thHandler(num), storage(stor)
 {
     mutexes = new mutex[num];
     vars = new condition_variable[num];
@@ -38,7 +39,7 @@ bool TestHandler::createTest(Test t)
     addOneTest();
     thHandler.setTestAtPosition(index,t);
     thHandler.setThreadAtPositionIsBusy(index);
-    ICurrentlyRunningManager* manager = new MySqlCurrentlyRunningManager();
+    ICurrentlyRunningManager* manager = new MySqlCurrentlyRunningManager(storage);
     manager->insertTest(t);
     delete manager;
     vars[index].notify_one();
@@ -72,8 +73,8 @@ void TestHandler::subtractOneTest()
 void threadFunction(TestHandler* handler, int i)
 {
     unique_lock<mutex>lck(handler->mutexes[i]);
-    ITestCreator* testCreator = new TestCreator();
-    ICurrentlyRunningManager* manager = new MySqlCurrentlyRunningManager();
+    ITestCreator* testCreator = new TestCreator(handler->storage);
+    ICurrentlyRunningManager* manager = new MySqlCurrentlyRunningManager(handler->storage);
     while(handler->thHandler.shouldThreadStopped()) {
         handler->vars[i].wait(lck);
         if (handler->thHandler.shouldThreadStopped())

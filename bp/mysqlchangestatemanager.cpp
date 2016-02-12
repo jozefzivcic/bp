@@ -3,12 +3,12 @@
 using namespace std;
 using namespace sql;
 
-MySqlChangeStateManager::MySqlChangeStateManager()
+MySqlChangeStateManager::MySqlChangeStateManager(const ConfigStorage *storage)
 {
     Driver *driver;
     driver = get_driver_instance();
-    connection = driver->connect(Constants::DATABASE, Constants::USERNAME, Constants::USER_PASSWORD);
-    connection->setSchema(Constants::SCHEMA);
+    connection = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
+    connection->setSchema(storage->getSchema());
 }
 
 MySqlChangeStateManager::~MySqlChangeStateManager()

@@ -2,6 +2,7 @@
 #define MYSQLCHANGESTATEMANAGER_H
 #include "ichangestatemanager.h"
 #include "mysql_connection.h"
+#include "configstorage.h"
 #include <cppconn/driver.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
@@ -11,7 +12,7 @@ class MySqlChangeStateManager : public IChangeStateManager
 private:
     sql::Connection* connection;
 public:
-    MySqlChangeStateManager();
+    MySqlChangeStateManager(const ConfigStorage* storage);
     ~MySqlChangeStateManager();
     virtual bool getDBState(int& state) override;
 private:
