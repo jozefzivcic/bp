@@ -52,7 +52,7 @@ CREATE TABLE `currently_running` (
 CREATE TABLE `nist_tests` (
   `id_test` int(11) NOT NULL,
   `length` int(11) NOT NULL,
-  `testnumber` int(5) NOT NULL,
+  `test_number` int(5) NOT NULL,
   `streams` int(11),
   `special_parameter` int(11),
   CONSTRAINT nist_tests_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)

@@ -1,5 +1,5 @@
 #include "nisttestparameter.h"
-
+#include <iostream>
 long NistTestParameter::getTestId() const
 {
     return testId;
@@ -56,6 +56,30 @@ void NistTestParameter::setSpecialParameter(long value)
     specialParameter = value;
 }
 
+NistTestParameter &NistTestParameter::operator =(NistTestParameter other)
+{
+    swap(other);
+    return *this;
+}
+
+void NistTestParameter::swap(NistTestParameter &par)
+{
+    using std::swap;
+    swap(testId, par.testId);
+    swap(length, par.length);
+    swap(testNumber, par.testNumber);
+    swap(streams, par.streams);
+    swap(specialParameter, par.specialParameter);
+    swap(containsStreams, par.containsStreams);
+    swap(containsSpecialParameter, par.containsSpecialParameter);
+}
+
 NistTestParameter::NistTestParameter(long test, long l, int num):
     testId(test), length(l), testNumber(num), streams(1), specialParameter(0),
     containsStreams(false), containsSpecialParameter(false) {}
+
+NistTestParameter::NistTestParameter(const NistTestParameter &par):
+    testId(par.getTestId()), length(par.getLength()), testNumber(par.getTestNumber()),
+    streams(par.getStreams()), specialParameter(par.getSpecialParameter()),
+    containsStreams(par.containsStreams), containsSpecialParameter(par.containsSpecialParameter)
+{}
