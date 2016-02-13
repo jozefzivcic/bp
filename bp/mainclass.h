@@ -8,14 +8,16 @@
 class MainClass
 {
 private:
-    ConfigParser* parser;
-    IPriorityComparator* pri;
-    IScheduler* scheduler;
-    ConfigStorage* storage;
+    int maxParallelTests;
+    ConfigParser* parser = nullptr;
+    IPriorityComparator* pri = nullptr;
+    IScheduler* scheduler = nullptr;
+    ConfigStorage* storage = nullptr;
 public:
     MainClass();
     ~MainClass();
     void run();
+    bool prepareEnvironment();
 };
 
 #endif // MAINCLASS_H

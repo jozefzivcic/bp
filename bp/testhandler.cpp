@@ -19,10 +19,10 @@ TestHandler::TestHandler(int num, const ConfigStorage *stor):
 TestHandler::~TestHandler()
 {
     thHandler.stopAllThreads();
-    for (int i = 0; i < maxNumberOfTests; i++) {
+    for (unsigned int i = 0; i < maxNumberOfTests; i++) {
         vars[i].notify_one();
     }
-    for(int i = 0; i < maxNumberOfTests; i++) {
+    for(unsigned int i = 0; i < maxNumberOfTests; i++) {
         threads[i].join();
     }
     delete[] mutexes;
@@ -46,7 +46,7 @@ bool TestHandler::createTest(Test t)
     return true;
 }
 
-int TestHandler::getNumberOfRunningTests()
+unsigned int TestHandler::getNumberOfRunningTests()
 {
     int num;
     numberOfRunningTestsMutex.lock();
@@ -68,7 +68,6 @@ void TestHandler::subtractOneTest()
     numberOfRunningTests -= 1;
     numberOfRunningTestsMutex.unlock();
 }
-
 
 void threadFunction(TestHandler* handler, int i)
 {

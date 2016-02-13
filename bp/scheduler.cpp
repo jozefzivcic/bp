@@ -3,19 +3,18 @@
 #include <list>
 #include "ichangestatemanager.h"
 #include "mysqlchangestatemanager.h"
+#include "testhandler.h"
 
 using namespace std;
+
 extern bool endProgram;
-Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor)
-    : currentlyRunningProcesses(0), queue(pri), state(0), storage(stor)
+
+Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor, int maxParallel)
+    : queue(pri), state(0), storage(stor), maxTestsRunningParallel(maxParallel)
 {
-    numberOfProcessors = thread::hardware_concurrency();
-    if (numberOfProcessors == 0) {
-        throw runtime_error("hardware_concurrency: number of processors = 0");
-    }
-    maxProcessesRunningParallel = numberOfProcessors + 2;
     testManager = new MySqlTestManager(stor);
     stateManager = new MySqlChangeStateManager(stor);
+    testHandler = new TestHandler(maxParallel, stor);
 }
 
 Scheduler::~Scheduler()
@@ -49,9 +48,14 @@ bool Scheduler::addTestsReadyForRunning()
 void Scheduler::run()
 {
     while(!endProgram) {
-        /*if ((queue.size() <= maxProcessesRunningParallel + numberOfProcessors) && isStateChanged()) {
+        if ((queue.size() <= maxTestsRunningParallel * 2) && isStateChanged()) {
             addTestsReadyForRunning();
-        }*/
+        }
+        while(!queue.empty() && testHandler->getNumberOfRunningTests() < maxTestsRunningParallel) {
+            Test t;
+            getTestForRunning(t);
+            testHandler->createTest(t);
+        }
         sleep(1);
     }
     cout << endProgram << endl;

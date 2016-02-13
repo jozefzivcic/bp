@@ -4,7 +4,7 @@
 class ITestHandler {
 public:
     virtual bool createTest(Test t) = 0;
-    virtual int getNumberOfRunningTests() = 0;
+    virtual unsigned int getNumberOfRunningTests() = 0;
 };
 
 #endif // ITESTHANDLER

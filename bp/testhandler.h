@@ -15,12 +15,12 @@ void threadFunction(TestHandler* handler, int i);
 class TestHandler : public ITestHandler
 {
 private:
-    int maxNumberOfTests;
-    int numberOfRunningTests;
+    unsigned int maxNumberOfTests;
+    unsigned int numberOfRunningTests;
     std::mutex numberOfRunningTestsMutex;
     std::vector<std::thread> threads;
-    std::mutex* mutexes;
-    std::condition_variable* vars;
+    std::mutex* mutexes = nullptr;
+    std::condition_variable* vars = nullptr;
     ThreadHandler thHandler;
     const ConfigStorage* storage;
 public:
@@ -28,7 +28,7 @@ public:
     TestHandler(int num, const ConfigStorage* stor);
     virtual ~TestHandler();
     virtual bool createTest(Test t) override;
-    virtual int getNumberOfRunningTests() override;
+    virtual unsigned int getNumberOfRunningTests() override;
 private:
     void addOneTest();
     void subtractOneTest();
