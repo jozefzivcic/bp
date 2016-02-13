@@ -23,6 +23,9 @@ public:
     long getSpecialParameter() const;
     void setSpecialParameter(long value);
     NistTestParameter& operator =(NistTestParameter other);
+    bool getContainsStreams() const;
+    bool getContainsSpecialParameter() const;
+
 private:
     void swap(NistTestParameter& par);
 };

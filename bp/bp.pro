@@ -22,7 +22,8 @@ SOURCES += main.cpp \
     configstorage.cpp \
     mainclass.cpp \
     nisttestparameter.cpp \
-    mysqlnisttestsmanager.cpp
+    mysqlnisttestsmanager.cpp \
+    classtocmdparamconverter.cpp
 
 HEADERS += \
     ifilemanager.h \
@@ -51,5 +52,7 @@ HEADERS += \
     mainclass.h \
     nisttestparameter.h \
     inisttestsmanager.h \
-    mysqlnisttestsmanager.h
+    mysqlnisttestsmanager.h \
+    iclasstocmdparamconverter.h \
+    classtocmdparamconverter.h
 
