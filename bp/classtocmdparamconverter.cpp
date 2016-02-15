@@ -1,10 +1,12 @@
 #include "classtocmdparamconverter.h"
 
 using namespace std;
+
 ClassToCmdParamConverter::ClassToCmdParamConverter(const ConfigStorage *storage)
 {
     creator = new NistCmdParamsCreator();
     fileManager = new MySqlFileManager(storage);
+    nistManager = new MySqlNistTestsManager(storage);
 }
 
 ClassToCmdParamConverter::~ClassToCmdParamConverter()
@@ -13,19 +15,31 @@ ClassToCmdParamConverter::~ClassToCmdParamConverter()
         delete creator;
     if (fileManager != nullptr)
         delete fileManager;
+    if (nistManager != nullptr)
+        delete nistManager;
 }
 
-string ClassToCmdParamConverter::convertNistTestToCmd(Test t, NistTestParameter param)
+bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary, Test t)
 {
     creator->resetParams();
+    creator->setBinary(binary);
     File f;
-    fileManager->getFileById(t.idFile(), &f);
+    if (!fileManager->getFileById(t.idFile(), &f))
+        return false;
     creator->setFile(f.fileSystemPath());
+    NistTestParameter param;
+    if (!nistManager->getParameterById(t.id(),param))
+        return false;
     creator->setLength(param.getLength());
     if (param.getContainsStreams())
         creator->setStreams(param.getStreams());
     creator->setTest(param.getTestNumber());
     if (param.getContainsSpecialParameter())
         creator->setSpecialParameter(param.getSpecialParameter());
-    return creator->getCmdParams();
+    return creator->fillArrayOfArguments(ptr);
+}
+
+bool ClassToCmdParamConverter::deleteAllocatedArray(char ***ptr)
+{
+    return creator->deleteArrayOfArguments(ptr);
 }

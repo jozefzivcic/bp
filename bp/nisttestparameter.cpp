@@ -84,6 +84,8 @@ bool NistTestParameter::getContainsSpecialParameter() const
     return containsSpecialParameter;
 }
 
+NistTestParameter::NistTestParameter() : NistTestParameter(0,0,0) {}
+
 NistTestParameter::NistTestParameter(long test, long l, int num):
     testId(test), length(l), testNumber(num), streams(1), specialParameter(0),
     containsStreams(false), containsSpecialParameter(false) {}

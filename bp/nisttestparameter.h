@@ -13,6 +13,7 @@ private:
     bool containsStreams;
     bool containsSpecialParameter;
 public:
+    NistTestParameter();
     NistTestParameter(long test, long l, int num);
     NistTestParameter(const NistTestParameter& par);
     long getTestId() const;

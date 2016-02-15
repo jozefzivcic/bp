@@ -6,7 +6,8 @@
 
 class IClassToCmdParamConverter {
 public:
-    virtual std::string convertNistTestToCmd(Test t, NistTestParameter param) = 0;
+    virtual bool convertNistTestToArray(char*** ptr, std::string binary, Test t) = 0;
+    virtual bool deleteAllocatedArray(char *** ptr) = 0;
 };
 
 #endif // ICLASSTOCMDPARAMCONVERTER
