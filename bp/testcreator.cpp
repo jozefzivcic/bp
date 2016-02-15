@@ -6,19 +6,19 @@
 
 TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor) {}
 
-bool TestCreator::createTest(Test t)
+bool TestCreator::createTest(std::string bin, Test t)
 {
     if (t.testTable() == storage->getNist())
-        return createNistTest(t);
+        return createNistTest(bin, t);
     return false;
 }
 
-bool TestCreator::createNistTest(Test t)
+bool TestCreator::createNistTest(std::string bin, Test t)
 {
     pid_t pid = fork();
     switch(pid) {
     case 0:
-        execNist(t);
+        execNist(bin, t);
         break;
     case -1:
         return false;
@@ -29,9 +29,9 @@ bool TestCreator::createNistTest(Test t)
     return true;
 }
 
-bool TestCreator::execNist(Test t)
+bool TestCreator::execNist(std::string bin, Test t)
 {
-    int ret = execl(storage->getPathToNistBinary().c_str(), storage->getPathToNistBinary().c_str(), NULL);
+    int ret = execl(storage->getPathToNist().c_str(), storage->getPathToNist().c_str(), NULL);
     return ret != -1;
 }
 

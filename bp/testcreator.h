@@ -9,10 +9,10 @@ private:
     const ConfigStorage* storage;
 public:
     TestCreator(const ConfigStorage* stor);
-    virtual bool createTest(Test t) override;
-    virtual bool createNistTest(Test t) override;
+    virtual bool createTest(std::string bin, Test t) override;
+    virtual bool createNistTest(std::string bin, Test t) override;
 private:
-    bool execNist(Test t);
+    bool execNist(std::string bin, Test t);
     bool waitOnChild(pid_t pid);
 };
 

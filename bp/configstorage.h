@@ -11,7 +11,8 @@ private:
     std::string userPassword;
     std::string schema;
     std::string nist;
-    std::string pathToNistBinary;
+    std::string pathToNist;
+    std::string pathToTestsPool;
 public:
     ConfigStorage(ConfigParser* parser);
     std::string getDatabase() const;
@@ -19,7 +20,8 @@ public:
     std::string getUserPassword() const;
     std::string getSchema() const;
     std::string getNist() const;
-    std::string getPathToNistBinary() const;
+    std::string getPathToNist() const;
+    std::string getPathToTestsPool() const;
 };
 
 #endif // CONFIGSTORAGE_H

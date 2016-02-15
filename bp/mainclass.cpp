@@ -39,7 +39,7 @@ void MainClass::run()
 bool MainClass::prepareEnvironment()
 {
     IFileStructureHandler* handler = new LinuxFileStructureHandler();
-    if (!handler->controlFileStructure("../test_pool/", maxParallelTests))
-        return handler->createCopiesOfDirectory("../tests/", "../tests_pool", maxParallelTests);
+    if (!handler->controlFileStructure(storage->getPathToTestsPool(), maxParallelTests))
+        return handler->createCopiesOfDirectory(storage->getPathToNist(), storage->getPathToTestsPool(), maxParallelTests);
     return true;
 }
