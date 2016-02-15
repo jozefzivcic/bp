@@ -1,6 +1,7 @@
 #ifndef NISTCMDPARAMSCREATOR_H
 #define NISTCMDPARAMSCREATOR_H
 #include <iostream>
+#include <list>
 
 class NistCmdParamsCreator
 {
@@ -9,7 +10,7 @@ private:
     /**
      * @brief params Contains cmd line parameters.
      */
-    std::string params;
+    std::list<std::string> params;
 
     /**
      * @brief testNumber Contains for which test are created parameters.
@@ -32,6 +33,12 @@ public:
      * @brief resetParams Deletes all setted options except -fast.
      */
     void resetParams();
+
+    /**
+     * @brief setBinary Sets binary to be executed as 0th argument.
+     * @param bin Filesystem path to binary.
+     */
+    void setBinary(std::string bin);
 
     /**
      * @brief setLength Adds -length option.
@@ -65,6 +72,21 @@ public:
      * @return true if method was called after setTest, false otherwise.
      */
     bool setSpecialParameter(long param);
+
+    /**
+     * @brief fillArrayOfArguments Allocates memory to pointer ptr and then fills array with
+     * parameters setted with methods above.
+     * @param ptr Pointer to array, that will hold parameters.
+     * @return if given pointer is nullptr then false, else true.
+     */
+    bool fillArrayOfArguments(char*** ptr);
+
+    /**
+     * @brief deleteArrayOfArguments Frees allocated space on pointer ptr.
+     * @param ptr Pointer to array to be freed.
+     * @return if given pointer is nullptr then false, else true.
+     */
+    bool deleteArrayOfArguments(char*** ptr);
 private:
 
     /**
