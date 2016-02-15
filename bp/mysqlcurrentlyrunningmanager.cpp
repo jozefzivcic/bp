@@ -4,7 +4,6 @@
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
-#include "constants.h"
 #include <stdexcept>
 
 using namespace std;

@@ -1,5 +1,4 @@
 #include "mysqltestmanager.h"
-#include "constants.h"
 #include <cppconn/driver.h>
 
 using namespace std;

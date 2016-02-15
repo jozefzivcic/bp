@@ -1,5 +1,4 @@
 #include "mysqlchangestatemanager.h"
-#include "constants.h"
 using namespace std;
 using namespace sql;
 

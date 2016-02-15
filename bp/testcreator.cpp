@@ -1,10 +1,19 @@
 #include "testcreator.h"
-#include "constants.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "classtocmdparamconverter.h"
 
-TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor) {}
+TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor)
+{
+    converter = new ClassToCmdParamConverter(stor);
+}
+
+TestCreator::~TestCreator()
+{
+    if (converter != nullptr)
+        delete converter;
+}
 
 bool TestCreator::createTest(std::string bin, Test t)
 {
@@ -31,12 +40,15 @@ bool TestCreator::createNistTest(std::string bin, Test t)
 
 bool TestCreator::execNist(std::string bin, Test t)
 {
-    int ret = execl(storage->getPathToNist().c_str(), storage->getPathToNist().c_str(), NULL);
+    if (!converter->convertNistTestToArray(&args, bin, t))
+        return false;
+    int ret = execv(bin.c_str(), args);
     return ret != -1;
 }
 
 bool TestCreator::waitOnChild(pid_t pid)
 {
     pid_t returnedPid = waitpid(pid,NULL,0);
+    converter->deleteAllocatedArray(&args);
     return returnedPid != -1;
 }

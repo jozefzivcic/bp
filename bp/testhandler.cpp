@@ -3,6 +3,8 @@
 #include "testcreator.h"
 #include "icurrentlyrunningmanager.h"
 #include "mysqlcurrentlyrunningmanager.h"
+#include "itestmanager.h"
+#include "mysqltestmanager.h"
 
 using namespace std;
 
@@ -73,7 +75,8 @@ void threadFunction(TestHandler* handler, int i)
 {
     unique_lock<mutex>lck(handler->mutexes[i]);
     ITestCreator* testCreator = new TestCreator(handler->storage);
-    ICurrentlyRunningManager* manager = new MySqlCurrentlyRunningManager(handler->storage);
+    ITestManager* testManager = new MySqlTestManager(handler->storage);
+    ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->storage);
     string bin = handler->storage->getPathToTestsPool();
     if (bin[bin.length() - 1] != '/')
         bin += "/";
@@ -86,10 +89,12 @@ void threadFunction(TestHandler* handler, int i)
         Test myTest;
         handler->thHandler.getTestAtPosition(i,myTest);
         testCreator->createTest(bin, myTest);
-        manager->removeTest(myTest);
+        testManager->setTestHasFinished(myTest);
+        crManager->removeTest(myTest);
         handler->subtractOneTest();
         handler->thHandler.setThreadAtPositionIsReady(i);
     }
     delete testCreator;
-    delete manager;
+    delete testManager;
+    delete crManager;
 }
