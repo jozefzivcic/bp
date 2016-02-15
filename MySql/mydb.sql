@@ -38,7 +38,6 @@ CREATE TABLE `tests` (
   `time_of_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `test_table` varchar(45) NOT NULL, /*name of table with test parameters*/
   `loaded` tinyint(1) NOT NULL,  /*if test was loaded by external programm*/
-  `run` tinyint(1) NOT NULL,  /*if test has already run*/
   `ended` tinyint(1) NOT NULL, /*if test ran and ended successfully*/
   CONSTRAINT tests_fk_id_user FOREIGN KEY (`id_user`) REFERENCES `users`(`id`),
   CONSTRAINT tests_fk_id_file FOREIGN KEY (`id_file`) REFERENCES `files`(`id`)

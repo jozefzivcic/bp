@@ -71,3 +71,14 @@ bool Scheduler::isStateChanged()
     return true;
 }
 
+bool Scheduler::addTestsAfterCrash()
+{
+    list<Test> l;
+    if (!testManager->getTestsNotFinished(l))
+        return false;
+    for (Test t : l) {
+        queue.push(t);
+    }
+    return true;
+}
+

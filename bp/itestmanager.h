@@ -14,12 +14,20 @@ public:
     virtual bool getAllTestsReadyForRunning(std::list<Test>& t) = 0;
 
     /**
+     * @brief getTestsNotFinished If method succeeds, appends all tests which were loaded,
+     * but not finished or executed e.g. because of SW/HW crash.
+     * @param t List of tests, which is filled with tests, that should be executed again.
+     * @return If function succeeds and no error occurs, return value is true, false otherwise.
+     */
+    virtual bool getTestsNotFinished(std::list<Test>& t) = 0;
+
+    /**
      * @brief setTestHasStarted Sets flags in database, that given test has already started
      * and has not finished yet.
      * @param t Test which is marked as running.
      * @return If given test does not exists, or an error occurs, return value is false, true otherwise.
      */
-    virtual bool setTestHasStarted(Test t) = 0;
+    //virtual bool setTestHasStarted(Test t) = 0;
 
     /**
      * @brief setTestHasFinished Sets flag in database, that given test has already ended.

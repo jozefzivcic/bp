@@ -16,7 +16,8 @@ public:
     MySqlTestManager(const ConfigStorage* storage);
     ~MySqlTestManager();
     virtual bool getAllTestsReadyForRunning(std::list<Test>& t) override;
-    virtual bool setTestHasStarted(Test t) override;
+    virtual bool getTestsNotFinished(std::list<Test>& t) override;
+    //virtual bool setTestHasStarted(Test t) override;
     virtual bool setTestHasFinished(Test t) override;
     virtual bool setTestAsLoaded(const Test& t) override;
 private:

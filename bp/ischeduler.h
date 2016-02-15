@@ -13,8 +13,8 @@ public:
     virtual bool getTestForRunning(Test& t) = 0;
 
     /**
-     * @brief addTestsReadyForRunning
-     * @return
+     * @brief addTestsReadyForRunning Adds tests from database into queue of tests for running.
+     * @return If an error occurs false, true otherwise.
      */
     virtual bool addTestsReadyForRunning() = 0;
 
@@ -29,6 +29,16 @@ public:
      */
     virtual bool isStateChanged() = 0;
 
+    /**
+     * @brief addTestsAfterCrash Adds tests to the queue of tests for running after these tests
+     * were loaded but not finished.
+     * @return If an error occurs false, true otherwise.
+     */
+    virtual bool addTestsAfterCrash() = 0;
+
+    /**
+     * @brief ~IScheduler Virtual destructor.
+     */
     virtual ~IScheduler() {}
 };
 
