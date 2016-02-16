@@ -6,3 +6,4 @@
 "NIST"="nist"
 "PATH_TO_NIST"="../tests/"
 "PATH_TO_TESTS_POOL"="../tests_pool/"
+"PATH_TO_USERS_DIR"="../users/"

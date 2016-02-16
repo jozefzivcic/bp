@@ -13,6 +13,7 @@ private:
     std::string nist;
     std::string pathToNist;
     std::string pathToTestsPool;
+    std::string pathToUsersDir;
 public:
     ConfigStorage(ConfigParser* parser);
     std::string getDatabase() const;
@@ -22,6 +23,7 @@ public:
     std::string getNist() const;
     std::string getPathToNist() const;
     std::string getPathToTestsPool() const;
+    std::string getPathToUsersDir() const;
 };
 
 #endif // CONFIGSTORAGE_H

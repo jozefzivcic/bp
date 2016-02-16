@@ -4,7 +4,9 @@
 #include <sys/wait.h>
 #include "classtocmdparamconverter.h"
 
-TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor)
+using namespace std;
+
+TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor), directory(0)
 {
     converter = new ClassToCmdParamConverter(stor);
 }
@@ -15,19 +17,19 @@ TestCreator::~TestCreator()
         delete converter;
 }
 
-bool TestCreator::createTest(std::string bin, Test t)
+bool TestCreator::createTest(int dir, Test t)
 {
     if (t.testTable() == storage->getNist())
-        return createNistTest(bin, t);
+        return createNistTest(dir, t);
     return false;
 }
 
-bool TestCreator::createNistTest(std::string bin, Test t)
+bool TestCreator::createNistTest(int dir, Test t)
 {
     pid_t pid = fork();
     switch(pid) {
     case 0:
-        execNist(bin, t);
+        execNist(dir, t);
         break;
     case -1:
         return false;
@@ -38,8 +40,14 @@ bool TestCreator::createNistTest(std::string bin, Test t)
     return true;
 }
 
-bool TestCreator::execNist(std::string bin, Test t)
+bool TestCreator::execNist(int dir, Test t)
 {
+    directory = dir;
+    string bin = storage->getPathToTestsPool();
+    if (bin[bin.length() - 1] != '/')
+        bin += "/";
+    bin += to_string(dir);
+    bin += "/assess";
     if (!converter->convertNistTestToArray(&args, bin, t))
         return false;
     int ret = execv(bin.c_str(), args);

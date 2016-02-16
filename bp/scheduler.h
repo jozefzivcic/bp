@@ -31,6 +31,7 @@ public:
     virtual bool addTestsReadyForRunning() override;
     virtual void run() override;
     virtual bool isStateChanged() override;
+    virtual bool addTestsAfterCrash() override;
 };
 
 #endif // SCHEDULER_H

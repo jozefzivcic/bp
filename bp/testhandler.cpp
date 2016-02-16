@@ -77,18 +77,14 @@ void threadFunction(TestHandler* handler, int i)
     ITestCreator* testCreator = new TestCreator(handler->storage);
     ITestManager* testManager = new MySqlTestManager(handler->storage);
     ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->storage);
-    string bin = handler->storage->getPathToTestsPool();
-    if (bin[bin.length() - 1] != '/')
-        bin += "/";
-    bin += to_string(i);
-    bin += "/assess";
+
     while(handler->thHandler.shouldThreadStopped()) {
         handler->vars[i].wait(lck);
         if (handler->thHandler.shouldThreadStopped())
             break;
         Test myTest;
         handler->thHandler.getTestAtPosition(i,myTest);
-        testCreator->createTest(bin, myTest);
+        testCreator->createTest(i, myTest);
         testManager->setTestHasFinished(myTest);
         crManager->removeTest(myTest);
         handler->subtractOneTest();

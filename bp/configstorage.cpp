@@ -35,10 +35,16 @@ std::string ConfigStorage::getPathToTestsPool() const
     return pathToTestsPool;
 }
 
+std::string ConfigStorage::getPathToUsersDir() const
+{
+    return pathToUsersDir;
+}
+
 ConfigStorage::ConfigStorage(ConfigParser *parser):
     database(parser->getValue("DATABASE")), userName(parser->getValue("USERNAME")),
     userPassword(parser->getValue("USER_PASSWORD")), schema(parser->getValue("SCHEMA")),
     nist(parser->getValue("NIST")), pathToNist(parser->getValue("PATH_TO_NIST")),
-    pathToTestsPool(parser->getValue("PATH_TO_TESTS_POOL"))
+    pathToTestsPool(parser->getValue("PATH_TO_TESTS_POOL")),
+    pathToUsersDir(parser->getValue("PATH_TO_USERS_DIR"))
 {}
 

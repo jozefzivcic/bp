@@ -10,13 +10,14 @@ private:
     const ConfigStorage* storage;
     char** args = nullptr;
     IClassToCmdParamConverter* converter = nullptr;
+    int directory;
 public:
     TestCreator(const ConfigStorage* stor);
     ~TestCreator();
-    virtual bool createTest(std::string bin, Test t) override;
-    virtual bool createNistTest(std::string bin, Test t) override;
+    virtual bool createTest(int dir, Test t) override;
+    virtual bool createNistTest(int dir, Test t) override;
 private:
-    bool execNist(std::string bin, Test t);
+    bool execNist(int dir, Test t);
     bool waitOnChild(pid_t pid);
 };
 

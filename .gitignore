@@ -35,3 +35,4 @@ Makefile*
 /tests/
 /tests_pool/
 /bp/bp
+/users/
