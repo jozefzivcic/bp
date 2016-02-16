@@ -18,6 +18,7 @@ public:
     ClassToCmdParamConverter(const ConfigStorage* storage);
     ~ClassToCmdParamConverter();
     virtual bool convertNistTestToArray(char*** ptr, std::string binary, Test t) override;
+    virtual bool convertNistTestToArray(char*** ptr, std::string binary, Test t, NistTestParameter param) override;
     virtual bool deleteAllocatedArray(char *** ptr) override;
 };
 

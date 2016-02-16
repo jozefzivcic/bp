@@ -21,15 +21,20 @@ ClassToCmdParamConverter::~ClassToCmdParamConverter()
 
 bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary, Test t)
 {
+    NistTestParameter param;
+    if (!nistManager->getParameterById(t.id(),param))
+        return false;
+    return convertNistTestToArray(ptr, binary, t, param);
+}
+
+bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary, Test t, NistTestParameter param)
+{
     creator->resetParams();
     creator->setBinary(binary);
     File f;
     if (!fileManager->getFileById(t.idFile(), &f))
         return false;
     creator->setFile(f.fileSystemPath());
-    NistTestParameter param;
-    if (!nistManager->getParameterById(t.id(),param))
-        return false;
     creator->setLength(param.getLength());
     if (param.getContainsStreams())
         creator->setStreams(param.getStreams());
