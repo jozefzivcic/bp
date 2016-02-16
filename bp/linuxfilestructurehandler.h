@@ -14,6 +14,9 @@ public:
     virtual bool checkIfDirectoryExists(std::string directory) override;
     virtual bool controlFileStructure(std::string directory, int num) override;
     virtual std::string createFSPath(bool slashAtEnd, std::list<std::string> l) override;
+    virtual std::string createPathToNistResult(std::string testsPool, int dir, int testNum) override;
+    virtual std::string getNistTestFolder(int num) override;
+    virtual std::string createPathToStoreTest(std::string pathToUserDir, long userId, long testId) override;
 };
 
 #endif // FILESTRUCTUREHANDLER_H

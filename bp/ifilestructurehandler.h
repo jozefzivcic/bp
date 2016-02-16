@@ -59,6 +59,35 @@ public:
     virtual std::string createFSPath(bool slashAtEnd, std::list<std::string> l) = 0;
 
     /**
+     * @brief createPathToNistResult Creates path to NIST tests result.
+     * @param testsPool FS path where tests are stored.
+     * @param dir Specifies number of directory in tests pool.
+     * @param testNum Number of test in which results should be searched.
+     * @return Path to NIST test result. If testNum is not in range from 1 to 15, then returns
+     * empty string.
+     */
+    virtual std::string createPathToNistResult(std::string testsPool, int dir, int testNum) = 0;
+
+    /**
+     * @brief getNistTestFolder Gets name of folder, which is associated with test with number
+     * num.
+     * @param num Number of test, which folder should be returned.
+     * @return Name of folder of test num. If num is not in range from 1 to 15, then returns
+     * empty string.
+     */
+    virtual std::string getNistTestFolder(int num) = 0;
+
+    /**
+     * @brief createPathToStoreTest Creates FS path to directory, which is created to contain
+     * results from tests.
+     * @param pathToUserDir Path to directory, which contains user folders.
+     * @param userId Id of user to whom results are stored.
+     * @param testId Id of test which will be stored.
+     * @return Path to directory, where results of tests are stored.
+     */
+    virtual std::string createPathToStoreTest(std::string pathToUserDir, long userId, long testId) = 0;
+
+    /**
      * @brief ~IFileStructureHandler Virtual destructor.
      */
     virtual ~IFileStructureHandler() {}

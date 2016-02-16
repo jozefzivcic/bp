@@ -83,3 +83,63 @@ string LinuxFileStructureHandler::createFSPath(bool slashAtEnd, std::list<string
         return path.substr(0, path.length() - 1);
     return path;
 }
+
+string LinuxFileStructureHandler::createPathToNistResult(string testsPool, int dir, int testNum)
+{
+    list<string>l;
+    l.push_back(testsPool);
+    l.push_back(to_string(dir));
+    l.push_back("experiments");
+    l.push_back("AlgorithmTesting");
+    l.push_back(getNistTestFolder(testNum));
+    return createFSPath(true, l);
+}
+
+string LinuxFileStructureHandler::getNistTestFolder(int num)
+{
+    if (num < 1 || num > 15)
+        return "";
+    switch(num) {
+    case 1:
+        return "Frequency";
+    case 2:
+        return "BlockFrequency";
+    case 3:
+        return "CumulativeSums";
+    case 4:
+        return "Runs";
+    case 5:
+        return "LongestRun";
+    case 6:
+        return "Rank";
+    case 7:
+        return "FFT";
+    case 8:
+        return "NonOverlappingTemplate";
+    case 9:
+        return "OverlappingTemplate";
+    case 10:
+        return "Universal";
+    case 11:
+        return "ApproximateEntropy";
+    case 12:
+        return "RandomExcursions";
+    case 13:
+        return "RandomExcursionsVariant";
+    case 14:
+        return "Serial";
+    case 15:
+        return "LinearComplexity";
+    default:
+        return "";
+    }
+}
+
+string LinuxFileStructureHandler::createPathToStoreTest(string pathToUserDir, long userId, long testId)
+{
+    list<string> l;
+    l.push_back(pathToUserDir);
+    l.push_back(to_string(userId));
+    l.push_back(to_string(testId));
+    return createFSPath(true, l);
+}
