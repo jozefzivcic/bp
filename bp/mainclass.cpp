@@ -33,7 +33,8 @@ MainClass::~MainClass()
 
 void MainClass::run()
 {
-    scheduler->addTestsAfterCrash();
+    if (!scheduler->addTestsAfterCrash())
+        throw runtime_error("addTestsAfterCrash");
     scheduler->run();
 }
 

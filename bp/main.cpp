@@ -17,6 +17,8 @@ int main(void) {
     signal(SIGINT,interruptHandler);
     try {
         MainClass mainClass;
+        if (!mainClass.prepareEnvironment())
+            throw runtime_error("prepareEnvironment");
         mainClass.run();
     }catch(exception ex) {
         cout << "Unexpected program end" << endl;

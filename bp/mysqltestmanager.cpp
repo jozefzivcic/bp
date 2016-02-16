@@ -18,8 +18,8 @@ MySqlTestManager::~MySqlTestManager()
 
 bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
 {
-    PreparedStatement* preparedStmt;
-    ResultSet* res;
+    PreparedStatement* preparedStmt = nullptr;
+    ResultSet* res = nullptr;
     list<Test> l;
     try{
         preparedStmt = _con->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 0;");
@@ -47,8 +47,8 @@ bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
 
 bool MySqlTestManager::getTestsNotFinished(std::list<Test> &t)
 {
-    PreparedStatement* preparedStmt;
-    ResultSet* res;
+    PreparedStatement* preparedStmt = nullptr;
+    ResultSet* res = nullptr;
     list<Test> l;
     try{
         preparedStmt = _con->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 1 AND ended = 0;");
@@ -63,9 +63,6 @@ bool MySqlTestManager::getTestsNotFinished(std::list<Test> &t)
             l.push_back(t);
         }
         deleteStatementAndResSet(preparedStmt,res);
-        for (Test test : l) {
-            setTestAsLoaded(test);
-        }
         t.insert(t.end(), l.begin(), l.end());
         return true;
     }catch(exception) {
