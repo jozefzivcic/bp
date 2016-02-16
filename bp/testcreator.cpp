@@ -69,6 +69,10 @@ bool TestCreator::waitOnChild(pid_t pid)
 {
     pid_t returnedPid = waitpid(pid,NULL,0);
     converter->deleteAllocatedArray(&args);
-    //fileHandler->copyDirectory("",)
+    string source = fileHandler->createPathToNistResult(storage->getPathToTestsPool(),
+                                                        directory, nistParam.getTestNumber());
+    string destination = fileHandler->createPathToStoreTest(storage->getPathToUsersDir(),
+                                                            test.idUser(),test.id());
+    fileHandler->copyDirectory(source, destination);
     return returnedPid != -1;
 }
