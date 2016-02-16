@@ -13,6 +13,7 @@ public:
     virtual bool createCopiesOfDirectory(std::string source, std::string destination, int num) override;
     virtual bool checkIfDirectoryExists(std::string directory) override;
     virtual bool controlFileStructure(std::string directory, int num) override;
+    virtual std::string createFSPath(bool slashAtEnd, std::list<std::string> l) override;
 };
 
 #endif // FILESTRUCTUREHANDLER_H

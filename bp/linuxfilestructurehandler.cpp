@@ -70,3 +70,16 @@ bool LinuxFileStructureHandler::controlFileStructure(string directory, int num)
     }
     return true;
 }
+
+string LinuxFileStructureHandler::createFSPath(bool slashAtEnd, std::list<string> l)
+{
+    string path;
+    for (string dir : l) {
+        path += dir;
+        if (dir[dir.length() - 1] != '/')
+            path += "/";
+    }
+    if (!slashAtEnd)
+        return path.substr(0, path.length() - 1);
+    return path;
+}

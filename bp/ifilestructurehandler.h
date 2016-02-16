@@ -1,6 +1,7 @@
 #ifndef IFILESTRUCTUREHANDLER
 #define IFILESTRUCTUREHANDLER
 #include <iostream>
+#include <list>
 
 class IFileStructureHandler {
 public:
@@ -48,6 +49,14 @@ public:
      * @return true if structure is OK, else false.
      */
     virtual bool controlFileStructure(std::string directory, int num) = 0;
+
+    /**
+     * @brief createFSPath Creates filesystem path from given strings in list.
+     * @param slashAtEnd If at end of path should be placed "/".
+     * @param list List of directories which will be concat.
+     * @return Filesystem path.
+     */
+    virtual std::string createFSPath(bool slashAtEnd, std::list<std::string> l) = 0;
 
     /**
      * @brief ~IFileStructureHandler Virtual destructor.
