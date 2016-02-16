@@ -3,6 +3,8 @@
 #include "itestcreator.h"
 #include "configstorage.h"
 #include "iclasstocmdparamconverter.h"
+#include "inisttestsmanager.h"
+#include "ifilestructurehandler.h"
 
 class TestCreator : public ITestCreator
 {
@@ -11,6 +13,10 @@ private:
     char** args = nullptr;
     IClassToCmdParamConverter* converter = nullptr;
     int directory;
+    NistTestParameter nistParam;
+    Test test;
+    INistTestsManager* nistManager = nullptr;
+    IFileStructureHandler* fileHandler = nullptr;
 public:
     TestCreator(const ConfigStorage* stor);
     ~TestCreator();
