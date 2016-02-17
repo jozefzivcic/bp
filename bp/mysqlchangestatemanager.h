@@ -10,7 +10,7 @@
 class MySqlChangeStateManager : public IChangeStateManager
 {
 private:
-    sql::Connection* connection;
+    sql::Connection* connection = nullptr;
 public:
     MySqlChangeStateManager(const ConfigStorage* storage);
     ~MySqlChangeStateManager();

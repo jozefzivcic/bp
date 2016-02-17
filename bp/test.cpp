@@ -78,6 +78,7 @@ void Test::swap(Test &t)
 Test::Test() : _id(0), _idFile(0), _idUser(0), _timeOfAdd(0), _testTable("")
 {}
 
-Test::Test(const Test &t) : _id(t.id()), _idFile(t.idFile()), _idUser(t.idUser()), _timeOfAdd(t.timeOfAdd()), _testTable(t.testTable())
+Test::Test(const Test &t) : _id(t.id()), _idFile(t.idFile()), _idUser(t.idUser()),
+    _timeOfAdd(t.timeOfAdd()), _testTable(t.testTable())
 {}
 

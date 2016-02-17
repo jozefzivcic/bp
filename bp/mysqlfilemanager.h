@@ -8,7 +8,7 @@
 #include <cppconn/prepared_statement.h>
 class MySqlFileManager : public IFileManager {
 private:
-    sql::Connection* _con;
+    sql::Connection* _con = nullptr;
 public:
     MySqlFileManager(const ConfigStorage* storage);
     bool getFileById(int id, File* file) override;
