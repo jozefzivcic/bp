@@ -92,7 +92,7 @@ bool MySqlTestManager::setTestHasStarted(Test t)
 */
 bool MySqlTestManager::setTestHasFinished(Test t)
 {
-    PreparedStatement* preparedStmt;
+    PreparedStatement* preparedStmt = nullptr;
     try {
         preparedStmt = _con->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?;");
         preparedStmt->setInt(1,1);
@@ -110,7 +110,7 @@ bool MySqlTestManager::setTestHasFinished(Test t)
 
 bool MySqlTestManager::setTestAsLoaded(const Test &t)
 {
-    PreparedStatement* preparedStmt;
+    PreparedStatement* preparedStmt = nullptr;
     try {
         preparedStmt = _con->prepareStatement("UPDATE tests SET loaded = ? WHERE id = ? AND loaded = ?;");
         preparedStmt->setInt(1,1);

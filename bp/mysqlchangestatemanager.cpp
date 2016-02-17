@@ -18,8 +18,8 @@ MySqlChangeStateManager::~MySqlChangeStateManager()
 
 bool MySqlChangeStateManager::getDBState(int& state)
 {
-    PreparedStatement* preparedStmt;
-    ResultSet* res;
+    PreparedStatement* preparedStmt = nullptr;
+    ResultSet* res = nullptr;
     try{
         preparedStmt = connection->prepareStatement("SELECT change_number FROM change_table WHERE id = ?;");
         preparedStmt->setInt(0,0);

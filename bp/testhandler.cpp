@@ -1,7 +1,6 @@
 #include "testhandler.h"
 #include "itestcreator.h"
 #include "testcreator.h"
-#include "icurrentlyrunningmanager.h"
 #include "mysqlcurrentlyrunningmanager.h"
 #include "itestmanager.h"
 #include "mysqltestmanager.h"
@@ -9,10 +8,12 @@
 using namespace std;
 
 TestHandler::TestHandler(int num, const ConfigStorage *stor):
-    maxNumberOfTests(num), numberOfRunningTests(0), thHandler(num), storage(stor)
+    maxNumberOfTests(num), numberOfRunningTests(0), storage(stor)
 {
     mutexes = new mutex[num];
     vars = new condition_variable[num];
+    thHandler = new ThreadHandler(num);
+    crManager = new MySqlCurrentlyRunningManager(stor);
     for(int i = 0; i < num; i++) {
         threads.push_back(thread(threadFunction,this,i));
     }
@@ -20,7 +21,7 @@ TestHandler::TestHandler(int num, const ConfigStorage *stor):
 
 TestHandler::~TestHandler()
 {
-    thHandler.stopAllThreads();
+    thHandler->stopAllThreads();
     for (unsigned int i = 0; i < maxNumberOfTests; i++) {
         vars[i].notify_one();
     }
@@ -29,21 +30,23 @@ TestHandler::~TestHandler()
     }
     delete[] mutexes;
     delete[] vars;
+    if (crManager != nullptr)
+        delete crManager;
+    if (thHandler != nullptr)
+        delete thHandler;
 }
 
 bool TestHandler::createTest(Test t)
 {
     if (getNumberOfRunningTests() >= maxNumberOfTests)
         return false;
-    int index = thHandler.getIndexOfFreeThread();
+    int index = thHandler->getIndexOfFreeThread();
     if (index == -1)
        return false;
     addOneTest();
-    thHandler.setTestAtPosition(index,t);
-    thHandler.setThreadAtPositionIsBusy(index);
-    ICurrentlyRunningManager* manager = new MySqlCurrentlyRunningManager(storage);
-    manager->insertTest(t);
-    delete manager;
+    thHandler->setTestAtPosition(index,t);
+    thHandler->setThreadAtPositionIsBusy(index);
+    crManager->insertTest(t);
     vars[index].notify_one();
     return true;
 }
@@ -78,17 +81,17 @@ void threadFunction(TestHandler* handler, int i)
     ITestManager* testManager = new MySqlTestManager(handler->storage);
     ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->storage);
 
-    while(handler->thHandler.shouldThreadStopped()) {
+    while(handler->thHandler->shouldThreadStopped()) {
         handler->vars[i].wait(lck);
-        if (handler->thHandler.shouldThreadStopped())
+        if (handler->thHandler->shouldThreadStopped())
             break;
         Test myTest;
-        handler->thHandler.getTestAtPosition(i,myTest);
+        handler->thHandler->getTestAtPosition(i, myTest);
         testCreator->createTest(i, myTest);
         testManager->setTestHasFinished(myTest);
         crManager->removeTest(myTest);
+        handler->thHandler->setThreadAtPositionIsReady(i);
         handler->subtractOneTest();
-        handler->thHandler.setThreadAtPositionIsReady(i);
     }
     delete testCreator;
     delete testManager;

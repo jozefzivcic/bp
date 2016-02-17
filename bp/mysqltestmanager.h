@@ -11,7 +11,7 @@
 class MySqlTestManager : public ITestManager
 {
 private:
-    sql::Connection* _con;
+    sql::Connection* _con = nullptr;
 public:
     MySqlTestManager(const ConfigStorage* storage);
     ~MySqlTestManager();

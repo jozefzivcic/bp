@@ -9,8 +9,8 @@ class ThreadHandler
 {
 private:
     int maxNumberOfTests;
-    Test* tests;
-    bool* isThreadReady;
+    Test* tests = nullptr;
+    bool* isThreadReady = nullptr;
     bool endThreads;
 public:
     ThreadHandler(int n);

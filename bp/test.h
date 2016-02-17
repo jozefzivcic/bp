@@ -2,6 +2,7 @@
 #define TEST_H
 #include <iostream>
 #include "itestparameter.h"
+
 class Test
 {
 private:
@@ -10,8 +11,6 @@ private:
     int _idUser;
     time_t _timeOfAdd;
     std::string _testTable;
-    //bool _run;
-    //bool _ended;
 public:
     Test();
     Test(const Test& t);

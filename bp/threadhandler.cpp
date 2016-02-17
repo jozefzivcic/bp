@@ -14,8 +14,10 @@ ThreadHandler::ThreadHandler(int n) : maxNumberOfTests(n), endThreads(false)
 
 ThreadHandler::~ThreadHandler()
 {
-    delete[] tests;
-    delete[] isThreadReady;
+    if (tests != nullptr)
+        delete[] tests;
+    if (isThreadReady != nullptr)
+        delete[] isThreadReady;
 }
 
 bool ThreadHandler::setTestAtPosition(int position, Test t)

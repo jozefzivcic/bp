@@ -1,4 +1,5 @@
 #include "file.h"
+#include <utility>
 
 File::File(): _id(0), _userId(0), _hash(""), _name(""), _fileSystemPath("") {}
 
@@ -8,6 +9,12 @@ File::File(const File& f) {
     _hash = f._hash;
     _name = f._name;
     _fileSystemPath = f._fileSystemPath;
+}
+
+File &File::operator =(File other)
+{
+    swap(other);
+    return *this;
 }
 
 int File::userId() const
@@ -57,6 +64,16 @@ void File::setFile(const File &f)
     _hash = f._hash;
     _name = f._name;
     _fileSystemPath = f._fileSystemPath;
+}
+
+void File::swap(File &f)
+{
+    using std::swap;
+    swap(_id, f._id);
+    swap(_userId, f._userId);
+    swap(_hash, f._hash);
+    swap(_name, f._name);
+    swap(_fileSystemPath, f._fileSystemPath);
 }
 
 int File::id() const

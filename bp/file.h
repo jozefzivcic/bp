@@ -1,6 +1,7 @@
 #ifndef IFILE
 #define IFILE
 #include <iostream>
+
 class File {
     int _id;
     int _userId;
@@ -10,6 +11,7 @@ class File {
 public:
     File();
     File(const File&);
+    File& operator =(File other);
     /* Getters and setters */
     int id() const;
     void setId(int id);
@@ -29,6 +31,8 @@ public:
      * @param f
      */
     void setFile(const File& f);
+private:
+    void swap(File& f);
 };
 
 #endif // IFILE

@@ -140,6 +140,7 @@ string LinuxFileStructureHandler::createPathToStoreTest(string pathToUserDir, lo
     list<string> l;
     l.push_back(pathToUserDir);
     l.push_back(to_string(userId));
+    l.push_back("tests_results");
     l.push_back(to_string(testId));
     return createFSPath(true, l);
 }

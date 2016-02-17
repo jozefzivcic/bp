@@ -54,11 +54,11 @@ bool TestCreator::execNist(int dir, Test t)
     test = t;
     if (!nistManager->getParameterById(t.id(), nistParam))
         return false;
-    string bin = storage->getPathToTestsPool();
-    if (bin[bin.length() - 1] != '/')
-        bin += "/";
-    bin += to_string(dir);
-    bin += "/assess";
+    list<string> l;
+    l.push_back(storage->getPathToTestsPool());
+    l.push_back(to_string(dir));
+    l.push_back("assess");
+    string bin = fileHandler->createFSPath(false, l);
     if (!converter->convertNistTestToArray(&args, bin, t, nistParam))
         return false;
     int ret = execv(bin.c_str(), args);
@@ -67,7 +67,7 @@ bool TestCreator::execNist(int dir, Test t)
 
 bool TestCreator::waitOnChild(pid_t pid)
 {
-    pid_t returnedPid = waitpid(pid,NULL,0);
+    pid_t returnedPid = waitpid(pid, NULL, 0);
     converter->deleteAllocatedArray(&args);
     string source = fileHandler->createPathToNistResult(storage->getPathToTestsPool(),
                                                         directory, nistParam.getTestNumber());

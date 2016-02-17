@@ -39,8 +39,10 @@ bool MySqlNistTestsManager::getParameterById(long id, NistTestParameter &param)
         }
         if (i == 1) {
             NistTestParameter p(testId,length,testNumber);
-            p.setStreams(streams);
-            p.setSpecialParameter(specialParameter);
+            if (streams != 0)
+                p.setStreams(streams);
+            if (specialParameter != 0)
+                p.setSpecialParameter(specialParameter);
             param = p;
         }
         deleteStatementAndResSet(preparedStmt,res);

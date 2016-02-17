@@ -8,6 +8,7 @@
 #include "test.h"
 #include "threadhandler.h"
 #include "configstorage.h"
+#include "icurrentlyrunningmanager.h"
 
 class TestHandler;
 void threadFunction(TestHandler* handler, int i);
@@ -21,8 +22,9 @@ private:
     std::vector<std::thread> threads;
     std::mutex* mutexes = nullptr;
     std::condition_variable* vars = nullptr;
-    ThreadHandler thHandler;
+    ThreadHandler* thHandler = nullptr;
     const ConfigStorage* storage;
+    ICurrentlyRunningManager* crManager = nullptr;
 public:
     friend void threadFunction(TestHandler* handler, int i);
     TestHandler(int num, const ConfigStorage* stor);

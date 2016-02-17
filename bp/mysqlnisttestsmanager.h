@@ -9,7 +9,7 @@
 class MySqlNistTestsManager : public INistTestsManager
 {
 private:
-    sql::Connection* connection;
+    sql::Connection* connection = nullptr;
 public:
     MySqlNistTestsManager(const ConfigStorage* storage);
     ~MySqlNistTestsManager();

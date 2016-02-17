@@ -21,7 +21,10 @@ Scheduler::~Scheduler()
 {
     if (testManager != nullptr)
         delete testManager;
-
+    if (stateManager != nullptr)
+        delete stateManager;
+    if (testHandler != nullptr)
+        delete testHandler;
 }
 
 bool Scheduler::getTestForRunning(Test &t)
@@ -54,7 +57,8 @@ void Scheduler::run()
         while(!queue.empty() && testHandler->getNumberOfRunningTests() < maxTestsRunningParallel) {
             Test t;
             getTestForRunning(t);
-            testHandler->createTest(t);
+            if (!testHandler->createTest(t))
+                queue.push(t);
         }
         sleep(1);
     }
@@ -65,7 +69,7 @@ bool Scheduler::isStateChanged()
 {
     int dbState;
     stateManager->getDBState(dbState);
-    if (dbState != state)
+    if (dbState == state)
         return false;
     state = dbState;
     return true;
@@ -81,4 +85,3 @@ bool Scheduler::addTestsAfterCrash()
     }
     return true;
 }
-

@@ -10,7 +10,7 @@
 class MySqlCurrentlyRunningManager : public ICurrentlyRunningManager
 {
 private:
-    sql::Connection* _con;
+    sql::Connection* _con = nullptr;
 public:
     MySqlCurrentlyRunningManager(const ConfigStorage* storage);
     ~MySqlCurrentlyRunningManager();

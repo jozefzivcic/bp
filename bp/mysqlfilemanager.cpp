@@ -17,11 +17,11 @@ MySqlFileManager::MySqlFileManager(const ConfigStorage *storage) {
 }
 
 bool MySqlFileManager::getFileById(int id, File *file) {
-    PreparedStatement* preparedStmt;
-    ResultSet *res;
+    PreparedStatement* preparedStmt = nullptr;
+    ResultSet *res = nullptr;
     File tempFile;
     try {
-        preparedStmt = _con->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ? ;");
+        preparedStmt = _con->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ?;");
         preparedStmt->setInt(1,id);
         res = preparedStmt->executeQuery();
         int i = 0;
