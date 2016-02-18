@@ -35,23 +35,23 @@ void NistCmdParamsCreator::setBinary(string bin)
 
 void NistCmdParamsCreator::setLength(long length)
 {
-    string temp = "-length ";
-    temp += convertLongToString(length);
+    string temp = "-length";
     params.push_back(temp);
+    params.push_back(convertLongToString(length));
 }
 
 void NistCmdParamsCreator::setFile(string file)
 {
-    string temp = "-file ";
-    temp += file;
+    string temp = "-file";
     params.push_back(temp);
+    params.push_back(file);
 }
 
 void NistCmdParamsCreator::setStreams(long streams)
 {
-    string temp = "-streams ";
-    temp += convertLongToString(streams);
+    string temp = "-streams";
     params.push_back(temp);
+    params.push_back(convertLongToString(streams));
 }
 
 bool NistCmdParamsCreator::setTest(int test)
@@ -59,16 +59,11 @@ bool NistCmdParamsCreator::setTest(int test)
     if (test < 1 || test > 15)
         return false;
     testNumber = test;
-    string option = "-tests ";
-    string parameter = "";
-    for (int i = 1; i <= 15; i++) {
-        if (test == i)
-            parameter += "1";
-        else
-            parameter += "0";
-    }
-    option += parameter;
+    string option = "-tests";
     params.push_back(option);
+    string parameter = "000000000000000";
+    parameter[test - 1] = '1';
+    params.push_back(parameter);
     return true;
 }
 
@@ -79,28 +74,28 @@ bool NistCmdParamsCreator::setSpecialParameter(long param)
     string option;
     switch (testNumber) {
     case 2:
-        option += "-blockfreqpar ";
+        option += "-blockfreqpar";
         break;
     case 8:
-        option += "-nonoverpar ";
+        option += "-nonoverpar";
         break;
     case 9:
-        option += "-overpar ";
+        option += "-overpar";
         break;
     case 11:
-        option += "-approxpar ";
+        option += "-approxpar";
         break;
     case 14:
-        option += "-serialpar ";
+        option += "-serialpar";
         break;
     case 15:
-        option += "-linearpar ";
+        option += "-linearpar";
         break;
     default:
         return false;
     }
-    option += convertLongToString(param);
     params.push_back(option);
+    params.push_back(convertLongToString(param));
     return true;
 }
 
