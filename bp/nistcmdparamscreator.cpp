@@ -122,7 +122,7 @@ bool NistCmdParamsCreator::fillArrayOfArguments(char ***ptr)
 
 bool NistCmdParamsCreator::deleteArrayOfArguments(char ***ptr)
 {
-    if (ptr == nullptr)
+    if (ptr == nullptr || *ptr == nullptr)
         return false;
     int i = 0;
     while((*ptr)[i] != NULL) {

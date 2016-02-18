@@ -10,7 +10,7 @@ class TestCreator : public ITestCreator
 {
 private:
     const ConfigStorage* storage;
-    char** args = nullptr;
+    char** arguments = nullptr;
     IClassToCmdParamConverter* converter = nullptr;
     int directory;
     NistTestParameter nistParam;

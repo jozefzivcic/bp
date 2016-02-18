@@ -8,7 +8,7 @@ using namespace std;
 
 MainClass::MainClass()
 {
-    maxParallelTests = thread::hardware_concurrency() + 2;
+    maxParallelTests = 1;//thread::hardware_concurrency() + 2;
     if (maxParallelTests == 0)
         throw runtime_error("hardware_concurrency: number of processors = 0");
     parser = new ConfigParser();

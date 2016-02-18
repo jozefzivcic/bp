@@ -1,10 +1,12 @@
 #include <iostream>
 #include <signal.h>
 #include "mainclass.h"
+#include <mutex>
 
 using namespace std;
 
 bool endProgram = false;
+mutex dbMutex;
 
 void interruptHandler(int sig)
 {

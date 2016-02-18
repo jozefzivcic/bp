@@ -15,7 +15,7 @@ TestHandler::TestHandler(int num, const ConfigStorage *stor):
     thHandler = new ThreadHandler(num);
     crManager = new MySqlCurrentlyRunningManager(stor);
     for(int i = 0; i < num; i++) {
-        threads.push_back(thread(threadFunction,this,i));
+        threads.push_back(thread(threadFunction, this, i));
     }
 }
 
@@ -81,11 +81,12 @@ void threadFunction(TestHandler* handler, int i)
     ITestManager* testManager = new MySqlTestManager(handler->storage);
     ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->storage);
 
-    while(handler->thHandler->shouldThreadStopped()) {
+    while(!(handler->thHandler)->shouldThreadStopped()) {
         handler->vars[i].wait(lck);
         if (handler->thHandler->shouldThreadStopped())
             break;
         Test myTest;
+        cout << i << endl;
         handler->thHandler->getTestAtPosition(i, myTest);
         testCreator->createTest(i, myTest);
         testManager->setTestHasFinished(myTest);

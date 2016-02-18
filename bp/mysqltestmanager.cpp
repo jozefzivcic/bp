@@ -1,12 +1,18 @@
 #include "mysqltestmanager.h"
 #include <cppconn/driver.h>
+#include <mutex>
 
 using namespace std;
 using namespace sql;
+
+extern mutex dbMutex;
+
 MySqlTestManager::MySqlTestManager(const ConfigStorage *storage)
 {
     Driver *driver;
+    dbMutex.lock();
     driver = get_driver_instance();
+    dbMutex.unlock();
     _con = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
     _con->setSchema(storage->getSchema());
 }

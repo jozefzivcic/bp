@@ -1,11 +1,15 @@
 #include "mysqlchangestatemanager.h"
+#include <mutex>
 using namespace std;
 using namespace sql;
 
+extern mutex dbMutex;
 MySqlChangeStateManager::MySqlChangeStateManager(const ConfigStorage *storage)
 {
     Driver *driver;
+    dbMutex.lock();
     driver = get_driver_instance();
+    dbMutex.unlock();
     connection = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
     connection->setSchema(storage->getSchema());
 }
