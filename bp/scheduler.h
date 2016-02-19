@@ -18,7 +18,7 @@ class Scheduler : public IScheduler
 {
 private:
     std::priority_queue<Test, std::vector<Test>, QueueComparator> queue;
-    int state;
+    int state = 0;
     const ConfigStorage* storage;
     unsigned int maxTestsRunningParallel;
     ITestManager* testManager = nullptr;

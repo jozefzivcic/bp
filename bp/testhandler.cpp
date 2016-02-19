@@ -4,7 +4,12 @@
 #include "mysqlcurrentlyrunningmanager.h"
 #include "itestmanager.h"
 #include "mysqltestmanager.h"
-
+#include "ifilestructurehandler.h"
+#include "linuxfilestructurehandler.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sched.h>
+#include <cppconn/driver.h>
 using namespace std;
 
 TestHandler::TestHandler(int num, const ConfigStorage *stor):
@@ -80,20 +85,26 @@ void threadFunction(TestHandler* handler, int i)
     ITestCreator* testCreator = new TestCreator(handler->storage);
     ITestManager* testManager = new MySqlTestManager(handler->storage);
     ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->storage);
-
+    IFileStructureHandler* fileHandler = new LinuxFileStructureHandler(handler->storage);
+    list<string> l;
+    l.push_back(handler->storage->getPathToTestsPool());
+    l.push_back(to_string(i));
+    string bin = fileHandler->createFSPath(true, l);
+    unshare(CLONE_FS);
+    chdir(bin.c_str());
     while(!(handler->thHandler)->shouldThreadStopped()) {
         handler->vars[i].wait(lck);
         if (handler->thHandler->shouldThreadStopped())
             break;
         Test myTest;
-        cout << i << endl;
         handler->thHandler->getTestAtPosition(i, myTest);
-        testCreator->createTest(i, myTest);
+        testCreator->createTest(myTest);
         testManager->setTestHasFinished(myTest);
         crManager->removeTest(myTest);
         handler->thHandler->setThreadAtPositionIsReady(i);
         handler->subtractOneTest();
     }
+    delete fileHandler;
     delete testCreator;
     delete testManager;
     delete crManager;

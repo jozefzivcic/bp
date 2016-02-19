@@ -12,7 +12,7 @@ public:
      * @param t Test, which holds all data needed for test creation.
      * @return If an error occurs false, true otherwise.
      */
-    virtual bool createTest(int dir, Test t) = 0;
+    virtual bool createTest(Test t) = 0;
 
     /**
      * @brief createNistTest Creates a NIST test.
@@ -20,7 +20,7 @@ public:
      * @param t Data for test.
      * @return If an error occurs false, true otherwise.
      */
-    virtual bool createNistTest(int dir, Test t) = 0;
+    virtual bool createNistTest(Test t) = 0;
 
     /**
      * @brief ~ITestCreator Virtual destructor.

@@ -8,7 +8,7 @@ using namespace std;
 
 MainClass::MainClass()
 {
-    maxParallelTests = 1;//thread::hardware_concurrency() + 2;
+    maxParallelTests = thread::hardware_concurrency() + 2;
     if (maxParallelTests == 0)
         throw runtime_error("hardware_concurrency: number of processors = 0");
     parser = new ConfigParser();
@@ -40,8 +40,18 @@ void MainClass::run()
 
 bool MainClass::prepareEnvironment()
 {
-    IFileStructureHandler* handler = new LinuxFileStructureHandler();
+    IFileStructureHandler* handler = new LinuxFileStructureHandler(storage);
     if (!handler->controlFileStructure(storage->getPathToTestsPool(), maxParallelTests))
-        return handler->createCopiesOfDirectory(storage->getPathToNist(), storage->getPathToTestsPool(), maxParallelTests);
+        if (!handler->createCopiesOfDirectory(storage->getPathToNist(), storage->getPathToTestsPool(),
+                                              maxParallelTests)) {
+            delete handler;
+            return false;
+        }
+    if (!handler->checkIfDirectoryExists(storage->getPathToUsersDir()))
+        if (!handler->createDirectory(storage->getPathToUsersDir())) {
+            delete handler;
+            return false;
+        }
+    delete handler;
     return true;
 }

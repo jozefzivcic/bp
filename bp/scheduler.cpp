@@ -10,7 +10,7 @@ using namespace std;
 extern bool endProgram;
 
 Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor, int maxParallel)
-    : queue(pri), state(0), storage(stor), maxTestsRunningParallel(maxParallel)
+    : queue(pri), state(-1), storage(stor), maxTestsRunningParallel(maxParallel)
 {
     testManager = new MySqlTestManager(stor);
     stateManager = new MySqlChangeStateManager(stor);
@@ -67,7 +67,7 @@ void Scheduler::run()
 
 bool Scheduler::isStateChanged()
 {
-    int dbState;
+    int dbState = 0;
     stateManager->getDBState(dbState);
     if (dbState == state)
         return false;

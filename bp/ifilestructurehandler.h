@@ -60,13 +60,11 @@ public:
 
     /**
      * @brief createPathToNistResult Creates path to NIST tests result.
-     * @param testsPool FS path where tests are stored.
-     * @param dir Specifies number of directory in tests pool.
-     * @param testNum Number of test in which results should be searched.
+     * @param testNum Number of test in which results should be searched for.
      * @return Path to NIST test result. If testNum is not in range from 1 to 15, then returns
      * empty string.
      */
-    virtual std::string createPathToNistResult(std::string testsPool, int dir, int testNum) = 0;
+    virtual std::string createPathToNistResult(int testNum) = 0;
 
     /**
      * @brief getNistTestFolder Gets name of folder, which is associated with test with number
@@ -80,12 +78,28 @@ public:
     /**
      * @brief createPathToStoreTest Creates FS path to directory, which is created to contain
      * results from tests.
-     * @param pathToUserDir Path to directory, which contains user folders.
+     * @param pathToUserDirFromPool Path to directory, which contains user folders.
      * @param userId Id of user to whom results are stored.
      * @param testId Id of test which will be stored.
      * @return Path to directory, where results of tests are stored.
      */
-    virtual std::string createPathToStoreTest(std::string pathToUserDir, long userId, long testId) = 0;
+    virtual std::string createPathToStoreTest(std::string pathToUserDirFromPool, long userId, long testId) = 0;
+
+    /**
+     * @brief createDirectory Creates directory.
+     * @param path New directory to be created.
+     * @return True if no error occurs, false otherwise.
+     */
+    virtual bool createDirectory(std::string path) = 0;
+
+    /**
+     * @brief checkAndCreateUserTree Checks structure of folders in given directory for
+     * given user and if some is missing creates it.
+     * @param pathToUsersDir Path, where user directory should be placed.
+     * @param userId Id of user, who should have directory in pathToUsersDir.
+     * @return If an errors occurs false, true otherwise.
+     */
+    virtual bool checkAndCreateUserTree(std::string pathToUsersDir, long userId) = 0;
 
     /**
      * @brief ~IFileStructureHandler Virtual destructor.

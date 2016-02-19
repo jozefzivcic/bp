@@ -2,18 +2,17 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sched.h>
 #include "classtocmdparamconverter.h"
 #include "mysqlnisttestsmanager.h"
 #include "linuxfilestructurehandler.h"
 
 using namespace std;
 
-TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor), directory(0)
+TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor)
 {
     converter = new ClassToCmdParamConverter(stor);
     nistManager = new MySqlNistTestsManager(stor);
-    fileHandler = new LinuxFileStructureHandler();
+    fileHandler = new LinuxFileStructureHandler(stor);
 }
 
 TestCreator::~TestCreator()
@@ -26,58 +25,56 @@ TestCreator::~TestCreator()
         delete fileHandler;
 }
 
-bool TestCreator::createTest(int dir, Test t)
+bool TestCreator::createTest(Test t)
 {
     if (t.testTable() == storage->getNist())
-        return createNistTest(dir, t);
+        return createNistTest(t);
     return false;
 }
 
-bool TestCreator::createNistTest(int dir, Test t)
+bool TestCreator::createNistTest(Test t)
 {
-    //pid_t pid = fork();
-    execNist(dir, t);
-//    switch(pid) {
-//    case 0:
-//        execNist(dir, t);
-//        break;
-//    case -1:
-//        return false;
-//    default:
-//        waitOnChild(pid);
-//        break;
-//    }
+    NistTestParameter nistParam;
+    if (!nistManager->getParameterById(t.id(), nistParam))
+        return false;
+
+    string bin = "./assess";
+    if (!converter->convertNistTestToArray(&arguments, bin, t, nistParam))
+        return false;
+
+    pid_t pid = fork();
+
+    switch(pid) {
+    case 0:
+        execNist(bin, arguments);
+        break;
+    case -1:
+        return false;
+    default:
+        waitOnChild(pid, t, nistParam);
+        break;
+    }
     return true;
 }
 
-bool TestCreator::execNist(int dir, Test t)
+bool TestCreator::execNist(string bin, char** argm)
 {
-    directory = dir;
-    test = t;
-    if (!nistManager->getParameterById(t.id(), nistParam))
-        return false;
-    list<string> l;
-    l.push_back(storage->getPathToTestsPool());
-    l.push_back(to_string(dir));
-    l.push_back("assess");
-    string bin = fileHandler->createFSPath(false, l);
-    unshare(CLONE_FS);
-    chdir(bin.c_str());
-    bin = "./assess";
-    if (!converter->convertNistTestToArray(&arguments, bin, t, nistParam))
-        return false;
-    int ret = execv(bin.c_str(), arguments);
+    int ret = execv(bin.c_str(), argm);
     return ret != -1;
 }
 
-bool TestCreator::waitOnChild(pid_t pid)
+bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
 {
     pid_t returnedPid = waitpid(pid, NULL, 0);
     converter->deleteAllocatedArray(&arguments);
-    string source = fileHandler->createPathToNistResult(storage->getPathToTestsPool(),
-                                                        directory, nistParam.getTestNumber());
-    string destination = fileHandler->createPathToStoreTest(storage->getPathToUsersDir(),
-                                                            test.idUser(),test.id());
+    if (!fileHandler->checkAndCreateUserTree(storage->getPathToUsersDirFromPool(),t.id()))
+        return false;
+    string source = fileHandler->createPathToNistResult(param.getTestNumber());
+    string destination = fileHandler->createPathToStoreTest(storage->getPathToUsersDirFromPool(),
+                                                            t.idUser(),t.id());
+    if (!fileHandler->checkIfDirectoryExists(destination))
+        if (!fileHandler->createDirectory(destination))
+            return false;
     fileHandler->copyDirectory(source, destination);
     return returnedPid != -1;
 }

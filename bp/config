@@ -7,3 +7,5 @@
 "PATH_TO_NIST"="../tests/"
 "PATH_TO_TESTS_POOL"="../tests_pool/"
 "PATH_TO_USERS_DIR"="../users/"
+"PATH_TO_USERS_DIR_FROM_POOL"="../../users/"
+"TESTS_RESULTS"="tests_results"

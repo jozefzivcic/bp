@@ -7,6 +7,9 @@ using namespace std;
 
 string LinuxFileStructureHandler::REDIRECT = "> /dev/null 2>&1";
 
+LinuxFileStructureHandler::LinuxFileStructureHandler(const ConfigStorage *s) :
+    storage(s) {}
+
 bool LinuxFileStructureHandler::copyDirectory(string source, string destination)
 {
     string command = "cp -r ";
@@ -84,11 +87,10 @@ string LinuxFileStructureHandler::createFSPath(bool slashAtEnd, std::list<string
     return path;
 }
 
-string LinuxFileStructureHandler::createPathToNistResult(string testsPool, int dir, int testNum)
+string LinuxFileStructureHandler::createPathToNistResult(int testNum)
 {
     list<string>l;
-    l.push_back(testsPool);
-    l.push_back(to_string(dir));
+    l.push_back(".");
     l.push_back("experiments");
     l.push_back("AlgorithmTesting");
     l.push_back(getNistTestFolder(testNum));
@@ -135,12 +137,47 @@ string LinuxFileStructureHandler::getNistTestFolder(int num)
     }
 }
 
-string LinuxFileStructureHandler::createPathToStoreTest(string pathToUserDir, long userId, long testId)
+string LinuxFileStructureHandler::createPathToStoreTest(string pathToUserDirFromPool, long userId, long testId)
 {
     list<string> l;
-    l.push_back(pathToUserDir);
+    string strUserId = to_string(userId);
+    string testsRes = "tests_results";
+    string strTestId = to_string(testId);
+    l.push_back(pathToUserDirFromPool);
+    if (!checkIfDirectoryExists(strUserId)) {
+        createDirectory(strUserId);
+        createDirectory(testsRes);
+    }
     l.push_back(to_string(userId));
-    l.push_back("tests_results");
-    l.push_back(to_string(testId));
+    l.push_back(testsRes);
+    if (!checkIfDirectoryExists(strTestId))
+        createDirectory(strTestId);
+    l.push_back(strTestId);
     return createFSPath(true, l);
+}
+
+bool LinuxFileStructureHandler::createDirectory(string path)
+{
+    int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    return status == 0;
+}
+
+bool LinuxFileStructureHandler::checkAndCreateUserTree(string pathToUsersDir, long userId)
+{
+    if (!checkIfDirectoryExists(pathToUsersDir))
+        if (!createDirectory(pathToUsersDir))
+            return false;
+    list<string>l;
+    l.push_back(pathToUsersDir);
+    l.push_back(to_string(userId));
+    string path = createFSPath(true, l);
+    if (!checkIfDirectoryExists(path))
+        if (!createDirectory(path))
+            return false;
+    l.push_back(storage->getTestsResults());
+    path = createFSPath(true, l);
+    if (!checkIfDirectoryExists(path))
+        if (!createDirectory(path))
+            return false;
+    return true;
 }

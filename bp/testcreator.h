@@ -12,19 +12,16 @@ private:
     const ConfigStorage* storage;
     char** arguments = nullptr;
     IClassToCmdParamConverter* converter = nullptr;
-    int directory;
-    NistTestParameter nistParam;
-    Test test;
     INistTestsManager* nistManager = nullptr;
     IFileStructureHandler* fileHandler = nullptr;
 public:
     TestCreator(const ConfigStorage* stor);
     ~TestCreator();
-    virtual bool createTest(int dir, Test t) override;
-    virtual bool createNistTest(int dir, Test t) override;
+    virtual bool createTest(Test t) override;
+    virtual bool createNistTest(Test t) override;
 private:
-    bool execNist(int dir, Test t);
-    bool waitOnChild(pid_t pid);
+    bool execNist(std::string bin, char **argm);
+    bool waitOnChild(pid_t pid, Test t, NistTestParameter param);
 };
 
 #endif // TESTCREATOR_H
