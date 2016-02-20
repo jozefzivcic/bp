@@ -62,7 +62,6 @@ void Scheduler::run()
         }
         sleep(1);
     }
-    cout << endProgram << endl;
 }
 
 bool Scheduler::isStateChanged()

@@ -26,7 +26,7 @@ bool MySqlChangeStateManager::getDBState(int& state)
     ResultSet* res = nullptr;
     try{
         preparedStmt = connection->prepareStatement("SELECT change_number FROM change_table WHERE id = ?;");
-        preparedStmt->setInt(0,0);
+        preparedStmt->setInt(1,0);
         int i = 0;
         int tempState = 0;
         res = preparedStmt->executeQuery();

@@ -12,7 +12,6 @@ void interruptHandler(int sig)
 {
     (void)sig;
     endProgram = true;
-    cout << "signal" << endl;
 }
 
 int main(void) {
