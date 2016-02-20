@@ -67,7 +67,7 @@ bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
 {
     pid_t returnedPid = waitpid(pid, NULL, 0);
     converter->deleteAllocatedArray(&arguments);
-    if (!fileHandler->checkAndCreateUserTree(storage->getPathToUsersDirFromPool(),t.id()))
+    if (!fileHandler->checkAndCreateUserTree(storage->getPathToUsersDirFromPool(),t.idUser()))
         return false;
     string source = fileHandler->createPathToNistResult(param.getTestNumber());
     string destination = fileHandler->createPathToStoreTest(storage->getPathToUsersDirFromPool(),
