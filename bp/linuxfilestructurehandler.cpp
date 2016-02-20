@@ -141,17 +141,11 @@ string LinuxFileStructureHandler::createPathToStoreTest(string pathToUserDirFrom
 {
     list<string> l;
     string strUserId = to_string(userId);
-    string testsRes = "tests_results";
+    string testsRes = storage->getTestsResults();
     string strTestId = to_string(testId);
     l.push_back(pathToUserDirFromPool);
-    if (!checkIfDirectoryExists(strUserId)) {
-        createDirectory(strUserId);
-        createDirectory(testsRes);
-    }
-    l.push_back(to_string(userId));
+    l.push_back(strUserId);
     l.push_back(testsRes);
-    if (!checkIfDirectoryExists(strTestId))
-        createDirectory(strTestId);
     l.push_back(strTestId);
     return createFSPath(true, l);
 }
