@@ -8,6 +8,7 @@
 #include <cppconn/prepared_statement.h>
 class MySqlFileManager : public IFileManager {
 private:
+    sql::Driver *driver;
     sql::Connection* _con = nullptr;
 public:
     MySqlFileManager(const ConfigStorage* storage);

@@ -14,10 +14,10 @@ using namespace sql;
 extern mutex dbMutex;
 
 MySqlFileManager::MySqlFileManager(const ConfigStorage *storage) {
-    Driver *driver;
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
+    driver->threadInit();
     _con = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
     _con->setSchema(storage->getSchema());
 }
@@ -52,6 +52,7 @@ bool MySqlFileManager::getFileById(int id, File *file) {
 MySqlFileManager::~MySqlFileManager() {
     if (_con != nullptr)
         delete _con;
+    driver->threadEnd();
 }
 
 void MySqlFileManager::deleteStatementAndResSet(PreparedStatement* p, ResultSet* r)

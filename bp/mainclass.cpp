@@ -41,12 +41,18 @@ void MainClass::run()
 bool MainClass::prepareEnvironment()
 {
     IFileStructureHandler* handler = new LinuxFileStructureHandler(storage);
-    if (!handler->controlFileStructure(storage->getPathToTestsPool(), maxParallelTests))
+    if (!handler->controlPoolStructure(storage->getPathToTestsPool(), maxParallelTests)) {
+        if (!handler->checkIfDirectoryExists(storage->getPathToTestsPool()))
+            if (!handler->createDirectory(storage->getPathToTestsPool())) {
+                delete handler;
+                return false;
+            }
         if (!handler->createCopiesOfDirectory(storage->getPathToNist(), storage->getPathToTestsPool(),
                                               maxParallelTests)) {
             delete handler;
             return false;
         }
+    }
     if (!handler->checkIfDirectoryExists(storage->getPathToUsersDir()))
         if (!handler->createDirectory(storage->getPathToUsersDir())) {
             delete handler;

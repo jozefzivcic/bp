@@ -75,6 +75,6 @@ bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
     if (!fileHandler->checkIfDirectoryExists(destination))
         if (!fileHandler->createDirectory(destination))
             return false;
-    fileHandler->copyDirectory(source, destination);
+    fileHandler->copyDirectoryContent(source, destination);
     return returnedPid != -1;
 }

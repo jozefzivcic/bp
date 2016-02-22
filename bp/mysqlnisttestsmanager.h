@@ -9,6 +9,7 @@
 class MySqlNistTestsManager : public INistTestsManager
 {
 private:
+    sql::Driver *driver;
     sql::Connection* connection = nullptr;
 public:
     MySqlNistTestsManager(const ConfigStorage* storage);

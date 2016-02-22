@@ -60,8 +60,10 @@ bool LinuxFileStructureHandler::checkIfDirectoryExists(string directory)
     return false;
 }
 
-bool LinuxFileStructureHandler::controlFileStructure(string directory, int num)
+bool LinuxFileStructureHandler::controlPoolStructure(string directory, int num)
 {
+    if (!checkIfDirectoryExists(directory))
+        return false;
     string modifiedDirectory = directory;
     if (directory[directory.length() - 1] != '/')
         modifiedDirectory += "/";
@@ -174,4 +176,13 @@ bool LinuxFileStructureHandler::checkAndCreateUserTree(string pathToUsersDir, lo
         if (!createDirectory(path))
             return false;
     return true;
+}
+
+bool LinuxFileStructureHandler::copyDirectoryContent(string source, string destination)
+{
+    string sourceWithSlash = source;
+    if (source[source.length() - 1] != '/')
+        sourceWithSlash += "/";
+    sourceWithSlash += "*";
+    return copyDirectory(sourceWithSlash, destination);
 }

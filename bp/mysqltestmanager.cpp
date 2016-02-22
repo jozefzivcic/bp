@@ -9,10 +9,10 @@ extern mutex dbMutex;
 
 MySqlTestManager::MySqlTestManager(const ConfigStorage *storage)
 {
-    Driver *driver;
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
+    driver->threadInit();
     _con = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
     _con->setSchema(storage->getSchema());
 }
@@ -20,6 +20,7 @@ MySqlTestManager::~MySqlTestManager()
 {
     if (_con != nullptr)
         delete _con;
+    driver->threadEnd();
 }
 
 bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)

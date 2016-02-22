@@ -6,10 +6,10 @@ using namespace sql;
 extern mutex dbMutex;
 MySqlChangeStateManager::MySqlChangeStateManager(const ConfigStorage *storage)
 {
-    Driver *driver;
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
+    driver->threadInit();
     connection = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
     connection->setSchema(storage->getSchema());
 }
@@ -18,6 +18,7 @@ MySqlChangeStateManager::~MySqlChangeStateManager()
 {
     if (connection != nullptr)
         delete connection;
+    driver->threadEnd();
 }
 
 bool MySqlChangeStateManager::getDBState(int& state)

@@ -14,10 +14,10 @@ extern mutex dbMutex;
 
 MySqlCurrentlyRunningManager::MySqlCurrentlyRunningManager(const ConfigStorage *storage)
 {
-    Driver *driver;
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
+    driver->threadInit();
     _con = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
     _con->setSchema(storage->getSchema());
 }
@@ -26,6 +26,7 @@ MySqlCurrentlyRunningManager::~MySqlCurrentlyRunningManager()
 {
     if (_con != nullptr)
         delete _con;
+    driver->threadEnd();
 }
 
 bool MySqlCurrentlyRunningManager::insertTest(Test t)

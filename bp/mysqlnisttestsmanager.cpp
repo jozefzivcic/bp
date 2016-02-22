@@ -9,10 +9,10 @@ extern mutex dbMutex;
 
 MySqlNistTestsManager::MySqlNistTestsManager(const ConfigStorage *storage)
 {
-    Driver *driver;
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
+    driver->threadInit();
     connection = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
     connection->setSchema(storage->getSchema());
 }
@@ -21,6 +21,7 @@ MySqlNistTestsManager::~MySqlNistTestsManager()
 {
     if (connection != nullptr)
         delete connection;
+    driver->threadEnd();
 }
 
 bool MySqlNistTestsManager::getParameterById(long id, NistTestParameter &param)

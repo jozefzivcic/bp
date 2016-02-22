@@ -48,7 +48,7 @@ public:
      * @param num Number of subdirectories, which should be included in directory.
      * @return true if structure is OK, else false.
      */
-    virtual bool controlFileStructure(std::string directory, int num) = 0;
+    virtual bool controlPoolStructure(std::string directory, int num) = 0;
 
     /**
      * @brief createFSPath Creates filesystem path from given strings in list.
@@ -100,6 +100,15 @@ public:
      * @return If an errors occurs false, true otherwise.
      */
     virtual bool checkAndCreateUserTree(std::string pathToUsersDir, long userId) = 0;
+
+    /**
+     * @brief copyDirectoryContent Copies content of source directory into destination
+     * directory.
+     * @param source Source directory, which content is copied.
+     * @param destination Destination directory, into which items are stored.
+     * @return If an errors occurs false, true otherwise.
+     */
+    virtual bool copyDirectoryContent(std::string source, std::string destination) = 0;
 
     /**
      * @brief ~IFileStructureHandler Virtual destructor.

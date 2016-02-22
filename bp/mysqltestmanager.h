@@ -11,6 +11,7 @@
 class MySqlTestManager : public ITestManager
 {
 private:
+    sql::Driver *driver;
     sql::Connection* _con = nullptr;
 public:
     MySqlTestManager(const ConfigStorage* storage);
