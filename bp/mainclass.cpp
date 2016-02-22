@@ -32,7 +32,8 @@ MainClass::~MainClass()
 
 void MainClass::run()
 {
-    scheduler = new Scheduler(pri, storage, maxParallelTests);
+    if (scheduler == nullptr)
+        scheduler = new Scheduler(pri, storage, maxParallelTests);
     if (!scheduler->addTestsAfterCrash())
         throw runtime_error("addTestsAfterCrash");
     scheduler->run();
