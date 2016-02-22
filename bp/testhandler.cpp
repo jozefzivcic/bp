@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <sched.h>
 #include <cppconn/driver.h>
+
 using namespace std;
 
 TestHandler::TestHandler(int num, const ConfigStorage *stor):

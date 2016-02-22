@@ -16,7 +16,6 @@ MainClass::MainClass()
         throw runtime_error("Config file not located or has a wrong structure");
     storage = new ConfigStorage(parser);
     pri = new PriorityComparator();
-    scheduler = new Scheduler(pri, storage, maxParallelTests);
 }
 
 MainClass::~MainClass()
@@ -33,6 +32,7 @@ MainClass::~MainClass()
 
 void MainClass::run()
 {
+    scheduler = new Scheduler(pri, storage, maxParallelTests);
     if (!scheduler->addTestsAfterCrash())
         throw runtime_error("addTestsAfterCrash");
     scheduler->run();
