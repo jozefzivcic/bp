@@ -6,6 +6,7 @@ using namespace sql;
 extern mutex dbMutex;
 MySqlChangeStateManager::MySqlChangeStateManager(const ConfigStorage *storage)
 {
+    logger = new Logger();
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
@@ -18,6 +19,8 @@ MySqlChangeStateManager::~MySqlChangeStateManager()
 {
     if (connection != nullptr)
         delete connection;
+    if (logger != nullptr)
+        delete logger;
     driver->threadEnd();
 }
 
@@ -36,11 +39,14 @@ bool MySqlChangeStateManager::getDBState(int& state)
             i++;
         }
         deleteStatementAndResSet(preparedStmt,res);
-        if (i != 1)
+        if (i != 1) {
+            logger->logError("getDBState: More rows selected");
             return false;
+        }
         state = tempState;
         return true;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("getDBState " + string(ex.what()));
         deleteStatementAndResSet(preparedStmt,res);
         return false;
     }

@@ -1,4 +1,5 @@
 #include "mysqltestmanager.h"
+#include "logger.h"
 #include <cppconn/driver.h>
 #include <mutex>
 
@@ -9,6 +10,7 @@ extern mutex dbMutex;
 
 MySqlTestManager::MySqlTestManager(const ConfigStorage *storage)
 {
+    logger = new Logger();
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
@@ -20,6 +22,8 @@ MySqlTestManager::~MySqlTestManager()
 {
     if (_con != nullptr)
         delete _con;
+    if (logger != nullptr)
+        delete logger;
     driver->threadEnd();
 }
 

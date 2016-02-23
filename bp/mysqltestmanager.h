@@ -4,6 +4,7 @@
 #include <list>
 #include "mysql_connection.h"
 #include "configstorage.h"
+#include "ilogger.h"
 #include <cppconn/driver.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
@@ -13,6 +14,7 @@ class MySqlTestManager : public ITestManager
 private:
     sql::Driver *driver;
     sql::Connection* _con = nullptr;
+    ILogger* logger = nullptr;
 public:
     MySqlTestManager(const ConfigStorage* storage);
     ~MySqlTestManager();

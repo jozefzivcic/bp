@@ -1,5 +1,6 @@
 #include "mysqlcurrentlyrunningmanager.h"
 #include "mysql_connection.h"
+#include "logger.h"
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
@@ -14,6 +15,7 @@ extern mutex dbMutex;
 
 MySqlCurrentlyRunningManager::MySqlCurrentlyRunningManager(const ConfigStorage *storage)
 {
+    logger = new Logger();
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
@@ -26,6 +28,8 @@ MySqlCurrentlyRunningManager::~MySqlCurrentlyRunningManager()
 {
     if (_con != nullptr)
         delete _con;
+    if (logger != nullptr)
+        delete logger;
     driver->threadEnd();
 }
 
@@ -39,7 +43,8 @@ bool MySqlCurrentlyRunningManager::insertTest(Test t)
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return true;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("insertTest " + string(ex.what()));
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return false;
@@ -56,7 +61,8 @@ bool MySqlCurrentlyRunningManager::removeTest(Test t)
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return true;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("removeTest " + string(ex.what()));
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return false;

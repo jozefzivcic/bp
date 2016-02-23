@@ -1,4 +1,5 @@
 #include "mysqlnisttestsmanager.h"
+#include "logger.h"
 #include <cppconn/driver.h>
 #include <mutex>
 
@@ -9,6 +10,7 @@ extern mutex dbMutex;
 
 MySqlNistTestsManager::MySqlNistTestsManager(const ConfigStorage *storage)
 {
+    logger = new Logger();
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
@@ -21,6 +23,8 @@ MySqlNistTestsManager::~MySqlNistTestsManager()
 {
     if (connection != nullptr)
         delete connection;
+    if (logger != nullptr)
+        delete logger;
     driver->threadEnd();
 }
 
@@ -52,7 +56,8 @@ bool MySqlNistTestsManager::getParameterById(long id, NistTestParameter &param)
         }
         deleteStatementAndResSet(preparedStmt,res);
         return (i == 1) ? true : false;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("getParameterById " + string(ex.what()));
         deleteStatementAndResSet(preparedStmt,res);
         return false;
     }

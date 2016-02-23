@@ -1,6 +1,7 @@
 #include "mysqlfilemanager.h"
 #include "file.h"
 #include "mysql_connection.h"
+#include "logger.h"
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
@@ -14,6 +15,7 @@ using namespace sql;
 extern mutex dbMutex;
 
 MySqlFileManager::MySqlFileManager(const ConfigStorage *storage) {
+    logger = new Logger();
     dbMutex.lock();
     driver = get_driver_instance();
     dbMutex.unlock();
@@ -43,7 +45,8 @@ bool MySqlFileManager::getFileById(int id, File *file) {
             file->setFile(tempFile);
         deleteStatementAndResSet(preparedStmt,res);
         return (i == 1) ? true : false;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("getFileById " + string(ex.what()));
         deleteStatementAndResSet(preparedStmt,res);
         return false;
     }
@@ -52,6 +55,8 @@ bool MySqlFileManager::getFileById(int id, File *file) {
 MySqlFileManager::~MySqlFileManager() {
     if (_con != nullptr)
         delete _con;
+    if (logger != nullptr)
+        delete logger;
     driver->threadEnd();
 }
 

@@ -3,6 +3,7 @@
 #include "icurrentlyrunningmanager.h"
 #include "mysql_connection.h"
 #include "configstorage.h"
+#include "ilogger.h"
 #include <cppconn/driver.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
@@ -12,6 +13,7 @@ class MySqlCurrentlyRunningManager : public ICurrentlyRunningManager
 private:
     sql::Driver *driver;
     sql::Connection* _con = nullptr;
+    ILogger* logger = nullptr;
 public:
     MySqlCurrentlyRunningManager(const ConfigStorage* storage);
     ~MySqlCurrentlyRunningManager();

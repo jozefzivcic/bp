@@ -8,9 +8,9 @@ class Logger : public ILogger
 private:
     const ConfigStorage* storage;
 public:
-    virtual bool logInfo(std::string msg) override;
-    virtual bool logWarning(std::string msg) override;
-    virtual bool logError(std::string msg) override;
+    virtual void logInfo(std::string msg) override;
+    virtual void logWarning(std::string msg) override;
+    virtual void logError(std::string msg) override;
 };
 
 #endif // LOGGER_H

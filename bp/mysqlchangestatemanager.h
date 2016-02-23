@@ -3,6 +3,8 @@
 #include "ichangestatemanager.h"
 #include "mysql_connection.h"
 #include "configstorage.h"
+#include "ilogger.h"
+#include "logger.h"
 #include <cppconn/driver.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
@@ -12,6 +14,7 @@ class MySqlChangeStateManager : public IChangeStateManager
 private:
     sql::Driver *driver;
     sql::Connection* connection = nullptr;
+    ILogger* logger = nullptr;
 public:
     MySqlChangeStateManager(const ConfigStorage* storage);
     ~MySqlChangeStateManager();

@@ -1,4 +1,5 @@
 #include "nistcmdparamscreator.h"
+#include "logger.h"
 #include <sstream>
 #include <cstring>
 
@@ -6,8 +7,15 @@ using namespace std;
 
 NistCmdParamsCreator::NistCmdParamsCreator() : testNumber(0)
 {
+    logger = new Logger();
     params.clear();
     params.push_back("-fast");
+}
+
+NistCmdParamsCreator::~NistCmdParamsCreator()
+{
+    if (logger != nullptr)
+        delete logger;
 }
 
 string NistCmdParamsCreator::getCmdParams() const

@@ -1,5 +1,6 @@
 #ifndef NISTCMDPARAMSCREATOR_H
 #define NISTCMDPARAMSCREATOR_H
+#include "ilogger.h"
 #include <iostream>
 #include <list>
 
@@ -16,12 +17,22 @@ private:
      * @brief testNumber Contains for which test are created parameters.
      */
     int testNumber;
+
+    /**
+     * @brief logger Logging class.
+     */
+    ILogger* logger;
 public:
 
     /**
      * @brief NistCmdParamsCreator Constructor, creates parameters with only flag: -fast.
      */
     NistCmdParamsCreator();
+
+    /**
+     * @brief ~NistCmdParamsCreator Destructor.
+     */
+    ~NistCmdParamsCreator();
 
     /**
      * @brief getCmdParams Getter.
