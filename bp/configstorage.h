@@ -16,6 +16,7 @@ private:
     std::string pathToUsersDir;
     std::string pathToUsersDirFromPool;
     std::string testsResults;
+    std::string nameOfApplication;
 public:
     ConfigStorage(ConfigParser* parser);
     std::string getDatabase() const;
@@ -28,6 +29,7 @@ public:
     std::string getPathToUsersDir() const;
     std::string getPathToUsersDirFromPool() const;
     std::string getTestsResults() const;
+    std::string getNameOfApplication() const;
 };
 
 #endif // CONFIGSTORAGE_H

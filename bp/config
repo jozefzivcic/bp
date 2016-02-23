@@ -9,3 +9,4 @@
 "PATH_TO_USERS_DIR"="../users/"
 "PATH_TO_USERS_DIR_FROM_POOL"="../../users/"
 "TESTS_RESULTS"="tests_results"
+"NAME_OF_APPLICATION"="Tests scheduler daemon"

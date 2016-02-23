@@ -50,6 +50,11 @@ std::string ConfigStorage::getTestsResults() const
     return testsResults;
 }
 
+std::string ConfigStorage::getNameOfApplication() const
+{
+    return nameOfApplication;
+}
+
 ConfigStorage::ConfigStorage(ConfigParser *parser):
     database(parser->getValue("DATABASE")), userName(parser->getValue("USERNAME")),
     userPassword(parser->getValue("USER_PASSWORD")), schema(parser->getValue("SCHEMA")),
@@ -57,6 +62,7 @@ ConfigStorage::ConfigStorage(ConfigParser *parser):
     pathToTestsPool(parser->getValue("PATH_TO_TESTS_POOL")),
     pathToUsersDir(parser->getValue("PATH_TO_USERS_DIR")),
     pathToUsersDirFromPool(parser->getValue("PATH_TO_USERS_DIR_FROM_POOL")),
-    testsResults(parser->getValue("TESTS_RESULTS"))
+    testsResults(parser->getValue("TESTS_RESULTS")),
+    nameOfApplication(parser->getValue("NAME_OF_APPLICATION"))
 {}
 
