@@ -67,7 +67,8 @@ void Scheduler::run()
 bool Scheduler::isStateChanged()
 {
     int dbState = 0;
-    stateManager->getDBState(dbState);
+    if (!stateManager->getDBState(dbState))
+        return true;
     if (dbState == state)
         return false;
     state = dbState;
