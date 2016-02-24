@@ -3,6 +3,9 @@
 #include <iostream>
 #include "itestparameter.h"
 
+/**
+ * @brief The Test class represents a record in database table tests.
+ */
 class Test
 {
 private:
@@ -14,6 +17,7 @@ private:
 public:
     Test();
     Test(const Test& t);
+    /* ---- Getters and setters ---- */
     int id() const;
     void setId(int id);
     int idFile() const;
@@ -27,6 +31,11 @@ public:
     Test& operator =(Test other);
     friend std::ostream& operator <<(std::ostream& out, const Test& t);
 private:
+
+    /**
+     * @brief swap Swaps attributes with test t. This is used for copy-and-swap idiom.
+     * @param t Test which attributes are swapped.
+     */
     void swap(Test& t);
 };
 

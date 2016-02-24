@@ -14,13 +14,34 @@
 #include "configstorage.h"
 #include "itesthandler.h"
 
+/**
+ * @brief The Scheduler class implements interface IScheduler. For methods documentation
+ * see interface.
+ */
 class Scheduler : public IScheduler
 {
 private:
+
+    /**
+     * @brief queue Priority queue that orders tests according to given QueueComparator.
+     */
     std::priority_queue<Test, std::vector<Test>, QueueComparator> queue;
+
+    /**
+     * @brief state State of database.
+     */
     int state = 0;
+
+    /**
+     * @brief storage ConfigStorage.
+     */
     const ConfigStorage* storage;
+
+    /**
+     * @brief maxTestsRunningParallel Maximum number of tests that can run in parallel.
+     */
     unsigned int maxTestsRunningParallel;
+
     ITestManager* testManager = nullptr;
     IChangeStateManager* stateManager = nullptr;
     ITestHandler* testHandler = nullptr;
