@@ -3,6 +3,7 @@
 #include "scheduler.h"
 #include "ifilestructurehandler.h"
 #include "linuxfilestructurehandler.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ MainClass::MainClass()
         throw runtime_error("Config file not located or has a wrong structure");
     storage = new ConfigStorage(parser);
     pri = new PriorityComparator();
+    logger = new Logger();
 }
 
 MainClass::~MainClass()
@@ -28,15 +30,19 @@ MainClass::~MainClass()
         delete parser;
     if (storage != nullptr)
         delete storage;
+    if (logger != nullptr)
+        delete logger;
 }
 
 void MainClass::run()
 {
+    logger->logInfo("MainClass::run() has started");
     if (scheduler == nullptr)
         scheduler = new Scheduler(pri, storage, maxParallelTests);
     if (!scheduler->addTestsAfterCrash())
         throw runtime_error("addTestsAfterCrash");
     scheduler->run();
+    logger->logInfo("MainClass::run() has ended");
 }
 
 bool MainClass::prepareEnvironment()

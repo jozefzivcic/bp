@@ -4,6 +4,7 @@
 
 class IScheduler {
 public:
+
     /**
      * @brief getTestForRunning Sets attributes of parameter t according to test,
      * which will run as next.

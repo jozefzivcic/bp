@@ -2,8 +2,10 @@
 #define IFILEMANAGER
 
 #include "file.h"
+
 class IFileManager {
 public:
+
     /**
      * @brief getFileById Finds file with parameter id and if everything is OK fills file
      * as second parameter. If any error occurs, given parameter file is not modified.
@@ -12,6 +14,10 @@ public:
      * @return true is everything goes normally else false.
      */
     virtual bool getFileById(int id, File* file) = 0;
+
+    /**
+     * @brief ~IFileManager Virtual destructor.
+     */
     virtual ~IFileManager() {}
 };
 #endif // IFILEMANAGER

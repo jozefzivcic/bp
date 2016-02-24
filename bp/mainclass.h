@@ -4,6 +4,7 @@
 #include "iprioritycomparator.h"
 #include "ischeduler.h"
 #include "configstorage.h"
+#include "ilogger.h"
 
 class MainClass
 {
@@ -13,6 +14,7 @@ private:
     IPriorityComparator* pri = nullptr;
     IScheduler* scheduler = nullptr;
     ConfigStorage* storage = nullptr;
+    ILogger* logger = nullptr;
 public:
     MainClass();
     ~MainClass();

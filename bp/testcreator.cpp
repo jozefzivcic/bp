@@ -51,7 +51,7 @@ bool TestCreator::createNistTest(Test t)
     case -1:
         return false;
     default:
-        waitOnChild(pid, t, nistParam);
+        return waitOnChild(pid, t, nistParam);
         break;
     }
     return true;
