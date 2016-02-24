@@ -1,8 +1,13 @@
 #ifndef ICURRENTLYRUNNINGMANAGER
 #define ICURRENTLYRUNNINGMANAGER
 #include "test.h"
+
+/**
+ * @brief The ICurrentlyRunningManager class manages database table currently_running.
+ */
 class ICurrentlyRunningManager {
 public:
+
     /**
      * @brief insertTest Inserts test id into table currently_running.
      * @param t Test which id will be added into the table.

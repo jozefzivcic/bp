@@ -2,6 +2,9 @@
 #define ILOGGER
 #include <iostream>
 
+/**
+ * @brief The ILogger class loggs messages into log file.
+ */
 class ILogger {
 public:
 

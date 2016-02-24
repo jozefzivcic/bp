@@ -2,6 +2,10 @@
 #define ITESTMANAGER
 #include "test.h"
 #include <list>
+
+/**
+ * @brief The ITestManager class manages database table tests.
+ */
 class ITestManager {
 public:
 

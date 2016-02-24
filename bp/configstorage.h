@@ -3,6 +3,9 @@
 #include <iostream>
 #include "configparser.h"
 
+/**
+ * @brief The ConfigStorage class holds all constants from .config file.
+ */
 class ConfigStorage
 {
 private:

@@ -4,6 +4,10 @@
 #include <iostream>
 #include "configstorage.h"
 
+/**
+ * @brief The LinuxFileStructureHandler class is implementation of interface
+ * IFileStructureHandler. For methods documentation see base interface.
+ */
 class LinuxFileStructureHandler : public IFileStructureHandler
 {
 private:

@@ -2,11 +2,12 @@
 
 using namespace std;
 
-ClassToCmdParamConverter::ClassToCmdParamConverter(const ConfigStorage *storage)
+ClassToCmdParamConverter::ClassToCmdParamConverter(const ConfigStorage *configStorage)
 {
     creator = new NistCmdParamsCreator();
-    fileManager = new MySqlFileManager(storage);
-    nistManager = new MySqlNistTestsManager(storage);
+    fileManager = new MySqlFileManager(configStorage);
+    nistManager = new MySqlNistTestsManager(configStorage);
+    storage = configStorage;
 }
 
 ClassToCmdParamConverter::~ClassToCmdParamConverter()
@@ -21,6 +22,8 @@ ClassToCmdParamConverter::~ClassToCmdParamConverter()
 
 bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary, Test t)
 {
+    if (t.testTable() != storage->getNist())
+        return false;
     NistTestParameter param;
     if (!nistManager->getParameterById(t.id(),param))
         return false;
@@ -29,6 +32,8 @@ bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary
 
 bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary, Test t, NistTestParameter param)
 {
+    if (t.testTable() != storage->getNist())
+        return false;
     creator->resetParams();
     creator->setBinary(binary);
     File f;

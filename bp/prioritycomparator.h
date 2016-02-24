@@ -2,6 +2,10 @@
 #define PRIORITYCOMPARATOR_H
 #include "iprioritycomparator.h"
 
+/**
+ * @brief The PriorityComparator class is implementation of interface IPriorityComparator. For
+ * method documentation see interface.
+ */
 class PriorityComparator : public IPriorityComparator
 {
 public:

@@ -6,6 +6,9 @@
 #include "configstorage.h"
 #include "ilogger.h"
 
+/**
+ * @brief The MainClass class is the main class of this program.
+ */
 class MainClass
 {
 private:
@@ -16,9 +19,27 @@ private:
     ConfigStorage* storage = nullptr;
     ILogger* logger = nullptr;
 public:
+
+    /**
+     * @brief MainClass Constructor.
+     */
     MainClass();
+
+    /**
+     * @brief ~MainClass Destructor.
+     */
     ~MainClass();
+
+    /**
+     * @brief run This method provides main functionality of program.
+     */
     void run();
+
+    /**
+     * @brief prepareEnvironment Prepares structure of files and directories, to
+     * program can run properly.
+     * @return If and error occurs, then false, true otherwise.
+     */
     bool prepareEnvironment();
 };
 

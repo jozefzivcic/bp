@@ -3,6 +3,10 @@
 #include "ilogger.h"
 #include "configstorage.h"
 
+/**
+ * @brief The Logger class is implementation of interaface ILogger. For methods documentation
+ * see the interface.
+ */
 class Logger : public ILogger
 {
 private:

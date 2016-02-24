@@ -2,6 +2,10 @@
 #define ISCHEDULER
 #include "test.h"
 
+/**
+ * @brief The IScheduler class fills tests from database, decides, which test to execute
+ * and can also re-run tests, which not finished according to program crash.
+ */
 class IScheduler {
 public:
 

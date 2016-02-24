@@ -8,6 +8,10 @@
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
 
+/**
+ * @brief The MySqlCurrentlyRunningManager class implements interface ICurrentlyRunningManager.
+ * For methods documentation see interface.
+ */
 class MySqlCurrentlyRunningManager : public ICurrentlyRunningManager
 {
 private:

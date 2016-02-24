@@ -2,6 +2,9 @@
 #define IFILE
 #include <iostream>
 
+/**
+ * @brief The File class represents file record from database.
+ */
 class File {
     int _id;
     int _userId;

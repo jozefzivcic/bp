@@ -4,6 +4,9 @@
 #include <iostream>
 #include <list>
 
+/**
+ * @brief The NistCmdParamsCreator class creates parameters for NIST tests.
+ */
 class NistCmdParamsCreator
 {
 private:

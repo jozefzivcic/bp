@@ -8,14 +8,19 @@
 #include "inisttestsmanager.h"
 #include "mysqlnisttestsmanager.h"
 
-class ClassToCmdParamConverter :  public IClassToCmdParamConverter
+/**
+ * @brief The ClassToCmdParamConverter class implements interface IClassToCmdParamConverter.
+ * For methods documentation see here.
+ */
+class ClassToCmdParamConverter : public IClassToCmdParamConverter
 {
 private:
     NistCmdParamsCreator* creator = nullptr;
     IFileManager* fileManager = nullptr;
     INistTestsManager* nistManager = nullptr;
+    const ConfigStorage* storage;
 public:
-    ClassToCmdParamConverter(const ConfigStorage* storage);
+    ClassToCmdParamConverter(const ConfigStorage* configStorage);
     ~ClassToCmdParamConverter();
     virtual bool convertNistTestToArray(char*** ptr, std::string binary, Test t) override;
     virtual bool convertNistTestToArray(char*** ptr, std::string binary, Test t, NistTestParameter param) override;

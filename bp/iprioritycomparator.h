@@ -1,6 +1,10 @@
 #ifndef IPRIORITYCOMPARATOR
 #define IPRIORITYCOMPARATOR
 #include "test.h"
+
+/**
+ * @brief The IPriorityComparator class is used to compare two tests.
+ */
 class IPriorityComparator {
 public:
     /**

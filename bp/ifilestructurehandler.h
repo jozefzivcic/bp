@@ -3,6 +3,10 @@
 #include <iostream>
 #include <list>
 
+/**
+ * @brief The IFileStructureHandler class is used to work with files, directories and file
+ * system structure.
+ */
 class IFileStructureHandler {
 public:
 

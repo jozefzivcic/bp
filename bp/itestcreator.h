@@ -2,6 +2,10 @@
 #define ITESTCREATOR
 #include "test.h"
 
+/**
+ * @brief The ITestCreator class creates tests and waits until tests finish. Only one test
+ * can run under this class at the same time.
+ */
 class ITestCreator {
 public:
 
