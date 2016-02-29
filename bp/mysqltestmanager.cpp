@@ -45,12 +45,10 @@ bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
             l.push_back(t);
         }
         deleteStatementAndResSet(preparedStmt,res);
-        for (Test test : l) {
-            setTestAsLoaded(test);
-        }
         t.insert(t.end(), l.begin(), l.end());
         return true;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("getAllTestsReadyForRunning " + string(ex.what()));
         deleteStatementAndResSet(preparedStmt,res);
         return false;
     }
@@ -76,7 +74,8 @@ bool MySqlTestManager::getTestsNotFinished(std::list<Test> &t)
         deleteStatementAndResSet(preparedStmt,res);
         t.insert(t.end(), l.begin(), l.end());
         return true;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("getTestsNotFinished " + string(ex.what()));
         deleteStatementAndResSet(preparedStmt,res);
         return false;
     }
@@ -112,7 +111,8 @@ bool MySqlTestManager::setTestHasFinished(Test t)
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return count == 1 ? true : false;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("setTestHasFinished " + string(ex.what()));
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return false;
@@ -131,7 +131,8 @@ bool MySqlTestManager::setTestAsLoaded(const Test &t)
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return count == 1 ? true : false;
-    }catch(exception) {
+    }catch(exception& ex) {
+        logger->logError("setTestAsLoaded " + string(ex.what()));
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return false;

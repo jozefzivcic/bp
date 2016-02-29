@@ -2,7 +2,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
+#include <algorithm>
+#include <iterator>
+#include "fstream"
+#include <iostream>
+#include <dirent.h>
+#include <sys/types.h>
+#include <cstring>
 using namespace std;
 
 string LinuxFileStructureHandler::REDIRECT = "> /dev/null 2>&1";
@@ -24,14 +30,24 @@ bool LinuxFileStructureHandler::copyDirectory(string source, string destination)
 
 bool LinuxFileStructureHandler::copyFile(string file, string directory)
 {
-    string command = "cp ";
-    command += file;
-    command += " ";
-    command += directory;
-    command += " ";
-    command += REDIRECT;
-    int ret = system(command.c_str());
-    return (ret == 0) ? true : false;
+    ifstream inputFile(file, ios::binary);
+    if (!inputFile.is_open())
+        return false;
+    string fileName = getFileNameFromPath(file);
+    list <string> l;
+    l.push_back(directory);
+    l.push_back(fileName);
+    string destination = createFSPath(false, l);
+    ofstream output(destination, ios::binary);
+    if (!output.is_open())
+        return false;
+    istreambuf_iterator<char> inputBegin(inputFile);
+    istreambuf_iterator<char> inputEnd;
+    ostreambuf_iterator<char> destinationBegin(output);
+    copy(inputBegin, inputEnd, destinationBegin);
+    inputFile.close();
+    output.close();
+    return true;
 }
 
 bool LinuxFileStructureHandler::createCopiesOfDirectory(string source, string destination, int num)
@@ -180,9 +196,40 @@ bool LinuxFileStructureHandler::checkAndCreateUserTree(string pathToUsersDir, lo
 
 bool LinuxFileStructureHandler::copyDirectoryContent(string source, string destination)
 {
-    string sourceWithSlash = source;
-    if (source[source.length() - 1] != '/')
-        sourceWithSlash += "/";
-    sourceWithSlash += "*";
-    return copyDirectory(sourceWithSlash, destination);
+    if (!checkIfDirectoryExists(destination))
+        return false;
+    DIR* directory = opendir(source.c_str());
+    struct dirent* sd;
+    if (directory == NULL)
+        return false;
+    while((sd = readdir(directory)) != NULL) {
+        if (strcmp(sd->d_name, ".") == 0 || strcmp(sd->d_name, "..") == 0)
+            continue;
+        if (sd->d_type == DT_DIR) {
+            list<string> l;
+            l.push_back(destination);
+            l.push_back(string(sd->d_name));
+            createDirectory(createFSPath(true, l));
+        } else if (sd->d_type == DT_REG){
+            list<string> l;
+            l.push_back(destination);
+            l.push_back(string(sd->d_name));
+            string s = createFSPath(false, l);
+            l.clear();
+            l.push_back(source);
+            l.push_back(string(sd->d_name));
+            string d = createFSPath(false, l);
+            copyFile(s, d);
+        }
+    }
+    closedir(directory);
+    return true;
+}
+
+string LinuxFileStructureHandler::getFileNameFromPath(string path)
+{
+    size_t index = path.find_last_of('/');
+    if (index == string::npos || index == path.length())
+        return "";
+    return path.substr(index + 1, path.length() - index - 1);
 }

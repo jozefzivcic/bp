@@ -43,6 +43,8 @@ bool Scheduler::addTestsReadyForRunning()
     if (!testManager->getAllTestsReadyForRunning(l))
         return false;
     for (Test t : l) {
+        if (!testManager->setTestAsLoaded(t))
+            return false;
         queue.push(t);
     }
     return true;
