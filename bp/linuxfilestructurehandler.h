@@ -15,7 +15,7 @@ private:
     const ConfigStorage* storage;
 public:
     LinuxFileStructureHandler(const ConfigStorage* s);
-    virtual bool copyDirectory(std::string source, std::string destination) override;
+    virtual bool copyDirectory(std::string source, std::string destination, bool copyRecursive) override;
     virtual bool copyFile(std::string file, std::string directory) override;
     virtual bool createCopiesOfDirectory(std::string source, std::string destination, int num) override;
     virtual bool checkIfDirectoryExists(std::string directory) override;
@@ -26,7 +26,6 @@ public:
     virtual std::string createPathToStoreTest(std::string pathToUserDirFromPool, long userId, long testId) override;
     virtual bool createDirectory(std::string path) override;
     virtual bool checkAndCreateUserTree(std::string pathToUsersDir, long userId) override;
-    virtual bool copyDirectoryContent(std::string source, std::string destination) override;
     virtual std::string getFileNameFromPath(std::string path) override;
 };
 

@@ -16,16 +16,37 @@ string LinuxFileStructureHandler::REDIRECT = "> /dev/null 2>&1";
 LinuxFileStructureHandler::LinuxFileStructureHandler(const ConfigStorage *s) :
     storage(s) {}
 
-bool LinuxFileStructureHandler::copyDirectory(string source, string destination)
+bool LinuxFileStructureHandler::copyDirectory(string source, string destination, bool copyRecursive)
 {
-    string command = "cp -r ";
-    command += source;
-    command += " ";
-    command += destination;
-    command += " ";
-    command += REDIRECT;
-    int ret = system(command.c_str());
-    return (ret == 0) ? true : false;
+    if (!checkIfDirectoryExists(destination))
+        return false;
+    DIR* directory = opendir(source.c_str());
+    struct dirent* sd;
+    if (directory == NULL)
+        return false;
+    list<string> l;
+    string newSource, newDestination;
+    while((sd = readdir(directory)) != NULL) {
+        if (strcmp(sd->d_name, ".") == 0 || strcmp(sd->d_name, "..") == 0)
+            continue;
+        l.clear();
+        l.push_back(source);
+        l.push_back(sd->d_name);
+        newSource = createFSPath(false, l);
+        l.clear();
+        l.push_back(destination);
+        l.push_back(sd->d_name);
+        newDestination = createFSPath(false, l);
+        if (sd->d_type == DT_DIR) {
+            createDirectory(newDestination);
+            if (copyRecursive)
+                copyDirectory(newSource, newDestination, true);
+        } else if (sd->d_type == DT_REG){
+            copyFile(newSource, destination);
+        }
+    }
+    closedir(directory);
+    return true;
 }
 
 bool LinuxFileStructureHandler::copyFile(string file, string directory)
@@ -60,7 +81,7 @@ bool LinuxFileStructureHandler::createCopiesOfDirectory(string source, string de
         string path = modifiedDestination;
         path += to_string(i);
         path += "/";
-        if (!copyDirectory(source,path))
+        if (!copyDirectory(source,path, true))
             return false;
     }
     return true;
@@ -191,38 +212,6 @@ bool LinuxFileStructureHandler::checkAndCreateUserTree(string pathToUsersDir, lo
     if (!checkIfDirectoryExists(path))
         if (!createDirectory(path))
             return false;
-    return true;
-}
-
-bool LinuxFileStructureHandler::copyDirectoryContent(string source, string destination)
-{
-    if (!checkIfDirectoryExists(destination))
-        return false;
-    DIR* directory = opendir(source.c_str());
-    struct dirent* sd;
-    if (directory == NULL)
-        return false;
-    while((sd = readdir(directory)) != NULL) {
-        if (strcmp(sd->d_name, ".") == 0 || strcmp(sd->d_name, "..") == 0)
-            continue;
-        if (sd->d_type == DT_DIR) {
-            list<string> l;
-            l.push_back(destination);
-            l.push_back(string(sd->d_name));
-            createDirectory(createFSPath(true, l));
-        } else if (sd->d_type == DT_REG){
-            list<string> l;
-            l.push_back(destination);
-            l.push_back(string(sd->d_name));
-            string s = createFSPath(false, l);
-            l.clear();
-            l.push_back(source);
-            l.push_back(string(sd->d_name));
-            string d = createFSPath(false, l);
-            copyFile(s, d);
-        }
-    }
-    closedir(directory);
     return true;
 }
 

@@ -11,12 +11,14 @@ class IFileStructureHandler {
 public:
 
     /**
-     * @brief copyDirectory Copies one directory into another directory.
+     * @brief copyDirectory Copies one directory content into another directory.
      * @param source Source directory to be copied.
      * @param destination Destination directory, in which the source will be copied.
+     * @param copyRecursive if is true, then copies recursive all subfolders in source to
+     * destination, else copies only folders and files in source.
      * @return If an error occurs, false, true otherwise.
      */
-    virtual bool copyDirectory(std::string source, std::string destination) = 0;
+    virtual bool copyDirectory(std::string source, std::string destination, bool copyRecursive) = 0;
 
     /**
      * @brief copyFile Copies file to given directory.
@@ -104,15 +106,6 @@ public:
      * @return If an errors occurs false, true otherwise.
      */
     virtual bool checkAndCreateUserTree(std::string pathToUsersDir, long userId) = 0;
-
-    /**
-     * @brief copyDirectoryContent Copies content of source directory into destination
-     * directory.
-     * @param source Source directory, which content is copied.
-     * @param destination Destination directory, into which items are stored.
-     * @return If an errors occurs false, true otherwise.
-     */
-    virtual bool copyDirectoryContent(std::string source, std::string destination) = 0;
 
     /**
      * @brief getFileNameFromPath Extracts name of file from structure.
