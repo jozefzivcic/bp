@@ -115,6 +115,13 @@ public:
     virtual std::string getFileNameFromPath(std::string path) = 0;
 
     /**
+     * @brief checkIfFileIsExecutable Checks if file is executable.
+     * @param file File to be checked.
+     * @return If file is executable, then true, else false.
+     */
+    virtual bool checkIfFileIsExecutable(std::string file) = 0;
+
+    /**
      * @brief ~IFileStructureHandler Virtual destructor.
      */
     virtual ~IFileStructureHandler() {}

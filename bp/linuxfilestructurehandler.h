@@ -27,6 +27,7 @@ public:
     virtual bool createDirectory(std::string path) override;
     virtual bool checkAndCreateUserTree(std::string pathToUsersDir, long userId) override;
     virtual std::string getFileNameFromPath(std::string path) override;
+    virtual bool checkIfFileIsExecutable(std::string file) override;
 };
 
 #endif // FILESTRUCTUREHANDLER_H

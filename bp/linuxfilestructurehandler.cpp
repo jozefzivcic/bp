@@ -41,8 +41,10 @@ bool LinuxFileStructureHandler::copyDirectory(string source, string destination,
             createDirectory(newDestination);
             if (copyRecursive)
                 copyDirectory(newSource, newDestination, true);
-        } else if (sd->d_type == DT_REG){
+        } else {
             copyFile(newSource, destination);
+            if (checkIfFileIsExecutable(newSource))
+                chmod(newDestination.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
         }
     }
     closedir(directory);
@@ -81,6 +83,8 @@ bool LinuxFileStructureHandler::createCopiesOfDirectory(string source, string de
         string path = modifiedDestination;
         path += to_string(i);
         path += "/";
+        if (!createDirectory(path))
+            return false;
         if (!copyDirectory(source,path, true))
             return false;
     }
@@ -191,6 +195,8 @@ string LinuxFileStructureHandler::createPathToStoreTest(string pathToUserDirFrom
 
 bool LinuxFileStructureHandler::createDirectory(string path)
 {
+    if (checkIfDirectoryExists(path))
+        return true;
     int status = mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     return status == 0;
 }
@@ -221,4 +227,11 @@ string LinuxFileStructureHandler::getFileNameFromPath(string path)
     if (index == string::npos || index == path.length())
         return "";
     return path.substr(index + 1, path.length() - index - 1);
+}
+
+bool LinuxFileStructureHandler::checkIfFileIsExecutable(string file)
+{
+
+    struct stat s;
+    return stat(file.c_str(), &s) == 0 && s.st_mode & S_IXUSR;
 }

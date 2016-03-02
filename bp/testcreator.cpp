@@ -41,7 +41,6 @@ bool TestCreator::createNistTest(Test t)
     string bin = "./assess";
     if (!converter->convertNistTestToArray(&arguments, bin, t, nistParam))
         return false;
-
     pid_t pid = fork();
 
     switch(pid) {
