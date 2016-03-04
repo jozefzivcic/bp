@@ -11,7 +11,6 @@
 class LinuxFileStructureHandler : public IFileStructureHandler
 {
 private:
-    static std::string REDIRECT;
     const ConfigStorage* storage;
 public:
     LinuxFileStructureHandler(const ConfigStorage* s);

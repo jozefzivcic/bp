@@ -44,12 +44,12 @@ CREATE TABLE `tests` (
 )DEFAULT CHARSET=utf8;
 
 CREATE TABLE `currently_running` (
-  `id_test` int(11) NOT NULL,
+  `id_test` int(11) PRIMARY KEY,
   CONSTRAINT currently_running_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;
 
 CREATE TABLE `nist_tests` (
-  `id_test` int(11) NOT NULL,
+  `id_test` int(11) PRIMARY KEY,
   `length` int(11) NOT NULL,
   `test_number` int(5) NOT NULL,
   `streams` int(11),
@@ -58,7 +58,7 @@ CREATE TABLE `nist_tests` (
 )DEFAULT CHARSET=utf8;
 
 CREATE TABLE `results` (
-  `id_test` int(11) NOT NULL,
+  `id_test` int(11) PRIMARY KEY,
   `directory` varchar(1024) NOT NULL,
   CONSTRAINT results_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;

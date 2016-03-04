@@ -11,8 +11,6 @@
 #include <cstring>
 using namespace std;
 
-string LinuxFileStructureHandler::REDIRECT = "> /dev/null 2>&1";
-
 LinuxFileStructureHandler::LinuxFileStructureHandler(const ConfigStorage *s) :
     storage(s) {}
 
