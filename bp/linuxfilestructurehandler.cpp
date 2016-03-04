@@ -19,23 +19,28 @@ bool LinuxFileStructureHandler::copyDirectory(string source, string destination,
     if (!checkIfDirectoryExists(destination))
         return false;
     DIR* directory = opendir(source.c_str());
-    struct dirent* sd;
     if (directory == NULL)
         return false;
+    struct dirent entry;
+    struct dirent* result;
     list<string> l;
     string newSource, newDestination;
-    while((sd = readdir(directory)) != NULL) {
-        if (strcmp(sd->d_name, ".") == 0 || strcmp(sd->d_name, "..") == 0)
+    while(true) {
+        if (readdir_r(directory, &entry, &result) != 0)
+            return false;
+        if (result == NULL)
+            break;
+        if (strcmp(entry.d_name, ".") == 0 || strcmp(entry.d_name, "..") == 0)
             continue;
         l.clear();
         l.push_back(source);
-        l.push_back(sd->d_name);
+        l.push_back(entry.d_name);
         newSource = createFSPath(false, l);
         l.clear();
         l.push_back(destination);
-        l.push_back(sd->d_name);
+        l.push_back(entry.d_name);
         newDestination = createFSPath(false, l);
-        if (sd->d_type == DT_DIR) {
+        if (entry.d_type == DT_DIR) {
             createDirectory(newDestination);
             if (copyRecursive)
                 copyDirectory(newSource, newDestination, true);
