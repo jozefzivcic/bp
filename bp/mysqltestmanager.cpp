@@ -15,13 +15,13 @@ MySqlTestManager::MySqlTestManager(const ConfigStorage *storage)
     driver = get_driver_instance();
     dbMutex.unlock();
     driver->threadInit();
-    _con = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
-    _con->setSchema(storage->getSchema());
+    connecion = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
+    connecion->setSchema(storage->getSchema());
 }
 MySqlTestManager::~MySqlTestManager()
 {
-    if (_con != nullptr)
-        delete _con;
+    if (connecion != nullptr)
+        delete connecion;
     if (logger != nullptr)
         delete logger;
     driver->threadEnd();
@@ -33,7 +33,7 @@ bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
     ResultSet* res = nullptr;
     list<Test> l;
     try{
-        preparedStmt = _con->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 0;");
+        preparedStmt = connecion->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 0;");
         res = preparedStmt->executeQuery();
         while(res->next()) {
             Test t;
@@ -60,7 +60,7 @@ bool MySqlTestManager::getTestsNotFinished(std::list<Test> &t)
     ResultSet* res = nullptr;
     list<Test> l;
     try{
-        preparedStmt = _con->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 1 AND ended = 0;");
+        preparedStmt = connecion->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 1 AND ended = 0;");
         res = preparedStmt->executeQuery();
         while(res->next()) {
             Test t;
@@ -85,7 +85,7 @@ bool MySqlTestManager::setTestHasStarted(Test t)
 {
     PreparedStatement* preparedStmt;
     try {
-        preparedStmt = _con->prepareStatement("UPDATE tests SET run = ?, ended = ? WHERE id = ?;");
+        preparedStmt = connecion->prepareStatement("UPDATE tests SET run = ?, ended = ? WHERE id = ?;");
         preparedStmt->setInt(1,1);
         preparedStmt->setInt(2,0);
         preparedStmt->setInt(3,t.id());
@@ -104,7 +104,7 @@ bool MySqlTestManager::setTestHasFinished(Test t)
 {
     PreparedStatement* preparedStmt = nullptr;
     try {
-        preparedStmt = _con->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?;");
+        preparedStmt = connecion->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?;");
         preparedStmt->setInt(1,1);
         preparedStmt->setInt(2,t.getId());
         int count = preparedStmt->executeUpdate();
@@ -123,7 +123,7 @@ bool MySqlTestManager::setTestAsLoaded(const Test &t)
 {
     PreparedStatement* preparedStmt = nullptr;
     try {
-        preparedStmt = _con->prepareStatement("UPDATE tests SET loaded = ? WHERE id = ? AND loaded = ?;");
+        preparedStmt = connecion->prepareStatement("UPDATE tests SET loaded = ? WHERE id = ? AND loaded = ?;");
         preparedStmt->setInt(1,1);
         preparedStmt->setInt(2,t.getId());
         preparedStmt->setInt(3,0);

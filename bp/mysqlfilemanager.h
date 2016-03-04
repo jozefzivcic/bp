@@ -15,7 +15,7 @@
 class MySqlFileManager : public IFileManager {
 private:
     sql::Driver *driver;
-    sql::Connection* _con = nullptr;
+    sql::Connection* connecion = nullptr;
     ILogger* logger = nullptr;
 public:
     MySqlFileManager(const ConfigStorage* storage);

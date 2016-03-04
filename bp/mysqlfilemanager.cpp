@@ -20,8 +20,8 @@ MySqlFileManager::MySqlFileManager(const ConfigStorage *storage) {
     driver = get_driver_instance();
     dbMutex.unlock();
     driver->threadInit();
-    _con = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
-    _con->setSchema(storage->getSchema());
+    connecion = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
+    connecion->setSchema(storage->getSchema());
 }
 
 bool MySqlFileManager::getFileById(int id, File *file) {
@@ -29,7 +29,7 @@ bool MySqlFileManager::getFileById(int id, File *file) {
     ResultSet *res = nullptr;
     File tempFile;
     try {
-        preparedStmt = _con->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ?;");
+        preparedStmt = connecion->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ?;");
         preparedStmt->setInt(1,id);
         res = preparedStmt->executeQuery();
         int i = 0;
@@ -53,8 +53,8 @@ bool MySqlFileManager::getFileById(int id, File *file) {
 }
 
 MySqlFileManager::~MySqlFileManager() {
-    if (_con != nullptr)
-        delete _con;
+    if (connecion != nullptr)
+        delete connecion;
     if (logger != nullptr)
         delete logger;
     driver->threadEnd();
