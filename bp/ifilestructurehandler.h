@@ -122,6 +122,13 @@ public:
     virtual bool checkIfFileIsExecutable(std::string file) = 0;
 
     /**
+     * @brief getAbsolutePath Returns absolute path from given path.
+     * @param relativePath Relative file system path, which is converted into absolute FS path.
+     * @return Absolute filesystem path, or empty string if an error occurs.
+     */
+    virtual std::string getAbsolutePath(std::string relativePath) = 0;
+
+    /**
      * @brief ~IFileStructureHandler Virtual destructor.
      */
     virtual ~IFileStructureHandler() {}

@@ -101,8 +101,8 @@ void threadFunction(TestHandler* handler, int i)
         testCreator->createTest(myTest);
         testManager->setTestHasFinished(myTest);
         crManager->removeTest(myTest);
-        handler->thHandler->setThreadAtPositionIsReady(i);
         handler->subtractOneTest();
+        handler->thHandler->setThreadAtPositionIsReady(i);
     }
     delete fileHandler;
     delete testCreator;

@@ -5,6 +5,7 @@
 #include "iclasstocmdparamconverter.h"
 #include "inisttestsmanager.h"
 #include "ifilestructurehandler.h"
+#include "iresultsmanager.h"
 
 /**
  * @brief The TestCreator class implements interface ITestCreator. For methods comments see the
@@ -22,6 +23,7 @@ private:
     IClassToCmdParamConverter* converter = nullptr;
     INistTestsManager* nistManager = nullptr;
     IFileStructureHandler* fileHandler = nullptr;
+    IResultsManager* resManager = nullptr;
 public:
     TestCreator(const ConfigStorage* stor);
     ~TestCreator();

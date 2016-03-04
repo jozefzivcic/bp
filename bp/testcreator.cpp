@@ -5,6 +5,7 @@
 #include "classtocmdparamconverter.h"
 #include "mysqlnisttestsmanager.h"
 #include "linuxfilestructurehandler.h"
+#include "mysqlresultsmanager.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor)
     converter = new ClassToCmdParamConverter(stor);
     nistManager = new MySqlNistTestsManager(stor);
     fileHandler = new LinuxFileStructureHandler(stor);
+    resManager = new MySqlResultsManager(stor);
 }
 
 TestCreator::~TestCreator()
@@ -23,6 +25,8 @@ TestCreator::~TestCreator()
         delete nistManager;
     if (fileHandler != nullptr)
         delete fileHandler;
+    if (resManager != nullptr)
+        delete resManager;
 }
 
 bool TestCreator::createTest(Test t)
@@ -75,5 +79,7 @@ bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
         if (!fileHandler->createDirectory(destination))
             return false;
     fileHandler->copyDirectory(source, destination, false);
+    string absPath = fileHandler->getAbsolutePath(destination);
+    resManager->storePathForTest(t, absPath);
     return returnedPid != -1;
 }

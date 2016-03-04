@@ -233,3 +233,18 @@ bool LinuxFileStructureHandler::checkIfFileIsExecutable(string file)
     struct stat s;
     return stat(file.c_str(), &s) == 0 && s.st_mode & S_IXUSR;
 }
+
+string LinuxFileStructureHandler::getAbsolutePath(string relativePath)
+{
+    char* buffer = realpath(relativePath.c_str(), NULL);
+    if (buffer == NULL)
+        return "";
+    char* absPath = realpath(relativePath.c_str(), buffer);
+    if (absPath == NULL) {
+        free(buffer);
+        return "";
+    }
+    string result(absPath);
+    free(buffer);
+    return result;
+}
