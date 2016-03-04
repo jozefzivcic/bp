@@ -1,14 +1,14 @@
 #include "file.h"
 #include <utility>
 
-File::File(): _id(0), _userId(0), _hash(""), _name(""), _fileSystemPath("") {}
+File::File(): id(0), userId(0), hash(""), name(""), fileSystemPath("") {}
 
 File::File(const File& f) {
-    _id = f._id;
-    _userId = f._userId;
-    _hash = f._hash;
-    _name = f._name;
-    _fileSystemPath = f._fileSystemPath;
+    id = f.id;
+    userId = f.userId;
+    hash = f.hash;
+    name = f.name;
+    fileSystemPath = f.fileSystemPath;
 }
 
 File &File::operator =(File other)
@@ -17,71 +17,71 @@ File &File::operator =(File other)
     return *this;
 }
 
-int File::userId() const
+int File::getId() const
 {
-    return _userId;
+    return id;
 }
 
-void File::setUserId(int userId)
+void File::setId(int value)
 {
-    _userId = userId;
+    id = value;
 }
 
-std::string File::hash() const
+int File::getUserId() const
 {
-    return _hash;
+    return userId;
 }
 
-void File::setHash(const std::string &hash)
+void File::setUserId(int value)
 {
-    _hash = hash;
+    userId = value;
 }
 
-std::string File::name() const
+std::string File::getHash() const
 {
-    return _name;
+    return hash;
 }
 
-void File::setName(const std::string &name)
+void File::setHash(const std::string &value)
 {
-    _name = name;
+    hash = value;
 }
 
-std::string File::fileSystemPath() const
+std::string File::getName() const
 {
-    return _fileSystemPath;
+    return name;
 }
 
-void File::setFileSystemPath(const std::string &fileSystemPath)
+void File::setName(const std::string &value)
 {
-    _fileSystemPath = fileSystemPath;
+    name = value;
+}
+
+std::string File::getFileSystemPath() const
+{
+    return fileSystemPath;
+}
+
+void File::setFileSystemPath(const std::string &value)
+{
+    fileSystemPath = value;
 }
 
 void File::setFile(const File &f)
 {
-    _id = f._id;
-    _userId = f._userId;
-    _hash = f._hash;
-    _name = f._name;
-    _fileSystemPath = f._fileSystemPath;
+    id = f.id;
+    userId = f.userId;
+    hash = f.hash;
+    name = f.name;
+    fileSystemPath = f.fileSystemPath;
 }
 
 void File::swap(File &f)
 {
     using std::swap;
-    swap(_id, f._id);
-    swap(_userId, f._userId);
-    swap(_hash, f._hash);
-    swap(_name, f._name);
-    swap(_fileSystemPath, f._fileSystemPath);
-}
-
-int File::id() const
-{
-    return _id;
-}
-
-void File::setId(int id)
-{
-    _id = id;
+    swap(id, f.id);
+    swap(userId, f.userId);
+    swap(hash, f.hash);
+    swap(name, f.name);
+    swap(fileSystemPath, f.fileSystemPath);
 }

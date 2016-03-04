@@ -39,7 +39,7 @@ bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary
     File f;
     if (!fileManager->getFileById(t.getFileId(), &f))
         return false;
-    creator->setFile(f.fileSystemPath());
+    creator->setFile(f.getFileSystemPath());
     creator->setLength(param.getLength());
     if (param.getContainsStreams())
         creator->setStreams(param.getStreams());
