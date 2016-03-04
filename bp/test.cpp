@@ -3,54 +3,61 @@
 
 using namespace std;
 
-int Test::id() const
+Test::Test() : id(0), fileId(0), userId(0), timeOfAdd(0), testTable("")
+{}
+
+Test::Test(const Test &t) : id(t.getId()), fileId(t.getFileId()), userId(t.getUserId()),
+    timeOfAdd(t.getTimeOfAdd()), testTable(t.getTestTable())
+{}
+
+int Test::getId() const
 {
-    return _id;
+    return id;
 }
 
-void Test::setId(int id)
+void Test::setId(int value)
 {
-    _id = id;
+    id = value;
 }
 
-int Test::idFile() const
+int Test::getFileId() const
 {
-    return _idFile;
+    return fileId;
 }
 
-void Test::setIdFile(int idFile)
+void Test::setFileId(int value)
 {
-    _idFile = idFile;
+    fileId = value;
 }
 
-int Test::idUser() const
+int Test::getUserId() const
 {
-    return _idUser;
+    return userId;
 }
 
-void Test::setIdUser(int idUser)
+void Test::setUserId(int value)
 {
-    _idUser = idUser;
+    userId = value;
 }
 
-time_t Test::timeOfAdd() const
+time_t Test::getTimeOfAdd() const
 {
-    return _timeOfAdd;
+    return timeOfAdd;
 }
 
-void Test::setTimeOfAdd(const time_t &timeOfAdd)
+void Test::setTimeOfAdd(const time_t &value)
 {
-    _timeOfAdd = timeOfAdd;
+    timeOfAdd = value;
 }
 
-std::string Test::testTable() const
+std::string Test::getTestTable() const
 {
-    return _testTable;
+    return testTable;
 }
 
-void Test::setTestTable(const std::string &testTable)
+void Test::setTestTable(const std::string &value)
 {
-    _testTable = testTable;
+    testTable = value;
 }
 
 Test& Test::operator =(Test other)
@@ -61,24 +68,16 @@ Test& Test::operator =(Test other)
 
 ostream& operator <<(ostream &out, const Test &t)
 {
-    out << "[" << t.id() << ", " << t.idFile() << ", " << t.idUser() << ", " << t.timeOfAdd() << ", " << t.testTable() << "]";
+    out << "[" << t.id << ", " << t.fileId << ", " << t.userId << ", " << t.timeOfAdd << ", " << t.testTable << "]";
     return out;
 }
 
 void Test::swap(Test &t)
 {
     using std::swap;
-    swap(_id, t._id);
-    swap(_idFile, t._idFile);
-    swap(_idUser, t._idUser);
-    swap(_timeOfAdd, t._timeOfAdd);
-    swap(_testTable, t._testTable);
+    swap(id, t.id);
+    swap(fileId, t.fileId);
+    swap(userId, t.userId);
+    swap(timeOfAdd, t.timeOfAdd);
+    swap(testTable, t.testTable);
 }
-
-Test::Test() : _id(0), _idFile(0), _idUser(0), _timeOfAdd(0), _testTable("")
-{}
-
-Test::Test(const Test &t) : _id(t.id()), _idFile(t.idFile()), _idUser(t.idUser()),
-    _timeOfAdd(t.timeOfAdd()), _testTable(t.testTable())
-{}
-

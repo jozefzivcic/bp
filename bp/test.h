@@ -9,25 +9,31 @@
 class Test
 {
 private:
-    int _id;
-    int _idFile;
-    int _idUser;
-    time_t _timeOfAdd;
-    std::string _testTable;
+    int id;
+    int fileId;
+    int userId;
+    time_t timeOfAdd;
+    std::string testTable;
 public:
     Test();
     Test(const Test& t);
+
     /* ---- Getters and setters ---- */
-    int id() const;
-    void setId(int id);
-    int idFile() const;
-    void setIdFile(int idFile);
-    int idUser() const;
-    void setIdUser(int idUser);
-    time_t timeOfAdd() const;
-    void setTimeOfAdd(const time_t &timeOfAdd);
-    std::string testTable() const;
-    void setTestTable(const std::string &testTable);
+    int getId() const;
+    void setId(int value);
+
+    int getFileId() const;
+    void setFileId(int value);
+
+    int getUserId() const;
+    void setUserId(int value);
+
+    time_t getTimeOfAdd() const;
+    void setTimeOfAdd(const time_t &value);
+
+    std::string getTestTable() const;
+    void setTestTable(const std::string &value);
+
     Test& operator =(Test other);
     friend std::ostream& operator <<(std::ostream& out, const Test& t);
 private:

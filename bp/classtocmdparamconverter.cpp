@@ -22,22 +22,22 @@ ClassToCmdParamConverter::~ClassToCmdParamConverter()
 
 bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary, Test t)
 {
-    if (t.testTable() != storage->getNist())
+    if (t.getTestTable() != storage->getNist())
         return false;
     NistTestParameter param;
-    if (!nistManager->getParameterById(t.id(),param))
+    if (!nistManager->getParameterById(t.getId(),param))
         return false;
     return convertNistTestToArray(ptr, binary, t, param);
 }
 
 bool ClassToCmdParamConverter::convertNistTestToArray(char ***ptr, string binary, Test t, NistTestParameter param)
 {
-    if (t.testTable() != storage->getNist())
+    if (t.getTestTable() != storage->getNist())
         return false;
     creator->resetParams();
     creator->setBinary(binary);
     File f;
-    if (!fileManager->getFileById(t.idFile(), &f))
+    if (!fileManager->getFileById(t.getFileId(), &f))
         return false;
     creator->setFile(f.fileSystemPath());
     creator->setLength(param.getLength());

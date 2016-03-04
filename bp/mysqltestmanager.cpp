@@ -38,8 +38,8 @@ bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
         while(res->next()) {
             Test t;
             t.setId(res->getInt("id"));
-            t.setIdFile(res->getInt("id_file"));
-            t.setIdUser(res->getInt("id_user"));
+            t.setFileId(res->getInt("id_file"));
+            t.setUserId(res->getInt("id_user"));
             t.setTimeOfAdd(res->getInt("time"));
             t.setTestTable(res->getString("test_table"));
             l.push_back(t);
@@ -65,8 +65,8 @@ bool MySqlTestManager::getTestsNotFinished(std::list<Test> &t)
         while(res->next()) {
             Test t;
             t.setId(res->getInt("id"));
-            t.setIdFile(res->getInt("id_file"));
-            t.setIdUser(res->getInt("id_user"));
+            t.setFileId(res->getInt("id_file"));
+            t.setUserId(res->getInt("id_user"));
             t.setTimeOfAdd(res->getInt("time"));
             t.setTestTable(res->getString("test_table"));
             l.push_back(t);
@@ -106,7 +106,7 @@ bool MySqlTestManager::setTestHasFinished(Test t)
     try {
         preparedStmt = _con->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?;");
         preparedStmt->setInt(1,1);
-        preparedStmt->setInt(2,t.id());
+        preparedStmt->setInt(2,t.getId());
         int count = preparedStmt->executeUpdate();
         if (preparedStmt != nullptr)
             delete preparedStmt;
@@ -125,7 +125,7 @@ bool MySqlTestManager::setTestAsLoaded(const Test &t)
     try {
         preparedStmt = _con->prepareStatement("UPDATE tests SET loaded = ? WHERE id = ? AND loaded = ?;");
         preparedStmt->setInt(1,1);
-        preparedStmt->setInt(2,t.id());
+        preparedStmt->setInt(2,t.getId());
         preparedStmt->setInt(3,0);
         int count = preparedStmt->executeUpdate();
         if (preparedStmt != nullptr)

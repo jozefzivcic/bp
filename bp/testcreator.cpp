@@ -31,7 +31,7 @@ TestCreator::~TestCreator()
 
 bool TestCreator::createTest(Test t)
 {
-    if (t.testTable() == storage->getNist())
+    if (t.getTestTable() == storage->getNist())
         return createNistTest(t);
     return false;
 }
@@ -39,7 +39,7 @@ bool TestCreator::createTest(Test t)
 bool TestCreator::createNistTest(Test t)
 {
     NistTestParameter nistParam;
-    if (!nistManager->getParameterById(t.id(), nistParam))
+    if (!nistManager->getParameterById(t.getId(), nistParam))
         return false;
 
     string bin = "./assess";
@@ -70,11 +70,11 @@ bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
 {
     pid_t returnedPid = waitpid(pid, NULL, 0);
     converter->deleteAllocatedArray(&arguments);
-    if (!fileHandler->checkAndCreateUserTree(storage->getPathToUsersDirFromPool(),t.idUser()))
+    if (!fileHandler->checkAndCreateUserTree(storage->getPathToUsersDirFromPool(),t.getUserId()))
         return false;
     string source = fileHandler->createPathToNistResult(param.getTestNumber());
     string destination = fileHandler->createPathToStoreTest(storage->getPathToUsersDirFromPool(),
-                                                            t.idUser(),t.id());
+                                                            t.getUserId(),t.getId());
     if (!fileHandler->checkIfDirectoryExists(destination))
         if (!fileHandler->createDirectory(destination))
             return false;
