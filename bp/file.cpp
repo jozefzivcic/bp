@@ -17,22 +17,22 @@ File &File::operator =(File other)
     return *this;
 }
 
-int File::getId() const
+long File::getId() const
 {
     return id;
 }
 
-void File::setId(int value)
+void File::setId(long value)
 {
     id = value;
 }
 
-int File::getUserId() const
+long File::getUserId() const
 {
     return userId;
 }
 
-void File::setUserId(int value)
+void File::setUserId(long value)
 {
     userId = value;
 }

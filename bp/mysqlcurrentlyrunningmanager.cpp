@@ -38,7 +38,7 @@ bool MySqlCurrentlyRunningManager::insertTest(Test t)
     PreparedStatement* preparedStmt = nullptr;
     try {
         preparedStmt = connecion->prepareStatement("INSERT INTO currently_running (id_test) VALUES (?);");
-        preparedStmt->setInt(1,t.getId());
+        preparedStmt->setInt64(1,t.getId());
         preparedStmt->execute();
         if (preparedStmt != nullptr)
             delete preparedStmt;
@@ -56,7 +56,7 @@ bool MySqlCurrentlyRunningManager::removeTest(Test t)
     PreparedStatement* preparedStmt = nullptr;
     try {
         preparedStmt = connecion->prepareStatement("DELETE FROM currently_running WHERE id_test = ?;");
-        preparedStmt->setInt(1,t.getId());
+        preparedStmt->setInt64(1,t.getId());
         preparedStmt->execute();
         if (preparedStmt != nullptr)
             delete preparedStmt;

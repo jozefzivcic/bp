@@ -24,18 +24,18 @@ MySqlFileManager::MySqlFileManager(const ConfigStorage *storage) {
     connecion->setSchema(storage->getSchema());
 }
 
-bool MySqlFileManager::getFileById(int id, File *file) {
+bool MySqlFileManager::getFileById(long id, File *file) {
     PreparedStatement* preparedStmt = nullptr;
     ResultSet *res = nullptr;
     File tempFile;
     try {
         preparedStmt = connecion->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ?;");
-        preparedStmt->setInt(1,id);
+        preparedStmt->setInt64(1,id);
         res = preparedStmt->executeQuery();
         int i = 0;
         while (res->next()) {
-            tempFile.setId(res->getInt("id"));
-            tempFile.setUserId(res->getInt("id_user"));
+            tempFile.setId(res->getInt64("id"));
+            tempFile.setUserId(res->getInt64("id_user"));
             tempFile.setHash(res->getString("hash"));
             tempFile.setName(res->getString("name"));
             tempFile.setFileSystemPath(res->getString("file_system_path"));

@@ -19,7 +19,7 @@ private:
     ILogger* logger = nullptr;
 public:
     MySqlFileManager(const ConfigStorage* storage);
-    bool getFileById(int id, File* file) override;
+    bool getFileById(long id, File* file) override;
     ~MySqlFileManager();
 private:
 

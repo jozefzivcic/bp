@@ -6,8 +6,8 @@
  * @brief The File class represents file record from database.
  */
 class File {
-    int id;
-    int userId;
+    long id;
+    long userId;
     std::string hash;
     std::string name;
     std::string fileSystemPath;
@@ -16,11 +16,11 @@ public:
     File(const File&);
     File& operator =(File other);
     /* Getters and setters */
-    int getId() const;
-    void setId(int value);
+    long getId() const;
+    void setId(long value);
 
-    int getUserId() const;
-    void setUserId(int value);
+    long getUserId() const;
+    void setUserId(long value);
 
     std::string getHash() const;
     void setHash(const std::string &value);

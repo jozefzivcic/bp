@@ -33,7 +33,7 @@ bool MySqlResultsManager::storePathForTest(Test t, string path)
     PreparedStatement* preparedStmt = nullptr;
     try {
         preparedStmt = connection->prepareStatement("INSERT INTO results (id_test, directory) VALUES (?,?);");
-        preparedStmt->setInt(1,t.getId());
+        preparedStmt->setInt64(1,t.getId());
         preparedStmt->setString(2, path);
         preparedStmt->execute();
         if (preparedStmt != nullptr)

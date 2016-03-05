@@ -34,16 +34,16 @@ bool MySqlNistTestsManager::getParameterById(long id, NistTestParameter &param)
     ResultSet *res = nullptr;
     try {
         preparedStmt = connection->prepareStatement("SELECT id_test, length, test_number, streams, special_parameter FROM nist_tests WHERE id_test=?;");
-        preparedStmt->setInt(1, id);
+        preparedStmt->setInt64(1, id);
         res = preparedStmt->executeQuery();
         int i = 0, testNumber;
-        int testId, length, streams, specialParameter;
+        long testId, length, streams, specialParameter;
         while (res->next()) {
-            testId = res->getInt("id_test");
-            length = res->getInt("length");
+            testId = res->getInt64("id_test");
+            length = res->getInt64("length");
             testNumber = res->getInt("test_number");
-            streams = res->getInt("streams");
-            specialParameter = res->getInt("special_parameter");
+            streams = res->getInt64("streams");
+            specialParameter = res->getInt64("special_parameter");
             i++;
         }
         if (i == 1) {

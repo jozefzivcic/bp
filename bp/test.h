@@ -9,9 +9,9 @@
 class Test
 {
 private:
-    int id;
-    int fileId;
-    int userId;
+    long id;
+    long fileId;
+    long userId;
     time_t timeOfAdd;
     std::string testTable;
 public:
@@ -19,14 +19,14 @@ public:
     Test(const Test& t);
 
     /* ---- Getters and setters ---- */
-    int getId() const;
-    void setId(int value);
+    long getId() const;
+    void setId(long value);
 
-    int getFileId() const;
-    void setFileId(int value);
+    long getFileId() const;
+    void setFileId(long value);
 
-    int getUserId() const;
-    void setUserId(int value);
+    long getUserId() const;
+    void setUserId(long value);
 
     time_t getTimeOfAdd() const;
     void setTimeOfAdd(const time_t &value);

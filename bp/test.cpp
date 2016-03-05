@@ -10,32 +10,32 @@ Test::Test(const Test &t) : id(t.getId()), fileId(t.getFileId()), userId(t.getUs
     timeOfAdd(t.getTimeOfAdd()), testTable(t.getTestTable())
 {}
 
-int Test::getId() const
+long Test::getId() const
 {
     return id;
 }
 
-void Test::setId(int value)
+void Test::setId(long value)
 {
     id = value;
 }
 
-int Test::getFileId() const
+long Test::getFileId() const
 {
     return fileId;
 }
 
-void Test::setFileId(int value)
+void Test::setFileId(long value)
 {
     fileId = value;
 }
 
-int Test::getUserId() const
+long Test::getUserId() const
 {
     return userId;
 }
 
-void Test::setUserId(int value)
+void Test::setUserId(long value)
 {
     userId = value;
 }

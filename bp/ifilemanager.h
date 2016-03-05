@@ -16,7 +16,7 @@ public:
      * @param file File which will be set according to data in database.
      * @return true is everything goes normally else false.
      */
-    virtual bool getFileById(int id, File* file) = 0;
+    virtual bool getFileById(long id, File* file) = 0;
 
     /**
      * @brief ~IFileManager Virtual destructor.
