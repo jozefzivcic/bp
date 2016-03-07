@@ -98,8 +98,8 @@ void threadFunction(TestHandler* handler, int i)
     string bin = fileHandler->createFSPath(true, l);
     unshare(CLONE_FS);
     chdir(bin.c_str());
+    handler->thHandler->setThreadAtPositionIsReady(i);
     while(!(handler->thHandler)->shouldThreadStopped()) {
-        logger->logInfo("thread " + to_string(i) + " is waiting for job");
         handler->vars[i].wait(lck);
         if (handler->thHandler->shouldThreadStopped())
             break;

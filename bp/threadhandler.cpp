@@ -7,7 +7,7 @@ ThreadHandler::ThreadHandler(int n) : maxNumberOfTests(n), endThreads(false)
     tests = new Test[n];
     isThreadReady = new bool[n];
     for (int i = 0; i < n; i++) {
-        isThreadReady[i] = true;
+        isThreadReady[i] = false;
     }
     endThreads = false;
 }
