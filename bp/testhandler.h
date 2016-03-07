@@ -10,7 +10,6 @@
 #include "configstorage.h"
 #include "icurrentlyrunningmanager.h"
 #include "ilogger.h"
-
 class TestHandler;
 
 /**
@@ -36,6 +35,8 @@ private:
     const ConfigStorage* storage;
     ICurrentlyRunningManager* crManager = nullptr;
     ILogger* log = nullptr;
+    std::mutex threadStartMutex;
+    std::condition_variable threadStart;
 public:
     friend void threadFunction(TestHandler* handler, int i);
 

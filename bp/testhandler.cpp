@@ -58,6 +58,10 @@ bool TestHandler::createTest(Test t)
     crManager->insertTest(t);
     log->logInfo("testHandler::createTest - sending message to thread" + to_string(t.getId()));
     vars[index].notify_one();
+    std::unique_lock<std::mutex> threadStartUnique(threadStartMutex);
+    if (threadStart.wait_for(threadStartUnique, std::chrono::seconds(1)) == cv_status::timeout) {
+        return false;
+    }
     return true;
 }
 
@@ -101,6 +105,7 @@ void threadFunction(TestHandler* handler, int i)
     handler->thHandler->setThreadAtPositionIsReady(i);
     while(!(handler->thHandler)->shouldThreadStopped()) {
         handler->vars[i].wait(lck);
+        handler->threadStart.notify_one();
         if (handler->thHandler->shouldThreadStopped())
             break;
         Test myTest;
