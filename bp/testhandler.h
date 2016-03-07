@@ -9,6 +9,7 @@
 #include "threadhandler.h"
 #include "configstorage.h"
 #include "icurrentlyrunningmanager.h"
+#include "ilogger.h"
 
 class TestHandler;
 
@@ -34,6 +35,7 @@ private:
     ThreadHandler* thHandler = nullptr;
     const ConfigStorage* storage;
     ICurrentlyRunningManager* crManager = nullptr;
+    ILogger* log = nullptr;
 public:
     friend void threadFunction(TestHandler* handler, int i);
 

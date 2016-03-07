@@ -6,6 +6,7 @@
 #include "mysqltestmanager.h"
 #include "ifilestructurehandler.h"
 #include "linuxfilestructurehandler.h"
+#include "logger.h"
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sched.h>
@@ -19,6 +20,7 @@ TestHandler::TestHandler(int num, const ConfigStorage *stor):
     vars = new condition_variable[num];
     thHandler = new ThreadHandler(num);
     crManager = new MySqlCurrentlyRunningManager(stor);
+    log = new Logger();
     for(int i = 0; i < num; i++) {
         threads.push_back(thread(threadFunction, this, i));
     }
@@ -39,6 +41,8 @@ TestHandler::~TestHandler()
         delete crManager;
     if (thHandler != nullptr)
         delete thHandler;
+    if (log != nullptr)
+        delete log;
 }
 
 bool TestHandler::createTest(Test t)
@@ -49,9 +53,10 @@ bool TestHandler::createTest(Test t)
     if (index == -1)
        return false;
     addOneTest();
-    thHandler->setTestAtPosition(index,t);
+    thHandler->setTestAtPosition(index, t);
     thHandler->setThreadAtPositionIsBusy(index);
     crManager->insertTest(t);
+    log->logInfo("testHandler::createTest - sending message to thread" + to_string(t.getId()));
     vars[index].notify_one();
     return true;
 }
@@ -86,6 +91,7 @@ void threadFunction(TestHandler* handler, int i)
     ITestManager* testManager = new MySqlTestManager(handler->storage);
     ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->storage);
     IFileStructureHandler* fileHandler = new LinuxFileStructureHandler(handler->storage);
+    ILogger* logger = new Logger();
     list<string> l;
     l.push_back(handler->storage->getPathToTestsPool());
     l.push_back(to_string(i));
@@ -93,12 +99,15 @@ void threadFunction(TestHandler* handler, int i)
     unshare(CLONE_FS);
     chdir(bin.c_str());
     while(!(handler->thHandler)->shouldThreadStopped()) {
+        logger->logInfo("thread " + to_string(i) + " is waiting for job");
         handler->vars[i].wait(lck);
         if (handler->thHandler->shouldThreadStopped())
             break;
         Test myTest;
         handler->thHandler->getTestAtPosition(i, myTest);
+        logger->logInfo("test " + to_string(myTest.getId()) + " started in thread " + to_string(i));
         testCreator->createTest(myTest);
+        logger->logInfo("test " + to_string(myTest.getId()) + " finished in thread " + to_string(i));
         testManager->setTestHasFinished(myTest);
         crManager->removeTest(myTest);
         handler->subtractOneTest();
@@ -108,4 +117,5 @@ void threadFunction(TestHandler* handler, int i)
     delete testCreator;
     delete testManager;
     delete crManager;
+    delete logger;
 }
