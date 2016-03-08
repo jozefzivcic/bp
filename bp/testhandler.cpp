@@ -56,13 +56,16 @@ bool TestHandler::createTest(Test t)
     thHandler->setTestAtPosition(index, t);
     thHandler->setThreadAtPositionIsBusy(index);
     crManager->insertTest(t);
-    log->logInfo("testHandler::createTest - sending message to thread" + to_string(t.getId()));
+    log->logInfo("testHandler::createTest - sending message to thread " +
+                 to_string(index) + " for test " + to_string(t.getId()));
+    setSignal(-1);
     vars[index].notify_one();
-    std::unique_lock<std::mutex> threadStartUnique(threadStartMutex);
-    if (threadStart.wait_for(threadStartUnique, std::chrono::seconds(1)) == cv_status::timeout) {
-        return false;
+    int i = 0;
+    while(i < 10 && getSignal() == -1) {
+        this_thread::sleep_for(chrono::milliseconds(1));
+        i++;
     }
-    return true;
+    return i != 10;
 }
 
 unsigned int TestHandler::getNumberOfRunningTests()
@@ -88,6 +91,22 @@ void TestHandler::subtractOneTest()
     numberOfRunningTestsMutex.unlock();
 }
 
+void TestHandler::setSignal(int sig)
+{
+    signalFromThreadMutex.lock();
+    signalFromThread = sig;
+    signalFromThreadMutex.unlock();
+}
+
+int TestHandler::getSignal()
+{
+    int temp;
+    signalFromThreadMutex.lock();
+    temp = signalFromThread;
+    signalFromThreadMutex.unlock();
+    return temp;
+}
+
 void threadFunction(TestHandler* handler, int i)
 {
     unique_lock<mutex>lck(handler->mutexes[i]);
@@ -101,11 +120,12 @@ void threadFunction(TestHandler* handler, int i)
     l.push_back(to_string(i));
     string bin = fileHandler->createFSPath(true, l);
     unshare(CLONE_FS);
-    chdir(bin.c_str());
+    if (chdir(bin.c_str()) != 0)
+        throw runtime_error("chdir");
     handler->thHandler->setThreadAtPositionIsReady(i);
     while(!(handler->thHandler)->shouldThreadStopped()) {
         handler->vars[i].wait(lck);
-        handler->threadStart.notify_one();
+        handler->setSignal(i);
         if (handler->thHandler->shouldThreadStopped())
             break;
         Test myTest;

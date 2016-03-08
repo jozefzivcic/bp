@@ -35,8 +35,8 @@ private:
     const ConfigStorage* storage;
     ICurrentlyRunningManager* crManager = nullptr;
     ILogger* log = nullptr;
-    std::mutex threadStartMutex;
-    std::condition_variable threadStart;
+    volatile int signalFromThread;
+    std::mutex signalFromThreadMutex;
 public:
     friend void threadFunction(TestHandler* handler, int i);
 
@@ -60,6 +60,18 @@ private:
      * @brief subtractOneTest Subracts one test to number of currently running tests.
      */
     void subtractOneTest();
+
+    /**
+     * @brief setSignal Sets signal to sig.
+     * @param sig Value, that is assigned to signal.
+     */
+    void setSignal(int sig);
+
+    /**
+     * @brief getSignal Gets current signal.
+     * @return Current signal value.
+     */
+    int getSignal();
 };
 
 #endif // TESTHANDLER_H
