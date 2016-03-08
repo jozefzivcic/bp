@@ -26,7 +26,8 @@ SOURCES += main.cpp \
     classtocmdparamconverter.cpp \
     linuxfilestructurehandler.cpp \
     logger.cpp \
-    mysqlresultsmanager.cpp
+    mysqlresultsmanager.cpp \
+    mysqldbpool.cpp
 
 HEADERS += \
     ifilemanager.h \
@@ -63,5 +64,7 @@ HEADERS += \
     ilogger.h \
     logger.h \
     iresultsmanager.h \
-    mysqlresultsmanager.h
+    mysqlresultsmanager.h \
+    generaldbpool.h \
+    mysqldbpool.h
 
