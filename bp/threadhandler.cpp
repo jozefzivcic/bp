@@ -55,7 +55,7 @@ bool ThreadHandler::setThreadAtPositionIsBusy(int position)
 int ThreadHandler::getIndexOfFreeThread()
 {
     int i = 0;
-    while (!isThreadReady[i] && i < maxNumberOfTests)
+    while (i < maxNumberOfTests && !isThreadReady[i])
         i++;
     if (i != maxNumberOfTests)
         return i;
