@@ -2,7 +2,7 @@
 #define CONFIGSTORAGE_H
 #include <iostream>
 #include "configparser.h"
-
+#include "ilogger.h"
 /**
  * @brief The ConfigStorage class holds all constants from .config file.
  */
@@ -20,8 +20,12 @@ private:
     std::string pathToUsersDirFromPool;
     std::string testsResults;
     std::string nameOfApplication;
+    size_t sleepInSeconds;
+    int pooledConnections;
+    ILogger* logger = nullptr;
 public:
     ConfigStorage(ConfigParser* parser);
+    ~ConfigStorage();
     std::string getDatabase() const;
     std::string getUserName() const;
     std::string getUserPassword() const;
@@ -33,6 +37,8 @@ public:
     std::string getPathToUsersDirFromPool() const;
     std::string getTestsResults() const;
     std::string getNameOfApplication() const;
+    size_t getSleepInSeconds() const;
+    int getPooledConnections() const;
 };
 
 #endif // CONFIGSTORAGE_H

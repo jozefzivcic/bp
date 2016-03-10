@@ -1,4 +1,8 @@
 #include "configstorage.h"
+#include <stdexcept>
+#include <logger.h>
+
+using namespace std;
 
 std::string ConfigStorage::getDatabase() const
 {
@@ -55,6 +59,16 @@ std::string ConfigStorage::getNameOfApplication() const
     return nameOfApplication;
 }
 
+size_t ConfigStorage::getSleepInSeconds() const
+{
+    return sleepInSeconds;
+}
+
+int ConfigStorage::getPooledConnections() const
+{
+    return pooledConnections;
+}
+
 ConfigStorage::ConfigStorage(ConfigParser *parser):
     database(parser->getValue("DATABASE")), userName(parser->getValue("USERNAME")),
     userPassword(parser->getValue("USER_PASSWORD")), schema(parser->getValue("SCHEMA")),
@@ -64,5 +78,25 @@ ConfigStorage::ConfigStorage(ConfigParser *parser):
     pathToUsersDirFromPool(parser->getValue("PATH_TO_USERS_DIR_FROM_POOL")),
     testsResults(parser->getValue("TESTS_RESULTS")),
     nameOfApplication(parser->getValue("NAME_OF_APPLICATION"))
-{}
+{
+    logger = new Logger();
+    try {
+        sleepInSeconds = stoi(parser->getValue("SLEEP_IN_SECONDS"));
+    }catch(invalid_argument& ex) {
+        logger->logError("Wrong format of SLEEP_IN_SECONDS");
+        throw;
+    }
+    try {
+        pooledConnections = stoi(parser->getValue("POOLED_CONNECTIONS"));
+    }catch(invalid_argument& ex) {
+        logger->logError("Wrong format of POOLED_CONNECTIONS");
+        throw;
+    }
+}
+
+ConfigStorage::~ConfigStorage()
+{
+    if (logger != nullptr)
+        delete logger;
+}
 

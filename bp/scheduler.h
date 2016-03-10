@@ -47,6 +47,7 @@ private:
     IChangeStateManager* stateManager = nullptr;
     ITestHandler* testHandler = nullptr;
     MySqlDBPool* dbPool = nullptr;
+    size_t sleepInSeconds;
 public:
     Scheduler(IPriorityComparator * pri, const ConfigStorage* stor, int maxParallel);
     ~Scheduler();

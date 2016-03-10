@@ -11,10 +11,13 @@ private:
     std::string database;
     std::string user;
     std::string password;
+    std::string schema;
+    bool isSchema;
     sql::Driver* driver;
     ILogger* logger = nullptr;
 public:
     MySqlDBPool(std::string db, std::string usr, std::string passwd);
+    MySqlDBPool(std::string db, std::string usr, std::string passwd, std::string databaseSchema);
     ~MySqlDBPool();
     virtual sql::Connection* createConnection() override;
 

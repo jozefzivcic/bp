@@ -10,3 +10,5 @@
 "PATH_TO_USERS_DIR_FROM_POOL"="../../users/"
 "TESTS_RESULTS"="tests_results"
 "NAME_OF_APPLICATION"="Tests scheduler daemon"
+"SLEEP_IN_SECONDS"="1"
+"POOLED_CONNECTIONS"="1"
