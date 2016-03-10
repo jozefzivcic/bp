@@ -13,38 +13,35 @@ using namespace sql;
 
 extern mutex dbMutex;
 
-MySqlCurrentlyRunningManager::MySqlCurrentlyRunningManager(const ConfigStorage *storage)
+MySqlCurrentlyRunningManager::MySqlCurrentlyRunningManager(MySqlDBPool *pool)
 {
     logger = new Logger();
-    dbMutex.lock();
-    driver = get_driver_instance();
-    dbMutex.unlock();
-    driver->threadInit();
-    connecion = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
-    connecion->setSchema(storage->getSchema());
+    dbPool = pool;
 }
 
 MySqlCurrentlyRunningManager::~MySqlCurrentlyRunningManager()
 {
-    if (connecion != nullptr)
-        delete connecion;
     if (logger != nullptr)
         delete logger;
-    driver->threadEnd();
 }
 
 bool MySqlCurrentlyRunningManager::insertTest(Test t)
 {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     try {
-        preparedStmt = connecion->prepareStatement("INSERT INTO currently_running (id_test) VALUES (?);");
+        connection = dbPool->getConnectionFromPoolBusy();
+        preparedStmt = connection->prepareStatement("INSERT INTO currently_running (id_test) VALUES (?);");
         preparedStmt->setInt64(1,t.getId());
         preparedStmt->execute();
+        dbPool->releaseConnection(connection);
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return true;
     }catch(exception& ex) {
         logger->logError("insertTest " + string(ex.what()));
+        if (connection != nullptr)
+            dbPool->releaseConnection(connection);
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return false;
@@ -53,16 +50,21 @@ bool MySqlCurrentlyRunningManager::insertTest(Test t)
 
 bool MySqlCurrentlyRunningManager::removeTest(Test t)
 {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     try {
-        preparedStmt = connecion->prepareStatement("DELETE FROM currently_running WHERE id_test = ?;");
+        connection = dbPool->getConnectionFromPoolBusy();
+        preparedStmt = connection->prepareStatement("DELETE FROM currently_running WHERE id_test = ?;");
         preparedStmt->setInt64(1,t.getId());
         preparedStmt->execute();
+        dbPool->releaseConnection(connection);
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return true;
     }catch(exception& ex) {
         logger->logError("removeTest " + string(ex.what()));
+        if (connection != nullptr)
+            dbPool->releaseConnection(connection);
         if (preparedStmt != nullptr)
             delete preparedStmt;
         return false;

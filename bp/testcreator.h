@@ -6,6 +6,7 @@
 #include "inisttestsmanager.h"
 #include "ifilestructurehandler.h"
 #include "iresultsmanager.h"
+#include "mysqldbpool.h"
 
 /**
  * @brief The TestCreator class implements interface ITestCreator. For methods comments see the
@@ -24,8 +25,9 @@ private:
     INistTestsManager* nistManager = nullptr;
     IFileStructureHandler* fileHandler = nullptr;
     IResultsManager* resManager = nullptr;
+    MySqlDBPool* dbPool = nullptr;
 public:
-    TestCreator(const ConfigStorage* stor);
+    TestCreator(const ConfigStorage* stor, MySqlDBPool* pool);
     ~TestCreator();
     virtual bool createTest(Test t) override;
     virtual bool createNistTest(Test t) override;

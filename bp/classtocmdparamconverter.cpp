@@ -2,11 +2,12 @@
 
 using namespace std;
 
-ClassToCmdParamConverter::ClassToCmdParamConverter(const ConfigStorage *configStorage)
+ClassToCmdParamConverter::ClassToCmdParamConverter(const ConfigStorage *configStorage, MySqlDBPool *pool)
 {
+    dbPool = pool;
     creator = new NistCmdParamsCreator();
-    fileManager = new MySqlFileManager(configStorage);
-    nistManager = new MySqlNistTestsManager(configStorage);
+    fileManager = new MySqlFileManager(dbPool);
+    nistManager = new MySqlNistTestsManager(dbPool);
     storage = configStorage;
 }
 

@@ -30,6 +30,7 @@ Connection *MySqlDBPool::createConnection()
     Connection* con;
     try {
         con = driver->connect(database, user, password);
+        con->setSchema("mydb");
         return con;
     }catch(SQLException& ex) {
         logger->logError("MySqlDBPool::createConnection " + string(ex.what()));

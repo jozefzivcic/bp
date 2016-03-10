@@ -3,6 +3,7 @@
 #include "iresultsmanager.h"
 #include "ilogger.h"
 #include "configstorage.h"
+#include "mysqldbpool.h"
 #include <mysql_connection.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
@@ -14,11 +15,10 @@
 class MySqlResultsManager : public IResultsManager
 {
 private:
-    sql::Driver *driver;
-    sql::Connection* connection = nullptr;
     ILogger* logger = nullptr;
+    MySqlDBPool* dbPool = nullptr;
 public:
-    MySqlResultsManager(const ConfigStorage* storage);
+    MySqlResultsManager(MySqlDBPool* pool);
     ~MySqlResultsManager();
     virtual bool storePathForTest(Test t, std::string path) override;
 };

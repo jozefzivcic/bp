@@ -13,13 +13,14 @@
 #include <cppconn/driver.h>
 using namespace std;
 
-TestHandler::TestHandler(int num, const ConfigStorage *stor):
+TestHandler::TestHandler(int num, const ConfigStorage *stor, MySqlDBPool *pool):
     maxNumberOfTests(num), numberOfRunningTests(0), storage(stor)
 {
+    dbPool = pool;
     mutexes = new mutex[num];
     vars = new condition_variable[num];
     thHandler = new ThreadHandler(num);
-    crManager = new MySqlCurrentlyRunningManager(stor);
+    crManager = new MySqlCurrentlyRunningManager(pool);
     log = new Logger();
     for(int i = 0; i < num; i++) {
         threads.push_back(thread(threadFunction, this, i));
@@ -110,9 +111,9 @@ int TestHandler::getSignal()
 void threadFunction(TestHandler* handler, int i)
 {
     unique_lock<mutex>lck(handler->mutexes[i]);
-    ITestCreator* testCreator = new TestCreator(handler->storage);
-    ITestManager* testManager = new MySqlTestManager(handler->storage);
-    ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->storage);
+    ITestCreator* testCreator = new TestCreator(handler->storage, handler->dbPool);
+    ITestManager* testManager = new MySqlTestManager(handler->dbPool);
+    ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->dbPool);
     IFileStructureHandler* fileHandler = new LinuxFileStructureHandler(handler->storage);
     ILogger* logger = new Logger();
     list<string> l;

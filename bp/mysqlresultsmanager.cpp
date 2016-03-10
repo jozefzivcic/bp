@@ -8,41 +8,38 @@ using namespace sql;
 
 extern mutex dbMutex;
 
-MySqlResultsManager::MySqlResultsManager(const ConfigStorage *storage)
+MySqlResultsManager::MySqlResultsManager(MySqlDBPool *pool)
 {
     logger = new Logger();
-    dbMutex.lock();
-    driver = get_driver_instance();
-    dbMutex.unlock();
-    driver->threadInit();
-    connection = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
-    connection->setSchema(storage->getSchema());
+    dbPool = pool;
 }
 
 MySqlResultsManager::~MySqlResultsManager()
 {
-    if (connection != nullptr)
-        delete connection;
     if (logger != nullptr)
         delete logger;
-    driver->threadEnd();
 }
 
 bool MySqlResultsManager::storePathForTest(Test t, string path)
 {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     try {
+        connection = dbPool->getConnectionFromPoolBusy();
         preparedStmt = connection->prepareStatement("INSERT INTO results (id_test, directory) VALUES (?,?);");
         preparedStmt->setInt64(1,t.getId());
         preparedStmt->setString(2, path);
         preparedStmt->execute();
         if (preparedStmt != nullptr)
             delete preparedStmt;
+        dbPool->releaseConnection(connection);
         return true;
     }catch(exception& ex) {
         logger->logError("storePathForTest " + string(ex.what()));
         if (preparedStmt != nullptr)
             delete preparedStmt;
+        if (connection != nullptr)
+            dbPool->releaseConnection(connection);
         return false;
     }
 }

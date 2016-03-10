@@ -8,31 +8,25 @@ using namespace sql;
 
 extern mutex dbMutex;
 
-MySqlNistTestsManager::MySqlNistTestsManager(const ConfigStorage *storage)
+MySqlNistTestsManager::MySqlNistTestsManager(MySqlDBPool *pool)
 {
     logger = new Logger();
-    dbMutex.lock();
-    driver = get_driver_instance();
-    dbMutex.unlock();
-    driver->threadInit();
-    connection = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
-    connection->setSchema(storage->getSchema());
+    dbPool = pool;
 }
 
 MySqlNistTestsManager::~MySqlNistTestsManager()
 {
-    if (connection != nullptr)
-        delete connection;
     if (logger != nullptr)
         delete logger;
-    driver->threadEnd();
 }
 
 bool MySqlNistTestsManager::getParameterById(long id, NistTestParameter &param)
 {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     ResultSet *res = nullptr;
     try {
+        connection = dbPool->getConnectionFromPoolBusy();
         preparedStmt = connection->prepareStatement("SELECT id_test, length, test_number, streams, special_parameter FROM nist_tests WHERE id_test=?;");
         preparedStmt->setInt64(1, id);
         res = preparedStmt->executeQuery();
@@ -54,17 +48,19 @@ bool MySqlNistTestsManager::getParameterById(long id, NistTestParameter &param)
                 p.setSpecialParameter(specialParameter);
             param = p;
         }
-        deleteStatementAndResSet(preparedStmt,res);
+        freeResources(connection, preparedStmt, res);
         return (i == 1) ? true : false;
     }catch(exception& ex) {
         logger->logError("getParameterById " + string(ex.what()));
-        deleteStatementAndResSet(preparedStmt,res);
+        freeResources(connection, preparedStmt, res);
         return false;
     }
 }
 
-void MySqlNistTestsManager::deleteStatementAndResSet(PreparedStatement* p, ResultSet* r)
+void MySqlNistTestsManager::freeResources(Connection* con, PreparedStatement* p, ResultSet* r)
 {
+    if (con != nullptr)
+        dbPool->releaseConnection(con);
     if (p != nullptr)
         delete p;
     if (r != nullptr)

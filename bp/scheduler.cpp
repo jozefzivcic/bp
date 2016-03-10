@@ -12,9 +12,11 @@ extern bool endProgram;
 Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor, int maxParallel)
     : queue(pri), state(-1), storage(stor), maxTestsRunningParallel(maxParallel)
 {
-    testManager = new MySqlTestManager(stor);
-    stateManager = new MySqlChangeStateManager(stor);
-    testHandler = new TestHandler(maxParallel, stor);
+    dbPool = new MySqlDBPool(stor->getDatabase(), stor->getUserName(), stor->getUserPassword());
+    dbPool->createPool(10);
+    testManager = new MySqlTestManager(dbPool);
+    stateManager = new MySqlChangeStateManager(dbPool);
+    testHandler = new TestHandler(maxParallel, stor, dbPool);
 }
 
 Scheduler::~Scheduler()
@@ -25,6 +27,10 @@ Scheduler::~Scheduler()
         delete stateManager;
     if (testHandler != nullptr)
         delete testHandler;
+    if (dbPool != nullptr) {
+        dbPool->destroyPool();
+        delete dbPool;
+    }
 }
 
 bool Scheduler::getTestForRunning(Test &t)

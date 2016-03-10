@@ -4,6 +4,7 @@
 #include "mysql_connection.h"
 #include "configstorage.h"
 #include "ilogger.h"
+#include "mysqldbpool.h"
 #include <cppconn/driver.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
@@ -15,11 +16,10 @@
 class MySqlCurrentlyRunningManager : public ICurrentlyRunningManager
 {
 private:
-    sql::Driver *driver;
-    sql::Connection* connecion = nullptr;
     ILogger* logger = nullptr;
+    MySqlDBPool* dbPool = nullptr;
 public:
-    MySqlCurrentlyRunningManager(const ConfigStorage* storage);
+    MySqlCurrentlyRunningManager(MySqlDBPool* pool);
     ~MySqlCurrentlyRunningManager();
     bool insertTest(Test t) override;
     bool removeTest(Test t) override;

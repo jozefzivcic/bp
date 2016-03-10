@@ -8,32 +8,26 @@ using namespace sql;
 
 extern mutex dbMutex;
 
-MySqlTestManager::MySqlTestManager(const ConfigStorage *storage)
+MySqlTestManager::MySqlTestManager(MySqlDBPool *pool)
 {
     logger = new Logger();
-    dbMutex.lock();
-    driver = get_driver_instance();
-    dbMutex.unlock();
-    driver->threadInit();
-    connecion = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
-    connecion->setSchema(storage->getSchema());
+    dbPool = pool;
 }
 MySqlTestManager::~MySqlTestManager()
 {
-    if (connecion != nullptr)
-        delete connecion;
     if (logger != nullptr)
         delete logger;
-    driver->threadEnd();
 }
 
 bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
 {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     ResultSet* res = nullptr;
     list<Test> l;
     try{
-        preparedStmt = connecion->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 0;");
+        connection = dbPool->getConnectionFromPoolBusy();
+        preparedStmt = connection->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 0;");
         res = preparedStmt->executeQuery();
         while(res->next()) {
             Test t;
@@ -44,23 +38,25 @@ bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
             t.setTestTable(res->getString("test_table"));
             l.push_back(t);
         }
-        deleteStatementAndResSet(preparedStmt,res);
+        freeResources(connection, preparedStmt, res);
         t.insert(t.end(), l.begin(), l.end());
         return true;
     }catch(exception& ex) {
         logger->logError("getAllTestsReadyForRunning " + string(ex.what()));
-        deleteStatementAndResSet(preparedStmt,res);
+        freeResources(connection, preparedStmt, res);
         return false;
     }
 }
 
 bool MySqlTestManager::getTestsNotFinished(std::list<Test> &t)
 {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     ResultSet* res = nullptr;
     list<Test> l;
     try{
-        preparedStmt = connecion->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 1 AND ended = 0;");
+        connection = dbPool->getConnectionFromPoolBusy();
+        preparedStmt = connection->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 1 AND ended = 0;");
         res = preparedStmt->executeQuery();
         while(res->next()) {
             Test t;
@@ -71,12 +67,12 @@ bool MySqlTestManager::getTestsNotFinished(std::list<Test> &t)
             t.setTestTable(res->getString("test_table"));
             l.push_back(t);
         }
-        deleteStatementAndResSet(preparedStmt,res);
+        freeResources(connection, preparedStmt, res);
         t.insert(t.end(), l.begin(), l.end());
         return true;
     }catch(exception& ex) {
         logger->logError("getTestsNotFinished " + string(ex.what()));
-        deleteStatementAndResSet(preparedStmt,res);
+        freeResources(connection, preparedStmt, res);
         return false;
     }
 }
@@ -102,45 +98,57 @@ bool MySqlTestManager::setTestHasStarted(Test t)
 */
 bool MySqlTestManager::setTestHasFinished(Test t)
 {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     try {
-        preparedStmt = connecion->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?;");
+        connection = dbPool->getConnectionFromPoolBusy();
+        preparedStmt = connection->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?;");
         preparedStmt->setInt(1,1);
         preparedStmt->setInt64(2,t.getId());
         int count = preparedStmt->executeUpdate();
         if (preparedStmt != nullptr)
             delete preparedStmt;
+        dbPool->releaseConnection(connection);
         return count == 1 ? true : false;
     }catch(exception& ex) {
         logger->logError("setTestHasFinished " + string(ex.what()));
         if (preparedStmt != nullptr)
             delete preparedStmt;
+        if (connection != nullptr)
+            dbPool->releaseConnection(connection);
         return false;
     }
 }
 
 bool MySqlTestManager::setTestAsLoaded(const Test &t)
 {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     try {
-        preparedStmt = connecion->prepareStatement("UPDATE tests SET loaded = ? WHERE id = ? AND loaded = ?;");
+        connection = dbPool->getConnectionFromPoolBusy();
+        preparedStmt = connection->prepareStatement("UPDATE tests SET loaded = ? WHERE id = ? AND loaded = ?;");
         preparedStmt->setInt(1,1);
         preparedStmt->setInt(2,t.getId());
         preparedStmt->setInt(3,0);
         int count = preparedStmt->executeUpdate();
         if (preparedStmt != nullptr)
             delete preparedStmt;
+        dbPool->releaseConnection(connection);
         return count == 1 ? true : false;
     }catch(exception& ex) {
         logger->logError("setTestAsLoaded " + string(ex.what()));
         if (preparedStmt != nullptr)
             delete preparedStmt;
+        if (connection != nullptr)
+            dbPool->releaseConnection(connection);
         return false;
     }
 }
 
-void MySqlTestManager::deleteStatementAndResSet(PreparedStatement* p, ResultSet* r)
+void MySqlTestManager::freeResources(Connection* con, PreparedStatement* p, ResultSet* r)
 {
+    if (con != nullptr)
+        dbPool->releaseConnection(con);
     if (p != nullptr)
         delete p;
     if (r != nullptr)

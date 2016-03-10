@@ -17,7 +17,7 @@ void interruptHandler(int sig)
 }
 
 int main(void) {
-    signal(SIGINT,interruptHandler);
+    signal(SIGINT, interruptHandler);
     ILogger* logger = new Logger();
     try {
         MainClass mainClass;

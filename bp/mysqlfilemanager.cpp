@@ -14,22 +14,19 @@ using namespace sql;
 
 extern mutex dbMutex;
 
-MySqlFileManager::MySqlFileManager(const ConfigStorage *storage) {
+MySqlFileManager::MySqlFileManager(MySqlDBPool *pool) {
     logger = new Logger();
-    dbMutex.lock();
-    driver = get_driver_instance();
-    dbMutex.unlock();
-    driver->threadInit();
-    connecion = driver->connect(storage->getDatabase(), storage->getUserName(), storage->getUserPassword());
-    connecion->setSchema(storage->getSchema());
+    dbPool = pool;
 }
 
 bool MySqlFileManager::getFileById(long id, File *file) {
+    Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     ResultSet *res = nullptr;
     File tempFile;
     try {
-        preparedStmt = connecion->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ?;");
+        connection = dbPool->getConnectionFromPoolBusy();
+        preparedStmt = connection->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ?;");
         preparedStmt->setInt64(1,id);
         res = preparedStmt->executeQuery();
         int i = 0;
@@ -43,25 +40,24 @@ bool MySqlFileManager::getFileById(long id, File *file) {
         }
         if (i == 1)
             file->setFile(tempFile);
-        deleteStatementAndResSet(preparedStmt,res);
+        freeResources(connection, preparedStmt,res);
         return (i == 1) ? true : false;
     }catch(exception& ex) {
         logger->logError("getFileById " + string(ex.what()));
-        deleteStatementAndResSet(preparedStmt,res);
+        freeResources(connection, preparedStmt,res);
         return false;
     }
 }
 
 MySqlFileManager::~MySqlFileManager() {
-    if (connecion != nullptr)
-        delete connecion;
     if (logger != nullptr)
         delete logger;
-    driver->threadEnd();
 }
 
-void MySqlFileManager::deleteStatementAndResSet(PreparedStatement* p, ResultSet* r)
+void MySqlFileManager::freeResources(Connection* con, PreparedStatement* p, ResultSet* r)
 {
+    if (con != nullptr)
+        dbPool->releaseConnection(con);
     if (p != nullptr)
         delete p;
     if (r != nullptr)

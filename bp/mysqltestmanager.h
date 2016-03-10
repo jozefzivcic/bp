@@ -5,6 +5,7 @@
 #include "mysql_connection.h"
 #include "configstorage.h"
 #include "ilogger.h"
+#include "mysqldbpool.h"
 #include <cppconn/driver.h>
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
@@ -16,11 +17,10 @@
 class MySqlTestManager : public ITestManager
 {
 private:
-    sql::Driver *driver;
-    sql::Connection* connecion = nullptr;
     ILogger* logger = nullptr;
+    MySqlDBPool* dbPool = nullptr;
 public:
-    MySqlTestManager(const ConfigStorage* storage);
+    MySqlTestManager(MySqlDBPool* pool);
     ~MySqlTestManager();
     virtual bool getAllTestsReadyForRunning(std::list<Test>& t) override;
     virtual bool getTestsNotFinished(std::list<Test>& t) override;
@@ -30,12 +30,13 @@ public:
 private:
 
     /**
-     * @brief deleteStatementAndResSet If PreparedStatement or ResultSet is not nullptr,
-     * then frees them.
+     * @brief freeResources If con is not nullptr, then this method returns it into pool
+     * and if PreparedStatement or ResultSet is not nullptr, then frees them.
+     * @param con Connection to be returned to pool.
      * @param p PreparedStatement to be freed.
      * @param r ResultSet to be freed.
      */
-    void deleteStatementAndResSet(sql::PreparedStatement* p, sql::ResultSet* r);
+    void freeResources(sql::Connection* con, sql::PreparedStatement* p, sql::ResultSet* r);
 };
 
 #endif // MYSQLTESTMANAGER_H

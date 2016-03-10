@@ -9,12 +9,13 @@
 
 using namespace std;
 
-TestCreator::TestCreator(const ConfigStorage* stor) : storage(stor)
+TestCreator::TestCreator(const ConfigStorage* stor, MySqlDBPool* pool) : storage(stor)
 {
-    converter = new ClassToCmdParamConverter(stor);
-    nistManager = new MySqlNistTestsManager(stor);
+    dbPool = pool;
+    converter = new ClassToCmdParamConverter(stor, dbPool);
+    nistManager = new MySqlNistTestsManager(dbPool);
     fileHandler = new LinuxFileStructureHandler(stor);
-    resManager = new MySqlResultsManager(stor);
+    resManager = new MySqlResultsManager(dbPool);
 }
 
 TestCreator::~TestCreator()

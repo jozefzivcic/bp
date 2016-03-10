@@ -10,6 +10,8 @@
 #include "configstorage.h"
 #include "icurrentlyrunningmanager.h"
 #include "ilogger.h"
+#include "mysqldbpool.h"
+
 class TestHandler;
 
 /**
@@ -27,16 +29,17 @@ class TestHandler : public ITestHandler
 private:
     unsigned int maxNumberOfTests;
     unsigned int numberOfRunningTests;
+    const ConfigStorage* storage;
     std::mutex numberOfRunningTestsMutex;
     std::vector<std::thread> threads;
     std::mutex* mutexes = nullptr;
     std::condition_variable* vars = nullptr;
     ThreadHandler* thHandler = nullptr;
-    const ConfigStorage* storage;
     ICurrentlyRunningManager* crManager = nullptr;
     ILogger* log = nullptr;
     volatile int signalFromThread;
     std::mutex signalFromThreadMutex;
+    MySqlDBPool* dbPool;
 public:
     friend void threadFunction(TestHandler* handler, int i);
 
@@ -45,7 +48,7 @@ public:
      * @param num Maximum number of running tests at same time.
      * @param stor ConfigStorage.
      */
-    TestHandler(int num, const ConfigStorage* stor);
+    TestHandler(int num, const ConfigStorage* stor, MySqlDBPool* pool);
     virtual ~TestHandler();
     virtual bool createTest(Test t) override;
     virtual unsigned int getNumberOfRunningTests() override;

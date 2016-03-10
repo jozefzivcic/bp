@@ -3,6 +3,7 @@
 #include "ifilemanager.h"
 #include "configstorage.h"
 #include "ilogger.h"
+#include "mysqldbpool.h"
 #include <mysql_connection.h>
 #include <cppconn/driver.h>
 #include <cppconn/resultset.h>
@@ -14,22 +15,22 @@
  */
 class MySqlFileManager : public IFileManager {
 private:
-    sql::Driver *driver;
-    sql::Connection* connecion = nullptr;
     ILogger* logger = nullptr;
+    MySqlDBPool* dbPool = nullptr;
 public:
-    MySqlFileManager(const ConfigStorage* storage);
+    MySqlFileManager(MySqlDBPool* pool);
     bool getFileById(long id, File* file) override;
     ~MySqlFileManager();
 private:
 
     /**
-     * @brief deleteStatementAndResSet If PreparedStatement or ResultSet is not nullptr,
-     * then frees them.
+     * @brief freeResources If con is not nullptr, then this method returns it into pool
+     * and if PreparedStatement or ResultSet is not nullptr, then frees them.
+     * @param con Connection to be returned to pool.
      * @param p PreparedStatement to be freed.
      * @param r ResultSet to be freed.
      */
-    void deleteStatementAndResSet(sql::PreparedStatement* p, sql::ResultSet* r);
+    void freeResources(sql::Connection* con, sql::PreparedStatement* p, sql::ResultSet* r);
 };
 
 #endif // MYSQLFILEMANAGER
