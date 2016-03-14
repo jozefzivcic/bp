@@ -36,4 +36,4 @@ Makefile*
 /tests_pool/
 /bp/bp
 /users/
-/webBP/idea/*
+/webBP/.idea/*
