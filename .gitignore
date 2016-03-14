@@ -36,3 +36,4 @@ Makefile*
 /tests_pool/
 /bp/bp
 /users/
+.idea/*
