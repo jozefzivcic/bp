@@ -11,30 +11,32 @@ bool ConfigParser::parseFile(string file)
         return false;
     string key;
     string value;
-    size_t first, second, last;
+    size_t pos;
+    bool isEscape;
     map<string,string> tempDictionary;
     while(getline(fileStream,line)) {
         if (line == "" || line[0] == '#')
             continue;
-        if (line.length() < 6)
+        if (line.length() < 3)
             return false;
-        first = line.find('\"',0);
-        if (first == string::npos || first + 1 >= line.length())
+        pos = 0;
+        isEscape = false;
+        while((pos = line.find('=', pos)) != string::npos) {
+            if (pos > 0 && line[pos - 1] == '\\') {
+                pos++;
+                isEscape = true;
+            }else if (pos > 0) {
+                break;
+            }
+        }
+        if (pos == string::npos)
             return false;
-        second = line.find('\"',first + 1);
-        if (second == string::npos || second + 1 >= line.length() || line[second + 1] != '=')
-            return false;
-        if (first + 1 == second)
-            return false;
-        if (second + 2 >= line.length() || line[second + 2] != '\"')
-            return false;
-        if (second + 3 >= line.length())
-            return false;
-        last = line.find('\"', second + 3);
-        if (last == string::npos || last == second + 3)
-            return false;
-        key = line.substr(first + 1, second - first - 1);
-        value = line.substr(second + 3, last - second - 3);
+        key = line.substr(0, pos);
+        value = line.substr(pos + 1, line.length() - pos - 1);
+        if (isEscape) {
+            key = eraseEscapeCharacters(key);
+            value = eraseEscapeCharacters(value);
+        }
         tempDictionary.insert(make_pair(key,value));
     }
     fileStream.close();
@@ -55,4 +57,18 @@ string ConfigParser::getValue(string key) const
 void ConfigParser::reset()
 {
     dictionary.clear();
+}
+
+string ConfigParser::eraseEscapeCharacters(string str)
+{
+    string::iterator iter = str.begin();
+    while(iter != str.end()) {
+        if (*iter == '\\' && (iter + 1) != str.end() && *(iter + 1) == '\\')
+            iter++;
+        else if (*iter == '\\')
+            iter = str.erase(iter);
+        else
+            iter++;
+    }
+    return str;
 }

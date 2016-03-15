@@ -4,8 +4,8 @@
 #include <map>
 
 /**
- * @brief The ConfigParser class This class is used to parse files with format "key"="value",
- * comments must begin with # as first character on line.
+ * @brief The ConfigParser class This class is used to parse files with format key=value,
+ * comments must begin with # as first character on line. Escape character is \.
  */
 class ConfigParser
 {
@@ -38,6 +38,14 @@ public:
      * @brief reset Resets actual loaded config file.
      */
     void reset();
+
+private:
+    /**
+     * @brief eraseEscapeCharacters Removes escape characters from given string.
+     * @param str String, from which escape characters are removed.
+     * @return String without escape characters.
+     */
+    std::string eraseEscapeCharacters(std::string str);
 };
 
 #endif // CONFIGPARSER_H

@@ -13,7 +13,7 @@ MainClass::MainClass()
     if (maxParallelTests == 0)
         throw runtime_error("hardware_concurrency: number of processors = 0");
     parser = new ConfigParser();
-    if (!parser->parseFile("./config"))
+    if (!parser->parseFile("../config"))
         throw runtime_error("Config file not located or has a wrong structure");
     storage = new ConfigStorage(parser);
     pri = new PriorityComparator();
