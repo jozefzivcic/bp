@@ -38,3 +38,5 @@ Makefile*
 /users/
 /webBP/.idea/*
 /webBP/__pycache__/
+/webBP/managers/__pycache__/
+/webBP/models/__pycache__/

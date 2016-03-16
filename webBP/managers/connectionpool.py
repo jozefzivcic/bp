@@ -11,16 +11,40 @@ class ConnectionPool:
         self.used_cons = 0
         self.num_of_cons = size
         self.cons = queue.Queue(size)
+
     def initialize_pool(self):
         for i in range(0,self.num_of_cons):
-            connection = pymysql.connect(host=self.db_name, port=self.port, user=self.user, passwd=self.password,
-                                         db=self.schema)
+            connection = self.create_connection()
             self.cons.put(connection, block=False)
+
+    def destroy_pool(self):
+        for i in range(0, self.num_of_cons):
+            if not self.cons.empty():
+                connection = self.cons.get(block=False)
+                connection.close()
 
     def get_connection_from_pool(self):
         self.used_cons += 1
-        return self.cons.get(block=False)
+        connection = self.cons.get(block=False)
+        if not self.ping_connection(connection):
+            connection = self.create_connection()
+        return connection
 
     def release_connection(self, c):
-        self.cons.put(c, block=False)
-        self.used_cons -= 1
+        if c:
+            self.cons.put(c, block=False)
+            self.used_cons -= 1
+
+    def create_connection(self):
+        return pymysql.connect(host=self.db_name, port=self.port, user=self.user, passwd=self.password,
+                                         db=self.schema)
+    def ping_connection(self, conn):
+        cur = None
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT 1;")
+            return True
+        except (AttributeError, pymysql.OperationalError):
+            return False
+        finally:
+            cur.close()
