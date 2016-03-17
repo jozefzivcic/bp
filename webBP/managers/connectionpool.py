@@ -49,7 +49,7 @@ class ConnectionPool:
             cur.execute("SELECT 1;")
             return True
         except (AttributeError, pymysql.OperationalError):
-            self.logger.log_info('connection closed')
+            self.logger.log_info('ConnectionPool.ping_connection: connection closed')
             return False
         finally:
             cur.close()

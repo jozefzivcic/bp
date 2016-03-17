@@ -17,7 +17,7 @@ class UserManager:
             connection.commit()
             return True
         except pymysql.MySQLError as ex:
-            self.logger.log_error('save_user', ex)
+            self.logger.log_error('UserManager.save_user', ex)
             return False
         finally:
             if cur:
@@ -34,7 +34,7 @@ class UserManager:
             connection.commit()
             return cur.rowcount
         except pymysql.MySQLError as ex:
-            self.logger.log_error('get_users_with_name', ex)
+            self.logger.log_error('UserManager.get_users_with_name', ex)
             return -1
         finally:
             if cur:
@@ -53,7 +53,7 @@ class UserManager:
                     return True
             return False
         except pymysql.MySQLError as ex:
-            self.logger.log_error('check_user_password', ex)
+            self.logger.log_error('UserManager.check_user_password', ex)
             return False
         finally:
             if cur:

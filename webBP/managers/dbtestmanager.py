@@ -31,7 +31,7 @@ class DBTestManager:
                 dict.append(test)
             return dict
         except pymysql.MySQLError as ex:
-            self.logger.log_error('save_file', ex)
+            self.logger.log_error('DBTestManager.get_tests_for_user', ex)
             return None
         finally:
             if cur:
@@ -51,7 +51,7 @@ class DBTestManager:
             connection.commit()
             return True
         except pymysql.MySQLError as ex:
-            self.logger.log_error('save_file', ex)
+            self.logger.log_error('DBTestManager.store_test', ex)
             return False
         finally:
             if cur:

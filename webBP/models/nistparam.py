@@ -4,4 +4,4 @@ class NistParam:
         self.length = 0
         self.test_number = 0
         self.streams = 0
-        self.specialparameter = 0
+        self.special_parameter = 0

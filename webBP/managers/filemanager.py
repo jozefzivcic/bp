@@ -19,7 +19,7 @@ class FileManager:
             connection.commit()
             return True
         except pymysql.MySQLError as ex:
-            self.logger.log_error('save_file', ex)
+            self.logger.log_error('FileManager.save_file', ex)
             return False
         finally:
             if cur:
@@ -47,7 +47,7 @@ class FileManager:
                 return file
             return None
         except pymysql.MySQLError as ex:
-            self.logger.log_error('save_file', ex)
+            self.logger.log_error('FileManager.get_file_by_id', ex)
             return None
         finally:
             if cur:
