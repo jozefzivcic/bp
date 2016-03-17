@@ -5,3 +5,5 @@ class Test:
         self.user_id = 0
         self.time_of_add = 0
         self.test_table = 0
+        self.loaded = 0
+        self.ended = 0
