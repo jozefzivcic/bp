@@ -1,11 +1,12 @@
-import managers.connectionpool
-import models.user
 import pymysql
+import logger
 
 class UserManager:
     def __init__(self, con_pool):
         self.pool = con_pool
-    def saveUser(self, user):
+        self.logger = logger.Logger()
+
+    def save_user(self, user):
         connection = None
         cur = None
         try:
@@ -14,8 +15,10 @@ class UserManager:
             cur.execute('INSERT INTO users (user_name, user_password) VALUES (%s, %s);',(user.name, user.password))
             user.id = cur.lastrowid
             connection.commit()
-        except pymysql.MySQLError:
-            print('error')
+            return True
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('save_user', ex)
+            return False
         finally:
             if cur:
                 cur.close()
@@ -30,8 +33,9 @@ class UserManager:
             cur.execute('SELECT id FROM users WHERE user_name = %s;',(name))
             connection.commit()
             return cur.rowcount
-        except pymysql.MySQLError:
-            print('error')
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('get_users_with_name', ex)
+            return -1
         finally:
             if cur:
                 cur.close()
@@ -48,8 +52,9 @@ class UserManager:
                 if row[0] == user.password:
                     return True
             return False
-        except pymysql.MySQLError:
-            print('error')
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('check_user_password', ex)
+            return False
         finally:
             if cur:
                 cur.close()

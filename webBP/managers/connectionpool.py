@@ -1,6 +1,8 @@
 import pymysql
 import queue
 import re
+import logger
+
 class ConnectionPool:
     def __init__(self, params, size):
         self.db_name = re.search('^([a-zA-Z]+://)?([0-9\.]+|[a-zA-Z]+)(:[0-9]+)?$', params.get('DATABASE')).groups()[1]
@@ -11,6 +13,7 @@ class ConnectionPool:
         self.used_cons = 0
         self.num_of_cons = size
         self.cons = queue.Queue(size)
+        self.logger = logger.Logger()
 
     def initialize_pool(self):
         for i in range(0,self.num_of_cons):
@@ -38,6 +41,7 @@ class ConnectionPool:
     def create_connection(self):
         return pymysql.connect(host=self.db_name, port=self.port, user=self.user, passwd=self.password,
                                          db=self.schema)
+
     def ping_connection(self, conn):
         cur = None
         try:
@@ -45,6 +49,7 @@ class ConnectionPool:
             cur.execute("SELECT 1;")
             return True
         except (AttributeError, pymysql.OperationalError):
+            self.logger.log_info('connection closed')
             return False
         finally:
             cur.close()
