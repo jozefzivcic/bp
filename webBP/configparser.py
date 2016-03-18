@@ -25,7 +25,8 @@ class ConfigParser:
             return True
 
     def return_key_and_values(self):
-        return self._dict
+        temp_dict = self._dict.copy()
+        return temp_dict
 
     def get_key(self, key):
         return self._dict[key]

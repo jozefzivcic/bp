@@ -4,3 +4,4 @@ password=Password
 login=Login
 page_not_found=Page not found
 not_found=Sorry your requested page was not found :(
+main_page=Main page

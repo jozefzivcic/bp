@@ -5,10 +5,10 @@ import logger
 
 class ConnectionPool:
     def __init__(self, params, size):
-        self.db_name = re.search('^([a-zA-Z]+://)?([0-9\.]+|[a-zA-Z]+)(:[0-9]+)?$', params.get('DATABASE')).groups()[1]
-        self.port = int(params.get('PORT'))
-        self.user = params.get('USER')
-        self.password = params.get('PASSWORD')
+        self.db_name = params.get('DATABASE')
+        self.port = params.get('PORT')
+        self.user = params.get('USERNAME')
+        self.password = params.get('USER_PASSWORD')
         self.schema = params.get('SCHEMA')
         self.used_cons = 0
         self.num_of_cons = size

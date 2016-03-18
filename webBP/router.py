@@ -1,4 +1,4 @@
-from controller import not_found
+from controller import not_found, login
 
 
 class Router:
@@ -16,3 +16,6 @@ class Router:
         if function:
             return function
         return self.default_controller()
+
+    def get_login_controller(self):
+        return login
