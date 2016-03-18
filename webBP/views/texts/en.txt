@@ -1,0 +1,6 @@
+title=Web for NIST tests
+user_name=Your user name
+password=Password
+login=Login
+page_not_found=Page not found
+not_found=Sorry your requested page was not found :(

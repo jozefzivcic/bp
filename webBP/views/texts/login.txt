@@ -1,4 +1,0 @@
-title=Web for NIST tests
-name=Name
-password=Password
-login=Login
