@@ -15,7 +15,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         ckie = self.read_cookie()
         controller = None
-        if (ckie == None) or (self.sessions.get(ckie) == None):
+        if (ckie == None) and (self.sessions.get(ckie) == None):
             controller = self.router.get_login_controller()
             controller(self)
             return
@@ -30,6 +30,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         password = form['password'].value
         if password == 'ahoj':
             self.send_response(303)
+            self.send_header('Content-type', 'text/html')
             self.send_header('Location','/')
             sid = self.write_cookie()
             self.end_headers()
@@ -38,14 +39,18 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 
     def read_cookie(self):
         if "Cookie" in self.headers:
-            c = SimpleCookie(self.headers["Cookie"])
-        return c['sid'].value
+            v = self.headers['Cookie']
+            c = SimpleCookie()
+            c.load(v)
+            value = c['sid'].value
+            return value
+        return None
 
     def write_cookie(self):
         c = SimpleCookie()
         sid = self.generate_sid()
         c['sid'] = sid
-        self.send_header('Set-Cookie', c.output())
+        self.send_header('Set-Cookie', c.output(header=''))
         return sid
 
     def generate_sid(self):
