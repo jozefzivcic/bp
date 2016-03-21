@@ -5,3 +5,6 @@ login=Login
 page_not_found=Page not found
 not_found=Sorry your requested page was not found :(
 main_page=Main page
+log_out=Log out
+user_doesnt_exists=Given user does not exists
+wrong_password=You typed wrong password
