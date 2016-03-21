@@ -18,7 +18,7 @@ class DBTestManager:
                 'SELECT id, id_file, id_user, time_of_add, test_table, loaded, ended FROM tests WHERE id_user = %s;',
                 (user.id))
             connection.commit()
-            dict = []
+            my_list = []
             for row in cur:
                 test = Test()
                 test.id = row[0]
@@ -28,8 +28,8 @@ class DBTestManager:
                 test.test_table = row[4]
                 test.loaded = row[5]
                 test.ended = row[6]
-                dict.append(test)
-            return dict
+                my_list.append(test)
+            return my_list
         except pymysql.MySQLError as ex:
             self.logger.log_error('DBTestManager.get_tests_for_user', ex)
             return None

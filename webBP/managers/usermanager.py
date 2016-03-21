@@ -1,5 +1,7 @@
 import pymysql
 import logger
+from models.user import User
+
 
 class UserManager:
     def __init__(self, con_pool):
@@ -30,12 +32,19 @@ class UserManager:
         try:
             connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
-            cur.execute('SELECT id FROM users WHERE user_name = %s;',(name))
+            cur.execute('SELECT id, user_name, user_password FROM users WHERE user_name = %s;',(name))
             connection.commit()
-            return cur.rowcount
+            my_list = []
+            for row in cur:
+                user = User()
+                user.id = row[0]
+                user.name = row[1]
+                user.password = row[2]
+                my_list.append(user)
+            return my_list
         except pymysql.MySQLError as ex:
             self.logger.log_error('UserManager.get_users_with_name', ex)
-            return -1
+            return []
         finally:
             if cur:
                 cur.close()

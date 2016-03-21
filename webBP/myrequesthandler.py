@@ -4,19 +4,20 @@ import uuid
 
 
 class MyRequestHandler(BaseHTTPRequestHandler):
-
     router = None
     environment = None
     texts = None
     sessions = {}
     pool = None
     user_manager = None
+    not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
+                            '/sign_up_passwords_are_not_the_same']
 
     def do_GET(self):
         ckie = self.read_cookie()
         controller = None
         if (ckie == None) or (self.sessions.get(ckie) == None):
-            if (self.path == '/wrong_user_name') or (self.path == '/wrong_password'):
+            if self.path in self.not_authorised_paths:
                 controller = self.router.get_controller(self.path)
             else:
                 controller = self.router.get_login_controller()

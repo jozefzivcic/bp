@@ -4,7 +4,8 @@ from http.server import HTTPServer
 
 from jinja2 import FileSystemLoader, Environment
 
-from controller import main_page, logout, post_login, wrong_user_name, wrong_password
+from controller import main_page, logout, post_login, wrong_user_name, wrong_password, sign_up, sign_up_user_exists, \
+    sign_up_passwords_are_not_the_same, post_sign_up
 from managers.connectionpool import ConnectionPool
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
@@ -17,6 +18,10 @@ def register_pages_into_router(router):
     router.register_controller('/logout',logout)
     router.register_controller('/wrong_user_name', wrong_user_name)
     router.register_controller('/wrong_password', wrong_password)
+    router.register_controller('/sign_up', sign_up)
+    router.register_controller('/sign_up_user_exists', sign_up_user_exists)
+    router.register_controller('/sign_up_passwords_are_not_the_same', sign_up_passwords_are_not_the_same)
+    router.register_controller('/sign_up_submit', post_sign_up)
 
 def load_texts():
     parser = ConfigParser()

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ register_new_user }}</title>
+</head>
+<body>
+  <form name="signup" action="sign_up_submit" method="post" accept-charset="utf-8">
+    <label for="username">{{ user_name }}</label>
+    <input type="text" name="username" placeholder="{{ user_name }}" required>
+    <label for="password">{{ password }}</label>
+    <input type="password" name="password" placeholder="{{ password }}" required>
+    <label for="retype_password">{{ retype_password }}</label>
+    <input type="password" name="retype_password" placeholder="{{ retype_password }}" required>
+    <input type="submit" value="{{ sign_up }}">
+  </form>
+
+  <br/>
+    {% if vars['user_already_exists'] is equalto 1 %}
+      <h3>{{ user_already_exists }}</h3>
+    {% endif %}
+
+    {% if vars['passwords_are_not_same'] is equalto 1 %}
+      <h3>{{ passwords_are_not_same }}</h3>
+    {% endif %}
+</body>
+</html>

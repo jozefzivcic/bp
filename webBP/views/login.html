@@ -5,6 +5,8 @@
     <title>{{ title }}</title>
 </head>
 <body>
+    <a href="sign_up">{{ register_new_user }}</a>
+
     <form name="login" action="login_submit" method="post" accept-charset="utf-8">
         <label for="username">{{ user_name }}</label>
         <input type="text" name="username" placeholder="{{ user_name }}" required>
@@ -13,6 +15,7 @@
         <input type="submit" value="{{ login }}">
 
     </form>
+
     <br/>
     {% if vars['wrong_user'] is equalto 1 %}
       <h3>{{ user_doesnt_exists }}</h3>
