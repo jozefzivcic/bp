@@ -4,24 +4,28 @@ from http.server import HTTPServer
 
 from jinja2 import FileSystemLoader, Environment
 
-from controller import main_page, logout, post_login, wrong_user_name, wrong_password, sign_up, sign_up_user_exists, \
-    sign_up_passwords_are_not_the_same, post_sign_up
+from configparser import ConfigParser
+from controllers.login_controller import post_login, wrong_user_name, wrong_password
+from controllers.main_controller import main_page, logout
+from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up_passwords_are_not_the_same, \
+    post_sign_up
 from managers.connectionpool import ConnectionPool
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
-from configparser import ConfigParser
 from router import Router
+
 
 def register_pages_into_router(router):
     router.register_controller('/', main_page)
     router.register_controller('/login_submit', post_login)
-    router.register_controller('/logout',logout)
+    router.register_controller('/logout', logout)
     router.register_controller('/wrong_user_name', wrong_user_name)
     router.register_controller('/wrong_password', wrong_password)
     router.register_controller('/sign_up', sign_up)
     router.register_controller('/sign_up_user_exists', sign_up_user_exists)
     router.register_controller('/sign_up_passwords_are_not_the_same', sign_up_passwords_are_not_the_same)
     router.register_controller('/sign_up_submit', post_sign_up)
+
 
 def load_texts():
     parser = ConfigParser()
@@ -30,9 +34,10 @@ def load_texts():
     for file in os.listdir(texts_folder):
         res = re.search(r'^([a-z]+)[.][a-z]+$', file)
         language = res.groups()[0]
-        parser.parse_file(os.path.join(texts_folder,file))
+        parser.parse_file(os.path.join(texts_folder, file))
         ret[language] = parser.return_key_and_values()
     return ret
+
 
 def extract_values_for_pool(parser):
     res = re.search(r'^([a-zA-Z]+://)?([0-9\.]+|[a-zA-Z]+)[:]([0-9]+)?$', parser.get_key('DATABASE')).groups()
@@ -43,6 +48,7 @@ def extract_values_for_pool(parser):
                  'USERNAME': parser.get_key('USERNAME'), 'USER_PASSWORD': parser.get_key('USER_PASSWORD'),
                  'SCHEMA': parser.get_key('SCHEMA')}
     return temp_dict
+
 
 def prepare_handler(parser):
     router = Router()
@@ -55,6 +61,7 @@ def prepare_handler(parser):
     pool.initialize_pool()
     MyRequestHandler.pool = pool
     MyRequestHandler.user_manager = UserManager(pool)
+
 
 if __name__ == '__main__':
     cp = ConfigParser()

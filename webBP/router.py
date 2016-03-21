@@ -1,4 +1,5 @@
-from controller import not_found, login, post_login
+from controllers.common_controller import not_found
+from controllers.login_controller import login
 
 
 class Router:

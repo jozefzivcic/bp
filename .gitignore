@@ -40,3 +40,4 @@ Makefile*
 /webBP/__pycache__/
 /webBP/managers/__pycache__/
 /webBP/models/__pycache__/
+/webBP/controllers/__pycache__/
