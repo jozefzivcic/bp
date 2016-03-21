@@ -10,6 +10,7 @@ from controllers.main_controller import main_page, logout
 from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up_passwords_are_not_the_same, \
     post_sign_up
 from managers.connectionpool import ConnectionPool
+from managers.dbtestmanager import DBTestManager
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
 from router import Router
@@ -61,6 +62,7 @@ def prepare_handler(parser):
     pool.initialize_pool()
     MyRequestHandler.pool = pool
     MyRequestHandler.user_manager = UserManager(pool)
+    MyRequestHandler.test_manager = DBTestManager(pool)
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ class DBTestManager:
         self.pool = pool
         self.logger = Logger()
 
-    def get_tests_for_user(self, user):
+    def get_tests_for_user(self, id):
         connection = None
         cur = None
         try:
@@ -16,7 +16,7 @@ class DBTestManager:
             cur = connection.cursor()
             cur.execute(
                 'SELECT id, id_file, id_user, time_of_add, test_table, loaded, ended FROM tests WHERE id_user = %s;',
-                (user.id))
+                (id))
             connection.commit()
             my_list = []
             for row in cur:

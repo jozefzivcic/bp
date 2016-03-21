@@ -1,3 +1,4 @@
+#Do not use vars as key! This is used by program.
 title=Web for NIST tests
 user_name=Your user name
 password=Password
@@ -13,3 +14,4 @@ retype_password=Retype your password once again
 sign_up=Sign up
 user_already_exists=Given user name already exists in database
 passwords_are_not_same=Passwords you typed are not the same
+your_tests=Your tests

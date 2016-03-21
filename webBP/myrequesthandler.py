@@ -10,6 +10,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     sessions = {}
     pool = None
     user_manager = None
+    test_manager = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
                             '/sign_up_passwords_are_not_the_same']
 

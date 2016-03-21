@@ -3,7 +3,12 @@ def main_page(handler):
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
     template = handler.environment.get_template('main.html')
-    output = template.render(handler.texts['en'])
+    id = handler.sessions[handler.read_cookie()]
+    tests = handler.test_manager.get_tests_for_user(id)
+    temp_dict = dict(handler.texts['en'])
+    temp_dict['vars'] = {}
+    temp_dict['vars']['tests'] = tests
+    output = template.render(temp_dict)
     handler.wfile.write(output.encode(encoding='utf-8'))
     return
 
