@@ -9,8 +9,10 @@ from controllers.login_controller import post_login, wrong_user_name, wrong_pass
 from controllers.main_controller import main_page, logout
 from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up_passwords_are_not_the_same, \
     post_sign_up
+from controllers.test_controller import test_controller
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
+from managers.filemanager import FileManager
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
 from router import Router
@@ -26,6 +28,7 @@ def register_pages_into_router(router):
     router.register_controller('/sign_up_user_exists', sign_up_user_exists)
     router.register_controller('/sign_up_passwords_are_not_the_same', sign_up_passwords_are_not_the_same)
     router.register_controller('/sign_up_submit', post_sign_up)
+    router.register_controller('/test', test_controller)
 
 
 def load_texts():
@@ -63,6 +66,7 @@ def prepare_handler(parser):
     MyRequestHandler.pool = pool
     MyRequestHandler.user_manager = UserManager(pool)
     MyRequestHandler.test_manager = DBTestManager(pool)
+    MyRequestHandler.file_manager = FileManager(pool)
 
 
 if __name__ == '__main__':

@@ -10,9 +10,45 @@
     </form>
     <h2>{{ your_tests }}:</h2>
     <br>
-    {% for test in vars['tests'] %}
-    {{ test.id }} {{ test.user_id }} {{ test.file_id }} {{ test.time_of_add }} {{ test.test_table }} {{ test.loaded }} {{ test.ended }}
-      <br>
-    {% endfor %}
+    <table>
+        <tr>
+            <th>{{ test }} {{ id }}</th>
+            <th>{{ test_type }}</th>
+            <th>{{ file }}</th>
+            <th>{{ time_of_add }}</th>
+            <th>{{ loaded }}</th>
+            <th>{{ finished }}</th>
+            <th>{{ more }}</th>
+        </tr>
+        {% for test in vars['tests'] %}
+            <tr>
+                <td>{{ test.id }}</td>
+                <td>{{ test.test_table }}</td>
+                <td>{{ vars['files'][test.file_id].name }}</td>
+                <td>{{ test.time_of_add }}</td>
+
+                <td>
+                    {% if test.loaded is equalto 0 %}
+                      &#10005;
+                    {% else %}
+                      &#10003;
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if test.ended is equalto 0 %}
+                      &#10005;
+                    {% else %}
+                      &#10003;
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="/test?id={{ test.id }}">info</a>
+                </td>
+
+            </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>
