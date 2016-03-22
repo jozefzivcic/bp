@@ -5,6 +5,7 @@ import uuid
 
 
 class MyRequestHandler(BaseHTTPRequestHandler):
+    parser = None
     router = None
     environment = None
     texts = None

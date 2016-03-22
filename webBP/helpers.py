@@ -1,3 +1,6 @@
+from managers.nisttestmanager import NistTestManager
+
+
 def hash_password(password):
     return password
 
@@ -22,3 +25,10 @@ def render_signup_template(handler, user_already_exists, passwords_are_not_same)
     temp_dict['vars'] = vars
     output = template.render(temp_dict)
     handler.wfile.write(output.encode(encoding='utf-8'))
+
+
+def get_param_for_test(handler, test):
+    if test.test_table == handler.parser.get_key('NIST'):
+        nist_param = NistTestManager(handler.pool)
+        return nist_param.get_nist_param_for_test(test)
+    return None

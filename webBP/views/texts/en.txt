@@ -25,3 +25,7 @@ finished=Finished
 more=More
 test_details=Test details
 details_for_test_id=Details for test with id
+test_parameter=Test parameter(s)
+length=Length
+test_number=Test number
+streams=Streams

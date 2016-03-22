@@ -55,6 +55,7 @@ def extract_values_for_pool(parser):
 
 
 def prepare_handler(parser):
+    MyRequestHandler.parser = parser
     router = Router()
     register_pages_into_router(router)
     MyRequestHandler.router = router
