@@ -98,5 +98,43 @@
           {% endif %}
       {% endif %}
   </table>
+
+  <br>
+  <table>
+      <th colspan="2">
+          {{ file }}
+      </th>
+      <tr>
+          <td>
+              {{ file_name }}
+          </td>
+          <td>
+              {{ vars['file'].name}}
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              {{ hash }}
+          </td>
+          <td>
+              {{ vars['file'].hash}}
+          </td>
+      </tr>
+
+      {% if vars['file'].file_system_path is not equalto None %}
+        <tr>
+          <td>
+              {{ file_system_path }}
+          </td>
+          <td>
+              {{ vars['file'].file_system_path}}
+          </td>
+      </tr>
+      {% endif %}
+  </table>
+  <FORM>
+      <INPUT Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
+  </FORM>
 </body>
 </html>

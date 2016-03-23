@@ -29,3 +29,7 @@ test_parameter=Test parameter(s)
 length=Length
 name_of_test=Name of test
 streams=Streams
+file_name=File name
+hash=Hash
+file_system_path=Filesystem path
+back=Back

@@ -15,8 +15,9 @@ def test_controller(handler):
     id = handler.sessions[handler.read_cookie()]
     test = handler.test_manager.get_test_for_user_by_id(id, test_id)
     if (test == None) or error:
-        handler.send_response(404)
+        handler.send_response(303)
         handler.send_header('Content-type', 'text/html')
+        handler.send_header('Location', '/not_found')
         handler.end_headers()
         return
     handler.send_response(200)
