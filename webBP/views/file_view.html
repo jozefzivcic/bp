@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ file_content }}</title>
+</head>
+<body>
+  {% for line in vars['file_content']%}
+    {{ line }}
+    <br>
+  {% endfor %}
+</body>
+</html>

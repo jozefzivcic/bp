@@ -83,7 +83,7 @@ class DBTestManager:
                 return test
             return None
         except pymysql.MySQLError as ex:
-            self.logger.log_error('DBTestManager.get_tests_for_user', ex)
+            self.logger.log_error('DBTestManager.get_test_for_user_by_id', ex)
             return None
         finally:
             if cur:

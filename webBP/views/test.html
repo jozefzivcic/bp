@@ -51,6 +51,13 @@
               {% endif %}
           </td>
       </tr>
+      {% if vars['test'].ended is equalto 1 %}
+          <tr>
+              <td>
+                <a href="/test/results?id={{ vars['test'].id }}">{{ results }}</a>
+              </td>
+          </tr>
+      {% endif %}
   </table>
   <br>
   <table>

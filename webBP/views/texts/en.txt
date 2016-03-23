@@ -33,3 +33,6 @@ file_name=File name
 hash=Hash
 file_system_path=Filesystem path
 back=Back
+return_back_to=Return back to
+results=Results
+file_content=File content

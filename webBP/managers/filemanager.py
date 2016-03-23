@@ -75,7 +75,7 @@ class FileManager:
                 temp_dict[file.id] = file
             return temp_dict
         except pymysql.MySQLError as ex:
-            self.logger.log_error('FileManager.get_file_by_id', ex)
+            self.logger.log_error('FileManager.get_files_for_user', ex)
             return None
         finally:
             if cur:

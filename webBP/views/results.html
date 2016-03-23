@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ results }}</title>
+</head>
+<body>
+  <h1>
+      {{ results }}
+  </h1>
+  <ul>
+      {% for file in vars['files'] %}
+            <li>
+                <a href="/test/results/view?id={{ vars['test_id'] }}&file={{ file[1] }}">
+                    {{ file[0] }}
+                </a>
+            </li>
+      {% endfor %}
+  </ul>
+  <FORM>
+      <INPUT Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
+  </FORM>
+</body>
+</html>
