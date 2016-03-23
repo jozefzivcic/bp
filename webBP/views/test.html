@@ -5,7 +5,7 @@
     <title>{{ test_details }}</title>
 </head>
 <body>
-  <h2>{{ details_for_test_id }}:</h2>
+  <h2>{{ details_for_test_id }}: {{ vars['test'].id }}</h2>
   <br>
   <table>
       <tr>
@@ -59,10 +59,43 @@
             {{ test_parameter }}
           </th>
       </tr>
-      {% if vars['test_param'] is equalto {{ vars['nist'] }} %}
-      <tr>
+      {% if vars['test'].test_table is equalto 'nist' %}
+          <tr>
+              <td>
+                  {{ name_of_test }}
+              </td>
+              <td>
+                  {{ vars['test_param'].get_test_name() }}
+              </td>
+          </tr>
 
-      </tr>
+          <tr>
+              <td>
+                  {{ length }}
+              </td>
+              <td>
+                  {{ vars['test_param'].length }}
+              </td>
+          </tr>
+
+          <tr>
+              <td>
+                  {{ streams }}
+              </td>
+              <td>
+                  {{ vars['test_param'].streams }}
+              </td>
+          </tr>
+          {% if vars['test_param'].has_special_parameter() is equalto True %}
+          <tr>
+              <td>
+                  {{ vars['test_param'].get_special_parameter_name() }}
+              </td>
+              <td>
+                  {{ vars['test_param'].special_parameter }}
+              </td>
+          </tr>
+          {% endif %}
       {% endif %}
   </table>
 </body>

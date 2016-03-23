@@ -9,7 +9,7 @@ def test_controller(handler):
     error = False
     test_id = None
     try:
-        test_id = queries.get('id')
+        test_id = queries.get('id')[0]
     except KeyError:
         error = True
     id = handler.sessions[handler.read_cookie()]

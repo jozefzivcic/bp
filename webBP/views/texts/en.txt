@@ -27,5 +27,5 @@ test_details=Test details
 details_for_test_id=Details for test with id
 test_parameter=Test parameter(s)
 length=Length
-test_number=Test number
+name_of_test=Name of test
 streams=Streams

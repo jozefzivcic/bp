@@ -66,7 +66,7 @@ class DBTestManager:
             cur = connection.cursor()
             cur.execute(
                 'SELECT id, id_file, id_user, time_of_add, test_table, loaded, ended FROM tests WHERE id = %s AND id_user = %s;',
-                (user_id, test_id))
+                (test_id, user_id))
             connection.commit()
             i = 0
             test = Test()
