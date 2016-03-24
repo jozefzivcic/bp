@@ -81,3 +81,23 @@ class FileManager:
             if cur:
                 cur.close()
             self.pool.release_connection(connection)
+
+    def get_num_of_files_with_name_for_user(self, user_id, file_name):
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute('SELECT id FROM files WHERE id_user = %s AND name = %s;', (user_id, file_name))
+            connection.commit()
+            i = 0
+            for row in cur:
+                i += 1
+            return i
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('FileManager.get_files_for_user', ex)
+            return -1
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)

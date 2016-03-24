@@ -5,12 +5,14 @@ from http.server import HTTPServer
 from jinja2 import FileSystemLoader, Environment
 
 from configparser import ConfigParser
+from controllers.file_controller import upload_file_post, upload_file
 from controllers.login_controller import post_login, wrong_user_name, wrong_password
 from controllers.main_controller import main_page, logout
 from controllers.results_controller import results_controller, view_file_content
 from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up_passwords_are_not_the_same, \
     post_sign_up
 from controllers.test_controller import test_controller
+from helpers import create_dir_if_not_exists
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
@@ -33,6 +35,8 @@ def register_pages_into_router(router):
     router.register_controller('/test', test_controller)
     router.register_controller('/test/results', results_controller)
     router.register_controller('/test/results/view', view_file_content)
+    router.register_controller('/upload_file', upload_file)
+    router.register_controller('/upload_file/upload', upload_file_post)
 
 
 def load_texts():
@@ -73,11 +77,17 @@ def prepare_handler(parser):
     MyRequestHandler.test_manager = DBTestManager(pool)
     MyRequestHandler.file_manager = FileManager(pool)
     MyRequestHandler.results_manager = ResultsManager(pool)
+    MyRequestHandler.path_to_users_dir = os.path.abspath(parser.get_key('PATH_TO_USERS_DIR_FROM_WEB'))
+
+
+def prepare_environment(parser):
+    create_dir_if_not_exists(parser.get_key('PATH_TO_USERS_DIR_FROM_WEB'))
 
 
 if __name__ == '__main__':
     cp = ConfigParser()
     cp.parse_file('../config')
+    prepare_environment(cp)
     ip_address = cp.get_key('IP_ADDRESS')
     port = int(cp.get_key('PORT'))
     prepare_handler(cp)

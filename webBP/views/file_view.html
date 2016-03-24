@@ -5,6 +5,9 @@
     <title>{{ file_content }}</title>
 </head>
 <body>
+  <FORM>
+      <INPUT Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
+  </FORM>
   {% for line in vars['file_content']%}
     {{ line }}
     <br>

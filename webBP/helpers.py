@@ -1,3 +1,7 @@
+from os import makedirs
+from os.path import isdir
+import os
+
 from managers.nisttestmanager import NistTestManager
 
 
@@ -32,3 +36,20 @@ def get_param_for_test(handler, test):
         nist_param = NistTestManager(handler.pool)
         return nist_param.get_nist_param_for_test(test)
     return None
+
+
+def check_dir(path):
+    return isdir(path)
+
+
+def create_dir(path):
+    makedirs(path)
+
+
+def create_dir_if_not_exists(path):
+    if not check_dir(path):
+        create_dir(path)
+
+
+def hash_file(file):
+    return file

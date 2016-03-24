@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ upload_file }}</title>
+</head>
+<body>
+  <h2>{{ upload_file }}</h2>
+  <br>
+  <form action="/upload_file/upload" method="post" enctype="multipart/form-data">
+      <label for="file_name">{{ file_name }}</label>
+      <input type="text" name="file_name" placeholder="{{ file_name }}" required> <br/>
+      <input type="file" name="file" /> <br />
+      <input type="submit" name="upload_file" value="{{ upload_file }}" />
+  </form>
+</body>
+</html>

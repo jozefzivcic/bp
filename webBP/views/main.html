@@ -5,9 +5,12 @@
     <title>{{ main_page }}</title>
 </head>
 <body>
-    <form name="login" action="logout" method="post" accept-charset="utf-8">
+    <form name="logout" action="logout" method="post" accept-charset="utf-8">
         <input type="submit" value="{{ log_out }}">
     </form>
+    <a href="upload_file">
+        <h2>{{ upload_file }}</h2>
+    </a>
     <h2>{{ your_tests }}:</h2>
     <br>
     <table>
