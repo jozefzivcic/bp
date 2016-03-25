@@ -56,13 +56,13 @@ class FileManager:
                 cur.close()
             self.pool.release_connection(connection)
 
-    def get_files_for_user(self, id):
+    def get_files_for_user(self, user_id):
         connection = None
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
-            cur.execute('SELECT id, id_user, hash, name, file_system_path FROM files WHERE id_user = %s;', (id))
+            cur.execute('SELECT id, id_user, hash, name, file_system_path FROM files WHERE id_user = %s;', (user_id))
             connection.commit()
             temp_dict = {}
             for row in cur:

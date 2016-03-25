@@ -5,6 +5,250 @@
     <title>{{ create_tests }}</title>
 </head>
 <body>
+    <form name="create" action="create_tests" method="post" accept-charset="utf-8">
+        {% for file in vars['files'] %}
+            <input type="checkbox" name="file{{ file.id }}">{{ file.name }}
+        {% endfor %}
 
+        <h2>{{ create_nist_test }}</h2>
+        <table>
+            <tr>
+                <th>{{ select }}</th>
+                <th>{{ test }}</th>
+                <th>{{ length }}</th>
+                <th>{{ streams }}</th>
+                <th>{{ block_length }}</th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="frequency">
+                </td>
+                <td>
+                    Frequency
+                </td>
+                <td>
+                    <input type="number" name="frequency_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td colspan="2">
+                    <input type="number" name="frequency_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="block_frequency">
+                </td>
+                <td>
+                    Block Frequency
+                </td>
+                <td>
+                    <input type="number" name="block_frequency_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="block_frequency_streams" placeholder="{{ streams }}" min="1">
+                </td>
+                <td>
+                    <input type="number" name="block_frequency_param" placeholder="{{ block_length_big }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="cumulative_sums">
+                </td>
+                <td>
+                    Cumulative Sums
+                </td>
+                <td>
+                    <input type="number" name="cumulative_sums_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="cumulative_sums_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="runs">
+                </td>
+                <td>
+                    Runs
+                </td>
+                <td>
+                    <input type="number" name="runs_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="runs_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="longest_run_of_ones">
+                </td>
+                <td>
+                    Longest Run of Ones
+                </td>
+                <td>
+                    <input type="number" name="longest_run_of_ones_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="longest_run_of_ones_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="rank">
+                </td>
+                <td>
+                    Rank
+                </td>
+                <td>
+                    <input type="number" name="rank_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="rank_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="discrete_fourier_transform">
+                </td>
+                <td>
+                    Discrete Fourier Transform
+                </td>
+                <td>
+                    <input type="number" name="discrete_fourier_transform_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="discrete_fourier_transform_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="nonperiodic">
+                </td>
+                <td>
+                    Nonperiodic Template Matchings
+                </td>
+                <td>
+                    <input type="number" name="nonperiodic_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="nonperiodic_streams" placeholder="{{ streams }}" min="1">
+                </td>
+                <td>
+                    <input type="number" name="nonperiodic_param" placeholder="{{ block_length_little }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="overlapping">
+                </td>
+                <td>
+                    Overlapping Template Matchings
+                </td>
+                <td>
+                    <input type="number" name="overlapping_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="overlapping_streams" placeholder="{{ streams }}" min="1">
+                </td>
+                <td>
+                    <input type="number" name="overlapping_param" placeholder="{{ block_length_little }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="universal">
+                </td>
+                <td>
+                    Universal Statistical
+                </td>
+                <td>
+                    <input type="number" name="universal_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="universal_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="apen">
+                </td>
+                <td>
+                    Approximate Entropy
+                </td>
+                <td>
+                    <input type="number" name="apen_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="apen_streams" placeholder="{{ streams }}" min="1">
+                </td>
+                <td>
+                    <input type="number" name="apen_param" placeholder="{{ block_length_little }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="excursion">
+                </td>
+                <td>
+                    Random Excursions
+                </td>
+                <td>
+                    <input type="number" name="excursion_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="excursion_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="excursion_var">
+                </td>
+                <td>
+                    Random Excursions Variant
+                </td>
+                <td>
+                    <input type="number" name="excursion_var_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="excursion_var_streams" placeholder="{{ streams }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="serial">
+                </td>
+                <td>
+                    Serial
+                </td>
+                <td>
+                    <input type="number" name="serial_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="serial_streams" placeholder="{{ streams }}" min="1">
+                </td>
+                <td>
+                    <input type="number" name="apen_param" placeholder="{{ block_length_little }}" min="1">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" name="linear">
+                </td>
+                <td>
+                    Linear Complexity
+                </td>
+                <td>
+                    <input type="number" name="linear_length" placeholder="{{ length }}" min="1" required>
+                </td>
+                <td>
+                    <input type="number" name="linear_streams" placeholder="{{ streams }}" min="1">
+                </td>
+                <td>
+                    <input type="number" name="linear_param" placeholder="{{ block_length_big }}" min="1">
+                </td>
+            </tr>
+        </table>
+        <input type="submit" value="{{ create_test }}">
+    </form>
 </body>
 </html>
