@@ -19,7 +19,7 @@ DROP TRIGGER IF EXISTS `test_update`;
 CREATE TABLE `users` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
   `user_name` varchar(45) NOT NULL,
-  `user_password` varchar(45) NOT NULL
+  `user_password` varchar(64) NOT NULL
 )DEFAULT CHARSET=utf8;
 
 CREATE TABLE `files` (

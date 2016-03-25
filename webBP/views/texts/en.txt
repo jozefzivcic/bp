@@ -37,3 +37,5 @@ return_back_to=Return back to
 results=Results
 file_content=File content
 upload_file=Upload file
+your_files=Your files
+create_tests=Create test(s)

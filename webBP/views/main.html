@@ -8,6 +8,9 @@
     <form name="logout" action="logout" method="post" accept-charset="utf-8">
         <input type="submit" value="{{ log_out }}">
     </form>
+    <a href="create_tests">
+        <h2> {{ create_tests }}</h2>
+    </a>
     <a href="upload_file">
         <h2>{{ upload_file }}</h2>
     </a>
@@ -50,6 +53,21 @@
                     <a href="/test?id={{ test.id }}">info</a>
                 </td>
 
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <h2>{{ your_files }}:</h2>
+    <br>
+    <table>
+        <tr>
+            <th>{{ file_name }}</th>
+            <th>{{ hash }}</th>
+        </tr>
+        {% for file in vars['files'].values() %}
+            <tr>
+                <th>{{ file.name }}</th>
+                <th>{{ file.hash }}</th>
             </tr>
         {% endfor %}
     </table>

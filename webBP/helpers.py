@@ -1,12 +1,12 @@
 from os import makedirs
 from os.path import isdir
-import os
+from hashlib import sha256
 
 from managers.nisttestmanager import NistTestManager
 
 
 def hash_password(password):
-    return password
+    return hash_file(password)
 
 
 def render_login_template(handler, wrong_user, wrong_password):
@@ -52,4 +52,6 @@ def create_dir_if_not_exists(path):
 
 
 def hash_file(file):
-    return file
+    if isinstance(file, str):
+        return sha256(file.encode()).hexdigest()
+    return sha256(file).hexdigest()

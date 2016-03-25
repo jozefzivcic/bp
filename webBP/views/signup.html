@@ -7,7 +7,7 @@
 <body>
   <form name="signup" action="sign_up_submit" method="post" accept-charset="utf-8">
     <label for="username">{{ user_name }}</label>
-    <input type="text" name="username" placeholder="{{ user_name }}" required>
+    <input type="text" name="username" placeholder="{{ user_name }}" maxlength="32" required>
     <label for="password">{{ password }}</label>
     <input type="password" name="password" placeholder="{{ password }}" required>
     <label for="retype_password">{{ retype_password }}</label>

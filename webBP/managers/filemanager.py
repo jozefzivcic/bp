@@ -64,9 +64,9 @@ class FileManager:
             cur = connection.cursor()
             cur.execute('SELECT id, id_user, hash, name, file_system_path FROM files WHERE id_user = %s;', (id))
             connection.commit()
-            file = File()
             temp_dict = {}
             for row in cur:
+                file = File()
                 file.id = row[0]
                 file.user_id = row[1]
                 file.hash = row[2]

@@ -9,7 +9,7 @@
   <br>
   <form action="/upload_file/upload" method="post" enctype="multipart/form-data">
       <label for="file_name">{{ file_name }}</label>
-      <input type="text" name="file_name" placeholder="{{ file_name }}" required> <br/>
+      <input type="text" name="file_name" placeholder="{{ file_name }}" maxlength="64" required> <br/>
       <input type="file" name="file" /> <br />
       <input type="submit" name="upload_file" value="{{ upload_file }}" />
   </form>
