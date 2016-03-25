@@ -5,6 +5,7 @@ from http.server import HTTPServer
 from jinja2 import FileSystemLoader, Environment
 
 from configparser import ConfigParser
+from controllers.create_tests_controller import create_tests
 from controllers.file_controller import upload_file_post, upload_file
 from controllers.login_controller import post_login, wrong_user_name, wrong_password
 from controllers.main_controller import main_page, logout
@@ -37,6 +38,7 @@ def register_pages_into_router(router):
     router.register_controller('/test/results/view', view_file_content)
     router.register_controller('/upload_file', upload_file)
     router.register_controller('/upload_file/upload', upload_file_post)
+    router.register_controller('/create_tests', create_tests)
 
 
 def load_texts():
