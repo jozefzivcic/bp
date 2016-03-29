@@ -1,3 +1,6 @@
+from helpers import parse_nist_form
+
+
 def create_tests(handler):
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
@@ -10,4 +13,15 @@ def create_tests(handler):
     temp_dict['vars']['files'] = files
     output = template.render(temp_dict)
     handler.wfile.write(output.encode(encoding='utf-8'))
+    return
+
+
+def create_tests_post(handler):
+    handler.send_response(303)
+    handler.send_header('Content-type', 'text/html')
+    handler.send_header('Location', '/')
+    handler.end_headers()
+    files = get_files_from_nist_form(handler)
+    my_dict = parse_nist_form(handler)
+
     return
