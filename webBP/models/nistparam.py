@@ -4,7 +4,7 @@ class NistParam:
         self.length = 0
         self.test_number = 0
         self.streams = 0
-        self.special_parameter = 0
+        self.special_parameter = None
 
     def has_special_parameter(self):
         if self.test_number == 2 or self.test_number == 8 or self.test_number == 9 or self.test_number == 11 or self.test_number == 14 or self.test_number == 15:
@@ -58,3 +58,21 @@ class NistParam:
         elif self.test_number == 15:
             return 'block length(M)'
         return 'None'
+
+    def get_default_param_value(self):
+        if self.test_number == 2:
+            return 128
+        elif self.test_number == 8:
+            return 9
+        elif self.test_number == 9:
+            return 9
+        elif self.test_number == 11:
+            return 10
+        elif self.test_number == 14:
+            return 16
+        elif self.test_number == 15:
+            return 500
+        return 0
+
+    def set_default_param_value_according_to_test(self):
+        self.test_number = self.get_default_param_value()

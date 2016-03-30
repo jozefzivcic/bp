@@ -1,9 +1,8 @@
-import cgi
 import re
 from os import makedirs, stat
 from os.path import isdir, join
 from hashlib import sha256
-
+from models.nistparam import NistParam
 from managers.nisttestmanager import NistTestManager
 
 
@@ -64,71 +63,66 @@ def get_file_size_in_bits(file):
     return stats.st_size * 8
 
 
-def create_nist_param_from_nist_form(form, length, streams, block_size=None):
+def create_nist_param_from_nist_form(form, test, length, streams, block_size=None):
     param = NistParam()
+    param.test_number = test
     if length in form:
-        param.length = form[length].value
+        param.length = int(form[length].value)
     else:
         param.length = None
     if streams in form:
-        param.streams = form[streams].value
+        param.streams = int(form[streams].value)
     else:
         param.streams = 1
     if block_size is not None:
         if block_size in form:
-            param.special_parameter = form[block_size].value
-        #else:
-        #    param.special_parameter =
-        return tuple(length, streams, param)
-    return tuple(length, streams)
+            param.special_parameter = int(form[block_size].value)
+        else:
+            param.set_default_param_value_according_to_test()
+    return param
 
 
-def parse_nist_form(handler):
-    temp_dict = {}
-    form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
-                                                                                'CONTENT_TYPE': handler.headers[
-                                                                                    'Content-Type'],})
+def parse_nist_form(form):
+    arr = []
     if 'frequency' in form:
-        temp_dict[1] = create_nist_param_from_nist_form(form, 'frequency_length', 'frequency_streams')
+        arr.append(create_nist_param_from_nist_form(form, 1, 'frequency_length', 'frequency_streams'))
     elif 'block_frequency' in form:
-        temp_dict[2] = create_nist_param_from_nist_form(form, 'block_frequency_length', 'block_frequency_streams',
-                                                   'block_frequency_param')
+        arr.append(create_nist_param_from_nist_form(form, 2, 'block_frequency_length', 'block_frequency_streams',
+                                                    'block_frequency_param'))
     elif 'cumulative_sums' in form:
-        temp_dict[3] = create_nist_param_from_nist_form(form, 'cumulative_sums_length', 'cumulative_sums_streams')
+        arr.append(create_nist_param_from_nist_form(form, 3, 'cumulative_sums_length', 'cumulative_sums_streams'))
     elif 'runs' in form:
-        temp_dict[4] = create_nist_param_from_nist_form(form, 'runs_length', 'runs_streams')
+        arr.append(create_nist_param_from_nist_form(form, 4, 'runs_length', 'runs_streams'))
     elif 'longest_run_of_ones' in form:
-        temp_dict[5] = create_nist_param_from_nist_form(form, 'longest_run_of_ones_length', 'longest_run_of_ones_streams')
+        arr.append(
+            create_nist_param_from_nist_form(form, 5, 'longest_run_of_ones_length', 'longest_run_of_ones_streams'))
     elif 'rank' in form:
-        temp_dict[6] = create_nist_param_from_nist_form(form, 'rank_length', 'rank_streams')
+        arr.append(create_nist_param_from_nist_form(form, 6, 'rank_length', 'rank_streams'))
     elif 'discrete_fourier_transform' in form:
-        temp_dict[7] = create_nist_param_from_nist_form(form, 'discrete_fourier_transform_length',
-                                                   'discrete_fourier_transform_streams')
+        arr.append(create_nist_param_from_nist_form(form, 7, 'discrete_fourier_transform_length',
+                                                    'discrete_fourier_transform_streams'))
     elif 'nonperiodic' in form:
-        temp_dict[8] = create_nist_param_from_nist_form(form, 'nonperiodic_length', 'nonperiodic_streams',
-                                                   'nonperiodic_param')
+        arr.append(create_nist_param_from_nist_form(form, 8, 'nonperiodic_length', 'nonperiodic_streams',
+                                                    'nonperiodic_param'))
     elif 'overlapping' in form:
-        temp_dict[9] = create_nist_param_from_nist_form(form, 'overlapping_length', 'overlapping_streams',
-                                                   'overlapping_param')
+        arr.append(create_nist_param_from_nist_form(form, 9, 'overlapping_length', 'overlapping_streams',
+                                                    'overlapping_param'))
     elif 'universal' in form:
-        temp_dict[10] = create_nist_param_from_nist_form(form, 'universal_length', 'universal_streams')
+        arr.append(create_nist_param_from_nist_form(form, 10, 'universal_length', 'universal_streams'))
     elif 'apen' in form:
-        temp_dict[11] = create_nist_param_from_nist_form(form, 'apen_length', 'apen_streams', 'apen_param')
+        arr.append(create_nist_param_from_nist_form(form, 11, 'apen_length', 'apen_streams', 'apen_param'))
     elif 'excursion' in form:
-        temp_dict[12] = create_nist_param_from_nist_form(form, 'excursion_length', 'excursion_streams')
+        arr.append(create_nist_param_from_nist_form(form, 12, 'excursion_length', 'excursion_streams'))
     elif 'excursion_var' in form:
-        temp_dict[13] = create_nist_param_from_nist_form(form, 'excursion_var_length', 'excursion_var_streams')
+        arr.append(create_nist_param_from_nist_form(form, 13, 'excursion_var_length', 'excursion_var_streams'))
     elif 'serial' in form:
-        temp_dict[14] = create_nist_param_from_nist_form(form, 'serial_length', 'serial_streams', 'serial_param')
+        arr.append(create_nist_param_from_nist_form(form, 14, 'serial_length', 'serial_streams', 'serial_param'))
     elif 'linear' in form:
-        temp_dict[15] = create_nist_param_from_nist_form(form, 'linear_length', 'linear_streams', 'linear_param')
-    return temp_dict
+        arr.append(create_nist_param_from_nist_form(form, 15, 'linear_length', 'linear_streams', 'linear_param'))
+    return arr
 
 
-def get_file_ids_from_nist_form(handler):
-    form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
-                                                                                'CONTENT_TYPE': handler.headers[
-                                                                                    'Content-Type'],})
+def get_file_ids_from_nist_form(form):
     files = [file for file in form.keys() if file.startswith('file')]
     ids = []
     for file in files:
@@ -137,7 +131,16 @@ def get_file_ids_from_nist_form(handler):
     return ids
 
 
-def control_forms(handler, file_ids, my_dict):
-    user_dir = join(handler.path_to_users_dir, str(id),handler.parser.get_key('FILES'))
-
-    return 0
+def control_nist_forms(handler, user_id, file_ids, nist_params):
+    user_dir = join(handler.path_to_users_dir, str(user_id), handler.parser.get_key('FILES'))
+    for file_id in file_ids:
+        file_path = join(user_dir, str(file_id))
+        size = get_file_size_in_bits(file_path)
+        for param in nist_params:
+            if param.length > size:
+                return (1, param.test_number)
+            if param.streams < 1:
+                return (2, param.test_number)
+            if (param.special_parameter is not None) and (param.special_parameter < 1):
+                return (3, param.test_number)
+    return (0, 0)
