@@ -251,6 +251,9 @@
             -->
         </table>
         <input type="submit" value="{{ create_test }}">
+        {% if vars['error'][0] is equalto 'l' %}
+            <h3>{{ error_in }} {{ vars['error'][1] }} {{ test_little }}. {{ length_error }}</h3>
+        {% endif %}
     </form>
 </body>
 </html>
