@@ -1,4 +1,4 @@
-from helpers import parse_nist_form
+from helpers import parse_nist_form, get_file_ids_from_nist_form, control_forms
 
 
 def create_tests(handler):
@@ -21,7 +21,7 @@ def create_tests_post(handler):
     handler.send_header('Content-type', 'text/html')
     handler.send_header('Location', '/')
     handler.end_headers()
-    files = get_files_from_nist_form(handler)
+    file_ids = get_file_ids_from_nist_form(handler)
     my_dict = parse_nist_form(handler)
-
+    control_forms(handler, file_ids, my_dict)
     return
