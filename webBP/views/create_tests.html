@@ -27,13 +27,12 @@
                     Frequency
                 </td>
                 <td>
-                    <input type="number" name="frequency_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['frequency_length'] }}" required>
+                    <input type="number" name="frequency_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['frequency_length'] }}" >
                 </td>
                 <td colspan="2">
                     <input type="number" name="frequency_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['frequency_streams'] }}">
                 </td>
             </tr>
-            <!--
             <tr>
                 <td>
                     <input type="checkbox" name="block_frequency" {% if 'block_frequency' in vars['queries'] %} checked {% endif %}>
@@ -42,7 +41,7 @@
                     Block Frequency
                 </td>
                 <td>
-                    <input type="number" name="block_frequency_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['block_frequency_length'] }}" required>
+                    <input type="number" name="block_frequency_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['block_frequency_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="block_frequency_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['block_frequency_streams'] }}">
@@ -59,7 +58,7 @@
                     Cumulative Sums
                 </td>
                 <td>
-                    <input type="number" name="cumulative_sums_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['cumulative_sums_length'] }}" required>
+                    <input type="number" name="cumulative_sums_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['cumulative_sums_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="cumulative_sums_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['cumulative_sums_streams'] }}">
@@ -73,7 +72,7 @@
                     Runs
                 </td>
                 <td>
-                    <input type="number" name="runs_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['runs_length'] }}" required>
+                    <input type="number" name="runs_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['runs_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="runs_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['runs_streams'] }}">
@@ -87,7 +86,7 @@
                     Longest Run of Ones
                 </td>
                 <td>
-                    <input type="number" name="longest_run_of_ones_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['longest_run_of_ones_length'] }}" required>
+                    <input type="number" name="longest_run_of_ones_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['longest_run_of_ones_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="longest_run_of_ones_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['longest_run_of_ones_streams'] }}">
@@ -101,7 +100,7 @@
                     Rank
                 </td>
                 <td>
-                    <input type="number" name="rank_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['rank_length'] }}" required>
+                    <input type="number" name="rank_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['rank_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="rank_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['rank_streams'] }}">
@@ -115,7 +114,7 @@
                     Discrete Fourier Transform
                 </td>
                 <td>
-                    <input type="number" name="discrete_fourier_transform_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['discrete_fourier_transform_length'] }}" required>
+                    <input type="number" name="discrete_fourier_transform_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['discrete_fourier_transform_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="discrete_fourier_transform_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['discrete_fourier_transform_streams'] }}">
@@ -129,7 +128,7 @@
                     Nonperiodic Template Matchings
                 </td>
                 <td>
-                    <input type="number" name="nonperiodic_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['nonperiodic_length'] }}" required>
+                    <input type="number" name="nonperiodic_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['nonperiodic_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="nonperiodic_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['nonperiodic_streams'] }}">
@@ -146,7 +145,7 @@
                     Overlapping Template Matchings
                 </td>
                 <td>
-                    <input type="number" name="overlapping_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['overlapping_length'] }}" required>
+                    <input type="number" name="overlapping_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['overlapping_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="overlapping_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['overlapping_streams'] }}">
@@ -163,7 +162,7 @@
                     Universal Statistical
                 </td>
                 <td>
-                    <input type="number" name="universal_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['universal_length'] }}" required>
+                    <input type="number" name="universal_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['universal_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="universal_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['universal_streams'] }}">
@@ -177,7 +176,7 @@
                     Approximate Entropy
                 </td>
                 <td>
-                    <input type="number" name="apen_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['apen_length'] }}" required>
+                    <input type="number" name="apen_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['apen_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="apen_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['apen_streams'] }}">
@@ -194,7 +193,7 @@
                     Random Excursions
                 </td>
                 <td>
-                    <input type="number" name="excursion_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['excursion_length'] }}" required>
+                    <input type="number" name="excursion_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['excursion_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="excursion_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['excursion_streams'] }}">
@@ -208,7 +207,7 @@
                     Random Excursions Variant
                 </td>
                 <td>
-                    <input type="number" name="excursion_var_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['excursion_var_length'] }}" required>
+                    <input type="number" name="excursion_var_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['excursion_var_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="excursion_var_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['excursion_var_streams'] }}">
@@ -222,7 +221,7 @@
                     Serial
                 </td>
                 <td>
-                    <input type="number" name="serial_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['serial_length'] }}" required>
+                    <input type="number" name="serial_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['serial_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="serial_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['serial_streams'] }}">
@@ -239,7 +238,7 @@
                     Linear Complexity
                 </td>
                 <td>
-                    <input type="number" name="linear_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['linear_length'] }}" required>
+                    <input type="number" name="linear_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['linear_length'] }}">
                 </td>
                 <td>
                     <input type="number" name="linear_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['linear_streams'] }}">
@@ -248,7 +247,6 @@
                     <input type="number" name="linear_param" placeholder="{{ block_length_big }}" min="1" value="{{ vars['queries']['linear_param'] }}">
                 </td>
             </tr>
-            -->
         </table>
         <input type="submit" value="{{ create_test }}">
         {% if 'l' in vars['queries'] and 't' in vars['queries'] %}
