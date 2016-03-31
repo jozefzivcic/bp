@@ -21,238 +21,246 @@
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="frequency">
+                    <input type="checkbox" name="frequency" {% if 'frequency' in vars['queries'] %} checked {% endif %} >
                 </td>
                 <td>
                     Frequency
                 </td>
                 <td>
-                    <input type="number" name="frequency_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="frequency_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['frequency_length'] }}" required>
                 </td>
                 <td colspan="2">
-                    <input type="number" name="frequency_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="frequency_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['frequency_streams'] }}">
                 </td>
             </tr>
             <!--
             <tr>
                 <td>
-                    <input type="checkbox" name="block_frequency">
+                    <input type="checkbox" name="block_frequency" {% if 'block_frequency' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Block Frequency
                 </td>
                 <td>
-                    <input type="number" name="block_frequency_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="block_frequency_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['block_frequency_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="block_frequency_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="block_frequency_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['block_frequency_streams'] }}">
                 </td>
                 <td>
-                    <input type="number" name="block_frequency_param" placeholder="{{ block_length_big }}" min="1">
+                    <input type="number" name="block_frequency_param" placeholder="{{ block_length_big }}" min="1" value="{{ vars['queries']['block_frequency_param'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="cumulative_sums">
+                    <input type="checkbox" name="cumulative_sums" {% if 'cumulative_sums' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Cumulative Sums
                 </td>
                 <td>
-                    <input type="number" name="cumulative_sums_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="cumulative_sums_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['cumulative_sums_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="cumulative_sums_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="cumulative_sums_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['cumulative_sums_streams'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="runs">
+                    <input type="checkbox" name="runs" {% if 'runs' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Runs
                 </td>
                 <td>
-                    <input type="number" name="runs_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="runs_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['runs_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="runs_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="runs_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['runs_streams'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="longest_run_of_ones">
+                    <input type="checkbox" name="longest_run_of_ones" {% if 'longest_run_of_ones' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Longest Run of Ones
                 </td>
                 <td>
-                    <input type="number" name="longest_run_of_ones_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="longest_run_of_ones_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['longest_run_of_ones_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="longest_run_of_ones_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="longest_run_of_ones_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['longest_run_of_ones_streams'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="rank">
+                    <input type="checkbox" name="rank" {% if 'rank' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Rank
                 </td>
                 <td>
-                    <input type="number" name="rank_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="rank_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['rank_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="rank_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="rank_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['rank_streams'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="discrete_fourier_transform">
+                    <input type="checkbox" name="discrete_fourier_transform" {% if 'discrete_fourier_transform' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Discrete Fourier Transform
                 </td>
                 <td>
-                    <input type="number" name="discrete_fourier_transform_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="discrete_fourier_transform_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['discrete_fourier_transform_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="discrete_fourier_transform_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="discrete_fourier_transform_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['discrete_fourier_transform_streams'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="nonperiodic">
+                    <input type="checkbox" name="nonperiodic" {% if 'nonperiodic' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Nonperiodic Template Matchings
                 </td>
                 <td>
-                    <input type="number" name="nonperiodic_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="nonperiodic_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['nonperiodic_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="nonperiodic_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="nonperiodic_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['nonperiodic_streams'] }}">
                 </td>
                 <td>
-                    <input type="number" name="nonperiodic_param" placeholder="{{ block_length_little }}" min="1">
+                    <input type="number" name="nonperiodic_param" placeholder="{{ block_length_little }}" min="1" value="{{ vars['queries']['nonperiodic_param'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="overlapping">
+                    <input type="checkbox" name="overlapping" {% if 'overlapping' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Overlapping Template Matchings
                 </td>
                 <td>
-                    <input type="number" name="overlapping_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="overlapping_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['overlapping_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="overlapping_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="overlapping_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['overlapping_streams'] }}">
                 </td>
                 <td>
-                    <input type="number" name="overlapping_param" placeholder="{{ block_length_little }}" min="1">
+                    <input type="number" name="overlapping_param" placeholder="{{ block_length_little }}" min="1" value="{{ vars['queries']['overlapping_param'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="universal">
+                    <input type="checkbox" name="universal" {% if 'universal' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Universal Statistical
                 </td>
                 <td>
-                    <input type="number" name="universal_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="universal_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['universal_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="universal_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="universal_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['universal_streams'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="apen">
+                    <input type="checkbox" name="apen" {% if 'apen' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Approximate Entropy
                 </td>
                 <td>
-                    <input type="number" name="apen_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="apen_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['apen_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="apen_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="apen_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['apen_streams'] }}">
                 </td>
                 <td>
-                    <input type="number" name="apen_param" placeholder="{{ block_length_little }}" min="1">
+                    <input type="number" name="apen_param" placeholder="{{ block_length_little }}" min="1" value="{{ vars['queries']['apen_param'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="excursion">
+                    <input type="checkbox" name="excursion" {% if 'excursion' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Random Excursions
                 </td>
                 <td>
-                    <input type="number" name="excursion_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="excursion_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['excursion_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="excursion_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="excursion_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['excursion_streams'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="excursion_var">
+                    <input type="checkbox" name="excursion_var" {% if 'excursion_var' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Random Excursions Variant
                 </td>
                 <td>
-                    <input type="number" name="excursion_var_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="excursion_var_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['excursion_var_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="excursion_var_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="excursion_var_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['excursion_var_streams'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="serial">
+                    <input type="checkbox" name="serial" {% if 'serial' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Serial
                 </td>
                 <td>
-                    <input type="number" name="serial_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="serial_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['serial_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="serial_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="serial_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['serial_streams'] }}">
                 </td>
                 <td>
-                    <input type="number" name="serial_param" placeholder="{{ block_length_little }}" min="1">
+                    <input type="number" name="serial_param" placeholder="{{ block_length_little }}" min="1" value="{{ vars['queries']['serial_param'] }}">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="checkbox" name="linear">
+                    <input type="checkbox" name="linear" {% if 'linear' in vars['queries'] %} checked {% endif %}>
                 </td>
                 <td>
                     Linear Complexity
                 </td>
                 <td>
-                    <input type="number" name="linear_length" placeholder="{{ length }}" min="1" required>
+                    <input type="number" name="linear_length" placeholder="{{ length }}" min="1" value="{{ vars['queries']['linear_length'] }}" required>
                 </td>
                 <td>
-                    <input type="number" name="linear_streams" placeholder="{{ streams }}" min="1">
+                    <input type="number" name="linear_streams" placeholder="{{ streams }}" min="1" value="{{ vars['queries']['linear_streams'] }}">
                 </td>
                 <td>
-                    <input type="number" name="linear_param" placeholder="{{ block_length_big }}" min="1">
+                    <input type="number" name="linear_param" placeholder="{{ block_length_big }}" min="1" value="{{ vars['queries']['linear_param'] }}">
                 </td>
             </tr>
             -->
         </table>
         <input type="submit" value="{{ create_test }}">
-        {% if vars['error'][0] is equalto 'l' %}
-            <h3>{{ error_in }} {{ vars['error'][1] }} {{ test_little }}. {{ length_error }}</h3>
+        {% if 'l' in vars['queries'] and 't' in vars['queries'] %}
+            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ length_error }}</h3>
+        {% endif %}
+
+        {% if 's' in vars['queries'] and 't' in vars['queries'] %}
+            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ streams_error }}</h3>
+        {% endif %}
+
+        {% if 'p' in vars['queries'] and 't' in vars['queries'] %}
+            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ param_error }}</h3>
         {% endif %}
     </form>
 </body>

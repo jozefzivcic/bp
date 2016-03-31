@@ -23,22 +23,23 @@ def upload_file_post(handler):
     file_data = form['file'].value
     id = handler.sessions[handler.read_cookie()]
     # handler.file_manager.get_num_of_files_with_name_for_user
-    path = join(handler.path_to_users_dir, str(id))
-    create_dir_if_not_exists(path)
-    path = join(path, handler.parser.get_key('FILES'))
-    create_dir_if_not_exists(path)
-    file = File()
-    file.name = file_name
-    file.user_id = id
-    file.file_system_path = path
-    file.hash = hash_file(file_data)
-    handler.file_manager.save_file(file)
+    if file_name != '' and file_data != b'':
+        path = join(handler.path_to_users_dir, str(id))
+        create_dir_if_not_exists(path)
+        path = join(path, handler.parser.get_key('FILES'))
+        create_dir_if_not_exists(path)
+        file = File()
+        file.name = file_name
+        file.user_id = id
+        file.file_system_path = path
+        file.hash = hash_file(file_data)
+        handler.file_manager.save_file(file)
+        path = join(path, str(file.id))
+        if file_data:
+            with open(path,'wb') as f:
+                f.write(file_data)
     handler.send_response(303)
     handler.send_header('Content-type', 'text/html')
     handler.send_header('Location', '/')
     handler.end_headers()
-    path = join(path, str(file.id))
-    if file_data:
-        with open(path,'wb') as f:
-            f.write(file_data)
     return
