@@ -49,6 +49,12 @@ def create_tests_post(handler):
             qstr += '&s=1&t=' + str(ret[1])
         elif ret[0] == 3:
             qstr += '&p=1&t=' + str(ret[1])
+        elif ret[0] == 4:
+            qstr += '&f=1'
+        elif ret[0] == 5:
+            qstr += '&test=1'
+        elif ret[0] == 6:
+            qstr += '&l=2&t=' + str(ret[1])
         location = '/create_tests?' + qstr
         handler.send_header('Location', location)
         handler.end_headers()
@@ -80,7 +86,7 @@ def get_possible_keys_and_values():
            'apen_param': int, 'excursion': int, 'excursion_length': int, 'excursion_streams': int, 'excursion_var': int,
            'excursion_var_length': int, 'excursion_var_streams': int, 'serial': int, 'serial_length': int,
            'serial_streams': int, 'serial_param': int, 'linear': int, 'linear_length': int, 'linear_streams': int,
-           'linear_param': int}
+           'linear_param': int, 'f': int, 'test': int}
     return arr
 
 
@@ -114,7 +120,8 @@ def convert_nist_params_to_query(params):
         streams_name = get_streams_name(param.test_number)
         param_name = get_param_name(param.test_number)
         temp_dict[cb_name] = 1
-        temp_dict[length_name] = param.length
+        if param.length is not None:
+            temp_dict[length_name] = param.length
         temp_dict[streams_name] = param.streams
         if param_name is not None:
             temp_dict[param_name] = param.special_parameter
