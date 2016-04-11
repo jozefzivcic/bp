@@ -7,7 +7,7 @@
 <body>
     <form name="create" action="create_tests_submit" method="post" accept-charset="utf-8">
         {% for file in vars['files'] %}
-            <input type="checkbox" name="file{{ file.id }}">{{ file.name }}
+            <input type="checkbox" name="file{{ file.id }}" {% if file.id in vars['file_ids'] %} checked {% endif %} > {{ file.name }}
         {% endfor %}
 
         <h2>{{ create_nist_test }}</h2>

@@ -53,3 +53,5 @@ param_error=Block length is less than 1
 no_file_selected=No file has been selected. Select at least one file for testing.
 no_test_selected=No test has been selected. Select at least one test.
 length_must_be_filled=Length must be filled.
+error=Error
+error_occurred_during_request=An error has been occurred during handling your request

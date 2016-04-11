@@ -26,6 +26,8 @@ def create_tests(handler):
     temp_dict['vars'] = {}
     temp_dict['vars']['files'] = files
     temp_dict['vars']['queries'] = parsed_queries
+    if (parsed_queries is not None) and ('files' in parsed_queries):
+        temp_dict['vars']['file_ids'] = get_int_array_from_string(parsed_queries.get('files'))
     output = template.render(temp_dict)
     handler.wfile.write(output.encode(encoding='utf-8'))
     return
@@ -42,7 +44,7 @@ def create_tests_post(handler):
     handler.send_response(303)
     handler.send_header('Content-type', 'text/html')
     if ret != (0, 0):
-        qstr = convert_nist_params_to_query(nist_params)
+        qstr = convert_nist_form_params_to_query(file_ids, nist_params)
         if ret[0] == 1:
             qstr += '&l=1&t=' + str(ret[1])
         elif ret[0] == 2:
@@ -86,7 +88,7 @@ def get_possible_keys_and_values():
            'apen_param': int, 'excursion': int, 'excursion_length': int, 'excursion_streams': int, 'excursion_var': int,
            'excursion_var_length': int, 'excursion_var_streams': int, 'serial': int, 'serial_length': int,
            'serial_streams': int, 'serial_param': int, 'linear': int, 'linear_length': int, 'linear_streams': int,
-           'linear_param': int, 'f': int, 'test': int}
+           'linear_param': int, 'f': int, 'test': int, 'files': str}
     return arr
 
 
@@ -112,8 +114,10 @@ def parse_queries(queries):
     return temp_dict
 
 
-def convert_nist_params_to_query(params):
+def convert_nist_form_params_to_query(file_ids, params):
     temp_dict = {}
+    encoded_ids = get_string_from_int_array(file_ids)
+    temp_dict['files'] = encoded_ids
     for param in params:
         cb_name = get_checkbox_name(param.test_number)
         length_name = get_length_name(param.test_number)
@@ -244,3 +248,13 @@ def get_param_name(test_number):
     elif test_number == 15:
         return 'linear_param'
     return None
+
+
+def get_string_from_int_array(arr):
+    return str(arr).strip('[]')
+
+
+def get_int_array_from_string(str):
+    temp_arr =  str.split(',')
+    ret_array = [int(num) for num in temp_arr]
+    return ret_array

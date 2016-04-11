@@ -1,4 +1,4 @@
-from controllers.common_controller import not_found
+from controllers.common_controller import not_found, error_occurred
 from controllers.login_controller import login
 
 
@@ -20,3 +20,6 @@ class Router:
 
     def get_login_controller(self):
         return login
+
+    def get_error_controller(self):
+        return error_occurred

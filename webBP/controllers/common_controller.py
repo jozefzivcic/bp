@@ -6,3 +6,13 @@ def not_found(handler):
     output = template.render(handler.texts['en'])
     handler.wfile.write(output.encode(encoding='utf-8'))
     return
+
+
+def error_occurred(handler):
+    handler.send_response(200)
+    handler.send_header('Content-type', 'text/html')
+    handler.end_headers()
+    template = handler.environment.get_template('error_occurred.html')
+    output = template.render(handler.texts['en'])
+    handler.wfile.write(output.encode(encoding='utf-8'))
+    return

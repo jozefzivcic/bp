@@ -16,6 +16,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     file_manager = None
     results_manager = None
     path_to_users_dir = None
+    logger = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
                             '/sign_up_passwords_are_not_the_same']
 
@@ -23,7 +24,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         ckie = self.read_cookie()
         controller = None
-        if (ckie == None) or (self.sessions.get(ckie) == None):
+        if (ckie is None) or (self.sessions.get(ckie) is None):
             if path in self.not_authorised_paths:
                 controller = self.router.get_controller(path)
             else:
@@ -31,13 +32,23 @@ class MyRequestHandler(BaseHTTPRequestHandler):
             controller(self)
             return
         controller = self.router.get_controller(path)
-        controller(self)
+        try:
+            controller(self)
+        except (FileNotFoundError, ValueError, KeyError) as e:
+            self.logger.log_error('do_GET', e)
+            controller = self.router.get_error_controller()
+            controller(self)
         return
 
     def do_POST(self):
         path = urlparse(self.path).path
         controller = self.router.get_controller(path)
-        controller(self)
+        try:
+            controller(self)
+        except (FileNotFoundError, ValueError, KeyError) as e:
+            self.logger.log_error('do_GET', e)
+            controller = self.router.get_error_controller()
+            controller(self)
         return
 
     def read_cookie(self):

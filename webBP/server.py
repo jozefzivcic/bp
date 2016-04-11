@@ -5,6 +5,7 @@ from http.server import HTTPServer
 from jinja2 import FileSystemLoader, Environment
 
 from configparser import ConfigParser
+from controllers.common_controller import error_occurred
 from controllers.create_tests_controller import create_tests, create_tests_post
 from controllers.file_controller import upload_file_post, upload_file
 from controllers.login_controller import post_login, wrong_user_name, wrong_password
@@ -21,6 +22,7 @@ from managers.resultsmanager import ResultsManager
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
 from router import Router
+from logger import Logger
 
 
 def register_pages_into_router(router):
@@ -40,6 +42,7 @@ def register_pages_into_router(router):
     router.register_controller('/upload_file/upload', upload_file_post)
     router.register_controller('/create_tests', create_tests)
     router.register_controller('/create_tests_submit', create_tests_post)
+    router.register_controller('/error', error_occurred)
 
 
 def load_texts():
@@ -81,6 +84,7 @@ def prepare_handler(parser):
     MyRequestHandler.file_manager = FileManager(pool)
     MyRequestHandler.results_manager = ResultsManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(parser.get_key('PATH_TO_USERS_DIR_FROM_WEB'))
+    MyRequestHandler.logger = Logger()
 
 
 def prepare_environment(parser):
