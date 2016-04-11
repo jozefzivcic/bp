@@ -63,11 +63,25 @@
         <tr>
             <th>{{ file_name }}</th>
             <th>{{ hash }}</th>
+            <th>{{ delete_data }}</th>
+            <th>{{ delete_record }}</th>
         </tr>
         {% for file in vars['files'].values() %}
             <tr>
-                <th>{{ file.name }}</th>
-                <th>{{ file.hash }}</th>
+                <td>{{ file.name }}</td>
+                <td {% if file.file_system_path is none %} colspan="2" {% endif %}>{{ file.hash }}</td>
+                {% if file.file_system_path is not none %}
+                    <td>
+                        <a href="/delete_path?id={{ file.id }}">
+                            &#10005;
+                        </a>
+                    </td>
+                {% endif %}
+                <td>
+                    <a href="/delete_file?id={{ file.id }}">
+                        &#10005;
+                    </a>
+                </td>
             </tr>
         {% endfor %}
     </table>

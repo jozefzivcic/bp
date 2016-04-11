@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ delete_record }}</title>
+</head>
+<body>
+  <h2>{{ delete_record_question }}</h2>
+  <form name="delete_fs_path" action="delete_file_submit" method="post" accept-charset="utf-8">
+    <input type="submit" value="{{ yes }}">
+  </form>
+  <input type="button" value="{{ no }}" onclick="window.location = '/';">
+</body>
+</html>

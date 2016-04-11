@@ -20,7 +20,7 @@ def create_tests(handler):
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
     user_id = handler.sessions[handler.read_cookie()]
-    files = handler.file_manager.get_files_for_user(user_id).values()
+    files = handler.file_manager.get_existing_files_for_user(user_id).values()
     template = handler.environment.get_template('create_tests.html')
     temp_dict = dict(handler.texts['en'])
     temp_dict['vars'] = {}
