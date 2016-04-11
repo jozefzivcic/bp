@@ -75,4 +75,4 @@ class NistParam:
         return 0
 
     def set_default_param_value_according_to_test(self):
-        self.test_number = self.get_default_param_value()
+        self.special_parameter = self.get_default_param_value()

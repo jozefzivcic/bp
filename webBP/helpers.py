@@ -86,38 +86,38 @@ def parse_nist_form(form):
     arr = []
     if 'frequency' in form:
         arr.append(create_nist_param_from_nist_form(form, 1, 'frequency_length', 'frequency_streams'))
-    elif 'block_frequency' in form:
+    if 'block_frequency' in form:
         arr.append(create_nist_param_from_nist_form(form, 2, 'block_frequency_length', 'block_frequency_streams',
                                                     'block_frequency_param'))
-    elif 'cumulative_sums' in form:
+    if 'cumulative_sums' in form:
         arr.append(create_nist_param_from_nist_form(form, 3, 'cumulative_sums_length', 'cumulative_sums_streams'))
-    elif 'runs' in form:
+    if 'runs' in form:
         arr.append(create_nist_param_from_nist_form(form, 4, 'runs_length', 'runs_streams'))
-    elif 'longest_run_of_ones' in form:
+    if 'longest_run_of_ones' in form:
         arr.append(
             create_nist_param_from_nist_form(form, 5, 'longest_run_of_ones_length', 'longest_run_of_ones_streams'))
-    elif 'rank' in form:
+    if 'rank' in form:
         arr.append(create_nist_param_from_nist_form(form, 6, 'rank_length', 'rank_streams'))
-    elif 'discrete_fourier_transform' in form:
+    if 'discrete_fourier_transform' in form:
         arr.append(create_nist_param_from_nist_form(form, 7, 'discrete_fourier_transform_length',
                                                     'discrete_fourier_transform_streams'))
-    elif 'nonperiodic' in form:
+    if 'nonperiodic' in form:
         arr.append(create_nist_param_from_nist_form(form, 8, 'nonperiodic_length', 'nonperiodic_streams',
                                                     'nonperiodic_param'))
-    elif 'overlapping' in form:
+    if 'overlapping' in form:
         arr.append(create_nist_param_from_nist_form(form, 9, 'overlapping_length', 'overlapping_streams',
                                                     'overlapping_param'))
-    elif 'universal' in form:
+    if 'universal' in form:
         arr.append(create_nist_param_from_nist_form(form, 10, 'universal_length', 'universal_streams'))
-    elif 'apen' in form:
+    if 'apen' in form:
         arr.append(create_nist_param_from_nist_form(form, 11, 'apen_length', 'apen_streams', 'apen_param'))
-    elif 'excursion' in form:
+    if 'excursion' in form:
         arr.append(create_nist_param_from_nist_form(form, 12, 'excursion_length', 'excursion_streams'))
-    elif 'excursion_var' in form:
+    if 'excursion_var' in form:
         arr.append(create_nist_param_from_nist_form(form, 13, 'excursion_var_length', 'excursion_var_streams'))
-    elif 'serial' in form:
+    if 'serial' in form:
         arr.append(create_nist_param_from_nist_form(form, 14, 'serial_length', 'serial_streams', 'serial_param'))
-    elif 'linear' in form:
+    if 'linear' in form:
         arr.append(create_nist_param_from_nist_form(form, 15, 'linear_length', 'linear_streams', 'linear_param'))
     return arr
 
