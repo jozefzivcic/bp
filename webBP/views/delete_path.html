@@ -8,6 +8,7 @@
   <h2>{{ delete_fs_path_question }}</h2>
   <form name="delete_fs_path" action="/delete_fs_path_submit" method="post" accept-charset="utf-8">
     <input type="submit" value="{{ yes }}">
+    <input type="hidden" name="file_id" value="{{ vars['file_id'] }}">
   </form>
   <input type="button" value="{{ no }}" onclick="window.location = '/';">
 </body>

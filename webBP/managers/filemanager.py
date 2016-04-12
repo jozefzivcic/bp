@@ -135,7 +135,6 @@ class FileManager:
             connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('UPDATE files SET file_system_path = NULL WHERE id = %s;', (file.id))
-            file.file_system_path = None
             connection.commit()
             return True
         except pymysql.MySQLError as ex:
