@@ -1,4 +1,7 @@
+import cgi
 from urllib.parse import urlparse, parse_qs
+
+import shutil
 
 from helpers import get_param_for_test
 
@@ -36,4 +39,25 @@ def delete_test(handler):
 
 
 def delete_test_post(handler):
+    form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
+                                                                                'CONTENT_TYPE': handler.headers[
+                                                                                    'Content-Type'],})
+    test_id = int(form['test_id'].value)
+    user_id = handler.sessions[handler.read_cookie()]
+    test = handler.test_manager.get_test_for_user_by_id(user_id, test_id)
+    handler.send_response(303)
+    handler.send_header('Content-type', 'text/html')
+    if test is None or test.ended != 1:
+        handler.send_header('Location', '/not_found')
+        handler.end_headers()
+        return
+    handler.send_header('Location', '/')
+    handler.end_headers()
+    path = handler.results_manager.get_path_for_test(test)
+    handler.results_manager.delete_result(test)
+    if path is not None:
+        shutil.rmtree(path)
+    if test.test_table == handler.parser.get_key('NIST'):
+        handler.nist_manager.delete_nist_param_by_id(test.id)
+    handler.test_manager.delete_test(test)
     return
