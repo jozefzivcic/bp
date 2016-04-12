@@ -25,6 +25,7 @@
             <th>{{ loaded }}</th>
             <th>{{ finished }}</th>
             <th>{{ more }}</th>
+            <th>{{ delete }}</th>
         </tr>
         {% for test in vars['tests'] %}
             <tr>
@@ -53,6 +54,16 @@
                     <a href="/test?id={{ test.id }}">info</a>
                 </td>
 
+                <td>
+                    {% if test.ended is equalto 1 %}
+                      <a href="/delete_test?id={{ test.id }}">
+                    {% endif %}
+                    &#10005;
+                    {% if test.ended is equalto 1 %}
+                      </a>
+                    {% endif %}
+
+                </td>
             </tr>
         {% endfor %}
     </table>

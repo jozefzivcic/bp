@@ -7,8 +7,9 @@ from jinja2 import FileSystemLoader, Environment
 from configparser import ConfigParser
 from controllers.common_controller import error_occurred
 from controllers.create_tests_controller import create_tests, create_tests_post
-from controllers.delete_file import delete_file, delete_file_post
+from controllers.delete_file_controller import delete_file, delete_file_post
 from controllers.delete_path_controller import delete_path, delete_path_post
+from controllers.delete_test_controller import delete_test, delete_test_post
 from controllers.file_controller import upload_file_post, upload_file
 from controllers.login_controller import post_login, wrong_user_name, wrong_password
 from controllers.main_controller import main_page, logout
@@ -50,6 +51,8 @@ def register_pages_into_router(router):
     router.register_controller('/delete_fs_path_submit', delete_path_post)
     router.register_controller('/delete_file', delete_file)
     router.register_controller('/delete_file_submit', delete_file_post)
+    router.register_controller('/delete_test', delete_test)
+    router.register_controller('/delete_test_submit', delete_test_post)
 
 
 def load_texts():

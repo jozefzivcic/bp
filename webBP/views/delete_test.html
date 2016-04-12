@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ delete_test }}</title>
+</head>
+<body>
+  <h2>{{ do_you_really }} {{ this }} {{ test_little }}?</h2>
+  <br>
+  <table>
+      <tr>
+          <td>{{ test_type }}</td>
+          <td>{{ vars['test'].test_table }}</td>
+      </tr>
+      <tr>
+          <td>{{ file }}</td>
+          <td>{{ vars['file_name'] }}</td>
+      </tr>
+      <tr>
+          <td>{{ time_of_add }}</td>
+          <td>{{ vars['test'].time_of_add }}</td>
+      </tr>
+      {% if vars['test'].test_table is equalto 'nist' %}
+          <tr>
+              <td>
+                  {{ name_of_test }}
+              </td>
+              <td>
+                  {{ vars['test_param'].get_test_name() }}
+              </td>
+          </tr>
+
+          <tr>
+              <td>
+                  {{ length }}
+              </td>
+              <td>
+                  {{ vars['test_param'].length }}
+              </td>
+          </tr>
+
+          <tr>
+              <td>
+                  {{ streams }}
+              </td>
+              <td>
+                  {{ vars['test_param'].streams }}
+              </td>
+          </tr>
+          {% if vars['test_param'].has_special_parameter() is equalto True %}
+          <tr>
+              <td>
+                  {{ vars['test_param'].get_special_parameter_name() }}
+              </td>
+              <td>
+                  {{ vars['test_param'].special_parameter }}
+              </td>
+          </tr>
+          {% endif %}
+      {% endif %}
+  </table>
+  <form name="delete_test" action="/delete_test_submit" method="post" accept-charset="utf-8">
+      <input type="submit" value="{{ yes }}">
+      <input type="hidden" name="test_id" value="{{ vars['test'].id }}">
+  </form>
+  <input type="button" value="{{ no }}" onclick="window.location = '/';">
+</body>
+</html>
