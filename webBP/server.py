@@ -20,6 +20,7 @@ from helpers import create_dir_if_not_exists
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
+from managers.nisttestmanager import NistTestManager
 from managers.resultsmanager import ResultsManager
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
@@ -87,6 +88,7 @@ def prepare_handler(parser):
     MyRequestHandler.pool = pool
     MyRequestHandler.user_manager = UserManager(pool)
     MyRequestHandler.test_manager = DBTestManager(pool)
+    MyRequestHandler.nist_manager = NistTestManager(pool)
     MyRequestHandler.file_manager = FileManager(pool)
     MyRequestHandler.results_manager = ResultsManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(parser.get_key('PATH_TO_USERS_DIR_FROM_WEB'))

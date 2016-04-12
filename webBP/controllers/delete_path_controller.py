@@ -3,6 +3,7 @@ from urllib.parse import urlparse, parse_qs
 from os.path import join
 import os
 
+
 def delete_path(handler):
     parsed_path = urlparse(handler.path)
     queries = parse_qs(parsed_path.query)
@@ -48,6 +49,5 @@ def delete_path_post(handler):
     handler.send_header('Location', '/')
     handler.end_headers()
     handler.file_manager.set_fs_path_to_null(file)
-    file_path = join(file.file_system_path, str(file.id))
-    os.remove(file_path)
+    os.remove(file.file_system_path)
     return

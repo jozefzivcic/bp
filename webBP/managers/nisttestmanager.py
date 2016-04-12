@@ -57,3 +57,20 @@ class NistTestManager:
             if cur:
                 cur.close()
             self.pool.release_connection(connection)
+
+    def delete_nist_param_by_id(self, id):
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute('DELETE FROM nist_tests WHERE id_test = %s', (id))
+            connection.commit()
+            return True
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('NistTestManager.delete_nist_param_by_id', ex)
+            return False
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)

@@ -13,6 +13,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     pool = None
     user_manager = None
     test_manager = None
+    nist_manager = None
     file_manager = None
     results_manager = None
     path_to_users_dir = None

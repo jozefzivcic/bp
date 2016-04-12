@@ -5,9 +5,11 @@
     <title>{{ delete_record }}</title>
 </head>
 <body>
-  <h2>{{ delete_record_question }}</h2>
-  <form name="delete_fs_path" action="delete_file_submit" method="post" accept-charset="utf-8">
-    <input type="submit" value="{{ yes }}">
+  <h2>{{ do_you_really }} {{ vars['file'].name }}?</h2>
+  <h2>{{ all_tests_removed }}</h2>
+  <form name="delete_file" action="delete_file_submit" method="post" accept-charset="utf-8">
+      <input type="hidden" name="file_id" value="{{ vars['file'].id }}">
+      <input type="submit" value="{{ yes }}">
   </form>
   <input type="button" value="{{ no }}" onclick="window.location = '/';">
 </body>

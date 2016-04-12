@@ -1,3 +1,5 @@
+from os.path import join
+
 import pymysql
 from logger import Logger
 from models.file import File
@@ -18,6 +20,8 @@ class FileManager:
                         (file.user_id, file.hash,
                          file.name, file.file_system_path))
             file.id = cur.lastrowid
+            new_path = join(file.file_system_path, str(file.id))
+            cur.execute('UPDATE files set file_system_path = %s WHERE id = %s', (new_path, file.id))
             connection.commit()
             return True
         except pymysql.MySQLError as ex:
@@ -139,6 +143,23 @@ class FileManager:
             return True
         except pymysql.MySQLError as ex:
             self.logger.log_error('FileManager.get_files_for_user', ex)
+            return False
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
+
+    def delete_file(self, file):
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute('DELETE FROM files WHERE id = %s;', (file.id))
+            connection.commit()
+            return True
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('FileManager.delete_file', ex)
             return False
         finally:
             if cur:
