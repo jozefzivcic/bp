@@ -27,8 +27,8 @@ void threadFunction(TestHandler* handler, int i);
 class TestHandler : public ITestHandler
 {
 private:
-    unsigned int maxNumberOfTests;
-    unsigned int numberOfRunningTests;
+    volatile unsigned int maxNumberOfTests;
+    volatile unsigned int numberOfRunningTests;
     const ConfigStorage* storage;
     std::mutex numberOfRunningTestsMutex;
     std::vector<std::thread> threads;

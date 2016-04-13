@@ -7,6 +7,7 @@
 #include "ifilestructurehandler.h"
 #include "iresultsmanager.h"
 #include "mysqldbpool.h"
+#include "ilogger.h"
 
 /**
  * @brief The TestCreator class implements interface ITestCreator. For methods comments see the
@@ -26,6 +27,7 @@ private:
     IFileStructureHandler* fileHandler = nullptr;
     IResultsManager* resManager = nullptr;
     MySqlDBPool* dbPool = nullptr;
+    ILogger* logger = nullptr;
 public:
     TestCreator(const ConfigStorage* stor, MySqlDBPool* pool);
     ~TestCreator();

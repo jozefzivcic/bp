@@ -6,6 +6,8 @@
 #include "mysqlnisttestsmanager.h"
 #include "linuxfilestructurehandler.h"
 #include "mysqlresultsmanager.h"
+#include "logger.h"
+#include <string>
 
 using namespace std;
 
@@ -16,6 +18,7 @@ TestCreator::TestCreator(const ConfigStorage* stor, MySqlDBPool* pool) : storage
     nistManager = new MySqlNistTestsManager(dbPool);
     fileHandler = new LinuxFileStructureHandler(stor);
     resManager = new MySqlResultsManager(dbPool);
+    logger = new Logger();
 }
 
 TestCreator::~TestCreator()
@@ -28,6 +31,8 @@ TestCreator::~TestCreator()
         delete fileHandler;
     if (resManager != nullptr)
         delete resManager;
+    if (logger != nullptr)
+        delete logger;
 }
 
 bool TestCreator::createTest(Test t)
@@ -70,6 +75,7 @@ bool TestCreator::execNist(string bin, char** argm)
 bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
 {
     pid_t returnedPid = waitpid(pid, NULL, 0);
+    logger->logInfo(string("Waiting on child ended for test ") + to_string(t.getId()));
     converter->deleteAllocatedArray(&arguments);
     if (!fileHandler->checkAndCreateUserTree(storage->getPathToUsersDirFromPool(),t.getUserId()))
         return false;

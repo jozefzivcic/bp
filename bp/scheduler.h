@@ -14,7 +14,7 @@
 #include "configstorage.h"
 #include "itesthandler.h"
 #include "mysqldbpool.h"
-
+#include "ilogger.h"
 /**
  * @brief The Scheduler class implements interface IScheduler. For methods documentation
  * see interface.
@@ -48,6 +48,7 @@ private:
     ITestHandler* testHandler = nullptr;
     MySqlDBPool* dbPool = nullptr;
     size_t sleepInSeconds;
+    ILogger* logger = nullptr;
 public:
     Scheduler(IPriorityComparator * pri, const ConfigStorage* stor, int maxParallel);
     ~Scheduler();

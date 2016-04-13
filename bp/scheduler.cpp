@@ -4,6 +4,7 @@
 #include "ichangestatemanager.h"
 #include "mysqlchangestatemanager.h"
 #include "testhandler.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor, int ma
     stateManager = new MySqlChangeStateManager(dbPool);
     testHandler = new TestHandler(maxParallel, stor, dbPool);
     sleepInSeconds = stor->getSleepInSeconds();
+    logger = new Logger();
 }
 
 Scheduler::~Scheduler()
@@ -33,6 +35,8 @@ Scheduler::~Scheduler()
         dbPool->destroyPool();
         delete dbPool;
     }
+    if (logger != nullptr)
+        delete logger;
 }
 
 bool Scheduler::getTestForRunning(Test &t)
@@ -69,11 +73,14 @@ void Scheduler::run()
         while(!queue.empty() && testHandler->getNumberOfRunningTests() < maxTestsRunningParallel) {
             Test t;
             getTestForRunning(t);
-            if (!testHandler->createTest(t))
+            if (!testHandler->createTest(t)) {
+                logger->logWarning("Test was not created and is pushed back to queue " + to_string(t.getId()));
                 queue.push(t);
+            }
         }
         sleep(sleepInSeconds);
     }
+    logger->logInfo("Ending Scheduler::run()");
 }
 
 bool Scheduler::isStateChanged(long& retState)
