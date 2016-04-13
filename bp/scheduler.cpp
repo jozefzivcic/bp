@@ -60,9 +60,11 @@ bool Scheduler::addTestsReadyForRunning()
 
 void Scheduler::run()
 {
+    long tempState = 0;
     while(!endProgram) {
-        if ((queue.size() <= maxTestsRunningParallel * 2) && isStateChanged()) {
+        if ((queue.size() <= maxTestsRunningParallel * 2) && isStateChanged(tempState)) {
             addTestsReadyForRunning();
+            state = tempState;
         }
         while(!queue.empty() && testHandler->getNumberOfRunningTests() < maxTestsRunningParallel) {
             Test t;
@@ -74,14 +76,14 @@ void Scheduler::run()
     }
 }
 
-bool Scheduler::isStateChanged()
+bool Scheduler::isStateChanged(long& retState)
 {
-    int dbState = 0;
+    long dbState = 0L;
     if (!stateManager->getDBState(dbState))
         return true;
     if (dbState == state)
         return false;
-    state = dbState;
+    retState = dbState;
     return true;
 }
 

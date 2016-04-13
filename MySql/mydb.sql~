@@ -80,4 +80,4 @@ BEGIN
 END$$
 DELIMITER ;
 
-\. insertTestValues.sql
+-- \. insertTestValues.sql

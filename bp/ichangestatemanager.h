@@ -13,7 +13,7 @@ public:
      * variable is not changed.
      * @return If an error occurs false, true otherwise.
      */
-    virtual bool getDBState(int& state) = 0;
+    virtual bool getDBState(long& state) = 0;
 
     /**
      * @brief ~IChangeStateManager Virtual destructor.

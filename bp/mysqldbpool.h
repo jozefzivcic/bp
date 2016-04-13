@@ -22,6 +22,8 @@ public:
     virtual sql::Connection* createConnection() override;
 
     virtual bool deleteConnection(sql::Connection *con) override;
+
+    virtual bool pingConnection(sql::Connection *con) override;
 };
 
 #endif // MYSQLDBPOOL_H

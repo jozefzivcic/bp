@@ -54,7 +54,7 @@ public:
     virtual bool getTestForRunning(Test& t) override;
     virtual bool addTestsReadyForRunning() override;
     virtual void run() override;
-    virtual bool isStateChanged() override;
+    virtual bool isStateChanged(long &retState) override;
     virtual bool addTestsAfterCrash() override;
 };
 

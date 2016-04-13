@@ -22,7 +22,7 @@ private:
 public:
     MySqlChangeStateManager(MySqlDBPool* pool);
     ~MySqlChangeStateManager();
-    virtual bool getDBState(int& state) override;
+    virtual bool getDBState(long &state) override;
 private:
 
     /**

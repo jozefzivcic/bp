@@ -48,13 +48,16 @@ public:
     T* getConnectionFromPool() {
         if (!isReady)
             return nullptr;
-        if (!conMutex.try_lock())
-            return nullptr;
+        conMutex.lock();
         T* con = nullptr;
         if (!freeConnections.empty()) {
             typename std::list<T*>::iterator iter;
             iter = freeConnections.begin();
             con = *iter;
+            if (!pingConnection(con)) {
+                deleteConnection(con);
+                con = createConnection();
+            }
             freeConnections.erase(iter);
             usedConnections.push_back(con);
         }
@@ -90,6 +93,8 @@ protected:
     virtual T* createConnection() = 0;
 
     virtual bool deleteConnection(T* con) = 0;
+
+    virtual bool pingConnection(T* con) = 0;
 };
 
 #endif // GENERALDBPOOL

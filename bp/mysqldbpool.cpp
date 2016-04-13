@@ -1,6 +1,7 @@
 #include "mysqldbpool.h"
 #include "logger.h"
 #include <cppconn/exception.h>
+#include <cppconn/prepared_statement.h>
 
 using namespace std;
 using namespace sql;
@@ -59,5 +60,22 @@ bool MySqlDBPool::deleteConnection(sql::Connection *con)
         return false;
     delete con;
     return true;
+}
+
+bool MySqlDBPool::pingConnection(sql::Connection *con)
+{
+    PreparedStatement* preparedStmt = nullptr;
+    try{
+        preparedStmt = con->prepareStatement("SELECT 1;");
+        preparedStmt->execute();
+        if (preparedStmt != nullptr)
+            delete preparedStmt;
+        return true;
+    }catch(exception& ex) {
+        if (preparedStmt != nullptr)
+            delete preparedStmt;
+        logger->logError("pingConnection " + string(ex.what()));
+        return false;
+    }
 }
 

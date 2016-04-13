@@ -16,7 +16,7 @@ MySqlChangeStateManager::~MySqlChangeStateManager()
         delete logger;
 }
 
-bool MySqlChangeStateManager::getDBState(int& state)
+bool MySqlChangeStateManager::getDBState(long& state)
 {
     Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
@@ -29,7 +29,7 @@ bool MySqlChangeStateManager::getDBState(int& state)
         int tempState = 0;
         res = preparedStmt->executeQuery();
         while(res->next()) {
-            tempState = res->getInt("change_number");
+            tempState = res->getInt64("change_number");
             i++;
         }
         freeResources(connection, preparedStmt, res);
