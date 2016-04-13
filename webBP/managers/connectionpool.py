@@ -2,6 +2,8 @@ import pymysql
 import queue
 import re
 import logger
+from threading import Lock
+
 
 class ConnectionPool:
     def __init__(self, params, size):
@@ -14,9 +16,10 @@ class ConnectionPool:
         self.num_of_cons = size
         self.cons = queue.Queue(size)
         self.logger = logger.Logger()
+        self.mut = Lock()
 
     def initialize_pool(self):
-        for i in range(0,self.num_of_cons):
+        for i in range(0, self.num_of_cons):
             connection = self.create_connection()
             self.cons.put(connection, block=False)
 
@@ -26,21 +29,38 @@ class ConnectionPool:
                 connection = self.cons.get(block=False)
                 connection.close()
 
+    def get_connection_from_pool_non_block(self):
+        try:
+            self.mut.acquire()
+            if self.used_cons >= self.num_of_cons:
+                return None
+            self.used_cons += 1
+            connection = self.cons.get(block=False)
+            if not self.ping_connection(connection):
+                connection = self.create_connection()
+            return connection
+        finally:
+            self.mut.release()
+
     def get_connection_from_pool(self):
-        self.used_cons += 1
-        connection = self.cons.get(block=False)
-        if not self.ping_connection(connection):
-            connection = self.create_connection()
+        connection = self.get_connection_from_pool_non_block()
+        while connection is None:
+            connection = self.get_connection_from_pool_non_block()
         return connection
 
     def release_connection(self, c):
-        if c:
+        if not c:
+            return None
+        try:
+            self.mut.acquire()
             self.cons.put(c, block=False)
             self.used_cons -= 1
+        finally:
+            self.mut.release()
 
     def create_connection(self):
         return pymysql.connect(host=self.db_name, port=self.port, user=self.user, passwd=self.password,
-                                         db=self.schema)
+                               db=self.schema)
 
     def ping_connection(self, conn):
         cur = None

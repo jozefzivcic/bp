@@ -64,6 +64,8 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     def write_cookie(self):
         c = SimpleCookie()
         sid = self.generate_sid()
+        while sid in self.sessions:
+            sid = self.generate_sid()
         c['sid'] = sid
         self.send_header('Set-Cookie', c.output(header=''))
         return sid

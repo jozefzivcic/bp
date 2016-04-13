@@ -1,6 +1,7 @@
 import os
 import re
 from http.server import HTTPServer
+from socketserver import ThreadingMixIn
 
 from jinja2 import FileSystemLoader, Environment
 
@@ -102,6 +103,9 @@ def prepare_environment(parser):
     create_dir_if_not_exists(parser.get_key('PATH_TO_USERS_DIR_FROM_WEB'))
 
 
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
+
 if __name__ == '__main__':
     cp = ConfigParser()
     cp.parse_file('../config')
@@ -109,7 +113,7 @@ if __name__ == '__main__':
     ip_address = cp.get_key('IP_ADDRESS')
     port = int(cp.get_key('PORT'))
     prepare_handler(cp)
-    server_class = HTTPServer
+    server_class = ThreadedHTTPServer
     httpd = server_class((ip_address, port), MyRequestHandler)
     try:
         httpd.serve_forever()

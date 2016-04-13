@@ -1,5 +1,6 @@
 import syslog
 
+
 class Logger:
     def log_info(self, message):
         syslog.syslog(syslog.LOG_INFO, message)
