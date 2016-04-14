@@ -16,6 +16,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     nist_manager = None
     file_manager = None
     results_manager = None
+    currently_running_manager = None
     path_to_users_dir = None
     logger = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ currently_running }}</title>
+</head>
+<body>
+  <h2>{{ your_currently_running }}</h2>
+  <table>
+        <tr>
+            <th>{{ test }} {{ id }}</th>
+            <th>{{ test_type }}</th>
+            <th>{{ file }}</th>
+            <th>{{ time_of_add }}</th>
+        </tr>
+        {% for test in vars['tests'] %}
+            <tr>
+                <td>{{ test.id }}</td>
+                <td>{{ test.test_table }}</td>
+                <td>{{ vars['files'][test.file_id].name }}</td>
+                <td>{{ test.time_of_add }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

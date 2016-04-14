@@ -8,6 +8,7 @@ from jinja2 import FileSystemLoader, Environment
 from configparser import ConfigParser
 from controllers.common_controller import error_occurred
 from controllers.create_tests_controller import create_tests, create_tests_post
+from controllers.currently_running_controller import currently_running
 from controllers.delete_file_controller import delete_file, delete_file_post
 from controllers.delete_path_controller import delete_path, delete_path_post
 from controllers.delete_test_controller import delete_test, delete_test_post
@@ -20,6 +21,7 @@ from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up
 from controllers.test_controller import test_controller
 from helpers import create_dir_if_not_exists
 from managers.connectionpool import ConnectionPool
+from managers.currently_running_manager import CurrentlyRunningManager
 from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
 from managers.nisttestmanager import NistTestManager
@@ -54,6 +56,7 @@ def register_pages_into_router(router):
     router.register_controller('/delete_file_submit', delete_file_post)
     router.register_controller('/delete_test', delete_test)
     router.register_controller('/delete_test_submit', delete_test_post)
+    router.register_controller('/currently_running', currently_running)
 
 
 def load_texts():
@@ -95,6 +98,7 @@ def prepare_handler(parser):
     MyRequestHandler.nist_manager = NistTestManager(pool)
     MyRequestHandler.file_manager = FileManager(pool)
     MyRequestHandler.results_manager = ResultsManager(pool)
+    MyRequestHandler.currently_running_manager = CurrentlyRunningManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(parser.get_key('PATH_TO_USERS_DIR_FROM_WEB'))
     MyRequestHandler.logger = Logger()
 

@@ -66,7 +66,7 @@ bool MySqlDBPool::pingConnection(sql::Connection *con)
 {
     PreparedStatement* preparedStmt = nullptr;
     try{
-        preparedStmt = con->prepareStatement("SELECT 1;");
+        preparedStmt = con->prepareStatement("SELECT 0 FROM dual;");
         preparedStmt->execute();
         if (preparedStmt != nullptr)
             delete preparedStmt;

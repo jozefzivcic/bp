@@ -82,3 +82,5 @@ random_exc=Random Excursions
 random_excs_var=Random Excursions Variant
 serial=Serial
 linear_complex=Linear Complexity
+currently_running=Currently running tests
+your_currently_running=Your currently running tests
