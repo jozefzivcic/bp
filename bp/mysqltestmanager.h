@@ -27,6 +27,7 @@ public:
     //virtual bool setTestHasStarted(Test t) override;
     virtual bool setTestHasFinished(Test t) override;
     virtual bool setTestAsLoaded(const Test& t) override;
+    virtual bool updateTestForRerun(const Test& t) override;
 private:
 
     /**

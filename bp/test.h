@@ -14,6 +14,10 @@ private:
     long userId;
     time_t timeOfAdd;
     std::string testTable;
+    time_t timeOfRerun;
+    int numOfRuns;
+    int returnValue;
+
 public:
     Test();
     Test(const Test& t);
@@ -34,8 +38,20 @@ public:
     std::string getTestTable() const;
     void setTestTable(const std::string &value);
 
+    time_t getTimeOfRerun() const;
+    void setTimeOfRerun(const time_t &value);
+
+    int getNumOfRuns() const;
+    void setNumOfRuns(int value);
+
+    int getReturnValue() const;
+    void setReturnValue(int value);
+
+    void increaseRuns();
+
     Test& operator =(Test other);
     friend std::ostream& operator <<(std::ostream& out, const Test& t);
+
 private:
 
     /**

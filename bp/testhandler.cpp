@@ -110,7 +110,6 @@ void threadFunction(TestHandler* handler, int i)
 {
     unique_lock<mutex>lck(handler->mutexes[i]);
     ITestCreator* testCreator = new TestCreator(handler->storage, handler->dbPool);
-    ITestManager* testManager = new MySqlTestManager(handler->dbPool);
     ICurrentlyRunningManager* crManager = new MySqlCurrentlyRunningManager(handler->dbPool);
     IFileStructureHandler* fileHandler = new LinuxFileStructureHandler(handler->storage);
     ILogger* logger = new Logger();
@@ -132,7 +131,6 @@ void threadFunction(TestHandler* handler, int i)
         logger->logInfo("test " + to_string(myTest.getId()) + " started in thread " + to_string(i));
         testCreator->createTest(myTest);
         logger->logInfo("test " + to_string(myTest.getId()) + " finished in thread " + to_string(i));
-        testManager->setTestHasFinished(myTest);
         crManager->removeTest(myTest);
         handler->subtractOneTest();
         handler->thHandler->setThreadAtPositionIsReady(i);
@@ -140,7 +138,6 @@ void threadFunction(TestHandler* handler, int i)
     logger->logInfo("Thread " + to_string(i) + " ended");
     delete fileHandler;
     delete testCreator;
-    delete testManager;
     delete crManager;
     delete logger;
 }

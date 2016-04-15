@@ -7,6 +7,7 @@
 #include "linuxfilestructurehandler.h"
 #include "mysqlresultsmanager.h"
 #include "logger.h"
+#include "mysqltestmanager.h"
 #include <string>
 
 using namespace std;
@@ -18,6 +19,7 @@ TestCreator::TestCreator(const ConfigStorage* stor, MySqlDBPool* pool) : storage
     nistManager = new MySqlNistTestsManager(dbPool);
     fileHandler = new LinuxFileStructureHandler(stor);
     resManager = new MySqlResultsManager(dbPool);
+    testManager = new MySqlTestManager(dbPool);
     logger = new Logger();
 }
 
@@ -33,6 +35,8 @@ TestCreator::~TestCreator()
         delete resManager;
     if (logger != nullptr)
         delete logger;
+    if (testManager != nullptr)
+        delete testManager;
 }
 
 bool TestCreator::createTest(Test t)
@@ -60,7 +64,7 @@ bool TestCreator::createNistTest(Test t)
     case -1:
         return false;
     default:
-        return waitOnChild(pid, t, nistParam);
+        waitOnNistChild(pid, t, nistParam);
         break;
     }
     return true;
@@ -72,10 +76,20 @@ bool TestCreator::execNist(string bin, char** argm)
     return ret != -1;
 }
 
-bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
+bool TestCreator::waitOnNistChild(pid_t pid, Test t, NistTestParameter param)
 {
-    pid_t returnedPid = waitpid(pid, NULL, 0);
+    int status = 0;
+    waitpid(pid, &status, 0);
+    int returnValue, signaled;
+    extractFromStatus(status, returnValue, signaled);
     converter->deleteAllocatedArray(&arguments);
+    t.increaseRuns();
+    t.setReturnValue(returnValue);
+    if ((returnValue != 1 || signaled != 0) && t.getNumOfRuns() < storage->getRerunTimes() - 1) {
+        t.setTimeOfRerun(addSecondsToTime(t.getTimeOfRerun(), 7200));
+        testManager->updateTestForRerun(t);
+        return true;
+    }
     if (!fileHandler->checkAndCreateUserTree(storage->getPathToUsersDirFromPool(),t.getUserId()))
         return false;
     string source = fileHandler->createPathToNistResult(param.getTestNumber());
@@ -87,5 +101,16 @@ bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
     fileHandler->copyDirectory(source, destination, false);
     string absPath = fileHandler->getAbsolutePath(destination);
     resManager->storePathForTest(t, absPath);
-    return returnedPid != -1;
+    return true;
+}
+
+void TestCreator::extractFromStatus(const int &status, int &ret, int &signaled)
+{
+    ret = WEXITSTATUS(status);
+    signaled = WIFSIGNALED(status);
+}
+
+time_t TestCreator::addSecondsToTime(time_t time, unsigned int seconds)
+{
+    return time + seconds;
 }

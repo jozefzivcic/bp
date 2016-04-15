@@ -1,6 +1,7 @@
 #include "configstorage.h"
 #include <stdexcept>
 #include <logger.h>
+#include <string>
 
 using namespace std;
 
@@ -69,6 +70,11 @@ int ConfigStorage::getPooledConnections() const
     return pooledConnections;
 }
 
+int ConfigStorage::getRerunTimes() const
+{
+    return rerunTimes;
+}
+
 ConfigStorage::ConfigStorage(ConfigParser *parser):
     database(parser->getValue("DATABASE")), userName(parser->getValue("USERNAME")),
     userPassword(parser->getValue("USER_PASSWORD")), schema(parser->getValue("SCHEMA")),
@@ -77,7 +83,8 @@ ConfigStorage::ConfigStorage(ConfigParser *parser):
     pathToUsersDir(parser->getValue("PATH_TO_USERS_DIR")),
     pathToUsersDirFromPool(parser->getValue("PATH_TO_USERS_DIR_FROM_POOL")),
     testsResults(parser->getValue("TESTS_RESULTS")),
-    nameOfApplication(parser->getValue("NAME_OF_APPLICATION"))
+    nameOfApplication(parser->getValue("NAME_OF_APPLICATION")),
+    rerunTimes(stoi(parser->getValue("RERUN_TIMES")))
 {
     logger = new Logger();
     try {

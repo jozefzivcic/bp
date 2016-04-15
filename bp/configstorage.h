@@ -23,6 +23,7 @@ private:
     size_t sleepInSeconds;
     int pooledConnections;
     ILogger* logger = nullptr;
+    int rerunTimes;
 public:
     ConfigStorage(ConfigParser* parser);
     ~ConfigStorage();
@@ -39,6 +40,7 @@ public:
     std::string getNameOfApplication() const;
     size_t getSleepInSeconds() const;
     int getPooledConnections() const;
+    int getRerunTimes() const;
 };
 
 #endif // CONFIGSTORAGE_H

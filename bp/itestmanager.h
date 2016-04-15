@@ -50,6 +50,13 @@ public:
     virtual bool setTestAsLoaded(const Test& t) = 0;
 
     /**
+     * @brief updateTestForRerun Updates test to can be loaded again for rerunning.
+     * @param t Test to be updated.
+     * @return If an erro occurs false, true otherwise.
+     */
+    virtual bool updateTestForRerun(const Test& t) = 0;
+
+    /**
      * @brief ~ITestManager
      */
     virtual ~ITestManager() {}
