@@ -22,7 +22,8 @@ bool MySqlChangeStateManager::getDBState(long& state)
     PreparedStatement* preparedStmt = nullptr;
     ResultSet* res = nullptr;
     try{
-        connection = dbPool->getConnectionFromPoolBusy();
+        while((connection = dbPool->getConnectionFromPool()) == nullptr)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         preparedStmt = connection->prepareStatement("SELECT change_number FROM change_table WHERE id = ?;");
         preparedStmt->setInt(1,0);
         int i = 0;
@@ -48,10 +49,10 @@ bool MySqlChangeStateManager::getDBState(long& state)
 
 void MySqlChangeStateManager::freeResources(Connection* con, PreparedStatement* p, ResultSet* r)
 {
-    if (con != nullptr)
-        dbPool->releaseConnection(con);
     if (p != nullptr)
         delete p;
     if (r != nullptr)
         delete r;
+    if (con != nullptr)
+        dbPool->releaseConnection(con);
 }

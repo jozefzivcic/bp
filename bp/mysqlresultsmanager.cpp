@@ -25,7 +25,8 @@ bool MySqlResultsManager::storePathForTest(Test t, string path)
     Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     try {
-        connection = dbPool->getConnectionFromPoolBusy();
+        while((connection = dbPool->getConnectionFromPool()) == nullptr)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         preparedStmt = connection->prepareStatement("INSERT INTO results (id_test, directory) VALUES (?,?);");
         preparedStmt->setInt64(1,t.getId());
         preparedStmt->setString(2, path);
@@ -43,4 +44,3 @@ bool MySqlResultsManager::storePathForTest(Test t, string path)
         return false;
     }
 }
-

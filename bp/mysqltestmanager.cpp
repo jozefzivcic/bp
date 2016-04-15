@@ -26,7 +26,8 @@ bool MySqlTestManager::getAllTestsReadyForRunning(list<Test>& t)
     ResultSet* res = nullptr;
     list<Test> l;
     try{
-        connection = dbPool->getConnectionFromPoolBusy();
+        while((connection = dbPool->getConnectionFromPool()) == nullptr)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         preparedStmt = connection->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 0;");
         res = preparedStmt->executeQuery();
         while(res->next()) {
@@ -55,7 +56,8 @@ bool MySqlTestManager::getTestsNotFinished(std::list<Test> &t)
     ResultSet* res = nullptr;
     list<Test> l;
     try{
-        connection = dbPool->getConnectionFromPoolBusy();
+        while((connection = dbPool->getConnectionFromPool()) == nullptr)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         preparedStmt = connection->prepareStatement("SELECT id, id_file, id_user, UNIX_TIMESTAMP(time_of_add) time, test_table FROM tests WHERE loaded = 1 AND ended = 0;");
         res = preparedStmt->executeQuery();
         while(res->next()) {
@@ -101,7 +103,8 @@ bool MySqlTestManager::setTestHasFinished(Test t)
     Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     try {
-        connection = dbPool->getConnectionFromPoolBusy();
+        while((connection = dbPool->getConnectionFromPool()) == nullptr)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         preparedStmt = connection->prepareStatement("UPDATE tests SET ended = ? WHERE id = ?;");
         preparedStmt->setInt(1,1);
         preparedStmt->setInt64(2,t.getId());
@@ -125,7 +128,8 @@ bool MySqlTestManager::setTestAsLoaded(const Test &t)
     Connection* connection = nullptr;
     PreparedStatement* preparedStmt = nullptr;
     try {
-        connection = dbPool->getConnectionFromPoolBusy();
+        while((connection = dbPool->getConnectionFromPool()) == nullptr)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         preparedStmt = connection->prepareStatement("UPDATE tests SET loaded = ? WHERE id = ? AND loaded = ?;");
         preparedStmt->setInt(1,1);
         preparedStmt->setInt(2,t.getId());
@@ -147,10 +151,10 @@ bool MySqlTestManager::setTestAsLoaded(const Test &t)
 
 void MySqlTestManager::freeResources(Connection* con, PreparedStatement* p, ResultSet* r)
 {
-    if (con != nullptr)
-        dbPool->releaseConnection(con);
     if (p != nullptr)
         delete p;
     if (r != nullptr)
         delete r;
+    if (con != nullptr)
+        dbPool->releaseConnection(con);
 }

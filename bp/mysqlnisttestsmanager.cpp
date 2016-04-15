@@ -26,7 +26,8 @@ bool MySqlNistTestsManager::getParameterById(long id, NistTestParameter &param)
     PreparedStatement* preparedStmt = nullptr;
     ResultSet *res = nullptr;
     try {
-        connection = dbPool->getConnectionFromPoolBusy();
+        while((connection = dbPool->getConnectionFromPool()) == nullptr)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         preparedStmt = connection->prepareStatement("SELECT id_test, length, test_number, streams, special_parameter FROM nist_tests WHERE id_test=?;");
         preparedStmt->setInt64(1, id);
         res = preparedStmt->executeQuery();
@@ -59,10 +60,10 @@ bool MySqlNistTestsManager::getParameterById(long id, NistTestParameter &param)
 
 void MySqlNistTestsManager::freeResources(Connection* con, PreparedStatement* p, ResultSet* r)
 {
-    if (con != nullptr)
-        dbPool->releaseConnection(con);
     if (p != nullptr)
         delete p;
     if (r != nullptr)
         delete r;
+    if (con != nullptr)
+        dbPool->releaseConnection(con);
 }

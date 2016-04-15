@@ -57,8 +57,6 @@ bool TestHandler::createTest(Test t)
     thHandler->setTestAtPosition(index, t);
     thHandler->setThreadAtPositionIsBusy(index);
     crManager->insertTest(t);
-    log->logInfo("testHandler::createTest - sending message to thread " +
-                 to_string(index) + " for test " + to_string(t.getId()));
     setSignal(-1);
     vars[index].notify_one();
     int i = 0;

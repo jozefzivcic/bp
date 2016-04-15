@@ -75,7 +75,6 @@ bool TestCreator::execNist(string bin, char** argm)
 bool TestCreator::waitOnChild(pid_t pid, Test t, NistTestParameter param)
 {
     pid_t returnedPid = waitpid(pid, NULL, 0);
-    logger->logInfo(string("Waiting on child ended for test ") + to_string(t.getId()));
     converter->deleteAllocatedArray(&arguments);
     if (!fileHandler->checkAndCreateUserTree(storage->getPathToUsersDirFromPool(),t.getUserId()))
         return false;

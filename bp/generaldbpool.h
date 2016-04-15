@@ -5,22 +5,26 @@
 #include <mutex>
 #include <thread>
 #include <algorithm>
+#include <atomic>
 #include "ilogger.h"
 #include "logger.h"
+#include "map"
+#include <utility>
 
 template <typename T>
 class GeneralDBPool {
 private:
-    std::list<T*> freeConnections;
-    std::list<T*> usedConnections;
+    std::map<T*, bool> cons;
     bool isReady = false;
-    int numOfCons = 0;
+    volatile int numOfCons = 0;
     std::mutex conMutex;
-    std::mutex getMutex;
     ILogger* logger = new Logger();
 public:
 
-    virtual ~GeneralDBPool() {}
+    virtual ~GeneralDBPool() {
+        if (logger != nullptr)
+            delete logger;
+    }
 
     bool createPool(int num) {
         if (isReady || num < 1)
@@ -32,7 +36,7 @@ public:
                 destroyPool();
                 return false;
             }
-            freeConnections.push_back(con);
+            cons.insert(std::make_pair(con, true));
         }
         isReady = true;
         return true;
@@ -40,12 +44,9 @@ public:
 
     void destroyPool() {
         isReady = false;
-        typename std::list<T*>::iterator iter;
-        for (iter = freeConnections.begin(); iter != freeConnections.end(); iter++) {
-            deleteConnection(*iter);
-        }
-        for (iter = usedConnections.begin(); iter != usedConnections.end(); iter++) {
-            deleteConnection(*iter);
+        typename std::map<T*, bool>::iterator iter;
+        for (iter = cons.begin(); !cons.empty() && iter != cons.end(); iter++) {
+            deleteConnection(iter->first);
         }
     }
 
@@ -54,29 +55,22 @@ public:
         if (!isReady)
             return nullptr;
         T* con = nullptr;
-        if (!freeConnections.empty()) {
-            typename std::list<T*>::iterator iter;
-            iter = freeConnections.begin();
-            con = *iter;
-            if (!pingConnection(con)) {
-                deleteConnection(con);
-                con = createConnection();
+        typename std::map<T*, bool>::iterator iter;
+        for (iter = cons.begin(); iter != cons.end(); iter++) {
+            if (iter->second) {
+                iter->second = false;
+                con = iter->first;
+                break;
             }
-            freeConnections.erase(iter);
-            usedConnections.push_back(con);
         }
-        return con;
-    }
-
-    T* getConnectionFromPoolBusy() {
-        std::unique_lock<std::mutex> lck(getMutex);
-        logger->logInfo("Entered getConnectionFromPoolBusy");
-        if (!isReady)
+        if (iter == cons.end())
             return nullptr;
-        T* con = nullptr;
-        while ((con = getConnectionFromPool()) == nullptr)
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        logger->logInfo("Leaved getConnectionFromPoolBusy");
+        if (!pingConnection(con)) {
+            deleteConnection(con);
+            cons.erase(iter);
+            con = createConnection();
+            cons.insert(std::make_pair(con, false));
+        }
         return con;
     }
 
@@ -84,13 +78,10 @@ public:
         std::unique_lock<std::mutex> lck(conMutex);
         if (con == nullptr)
             return false;
-        typename std::list<T*>::iterator iter;
-        iter = std::find(usedConnections.begin(), usedConnections.end(), con);
-        if (iter == usedConnections.end()) {
+        typename std::map<T*,bool>::iterator iter = cons.find(con);
+        if (iter == cons.end())
             return false;
-        }
-        usedConnections.erase(iter);
-        freeConnections.push_back(con);
+        iter->second = true;
         return true;
     }
 protected:
@@ -102,4 +93,3 @@ protected:
 };
 
 #endif // GENERALDBPOOL
-

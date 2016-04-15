@@ -25,7 +25,8 @@ bool MySqlFileManager::getFileById(long id, File *file) {
     ResultSet *res = nullptr;
     File tempFile;
     try {
-        connection = dbPool->getConnectionFromPoolBusy();
+        while((connection = dbPool->getConnectionFromPool()) == nullptr)
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         preparedStmt = connection->prepareStatement("SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = ?;");
         preparedStmt->setInt64(1,id);
         res = preparedStmt->executeQuery();
@@ -56,10 +57,10 @@ MySqlFileManager::~MySqlFileManager() {
 
 void MySqlFileManager::freeResources(Connection* con, PreparedStatement* p, ResultSet* r)
 {
-    if (con != nullptr)
-        dbPool->releaseConnection(con);
     if (p != nullptr)
         delete p;
     if (r != nullptr)
         delete r;
+    if (con != nullptr)
+        dbPool->releaseConnection(con);
 }
