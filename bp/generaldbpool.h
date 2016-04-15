@@ -5,6 +5,8 @@
 #include <mutex>
 #include <thread>
 #include <algorithm>
+#include "ilogger.h"
+#include "logger.h"
 
 template <typename T>
 class GeneralDBPool {
@@ -14,6 +16,8 @@ private:
     bool isReady = false;
     int numOfCons = 0;
     std::mutex conMutex;
+    std::mutex getMutex;
+    ILogger* logger = new Logger();
 public:
 
     virtual ~GeneralDBPool() {}
@@ -46,9 +50,9 @@ public:
     }
 
     T* getConnectionFromPool() {
+        std::unique_lock<std::mutex> lck(conMutex);
         if (!isReady)
             return nullptr;
-        conMutex.lock();
         T* con = nullptr;
         if (!freeConnections.empty()) {
             typename std::list<T*>::iterator iter;
@@ -61,32 +65,32 @@ public:
             freeConnections.erase(iter);
             usedConnections.push_back(con);
         }
-        conMutex.unlock();
         return con;
     }
 
     T* getConnectionFromPoolBusy() {
+        std::unique_lock<std::mutex> lck(getMutex);
+        logger->logInfo("Entered getConnectionFromPoolBusy");
         if (!isReady)
             return nullptr;
         T* con = nullptr;
         while ((con = getConnectionFromPool()) == nullptr)
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        logger->logInfo("Leaved getConnectionFromPoolBusy");
         return con;
     }
 
     bool releaseConnection(T* con) {
+        std::unique_lock<std::mutex> lck(conMutex);
         if (con == nullptr)
             return false;
-        conMutex.lock();
         typename std::list<T*>::iterator iter;
         iter = std::find(usedConnections.begin(), usedConnections.end(), con);
         if (iter == usedConnections.end()) {
-            conMutex.unlock();
             return false;
         }
         usedConnections.erase(iter);
         freeConnections.push_back(con);
-        conMutex.unlock();
         return true;
     }
 protected:

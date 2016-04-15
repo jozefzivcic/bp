@@ -139,6 +139,7 @@ void threadFunction(TestHandler* handler, int i)
         handler->subtractOneTest();
         handler->thHandler->setThreadAtPositionIsReady(i);
     }
+    logger->logInfo("Thread " + to_string(i) + " ended");
     delete fileHandler;
     delete testCreator;
     delete testManager;
