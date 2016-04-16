@@ -170,7 +170,7 @@ bool MySqlTestManager::updateTestForRerun(const Test &t)
     try {
         while((connection = dbPool->getConnectionFromPool()) == nullptr)
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        preparedStmt = connection->prepareStatement("UPDATE tests SET num_of_runs = ?, rerun = 1, FROM_UNIXTIME(time_of_rerun = ?), loaded_for_rerun = 0, return_value = ? WHERE id = ?;");
+        preparedStmt = connection->prepareStatement("UPDATE tests SET num_of_runs = ?, rerun = 1, time_of_rerun = FROM_UNIXTIME(?), loaded_for_rerun = 0, return_value = ? WHERE id = ?;");
         preparedStmt->setInt(1,t.getNumOfRuns());
         preparedStmt->setInt(2,t.getTimeOfRerun());
         preparedStmt->setInt(3,t.getReturnValue());

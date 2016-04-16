@@ -24,6 +24,7 @@ private:
     int pooledConnections;
     ILogger* logger = nullptr;
     int rerunTimes;
+    unsigned int rerunAfter;
 public:
     ConfigStorage(ConfigParser* parser);
     ~ConfigStorage();
@@ -41,6 +42,7 @@ public:
     size_t getSleepInSeconds() const;
     int getPooledConnections() const;
     int getRerunTimes() const;
+    unsigned int getRerunAfter() const;
 };
 
 #endif // CONFIGSTORAGE_H

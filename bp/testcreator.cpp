@@ -86,7 +86,7 @@ bool TestCreator::waitOnNistChild(pid_t pid, Test t, NistTestParameter param)
     t.increaseRuns();
     t.setReturnValue(returnValue);
     if ((returnValue != 1 || signaled != 0) && t.getNumOfRuns() < storage->getRerunTimes()) {
-        t.setTimeOfRerun(addSecondsToTime(t.getTimeOfRerun(), 7200));
+        t.setTimeOfRerun(addSecondsToTime(time(0), storage->getRerunAfter()));
         testManager->updateTestForRerun(t);
         return true;
     }

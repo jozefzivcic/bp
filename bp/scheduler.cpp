@@ -72,7 +72,7 @@ void Scheduler::run()
 {
     long tempState = 0;
     while(!endProgram) {
-        if ((queue.size() <= maxTestsRunningParallel * 2) && isStateChanged(tempState)) {
+        if ((queue.size() <= maxTestsRunningParallel * 2) /*&& isStateChanged(tempState)*/) {
             addTestsReadyForRunning();
             state = tempState;
         }

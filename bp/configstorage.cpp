@@ -75,6 +75,11 @@ int ConfigStorage::getRerunTimes() const
     return rerunTimes;
 }
 
+unsigned int ConfigStorage::getRerunAfter() const
+{
+    return rerunAfter;
+}
+
 ConfigStorage::ConfigStorage(ConfigParser *parser):
     database(parser->getValue("DATABASE")), userName(parser->getValue("USERNAME")),
     userPassword(parser->getValue("USER_PASSWORD")), schema(parser->getValue("SCHEMA")),
@@ -84,7 +89,8 @@ ConfigStorage::ConfigStorage(ConfigParser *parser):
     pathToUsersDirFromPool(parser->getValue("PATH_TO_USERS_DIR_FROM_POOL")),
     testsResults(parser->getValue("TESTS_RESULTS")),
     nameOfApplication(parser->getValue("NAME_OF_APPLICATION")),
-    rerunTimes(stoi(parser->getValue("RERUN_TIMES")))
+    rerunTimes(stoi(parser->getValue("RERUN_TIMES"))),
+    rerunAfter(stoi(parser->getValue("RERUN_TEST_IN_SEC")))
 {
     logger = new Logger();
     try {
