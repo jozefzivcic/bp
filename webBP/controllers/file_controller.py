@@ -25,7 +25,7 @@ def upload_file_post(handler):
     if file_data != b'':
         if file_name == '':
             file_name = form['file'].filename
-        path = create_path(handler.path_to_users_dir, user_id, handler.parser.get_key('FILES'))
+        path = create_path(handler.path_to_users_dir, user_id, handler.config_storage.files)
         file = File()
         set_file(file, file_name, user_id, path, file_data)
         handler.file_manager.save_file(file)

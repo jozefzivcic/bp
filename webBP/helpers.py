@@ -33,7 +33,7 @@ def render_signup_template(handler, user_already_exists, passwords_are_not_same)
 
 
 def get_param_for_test(handler, test):
-    if test.test_table == handler.parser.get_key('NIST'):
+    if test.test_table == handler.config_storage.nist:
         nist_param = NistTestManager(handler.pool)
         return nist_param.get_nist_param_for_test(test)
     return None
@@ -132,7 +132,7 @@ def get_file_ids_from_nist_form(form):
 
 
 def control_nist_forms(handler, user_id, file_ids, nist_params):
-    user_dir = join(handler.path_to_users_dir, str(user_id), handler.parser.get_key('FILES'))
+    user_dir = join(handler.path_to_users_dir, str(user_id), handler.config_storage.files)
     if len(file_ids) == 0:
         return (4,0)
     if len(nist_params) == 0:

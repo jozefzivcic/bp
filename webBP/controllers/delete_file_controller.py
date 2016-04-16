@@ -57,7 +57,7 @@ def delete_file_post(handler):
             if path is not None:
                 handler.results_manager.delete_result(test)
                 shutil.rmtree(path)
-        if test.test_table == handler.parser.get_key('NIST'):
+        if test.test_table == handler.config_storage.nist:
             handler.nist_manager.delete_nist_param_by_id(test.id)
         handler.test_manager.delete_test(test)
     handler.file_manager.delete_file(file)

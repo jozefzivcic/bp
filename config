@@ -1,4 +1,4 @@
-# This file must be in the same folder as executable file of scheduler.
+# This file must be placed in the same folder as folders for scheduler and web.
 DATABASE=tcp://localhost:3306
 USERNAME=root
 USER_PASSWORD=admin

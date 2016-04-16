@@ -64,7 +64,7 @@ def create_tests_post(handler):
 
     t = Test()
     t.user_id = user_id
-    t.test_table = handler.parser.get_key('NIST')
+    t.test_table = handler.config_storage.nist
     for file_id in file_ids:
         t.file_id = file_id
         for nist_param in nist_params:

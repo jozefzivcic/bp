@@ -6,6 +6,7 @@ from socketserver import ThreadingMixIn
 from jinja2 import FileSystemLoader, Environment
 
 from configparser import ConfigParser
+from configstorage import ConfigStorage
 from controllers.common_controller import error_occurred
 from controllers.create_tests_controller import create_tests, create_tests_post
 from controllers.currently_running_controller import currently_running
@@ -71,26 +72,26 @@ def load_texts():
     return ret
 
 
-def extract_values_for_pool(parser):
-    res = re.search(r'^([a-zA-Z]+://)?([0-9\.]+|[a-zA-Z]+)[:]([0-9]+)?$', parser.get_key('DATABASE')).groups()
+def extract_values_for_pool(config_storage):
+    res = re.search(r'^([a-zA-Z]+://)?([0-9\.]+|[a-zA-Z]+)[:]([0-9]+)?$', config_storage.database).groups()
     db = res[1]
     db_port = res[2]
     temp_dict = {'DATABASE': db,
                  'PORT': int(db_port),
-                 'USERNAME': parser.get_key('USERNAME'), 'USER_PASSWORD': parser.get_key('USER_PASSWORD'),
-                 'SCHEMA': parser.get_key('SCHEMA')}
+                 'USERNAME': config_storage.user_name, 'USER_PASSWORD': config_storage.user_password,
+                 'SCHEMA': config_storage.schema}
     return temp_dict
 
 
-def prepare_handler(parser):
-    MyRequestHandler.parser = parser
+def prepare_handler(config_storage):
+    MyRequestHandler.config_storage = config_storage
     router = Router()
     register_pages_into_router(router)
     MyRequestHandler.router = router
     env = Environment(loader=FileSystemLoader('views'))
     MyRequestHandler.environment = env
     MyRequestHandler.texts = load_texts()
-    pool = ConnectionPool(extract_values_for_pool(parser), int(parser.get_key('POOLED_CONNECTIONS_FOR_WEB')))
+    pool = ConnectionPool(extract_values_for_pool(config_storage), config_storage.pooled_connections)
     pool.initialize_pool()
     MyRequestHandler.pool = pool
     MyRequestHandler.user_manager = UserManager(pool)
@@ -99,12 +100,12 @@ def prepare_handler(parser):
     MyRequestHandler.file_manager = FileManager(pool)
     MyRequestHandler.results_manager = ResultsManager(pool)
     MyRequestHandler.currently_running_manager = CurrentlyRunningManager(pool)
-    MyRequestHandler.path_to_users_dir = os.path.abspath(parser.get_key('PATH_TO_USERS_DIR_FROM_WEB'))
+    MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
     MyRequestHandler.logger = Logger()
 
 
-def prepare_environment(parser):
-    create_dir_if_not_exists(parser.get_key('PATH_TO_USERS_DIR_FROM_WEB'))
+def prepare_environment(config_storage):
+    create_dir_if_not_exists(config_storage.path_to_users_dir)
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -113,10 +114,11 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 if __name__ == '__main__':
     cp = ConfigParser()
     cp.parse_file('../config')
-    prepare_environment(cp)
-    ip_address = cp.get_key('IP_ADDRESS')
-    port = int(cp.get_key('PORT'))
-    prepare_handler(cp)
+    config_storage = ConfigStorage(cp)
+    prepare_environment(config_storage)
+    ip_address = config_storage.ip_address
+    port = config_storage.port
+    prepare_handler(config_storage)
     server_class = ThreadedHTTPServer
     httpd = server_class((ip_address, port), MyRequestHandler)
     try:

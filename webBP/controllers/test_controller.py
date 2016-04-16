@@ -30,7 +30,7 @@ def test_controller(handler):
     temp_dict['vars']['test'] = test
     temp_dict['vars']['file'] = file
     temp_dict['vars']['test_param'] = test_param
-    temp_dict['vars']['nist'] = handler.parser.get_key('NIST')
+    temp_dict['vars']['nist'] = handler.config_storage.nist
     template = handler.environment.get_template('test.html')
     output = template.render(temp_dict)
     handler.wfile.write(output.encode(encoding='utf-8'))
