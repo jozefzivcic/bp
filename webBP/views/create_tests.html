@@ -249,28 +249,31 @@
             </tr>
         </table>
         <input type="submit" value="{{ create_test }}">
-        {% if 'l' in vars['queries'] and 't' in vars['queries'] %}
-            {% if vars['queries']['l'] is equalto '1' %}
-                <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ length_error }}</h3>
-            {% endif %}
-            {% if vars['queries']['l'] is equalto '2' %}
-                <h3>{{ test }} {{ vars['queries']['t'] }}. {{ length_must_be_filled }}</h3>
-            {% endif %}
-        {% endif %}
-
-        {% if 's' in vars['queries'] and 't' in vars['queries'] %}
-            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ streams_error }}</h3>
-        {% endif %}
-
-        {% if 'p' in vars['queries'] and 't' in vars['queries'] %}
-            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ param_error }}</h3>
-        {% endif %}
-        {% if 'f' in vars['queries'] %}
-            <h3>{{ no_file_selected }}</h3>
-        {% endif %}
-        {% if 'test' in vars['queries'] %}
-            <h3>{{ no_test_selected }}</h3>
-        {% endif %}
     </form>
+    <FORM>
+      <INPUT Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
+    </FORM>
+    {% if 'l' in vars['queries'] and 't' in vars['queries'] %}
+        {% if vars['queries']['l'] is equalto '1' %}
+            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ length_error }}</h3>
+        {% endif %}
+        {% if vars['queries']['l'] is equalto '2' %}
+            <h3>{{ test }} {{ vars['queries']['t'] }}. {{ length_must_be_filled }}</h3>
+        {% endif %}
+    {% endif %}
+
+    {% if 's' in vars['queries'] and 't' in vars['queries'] %}
+        <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ streams_error }}</h3>
+    {% endif %}
+
+    {% if 'p' in vars['queries'] and 't' in vars['queries'] %}
+        <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ param_error }}</h3>
+    {% endif %}
+    {% if 'f' in vars['queries'] %}
+        <h3>{{ no_file_selected }}</h3>
+    {% endif %}
+    {% if 'test' in vars['queries'] %}
+        <h3>{{ no_test_selected }}</h3>
+    {% endif %}
 </body>
 </html>

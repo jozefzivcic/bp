@@ -52,8 +52,17 @@
           </td>
       </tr>
       {% if vars['test'].ended is equalto 1 %}
+
           <tr>
               <td>
+                  {{ return_value }}
+              </td>
+              <td>
+                  {{ vars['test'].return_value }}
+              </td>
+          </tr>
+          <tr>
+              <td colspan="2">
                 <a href="/test/results?id={{ vars['test'].id }}">{{ results }}</a>
               </td>
           </tr>

@@ -84,3 +84,4 @@ serial=Serial
 linear_complex=Linear Complexity
 currently_running=Currently running tests
 your_currently_running=Your currently running tests
+return_value=Return value

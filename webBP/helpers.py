@@ -134,9 +134,9 @@ def get_file_ids_from_nist_form(form):
 def control_nist_forms(handler, user_id, file_ids, nist_params):
     user_dir = join(handler.path_to_users_dir, str(user_id), handler.config_storage.files)
     if len(file_ids) == 0:
-        return (4,0)
+        return (4, 0)
     if len(nist_params) == 0:
-        return (5,0)
+        return (5, 0)
     for file_id in file_ids:
         file_path = join(user_dir, str(file_id))
         size = get_file_size_in_bits(file_path)

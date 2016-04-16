@@ -1,6 +1,6 @@
 import cgi
 import os
-from os.path import join
+from os.path import isfile, isdir
 from urllib.parse import urlparse, parse_qs
 
 import shutil
@@ -56,11 +56,12 @@ def delete_file_post(handler):
             path = handler.results_manager.get_path_for_test(test)
             if path is not None:
                 handler.results_manager.delete_result(test)
-                shutil.rmtree(path)
+                if isdir(path):
+                    shutil.rmtree(path)
         if test.test_table == handler.config_storage.nist:
             handler.nist_manager.delete_nist_param_by_id(test.id)
         handler.test_manager.delete_test(test)
     handler.file_manager.delete_file(file)
-    if file.file_system_path is not None:
+    if (file.file_system_path is not None) and isfile(file.file_system_path):
         os.remove(file.file_system_path)
     return

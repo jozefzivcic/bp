@@ -7,3 +7,4 @@ class Test:
         self.test_table = 0
         self.loaded = 0
         self.ended = 0
+        self.return_value = 0

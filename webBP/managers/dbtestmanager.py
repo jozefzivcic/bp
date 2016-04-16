@@ -15,7 +15,7 @@ class DBTestManager:
             connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
-                'SELECT id, id_file, id_user, time_of_add, test_table, loaded, ended FROM tests WHERE id_user = %s;',
+                'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests WHERE id_user = %s;',
                 (id))
             connection.commit()
             my_list = []
@@ -27,7 +27,8 @@ class DBTestManager:
                 test.time_of_add = row[3]
                 test.test_table = row[4]
                 test.loaded = row[5]
-                test.ended = row[6]
+                test.return_value = row[6]
+                test.ended = row[7]
                 my_list.append(test)
             return my_list
         except pymysql.MySQLError as ex:
@@ -65,7 +66,7 @@ class DBTestManager:
             connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
-                'SELECT id, id_file, id_user, time_of_add, test_table, loaded, ended FROM tests WHERE id = %s AND id_user = %s;',
+                'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests WHERE id = %s AND id_user = %s;',
                 (test_id, user_id))
             connection.commit()
             i = 0
@@ -77,7 +78,8 @@ class DBTestManager:
                 test.time_of_add = row[3]
                 test.test_table = row[4]
                 test.loaded = row[5]
-                test.ended = row[6]
+                test.return_value = row[6]
+                test.ended = row[7]
                 i += 1
             if i == 1:
                 return test
@@ -122,7 +124,7 @@ class DBTestManager:
             connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
-                'SELECT id, id_file, id_user, time_of_add, test_table, loaded, ended FROM tests WHERE id_file = %s;',
+                'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests WHERE id_file = %s;',
                 (file.id))
             connection.commit()
             arr = []
@@ -134,7 +136,8 @@ class DBTestManager:
                 test.time_of_add = row[3]
                 test.test_table = row[4]
                 test.loaded = row[5]
-                test.ended = row[6]
+                test.return_value = row[6]
+                test.ended = row[7]
                 arr.append(test)
             return arr
         except pymysql.MySQLError as ex:

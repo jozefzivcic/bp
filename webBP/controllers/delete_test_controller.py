@@ -1,6 +1,6 @@
 import cgi
 from urllib.parse import urlparse, parse_qs
-
+from os.path import isdir
 import shutil
 
 from helpers import get_param_for_test
@@ -55,7 +55,7 @@ def delete_test_post(handler):
     handler.end_headers()
     path = handler.results_manager.get_path_for_test(test)
     handler.results_manager.delete_result(test)
-    if path is not None:
+    if (path is not None) and (isdir(path)):
         shutil.rmtree(path)
     if test.test_table == handler.config_storage.nist:
         handler.nist_manager.delete_nist_param_by_id(test.id)
