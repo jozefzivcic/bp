@@ -3,13 +3,13 @@
 
 using namespace std;
 
-Test::Test() : id(0), fileId(0), userId(0), timeOfAdd(0), testTable(""), timeOfRerun(0),
+Test::Test() : id(0), fileId(0), userId(0), timeOfAdd(0), testTable(""), rerun(false), timeOfRerun(0),
     numOfRuns(0), returnValue(1)
 {}
 
 Test::Test(const Test &t) : id(t.getId()), fileId(t.getFileId()), userId(t.getUserId()),
-    timeOfAdd(t.getTimeOfAdd()), testTable(t.getTestTable()), timeOfRerun(t.getTimeOfRerun()),
-    numOfRuns(t.getNumOfRuns()), returnValue(t.getReturnValue())
+    timeOfAdd(t.getTimeOfAdd()), testTable(t.getTestTable()), rerun(t.getRerun()),
+    timeOfRerun(t.getTimeOfRerun()), numOfRuns(t.getNumOfRuns()), returnValue(t.getReturnValue())
 {}
 
 long Test::getId() const
@@ -97,6 +97,16 @@ void Test::increaseRuns()
     numOfRuns++;
 }
 
+bool Test::getRerun() const
+{
+    return rerun;
+}
+
+void Test::setRerun(bool value)
+{
+    rerun = value;
+}
+
 Test& Test::operator =(Test other)
 {
     swap(other);
@@ -117,6 +127,7 @@ void Test::swap(Test &t)
     swap(userId, t.userId);
     swap(timeOfAdd, t.timeOfAdd);
     swap(testTable, t.testTable);
+    swap(rerun, t.rerun);
     swap(timeOfRerun, t.timeOfRerun);
     swap(numOfRuns, t.numOfRuns);
     swap(returnValue, t.returnValue);

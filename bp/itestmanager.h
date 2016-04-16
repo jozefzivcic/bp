@@ -26,14 +26,6 @@ public:
     virtual bool getTestsNotFinished(std::list<Test>& t) = 0;
 
     /**
-     * @brief setTestHasStarted Sets flags in database, that given test has already started
-     * and has not finished yet.
-     * @param t Test which is marked as running.
-     * @return If given test does not exists, or an error occurs, return value is false, true otherwise.
-     */
-    //virtual bool setTestHasStarted(Test t) = 0;
-
-    /**
      * @brief setTestHasFinished Sets flag in database, that given test has already ended.
      * @param t Test which is marked as finished.
      * @return If given test does not exists, is not running, or an error occurs,
@@ -52,9 +44,16 @@ public:
     /**
      * @brief updateTestForRerun Updates test to can be loaded again for rerunning.
      * @param t Test to be updated.
-     * @return If an erro occurs false, true otherwise.
+     * @return If an error occurs false, true otherwise.
      */
     virtual bool updateTestForRerun(const Test& t) = 0;
+
+    /**
+     * @brief setTestAsLoadedForRerun Sets flag in database, that test is loaded by the program.
+     * @param t Test to be marked.
+     * @return If an error occurs false, true otherwise.
+     */
+    virtual bool setTestAsLoadedForRerun(const Test &t) = 0;
 
     /**
      * @brief ~ITestManager

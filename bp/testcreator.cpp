@@ -85,7 +85,7 @@ bool TestCreator::waitOnNistChild(pid_t pid, Test t, NistTestParameter param)
     converter->deleteAllocatedArray(&arguments);
     t.increaseRuns();
     t.setReturnValue(returnValue);
-    if ((returnValue != 1 || signaled != 0) && t.getNumOfRuns() < storage->getRerunTimes() - 1) {
+    if ((returnValue != 1 || signaled != 0) && t.getNumOfRuns() < storage->getRerunTimes()) {
         t.setTimeOfRerun(addSecondsToTime(t.getTimeOfRerun(), 7200));
         testManager->updateTestForRerun(t);
         return true;
@@ -101,6 +101,7 @@ bool TestCreator::waitOnNistChild(pid_t pid, Test t, NistTestParameter param)
     fileHandler->copyDirectory(source, destination, false);
     string absPath = fileHandler->getAbsolutePath(destination);
     resManager->storePathForTest(t, absPath);
+    testManager->setTestHasFinished(t);
     return true;
 }
 

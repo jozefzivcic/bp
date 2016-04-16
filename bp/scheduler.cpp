@@ -55,8 +55,14 @@ bool Scheduler::addTestsReadyForRunning()
     if (!testManager->getAllTestsReadyForRunning(l))
         return false;
     for (Test t : l) {
-        if (!testManager->setTestAsLoaded(t))
-            return false;
+        if (t.getRerun()) {
+            if (!testManager->setTestAsLoadedForRerun(t))
+                return false;
+        }
+        else {
+            if (!testManager->setTestAsLoaded(t))
+                return false;
+        }
         queue.push(t);
     }
     return true;
@@ -80,7 +86,6 @@ void Scheduler::run()
         }
         sleep(sleepInSeconds);
     }
-    logger->logInfo("Ending Scheduler::run()");
 }
 
 bool Scheduler::isStateChanged(long& retState)
