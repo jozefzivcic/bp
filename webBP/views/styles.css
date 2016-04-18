@@ -1,0 +1,62 @@
+body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
+}
+
+.form-signin {
+  max-width: 350px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.my-center {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.login-button {
+    margin-top: 10px;
+}
+
+tbody tr:nth-child(odd) {
+   background-color: #ccc;
+}
+
+.main-menu {
+    position: absolute;
+    width: 100%;
+    top: 0px;
+    background-color: #9d9d9d;
+}
+
+.main-menu ul {
+    margin: 0; padding: 0;
+    float: left;
+}
+
+.main-menu ul li {
+    display: inline;
+}
+
+.main-menu ul li a {
+    float: left; text-decoration: none;
+    color: whitesmoke;
+    padding: 10.5px 11px;
+    background-color: #9d9d9d;
+}
+
+.main-menu ul li a:visited {
+    color: white;
+}
+
+.main-menu ul li a:hover, main-menu ul li .current {
+    color: white;
+    background-color: #0f0f0f;
+}
+
+.logout {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+}

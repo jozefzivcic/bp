@@ -7,6 +7,7 @@ from jinja2 import FileSystemLoader, Environment
 
 from configparser import ConfigParser
 from configstorage import ConfigStorage
+from controllers.css_controller import get_bootstrap, get_own_styles
 from controllers.common_controller import error_occurred
 from controllers.create_tests_controller import create_tests, create_tests_post
 from controllers.currently_running_controller import currently_running
@@ -58,6 +59,8 @@ def register_pages_into_router(router):
     router.register_controller('/delete_test', delete_test)
     router.register_controller('/delete_test_submit', delete_test_post)
     router.register_controller('/currently_running', currently_running)
+    router.register_controller('/bootstrap/css/bootstrap.min.css', get_bootstrap)
+    router.register_controller('/styles.css', get_own_styles)
 
 
 def load_texts():

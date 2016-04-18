@@ -2,38 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css">
+    <link href="styles.css" rel="stylesheet">
     <title>{{ title }}</title>
 </head>
 <body>
-    <form name="login" action="login_submit" method="post" accept-charset="utf-8">
-        <table>
-            <tr>
-                <td>
-                    <label for="username">{{ user_name }}</label>
-                </td>
-                <td>
-                    <input type="text" name="username" placeholder="{{ user_name }}" maxlength="32" autofocus="autofocus" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="password">{{ password }}</label>
-                </td>
-                <td>
-                    <input type="password" name="password" placeholder="{{ password }}" required>
-                </td>
-            </tr>
-        </table>
-        <input type="submit" value="{{ login }}">
-    </form>
-    <a href="sign_up">{{ register_new_user }}</a>
-    <br/>
-    {% if vars['wrong_user'] is equalto 1 %}
-      <h3>{{ user_doesnt_exists }}</h3>
-    {% endif %}
+    <div class="container">
+        <form class="form-signin" name="login" action="login_submit" method="post" accept-charset="utf-8">
+            <h2>{{ please_log_in }}</h2>
+            <label class="sr-only" for="username">{{ user_name }}</label>
+            <input class="form-control" type="text" name="username" placeholder="{{ user_name }}" maxlength="32" autofocus="autofocus" required>
+            <label class="sr-only" for="password">{{ password }}</label>
+            <input class="form-control" type="password" name="password" placeholder="{{ password }}" required>
+            <input class="btn btn-primary btn-block login-button" type="submit" value="{{ login }}">
+        </form>
 
-    {% if vars['wrong_password'] is equalto 1 %}
-      <h3>{{ wrong_password }}</h3>
-    {% endif %}
+        <div class="my-center">
+            <a href="sign_up">{{ register_new_user }}</a>
+            <br/>
+            {% if vars['wrong_user'] is equalto 1 %}
+              <h3>{{ user_doesnt_exists }}</h3>
+            {% endif %}
+
+            {% if vars['wrong_password'] is equalto 1 %}
+              <h3>{{ wrong_password }}</h3>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

@@ -2,46 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css">
+    <link href="styles.css" rel="stylesheet">
     <title>{{ register_new_user }}</title>
 </head>
 <body>
-  <form name="signup" action="sign_up_submit" method="post" accept-charset="utf-8">
-    <table>
-      <tr>
-        <td>
-          <label for="username">{{ user_name }}</label>
-        </td>
-        <td>
-          <input type="text" name="username" placeholder="{{ user_name }}" maxlength="32" required> <br>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="password">{{ password }}</label>
-        </td>
-        <td>
-          <input type="password" name="password" placeholder="{{ password }}" required><br>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="retype_password">{{ retype_password }}</label>
-        </td>
-        <td>
-          <input type="password" name="retype_password" placeholder="{{ retype_password }}" required><br>
-        </td>
-      </tr>
-    </table>
-    <input type="submit" value="{{ sign_up }}">
-  </form>
+  <div class="container">
+    <form class="form-signin" name="signup" action="sign_up_submit" method="post" accept-charset="utf-8">
+      <h2>{{ sign_up }}</h2>
+      <label class="sr-only" for="username">{{ user_name }}</label>
+      <input class="form-control" type="text" name="username" placeholder="{{ user_name }}" maxlength="32" required>
+      <label class="sr-only" for="password">{{ password }}</label>
+      <input class="form-control" type="password" name="password" placeholder="{{ password }}" required>
+      <label class="sr-only" for="retype_password">{{ retype_password }}</label>
+      <input class="form-control" type="password" name="retype_password" placeholder="{{ retype_password }}" required>
+      <input class="btn btn-primary btn-block login-button" type="submit" value="{{ sign_up }}">
+    </form>
 
-  <br/>
-    {% if vars['user_already_exists'] is equalto 1 %}
-      <h3>{{ user_already_exists }}</h3>
-    {% endif %}
+    <br/>
+    <div class="my-center">
+      {% if vars['user_already_exists'] is equalto 1 %}
+        <h3>{{ user_already_exists }}</h3>
+      {% endif %}
 
-    {% if vars['passwords_are_not_same'] is equalto 1 %}
-      <h3>{{ passwords_are_not_same }}</h3>
-    {% endif %}
+      {% if vars['passwords_are_not_same'] is equalto 1 %}
+        <h3>{{ passwords_are_not_same }}</h3>
+      {% endif %}
+    </div>
+  </div>
 </body>
 </html>
