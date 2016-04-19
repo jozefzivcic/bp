@@ -86,3 +86,5 @@ currently_running=Currently running tests
 your_currently_running=Your currently running tests
 return_value=Return value
 please_log_in=Please log in
+home=Home
+browse=Browse

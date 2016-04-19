@@ -9,8 +9,38 @@
     <title>{{ currently_running }}</title>
 </head>
 <body>
-  <h2>{{ your_currently_running }}</h2>
-  <table>
+    <div class="main-menu">
+        <ul>
+            <li>
+                <a href="/">
+                    {{ home }}
+                </a>
+            </li>
+            <li>
+                <a href="create_tests">
+                    {{ create_tests }}
+                </a>
+            </li>
+            <li>
+                <a href="upload_file">
+                    {{ upload_file }}
+                </a>
+            </li>
+            <li>
+                <a href="/currently_running">
+                    {{ your_currently_running }}
+                </a>
+            </li>
+        </ul>
+    </div>
+    <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
+        <input class="btn btn-danger" type="submit" value="{{ log_out }}">
+    </form>
+    <div class="my-center">
+        <h2>{{ your_currently_running }}</h2>
+    </div>
+
+    <table class="table tests-table">
         <tr>
             <th>{{ test }} {{ id }}</th>
             <th>{{ test_type }}</th>

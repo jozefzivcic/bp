@@ -9,12 +9,42 @@
     <title>{{ file_content }}</title>
 </head>
 <body>
-  <FORM>
-      <INPUT Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
-  </FORM>
-  {% for line in vars['file_content']%}
-    {{ line }}
-    <br>
-  {% endfor %}
+    <div class="main-menu">
+        <ul>
+            <li>
+                <a href="/">
+                    {{ home }}
+                </a>
+            </li>
+            <li>
+                <a href="/create_tests">
+                    {{ create_tests }}
+                </a>
+            </li>
+            <li>
+                <a href="/upload_file">
+                    {{ upload_file }}
+                </a>
+            </li>
+            <li>
+                <a href="/currently_running">
+                    {{ your_currently_running }}
+                </a>
+            </li>
+        </ul>
+    </div>
+    <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
+        <input class="btn btn-danger" type="submit" value="{{ log_out }}">
+    </form>
+  <div class="my-center">
+
+      {% for line in vars['file_content']%}
+        {{ line }}
+        <br>
+      {% endfor %}
+      <FORM>
+          <INPUT class="btn btn-primary" Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
+      </FORM>
+  </div>
 </body>
 </html>

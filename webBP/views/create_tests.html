@@ -9,9 +9,36 @@
     <title>{{ create_tests }}</title>
 </head>
 <body>
+    <div class="main-menu">
+        <ul>
+            <li>
+                <a href="/">
+                    {{ home }}
+                </a>
+            </li>
+            <li>
+                <a href="/create_tests">
+                    {{ create_tests }}
+                </a>
+            </li>
+            <li>
+                <a href="/upload_file">
+                    {{ upload_file }}
+                </a>
+            </li>
+            <li>
+                <a href="/currently_running">
+                    {{ your_currently_running }}
+                </a>
+            </li>
+        </ul>
+    </div>
+    <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
+        <input class="btn btn-danger" type="submit" value="{{ log_out }}">
+    </form>
     <form name="create" action="create_tests_submit" method="post" accept-charset="utf-8">
         {% for file in vars['files'] %}
-            <input type="checkbox" name="file{{ file.id }}" {% if file.id in vars['file_ids'] %} checked {% endif %} > {{ file.name }}
+            <input class="checkbox-inline" type="checkbox" name="file{{ file.id }}" {% if file.id in vars['file_ids'] %} checked {% endif %} > {{ file.name }}
         {% endfor %}
 
         <h2>{{ create_nist_test }}</h2>

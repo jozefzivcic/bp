@@ -9,11 +9,42 @@
     <title>{{ delete_fs_path }}</title>
 </head>
 <body>
-  <h2>{{ delete_fs_path_question }}</h2>
-  <form name="delete_fs_path" action="/delete_fs_path_submit" method="post" accept-charset="utf-8">
-    <input type="submit" value="{{ yes }}">
-    <input type="hidden" name="file_id" value="{{ vars['file_id'] }}">
-  </form>
-  <input type="button" value="{{ no }}" onclick="window.location = '/';">
+    <div class="main-menu">
+        <ul>
+            <li>
+                <a href="/">
+                    {{ home }}
+                </a>
+            </li>
+            <li>
+                <a href="/create_tests">
+                    {{ create_tests }}
+                </a>
+            </li>
+            <li>
+                <a href="/upload_file">
+                    {{ upload_file }}
+                </a>
+            </li>
+            <li>
+                <a href="/currently_running">
+                    {{ your_currently_running }}
+                </a>
+            </li>
+        </ul>
+    </div>
+    <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
+        <input class="btn btn-danger" type="submit" value="{{ log_out }}">
+    </form>
+    <div class="my-center">
+        <h2>{{ delete_fs_path_question }}</h2>
+        <div class="btn-group">
+            <form name="delete_fs_path" action="/delete_fs_path_submit" method="post" accept-charset="utf-8">
+                <input class="btn btn-success" type="submit" value="{{ yes }}">
+                <input type="hidden" name="file_id" value="{{ vars['file_id'] }}">
+                <input class="btn btn-default" type="button" value="{{ no }}" onclick="window.location = '/';">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

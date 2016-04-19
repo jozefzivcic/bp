@@ -9,13 +9,45 @@
     <title>{{ upload_file }}</title>
 </head>
 <body>
-  <h2>{{ upload_file }}</h2>
-  <br>
-  <form action="/upload_file/upload" method="post" enctype="multipart/form-data">
-      <label for="file_name">{{ file_name }}</label>
-      <input type="text" name="file_name" placeholder="{{ file_name }}" maxlength="64"> <br/>
-      <input type="file" name="file" /> <br />
-      <input type="submit" name="upload_file" value="{{ upload_file }}" />
-  </form>
+    <div class="main-menu">
+        <ul>
+            <li>
+                <a href="/">
+                    {{ home }}
+                </a>
+            </li>
+            <li>
+                <a href="/create_tests">
+                    {{ create_tests }}
+                </a>
+            </li>
+            <li>
+                <a href="/upload_file">
+                    {{ upload_file }}
+                </a>
+            </li>
+            <li>
+                <a href="/currently_running">
+                    {{ your_currently_running }}
+                </a>
+            </li>
+        </ul>
+    </div>
+    <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
+        <input class="btn btn-danger" type="submit" value="{{ log_out }}">
+    </form>
+
+    <br>
+    <div class="container">
+        <form class="form-signin" action="/upload_file/upload" method="post" enctype="multipart/form-data">
+          <h2>{{ upload_file }}</h2>
+            <label class="sr-only" for="file_name">{{ file_name }}</label>
+          <input class="form-control" type="text" name="file_name" placeholder="{{ file_name }}" maxlength="64">
+            <span class="btn btn-default btn-file btn-block">
+                {{ browse }}<input type="file" name="file" />
+            </span>
+          <input class="btn btn-success btn-block login-button" type="submit" name="upload_file" value="{{ upload_file }}" />
+        </form>
+    </div>
 </body>
 </html>

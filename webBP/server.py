@@ -60,7 +60,11 @@ def register_pages_into_router(router):
     router.register_controller('/delete_test_submit', delete_test_post)
     router.register_controller('/currently_running', currently_running)
     router.register_controller('/bootstrap/css/bootstrap.min.css', get_bootstrap)
+    router.register_controller('/test/bootstrap/css/bootstrap.min.css', get_bootstrap)
+    router.register_controller('/test/results/bootstrap/css/bootstrap.min.css', get_bootstrap)
     router.register_controller('/styles.css', get_own_styles)
+    router.register_controller('/test/styles.css', get_own_styles)
+    router.register_controller('/test/results/styles.css', get_own_styles)
 
 
 def load_texts():

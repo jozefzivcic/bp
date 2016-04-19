@@ -9,16 +9,20 @@
     <title>{{ main_page }}</title>
 </head>
 <body>
-    <div>
-        <div class="main-menu">
+    <div class="main-menu">
             <ul>
                 <li>
-                    <a href="create_tests">
+                    <a href="/">
+                        {{ home }}
+                    </a>
+                </li>
+                <li>
+                    <a href="/create_tests">
                         {{ create_tests }}
                     </a>
                 </li>
                 <li>
-                    <a href="upload_file">
+                    <a href="/upload_file">
                         {{ upload_file }}
                     </a>
                 </li>
@@ -29,14 +33,14 @@
                 </li>
             </ul>
         </div>
-        <form class="logout" name="logout" action="logout" method="post" accept-charset="utf-8">
-            <input class="btn btn-primary" type="submit" value="{{ log_out }}">
+        <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
+            <input class="btn btn-danger" type="submit" value="{{ log_out }}">
         </form>
+    <div class="my-center">
+        <h2>{{ your_tests }}:</h2>
     </div>
-
-    <h2>{{ your_tests }}:</h2>
     <br>
-    <table class="table">
+    <table class="table tests-table">
         <tr>
             <th>{{ test }} {{ id }}</th>
             <th>{{ test_type }}</th>
@@ -88,9 +92,11 @@
         {% endfor %}
     </table>
     <br>
-    <h2>{{ your_files }}:</h2>
+    <div class="my-center">
+        <h2>{{ your_files }}:</h2>
+    </div>
     <br>
-    <table class="table">
+    <table class="table files-table">
         <tr>
             <th>{{ file_name }}</th>
             <th>{{ hash }}</th>

@@ -9,152 +9,188 @@
     <title>{{ test_details }}</title>
 </head>
 <body>
-  <h2>{{ details_for_test_id }}: {{ vars['test'].id }}</h2>
-  <br>
-  <table>
-      <tr>
-          <th colspan="2"> {{ test }}</th>
-      </tr>
-      <tr>
-          <td>
-              {{ id }}
-          </td>
-          <td>
-              {{ vars['test'].id }}
-          </td>
-      </tr>
-      <tr>
-          <td>
-              {{ time_of_add }}
-          </td>
-          <td>
-              {{ vars['test'].time_of_add }}
-          </td>
-      </tr>
-      <tr>
-          <td>
-              {{ loaded }}
-          </td>
-          <td>
-              {% if vars['test'].loaded is equalto 0 %}
-                      &#10005;
-                    {% else %}
-                      &#10003;
+    <div class="main-menu">
+        <ul>
+            <li>
+                <a href="/">
+                    {{ home }}
+                </a>
+            </li>
+            <li>
+                <a href="/create_tests">
+                    {{ create_tests }}
+                </a>
+            </li>
+            <li>
+                <a href="/upload_file">
+                    {{ upload_file }}
+                </a>
+            </li>
+            <li>
+                <a href="/currently_running">
+                    {{ your_currently_running }}
+                </a>
+            </li>
+        </ul>
+    </div>
+    <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
+        <input class="btn btn-danger" type="submit" value="{{ log_out }}">
+    </form>
+    <div class="my-center">
+        <h2>{{ details_for_test_id }}: {{ vars['test'].id }}</h2>
+    </div>
+    <br>
+    <div>
+        <div class="test-table">
+            <table class="table">
+              <tr>
+                  <th colspan="2"> {{ test }}</th>
+              </tr>
+              <tr>
+                  <td>
+                      {{ id }}
+                  </td>
+                  <td>
+                      {{ vars['test'].id }}
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      {{ time_of_add }}
+                  </td>
+                  <td>
+                      {{ vars['test'].time_of_add }}
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      {{ loaded }}
+                  </td>
+                  <td>
+                      {% if vars['test'].loaded is equalto 0 %}
+                              &#10005;
+                            {% else %}
+                              &#10003;
+                      {% endif %}
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      {{ finished }}
+                  </td>
+                  <td>
+                      {% if vars['test'].ended is equalto 0 %}
+                        &#10005;
+                      {% else %}
+                        &#10003;
+                      {% endif %}
+                  </td>
+              </tr>
+              {% if vars['test'].ended is equalto 1 %}
+
+                  <tr>
+                      <td>
+                          {{ return_value }}
+                      </td>
+                      <td>
+                          {{ vars['test'].return_value }}
+                      </td>
+                  </tr>
+                  <tr>
+                      <td colspan="2">
+                        <a href="/test/results?id={{ vars['test'].id }}"><b>{{ results }}</b></a>
+                      </td>
+                  </tr>
               {% endif %}
-          </td>
-      </tr>
-      <tr>
-          <td>
-              {{ finished }}
-          </td>
-          <td>
-              {% if vars['test'].ended is equalto 0 %}
-                &#10005;
-              {% else %}
-                &#10003;
+            </table>
+            <FORM id="back-form">
+                <INPUT class="btn btn-primary" Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
+            </FORM>
+        </div>
+
+        <div class="test-table">
+            <table class="table">
+              <tr>
+                  <th colspan="2">
+                    {{ test_parameter }}
+                  </th>
+              </tr>
+              {% if vars['test'].test_table is equalto 'nist' %}
+                  <tr>
+                      <td>
+                          {{ name_of_test }}
+                      </td>
+                      <td>
+                          {{ vars['test_param'].get_test_name() }}
+                      </td>
+                  </tr>
+
+                  <tr>
+                      <td>
+                          {{ length }}
+                      </td>
+                      <td>
+                          {{ vars['test_param'].length }}
+                      </td>
+                  </tr>
+
+                  <tr>
+                      <td>
+                          {{ streams }}
+                      </td>
+                      <td>
+                          {{ vars['test_param'].streams }}
+                      </td>
+                  </tr>
+                  {% if vars['test_param'].has_special_parameter() is equalto True %}
+                  <tr>
+                      <td>
+                          {{ vars['test_param'].get_special_parameter_name() }}
+                      </td>
+                      <td>
+                          {{ vars['test_param'].special_parameter }}
+                      </td>
+                  </tr>
+                  {% endif %}
               {% endif %}
-          </td>
-      </tr>
-      {% if vars['test'].ended is equalto 1 %}
+            </table>
+        </div>
 
-          <tr>
-              <td>
-                  {{ return_value }}
-              </td>
-              <td>
-                  {{ vars['test'].return_value }}
-              </td>
-          </tr>
-          <tr>
-              <td colspan="2">
-                <a href="/test/results?id={{ vars['test'].id }}">{{ results }}</a>
-              </td>
-          </tr>
-      {% endif %}
-  </table>
-  <br>
-  <table>
-      <tr>
-          <th colspan="2">
-            {{ test_parameter }}
-          </th>
-      </tr>
-      {% if vars['test'].test_table is equalto 'nist' %}
-          <tr>
-              <td>
-                  {{ name_of_test }}
-              </td>
-              <td>
-                  {{ vars['test_param'].get_test_name() }}
-              </td>
-          </tr>
+        <div class="test-table">
+            <table class="table">
+              <th colspan="2">
+                  {{ file }}
+              </th>
+              <tr>
+                  <td>
+                      {{ file_name }}
+                  </td>
+                  <td>
+                      {{ vars['file'].name}}
+                  </td>
+              </tr>
 
-          <tr>
-              <td>
-                  {{ length }}
-              </td>
-              <td>
-                  {{ vars['test_param'].length }}
-              </td>
-          </tr>
+              <tr>
+                  <td>
+                      {{ hash }}
+                  </td>
+                  <td>
+                      {{ vars['file'].hash}}
+                  </td>
+              </tr>
 
-          <tr>
-              <td>
-                  {{ streams }}
-              </td>
-              <td>
-                  {{ vars['test_param'].streams }}
-              </td>
-          </tr>
-          {% if vars['test_param'].has_special_parameter() is equalto True %}
-          <tr>
-              <td>
-                  {{ vars['test_param'].get_special_parameter_name() }}
-              </td>
-              <td>
-                  {{ vars['test_param'].special_parameter }}
-              </td>
-          </tr>
-          {% endif %}
-      {% endif %}
-  </table>
-
-  <br>
-  <table>
-      <th colspan="2">
-          {{ file }}
-      </th>
-      <tr>
-          <td>
-              {{ file_name }}
-          </td>
-          <td>
-              {{ vars['file'].name}}
-          </td>
-      </tr>
-
-      <tr>
-          <td>
-              {{ hash }}
-          </td>
-          <td>
-              {{ vars['file'].hash}}
-          </td>
-      </tr>
-
-      {% if vars['file'].file_system_path is not equalto None %}
-        <tr>
-          <td>
-              {{ file_system_path }}
-          </td>
-          <td>
-              {{ vars['file'].file_system_path}}
-          </td>
-      </tr>
-      {% endif %}
-  </table>
-  <FORM>
-      <INPUT Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
-  </FORM>
+              {% if vars['file'].file_system_path is not equalto None %}
+                <tr>
+                  <td>
+                      {{ file_system_path }}
+                  </td>
+                  <td>
+                      {{ vars['file'].file_system_path}}
+                  </td>
+              </tr>
+              {% endif %}
+            </table>
+        </div>
+    </div>
 </body>
 </html>
