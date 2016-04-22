@@ -36,7 +36,7 @@ CREATE TABLE `tests` (
   `id_file` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
   `time_of_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `test_table` varchar(16) NOT NULL, /*name of table with test parameters*/
+  `test_table` varchar(45) NOT NULL, /*name of table with test parameters*/
   `loaded` tinyint(1) NOT NULL DEFAULT 0,  /*if test was loaded by external programm*/
   `num_of_runs` int(3) NOT NULL DEFAULT 0,
   `rerun` tinyint(1) DEFAULT 0,

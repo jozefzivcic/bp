@@ -13,7 +13,7 @@
         <form class="form-signin" name="login" action="login_submit" method="post" accept-charset="utf-8">
             <h2>{{ please_log_in }}</h2>
             <label class="sr-only" for="username">{{ user_name }}</label>
-            <input class="form-control" type="text" name="username" placeholder="{{ user_name }}" maxlength="32" autofocus="autofocus" required>
+            <input class="form-control" type="text" name="username" placeholder="{{ user_name }}" maxlength="64" autofocus="autofocus" required>
             <label class="sr-only" for="password">{{ password }}</label>
             <input class="form-control" type="password" name="password" placeholder="{{ password }}" required>
             <input class="btn btn-primary btn-block login-button" type="submit" value="{{ login }}">
