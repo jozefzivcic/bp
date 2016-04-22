@@ -104,3 +104,16 @@ tbody tr:nth-child(odd) {
     position: absolute;
     display: block;
 }
+
+.my-checkbox label{
+    margin-left: 5px;
+    margin-right: 5px;
+    text-align: center;
+}
+
+.length-streams {
+    margin: 0 auto;
+    width: 30%;
+    margin-bottom: 10px;
+}
+
