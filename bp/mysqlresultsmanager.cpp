@@ -6,8 +6,6 @@
 using namespace std;
 using namespace sql;
 
-extern mutex dbMutex;
-
 MySqlResultsManager::MySqlResultsManager(MySqlDBPool *pool)
 {
     logger = new Logger();

@@ -7,8 +7,7 @@
 
 using namespace std;
 
-bool endProgram = false;
-mutex dbMutex;
+volatile bool endProgram = false;
 
 void interruptHandler(int sig)
 {

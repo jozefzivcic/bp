@@ -3,7 +3,6 @@
 using namespace std;
 using namespace sql;
 
-extern mutex dbMutex;
 MySqlChangeStateManager::MySqlChangeStateManager(MySqlDBPool *pool)
 {
     logger = new Logger();

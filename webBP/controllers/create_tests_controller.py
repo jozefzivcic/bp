@@ -1,9 +1,12 @@
 import cgi
+from math import log
+from os.path import join
 from urllib.parse import urlencode
 from urllib.parse import urlparse, parse_qs
 from models.test import Test
-from helpers import parse_nist_form, get_file_ids_from_nist_form, control_nist_forms
+from helpers import get_file_ids_from_nist_form, get_file_size_in_bits
 from models.nistparam import NistParam
+from enums import CreateErrors
 
 
 def create_tests(handler):
@@ -41,21 +44,25 @@ def create_tests_post(handler):
     nist_params = parse_nist_form(form)
     user_id = handler.sessions[handler.read_cookie()]
     ret = control_nist_forms(handler, user_id, file_ids, nist_params)
+    if (ret == (0,0)) and nist_params[0] is None:
+        ret = (CreateErrors.param_wrong_format, nist_params[1])
+    else:
+        nist_params = nist_params[0]
     handler.send_response(303)
     handler.send_header('Content-type', 'text/html')
-    if ret != (0, 0):
+    if ret != (CreateErrors.ok, 0):
         qstr = convert_nist_form_params_to_query(file_ids, nist_params)
-        if ret[0] == 1:
+        if ret[0] == CreateErrors.length_greater_than_size:
             qstr += '&l=1&t=' + str(ret[1])
-        elif ret[0] == 2:
+        elif ret[0] == CreateErrors.streams_less_than_one:
             qstr += '&s=1&t=' + str(ret[1])
-        elif ret[0] == 3:
+        elif ret[0] == CreateErrors.special_param_not_in_range:
             qstr += '&p=1&t=' + str(ret[1])
-        elif ret[0] == 4:
+        elif ret[0] == CreateErrors.length_files:
             qstr += '&f=1'
-        elif ret[0] == 5:
+        elif ret[0] == CreateErrors.length_params_array:
             qstr += '&test=1'
-        elif ret[0] == 6:
+        elif ret[0] == CreateErrors.length_none:
             qstr += '&l=2&t=' + str(ret[1])
         location = '/create_tests?' + qstr
         handler.send_header('Location', location)
@@ -75,20 +82,14 @@ def create_tests_post(handler):
 
 
 def get_possible_keys_and_values():
-    arr = {'l': str, 't': int, 'frequency': int, 'frequency_length': int, 'frequency_streams': int,
-           'block_frequency': int, 'block_frequency_length': int, 'block_frequency_streams': int,
-           'block_frequency_param': int, 'cumulative_sums': int, 'cumulative_sums_length': int,
-           'cumulative_sums_streams': int, 'runs': int, 'runs_length': int, 'runs_streams': int,
-           'longest_run_of_ones': int, 'longest_run_of_ones_length': int, 'longest_run_of_ones_streams': int,
-           'rank': int, 'rank_length': int, 'rank_streams': int, 'discrete_fourier_transform': int,
-           'discrete_fourier_transform_length': int, 'discrete_fourier_transform_streams': int, 'nonperiodic': int,
-           'nonperiodic_length': int, 'nonperiodic_streams': int, 'nonperiodic_param': int, 'overlapping': int,
-           'overlapping_length': int, 'overlapping_streams': int, 'overlapping_param': int, 'universal': int,
-           'universal_length': int, 'universal_streams': int, 'apen': int, 'apen_length': int, 'apen_streams': int,
-           'apen_param': int, 'excursion': int, 'excursion_length': int, 'excursion_streams': int, 'excursion_var': int,
-           'excursion_var_length': int, 'excursion_var_streams': int, 'serial': int, 'serial_length': int,
-           'serial_streams': int, 'serial_param': int, 'linear': int, 'linear_length': int, 'linear_streams': int,
-           'linear_param': int, 'f': int, 'test': int, 'files': str}
+    arr = {'l': str, 't': int, 'frequency': int, 'block_frequency': int, 'block_frequency_param': int,
+           'cumulative_sums': int,
+           'runs': int, 'longest_run_of_ones': int, 'rank': int,
+           'discrete_fourier_transform': int, 'nonperiodic': int, 'nonperiodic_param': int,
+           'overlapping': int,
+           'overlapping_param': int, 'universal': int, 'apen': int, 'apen_param': int, 'excursion': int,
+           'excursion_var': int,
+           'serial': int, 'serial_param': int, 'linear': int, 'linear_param': int, 'f': int, 'test': int, 'files': str}
     return arr
 
 
@@ -255,6 +256,134 @@ def get_string_from_int_array(arr):
 
 
 def get_int_array_from_string(str):
-    temp_arr =  str.split(',')
+    temp_arr = str.split(',')
     ret_array = [int(num) for num in temp_arr]
     return ret_array
+
+
+def create_nist_param_from_nist_form(form, test, length, streams, block_size=None):
+    param = NistParam()
+    param.test_number = test
+    param.length = length
+    param.streams = streams
+    if block_size is not None:
+        if block_size in form:
+            param.special_parameter = int(form[block_size].value)
+        else:
+            param.set_default_param_value_according_to_test()
+    return param
+
+
+def parse_nist_form(form):
+    arr = []
+    if 'length' in form:
+        length = int(form['length'].value)
+    else:
+        length = None
+    if 'streams' in form:
+        streams = int(form['streams'].value)
+    else:
+        streams = 1
+    if 'frequency' in form:
+        arr.append(create_nist_param_from_nist_form(form, 1, length, streams))
+    if 'block_frequency' in form:
+        if form['block_frequency_param'].value is not '':
+            params = get_params_from_form(form, 'block_frequency_param')
+        for param in params:
+            arr.append(create_nist_param_from_nist_form(form, 2, length, streams, param))
+    if 'cumulative_sums' in form:
+        arr.append(create_nist_param_from_nist_form(form, 3, length, streams))
+    if 'runs' in form:
+        arr.append(create_nist_param_from_nist_form(form, 4, length, streams))
+    if 'longest_run_of_ones' in form:
+        arr.append(create_nist_param_from_nist_form(form, 5, length, streams))
+    if 'rank' in form:
+        arr.append(create_nist_param_from_nist_form(form, 6, length, streams))
+    if 'discrete_fourier_transform' in form:
+        arr.append(create_nist_param_from_nist_form(form, 7, length, streams))
+    if 'nonperiodic' in form:
+        arr.append(create_nist_param_from_nist_form(form, 8, length, streams, 'nonperiodic_param'))
+    if 'overlapping' in form:
+        arr.append(create_nist_param_from_nist_form(form, 9, length, streams, 'overlapping_param'))
+    if 'universal' in form:
+        arr.append(create_nist_param_from_nist_form(form, 10, length, streams))
+    if 'apen' in form:
+        arr.append(create_nist_param_from_nist_form(form, 11, length, streams, 'apen_param'))
+    if 'excursion' in form:
+        arr.append(create_nist_param_from_nist_form(form, 12, length, streams))
+    if 'excursion_var' in form:
+        arr.append(create_nist_param_from_nist_form(form, 13, length, streams))
+    if 'serial' in form:
+        arr.append(create_nist_param_from_nist_form(form, 14, length, streams, 'serial_param'))
+    if 'linear' in form:
+        arr.append(create_nist_param_from_nist_form(form, 15, length, streams, 'linear_param'))
+    return (arr,0)
+
+
+def control_nist_forms(handler, user_id, file_ids, nist_params):
+    user_dir = join(handler.path_to_users_dir, str(user_id), handler.config_storage.files)
+    if len(file_ids) == 0:
+        return (CreateErrors.length_files, 0)
+    if len(nist_params) == 0:
+        return (CreateErrors.length_params_array, 0)
+    for file_id in file_ids:
+        file_path = join(user_dir, str(file_id))
+        size = get_file_size_in_bits(file_path)
+        for param in nist_params:
+            if param.length is None:
+                return (CreateErrors.length_none, param.test_number)
+            elif param.streams < 1:
+                return (CreateErrors.streams_less_than_one, param.test_number)
+            elif param.length * param.streams > size:
+                return (CreateErrors.length_greater_than_size, param.test_number)
+            elif (param.special_parameter is not None) and (param.special_parameter < 1):
+                return (CreateErrors.special_param_not_in_range, param.test_number)
+            elif (not control_nist_params_range(param)):
+                return (CreateErrors.special_param_not_in_range, param.test_number)
+    return (CreateErrors.ok, 0)
+
+
+def control_nist_params_range(param):
+    if param.test_number == 1:
+        if param.length <= 100:
+            return False
+    if param.test_number == 2:
+        if (param.special_parameter < 20) or (param.special_parameter > int(param.length / 100)):
+            return False
+    if param.test_number == 3:
+        if param.length <= 100:
+            return False
+    if param.test_number == 4:
+        if param.length < 100:
+            return False
+    if param.test_number == 6:
+        if param.length <= 38912:
+            return False
+    if param.test_number == 7:
+        if param.length < 1000:
+            return False
+    if param.test_number == 8:
+        if (param.special_parameter < 2) or (param.special_parameter > 21):
+            return False
+    if param.test_number == 9:
+        if (param.special_parameter < 1) or (param.special_parameter > param.length):
+            return False
+    if param.test_number == 11:
+        if param.special_parameter > (log(param.length, 2) - 6):
+            return False
+    if param.test_number == 12:
+        if param.length < 1000000:
+            return False
+    if param.test_number == 13:
+        if param.length <= 1000000:
+            return False
+    if param.test_number == 14:
+        if (param.special_parameter < 3) or (param.special_parameter > (log(param.length, 2) - 3)):
+            return False
+    if param.test_number == 15:
+        if (param.length < 1000000) or (param.special_parameter < 500) or (param.special_parameter > 5000):
+            return False
+    return True
+
+
+def get_params_from_form(form, param):

@@ -12,8 +12,6 @@
 using namespace std;
 using namespace sql;
 
-extern mutex dbMutex;
-
 MySqlFileManager::MySqlFileManager(MySqlDBPool *pool) {
     logger = new Logger();
     dbPool = pool;
