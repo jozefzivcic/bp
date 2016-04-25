@@ -59,20 +59,21 @@ class NistParam:
             return 'block length(M)'
         return 'None'
 
-    def get_default_param_value(self):
-        if self.test_number == 2:
+    @staticmethod
+    def get_default_param_value(test_number):
+        if test_number == 2:
             return 128
-        elif self.test_number == 8:
+        elif test_number == 8:
             return 9
-        elif self.test_number == 9:
+        elif test_number == 9:
             return 9
-        elif self.test_number == 11:
+        elif test_number == 11:
             return 10
-        elif self.test_number == 14:
+        elif test_number == 14:
             return 16
-        elif self.test_number == 15:
+        elif test_number == 15:
             return 500
         return 0
 
     def set_default_param_value_according_to_test(self):
-        self.special_parameter = self.get_default_param_value()
+        self.special_parameter = self.get_default_param_value(self.test_number)

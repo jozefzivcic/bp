@@ -85,18 +85,15 @@ def create_tests_post(handler):
 
 def get_possible_keys_and_values():
     arr = {'l': str, 't': int, 'p': int, 'frequency': int, 'block_frequency': int, 'block_frequency_param': str,
-           'cumulative_sums': int,
-           'runs': int, 'longest_run_of_ones': int, 'rank': int,
-           'discrete_fourier_transform': int, 'nonperiodic': int, 'nonperiodic_param': str,
-           'overlapping': int,
+           'cumulative_sums': int, 'runs': int, 'longest_run_of_ones': int, 'rank': int,
+           'discrete_fourier_transform': int, 'nonperiodic': int, 'nonperiodic_param': str, 'overlapping': int,
            'overlapping_param': str, 'universal': int, 'apen': int, 'apen_param': str, 'excursion': int,
-           'excursion_var': int,
-           'serial': int, 'serial_param': str, 'linear': int, 'linear_param': str, 'f': int, 'test': int, 'files': str,
-           'length': int, 'streams': int, 'nonperiodic2': int, 'nonperiodic3': int, 'nonperiodic4': int,
-           'nonperiodic5': int, 'nonperiodic6': int, 'nonperiodic7': int, 'nonperiodic8': int, 'nonperiodic9': int,
-           'nonperiodic10': int, 'nonperiodic11': int, 'nonperiodic12': int, 'nonperiodic13': int, 'nonperiodic14': int,
-           'nonperiodic15': int, 'nonperiodic16': int, 'nonperiodic17': int, 'nonperiodic18': int, 'nonperiodic19': int,
-           'nonperiodic20': int, 'nonperiodic21': int}
+           'excursion_var': int, 'serial': int, 'serial_param': str, 'linear': int, 'linear_param': str, 'f': int,
+           'test': int, 'files': str, 'length': int, 'streams': int, 'nonperiodic2': int, 'nonperiodic3': int,
+           'nonperiodic4': int, 'nonperiodic5': int, 'nonperiodic6': int, 'nonperiodic7': int, 'nonperiodic8': int,
+           'nonperiodic9': int, 'nonperiodic10': int, 'nonperiodic11': int, 'nonperiodic12': int, 'nonperiodic13': int,
+           'nonperiodic14': int, 'nonperiodic15': int, 'nonperiodic16': int, 'nonperiodic17': int, 'nonperiodic18': int,
+           'nonperiodic19': int, 'nonperiodic20': int, 'nonperiodic21': int}
     return arr
 
 
@@ -213,7 +210,7 @@ def get_int_array_from_string(str):
     return ret_array
 
 
-def create_nist_param_from_nist_form(form, test, length, streams, block_size=None):
+def create_nist_param_from_nist_form(test, length, streams, block_size=None):
     param = NistParam()
     param.test_number = test
     param.length = length
@@ -234,31 +231,31 @@ def parse_nist_form(form):
     else:
         streams = 1
     if 'frequency' in form:
-        arr.append(create_nist_param_from_nist_form(form, 1, length, streams))
+        arr.append(create_nist_param_from_nist_form(1, length, streams))
     if 'block_frequency' in form:
         fill_array_from_text_input(arr, form, length, streams, 2, 'block_frequency_param')
     if 'cumulative_sums' in form:
-        arr.append(create_nist_param_from_nist_form(form, 3, length, streams))
+        arr.append(create_nist_param_from_nist_form(3, length, streams))
     if 'runs' in form:
-        arr.append(create_nist_param_from_nist_form(form, 4, length, streams))
+        arr.append(create_nist_param_from_nist_form(4, length, streams))
     if 'longest_run_of_ones' in form:
-        arr.append(create_nist_param_from_nist_form(form, 5, length, streams))
+        arr.append(create_nist_param_from_nist_form(5, length, streams))
     if 'rank' in form:
-        arr.append(create_nist_param_from_nist_form(form, 6, length, streams))
+        arr.append(create_nist_param_from_nist_form(6, length, streams))
     if 'discrete_fourier_transform' in form:
-        arr.append(create_nist_param_from_nist_form(form, 7, length, streams))
+        arr.append(create_nist_param_from_nist_form(7, length, streams))
     if 'nonperiodic' in form:
         fill_array_from_checkboxes(arr, form, length, streams, 8, 'nonperiodic', 2, 22)
     if 'overlapping' in form:
         fill_array_from_text_input(arr, form, length, streams, 9, 'overlapping_param')
     if 'universal' in form:
-        arr.append(create_nist_param_from_nist_form(form, 10, length, streams))
+        arr.append(create_nist_param_from_nist_form(10, length, streams))
     if 'apen' in form:
         fill_array_from_text_input(arr, form, length, streams, 11, 'apen_param')
     if 'excursion' in form:
-        arr.append(create_nist_param_from_nist_form(form, 12, length, streams))
+        arr.append(create_nist_param_from_nist_form(12, length, streams))
     if 'excursion_var' in form:
-        arr.append(create_nist_param_from_nist_form(form, 13, length, streams))
+        arr.append(create_nist_param_from_nist_form(13, length, streams))
     if 'serial' in form:
         fill_array_from_text_input(arr, form, length, streams, 14, 'serial_param')
     if 'linear' in form:
@@ -317,35 +314,29 @@ def control_nist_params_range(param):
     if param.test_number == 11:
         if param.special_parameter > (log(param.length, 2) - 6):
             return False
-    if param.test_number == 12:
+    if (param.test_number == 12) or (param.test_number == 13):
         if param.length < 1000000:
-            return False
-    if param.test_number == 13:
-        if param.length <= 1000000:
             return False
     if param.test_number == 14:
         if (param.special_parameter < 3) or (param.special_parameter > (log(param.length, 2) - 3)):
             return False
     if param.test_number == 15:
-        if (param.length < 1000000) or (param.special_parameter < 500) or (param.special_parameter > 5000):
+        if (param.length <= 1000000) or (param.special_parameter < 500) or (param.special_parameter > 5000):
             return False
     return True
 
 
-def fill_array_from_text_input(arr, form, length, streams, test, param_name):
+def fill_array_from_text_input(arr, form, length, streams, test_number, param_name):
     if param_name not in form:
-        nist_param = NistParam()
-        nist_param.test_number = test
-        param_to_append = create_nist_param_from_nist_form(form, test, length, streams,
-                                                           nist_param.get_default_param_value())
-        arr.append(param_to_append)
+        arr.append(create_nist_param_from_nist_form(test_number, length, streams,
+                                                    NistParam.get_default_param_value(test_number)))
         return True
     try:
         params = get_int_array_from_string(form[param_name].value)
     except ValueError:
         return False
     for param in params:
-        param_to_append = create_nist_param_from_nist_form(form, test, length, streams, param)
+        param_to_append = create_nist_param_from_nist_form(test_number, length, streams, param)
         arr.append(param_to_append)
     return True
 
@@ -356,9 +347,7 @@ def fill_array_from_checkboxes(arr, form, length, streams, test_number, param_na
         param = param_name + str(i)
         if param in form:
             j += 1
-            arr.append(create_nist_param_from_nist_form(form, test_number, length, streams, i))
+            arr.append(create_nist_param_from_nist_form(test_number, length, streams, i))
     if j == 0:
-        nist_param = NistParam()
-        nist_param.test_number = test_number
-        arr.append(create_nist_param_from_nist_form(form, test_number, length, streams, nist_param.get_default_param_value()))
-
+        arr.append(create_nist_param_from_nist_form(test_number, length, streams,
+                                                    NistParam.get_default_param_value(test_number)))
