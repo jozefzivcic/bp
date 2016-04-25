@@ -36,7 +36,50 @@
     <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
         <input class="btn btn-danger" type="submit" value="{{ log_out }}">
     </form>
+    <div class="my-center">
+        {% if 'l' in vars['queries'] and 't' in vars['queries'] %}
+            {% if vars['queries']['l'] is equalto '1' %}
+                <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ length_error }}</h3>
+            {% endif %}
+            {% if vars['queries']['l'] is equalto '2' %}
+                <h3>{{ test }} {{ vars['queries']['t'] }}. {{ length_must_be_filled }}</h3>
+            {% endif %}
+        {% endif %}
 
+        {% if 's' in vars['queries'] and 't' in vars['queries'] %}
+            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ streams_error }}</h3>
+        {% endif %}
+
+        {% if 'p' in vars['queries'] and 't' in vars['queries'] %}
+            <h3>
+                {{ error_in }}
+                {% if vars['queries']['t'] == 2 %}
+                    {{ block_frequency }}.
+                {% endif %}
+                {% if vars['queries']['t'] == 8 %}
+                    {{ nonperiodic }}.
+                {% endif %}
+                {% if vars['queries']['t'] == 9 %}
+                    {{ overlapping }}.
+                {% endif %}
+                {% if vars['queries']['t'] == 11 %}
+                    {{ approximate_entropy }}.
+                {% endif %}
+                {% if vars['queries']['t'] == 14 %}
+                    {{ serial }}.
+                {% endif %}
+                {% if vars['queries']['t'] == 15 %}
+                    {{ linear_complex }}.
+                {% endif %} {{ param_error }}
+            </h3>
+        {% endif %}
+        {% if 'f' in vars['queries'] %}
+            <h3>{{ no_file_selected }}</h3>
+        {% endif %}
+        {% if 'test' in vars['queries'] %}
+            <h3>{{ no_test_selected }}</h3>
+        {% endif %}
+    </div>
     <form name="create" action="create_tests_submit" method="post" accept-charset="utf-8">
         <div class="my-center">
             {% for file in vars['files'] %}
@@ -48,9 +91,9 @@
         <h2 class="my-center">{{ create_nist_test }}</h2>
         <div class="length-streams">
             <label>{{ length }}</label>
-            <input class="form-control" placeholder="{{ length }}" type="number" name="length" min="1" required>
+            <input class="form-control" placeholder="{{ length }}" type="number" name="length" min="1" {% if 'length' in vars['queries'] %} value="{{ vars['queries']['length'] }}" {% endif %} required>
             <label>{{ streams }}</label>
-            <input class="form-control" placeholder="{{ streams }}" type="number" name="streams" min="1">
+            <input class="form-control" placeholder="{{ streams }}" type="number" name="streams" min="1" {% if 'streams' in vars['queries'] %} value="{{ vars['queries']['streams'] }}" {% endif %}>
         </div>
         <table class="table tests-table">
             <tr>
@@ -127,7 +170,7 @@
                 <td>
                     <div class="my-checkbox">
                         {% for i in range(2,22) %}
-                            <label ><input class="checkbox" type="checkbox" name="nonperiodic{{ i }}">{{ i }}</label>
+                            <label ><input class="checkbox" type="checkbox" name="nonperiodic{{ i }}" {% if i in vars['queries']['nonperiodic_param'] %} checked {% endif %}>{{ i }}</label>
                         {% endfor %}
                     </div>
                 </td>
@@ -208,29 +251,5 @@
     <FORM class="my-center">
       <INPUT class="btn btn-default" Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
     </FORM>
-    <div class="my-center">
-        {% if 'l' in vars['queries'] and 't' in vars['queries'] %}
-            {% if vars['queries']['l'] is equalto '1' %}
-                <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ length_error }}</h3>
-            {% endif %}
-            {% if vars['queries']['l'] is equalto '2' %}
-                <h3>{{ test }} {{ vars['queries']['t'] }}. {{ length_must_be_filled }}</h3>
-            {% endif %}
-        {% endif %}
-
-        {% if 's' in vars['queries'] and 't' in vars['queries'] %}
-            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ streams_error }}</h3>
-        {% endif %}
-
-        {% if 'p' in vars['queries'] and 't' in vars['queries'] %}
-            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ param_error }}</h3>
-        {% endif %}
-        {% if 'f' in vars['queries'] %}
-            <h3>{{ no_file_selected }}</h3>
-        {% endif %}
-        {% if 'test' in vars['queries'] %}
-            <h3>{{ no_test_selected }}</h3>
-        {% endif %}
-    </div>
 </body>
 </html>
