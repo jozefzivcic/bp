@@ -14,6 +14,8 @@ DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `nist_tests`;
 DROP TABLE IF EXISTS `change_table`;
 DROP TRIGGER IF EXISTS `test_update`;
+DROP TABLE IF EXISTS `groups`;
+DROP TABLE IF EXISTS `groups_tests`;
 
 -- creating tables
 CREATE TABLE `users` (
@@ -66,6 +68,19 @@ CREATE TABLE `results` (
   `id_test` int(11) PRIMARY KEY,
   `directory` varchar(1024) NOT NULL,
   CONSTRAINT results_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
+)DEFAULT CHARSET=utf8;
+
+CREATE TABLE `groups` (
+  `id` int(11) PRIMARY KEY AUTO_INCREMENT,
+  `id_user` int(11),
+  `time_of_add` timestamp DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT groups_fk_id_user FOREIGN KEY (`id_user`) REFERENCES `users`(`id`)
+)DEFAULT CHARSET=utf8;
+
+CREATE TABLE `groups_tests` (
+  `id` int(11) PRIMARY KEY,
+  `id_test` int(11),
+  CONSTRAINT groups_tests_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;
 
 CREATE TABLE `change_table` (

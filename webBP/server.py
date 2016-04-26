@@ -15,6 +15,7 @@ from controllers.delete_file_controller import delete_file, delete_file_post
 from controllers.delete_path_controller import delete_path, delete_path_post
 from controllers.delete_test_controller import delete_test, delete_test_post
 from controllers.file_controller import upload_file_post, upload_file
+from controllers.groups_controller import get_groups
 from controllers.login_controller import post_login, wrong_user_name, wrong_password
 from controllers.main_controller import main_page, logout
 from controllers.results_controller import results_controller, view_file_content
@@ -65,6 +66,7 @@ def register_pages_into_router(router):
     router.register_controller('/styles.css', get_own_styles)
     router.register_controller('/test/styles.css', get_own_styles)
     router.register_controller('/test/results/styles.css', get_own_styles)
+    router.register_controller('/groups', get_groups)
 
 
 def load_texts():
