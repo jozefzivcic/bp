@@ -78,7 +78,7 @@ CREATE TABLE `groups` (
 )DEFAULT CHARSET=utf8;
 
 CREATE TABLE `groups_tests` (
-  `id` int(11) PRIMARY KEY,
+  `id` int(11),
   `id_test` int(11),
   CONSTRAINT groups_tests_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;

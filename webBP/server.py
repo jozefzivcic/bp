@@ -15,7 +15,7 @@ from controllers.delete_file_controller import delete_file, delete_file_post
 from controllers.delete_path_controller import delete_path, delete_path_post
 from controllers.delete_test_controller import delete_test, delete_test_post
 from controllers.file_controller import upload_file_post, upload_file
-from controllers.groups_controller import get_groups
+from controllers.groups_controller import get_groups, groups_download_post
 from controllers.login_controller import post_login, wrong_user_name, wrong_password
 from controllers.main_controller import main_page, logout
 from controllers.results_controller import results_controller, view_file_content
@@ -27,6 +27,7 @@ from managers.connectionpool import ConnectionPool
 from managers.currently_running_manager import CurrentlyRunningManager
 from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
+from managers.groupmanager import GroupManager
 from managers.nisttestmanager import NistTestManager
 from managers.resultsmanager import ResultsManager
 from managers.usermanager import UserManager
@@ -67,6 +68,7 @@ def register_pages_into_router(router):
     router.register_controller('/test/styles.css', get_own_styles)
     router.register_controller('/test/results/styles.css', get_own_styles)
     router.register_controller('/groups', get_groups)
+    router.register_controller('/download', groups_download_post)
 
 
 def load_texts():
@@ -109,6 +111,7 @@ def prepare_handler(config_storage):
     MyRequestHandler.file_manager = FileManager(pool)
     MyRequestHandler.results_manager = ResultsManager(pool)
     MyRequestHandler.currently_running_manager = CurrentlyRunningManager(pool)
+    MyRequestHandler.group_manager = GroupManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
     MyRequestHandler.logger = Logger()
 

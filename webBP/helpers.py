@@ -1,3 +1,4 @@
+import os
 import re
 from os import makedirs, stat
 from os.path import isdir, join
@@ -71,3 +72,10 @@ def get_file_ids_from_nist_form(form):
         ids.append(int(file_id))
     return ids
 
+
+def zip_folders(zip_class, arr):
+    for folder in arr:
+        for base, dirs, files in os.walk(folder):
+            for file in files:
+                file_name = os.path.join(base, file)
+                zip_class.write(file_name)

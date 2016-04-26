@@ -41,8 +41,28 @@
     <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
         <input class="btn btn-danger" type="submit" value="{{ log_out }}">
     </form>
+    <div class="my-center">
+        <h2>{{ select_tests_to_download }}</h2>
+    </div>
     <table class="table tests-table">
-        
+        <tr>
+            <th>{{ select }}</th>
+            <th>{{ id }}</th>
+            <th>{{ time_of_add }}</th>
+            <th>{{ num_of_tests_in_group}}</th>
+        </tr>
+        {% for group in vars['groups'] %}
+            <tr>
+                <td><input class="checkbox" type="checkbox" name="group{{ group.id }}"></td>
+                <td>{{ group.id }}</td>
+                <td>{{ group.time_of_add }}</td>
+                <td>{{ group.get_num_of_tests() }}</td>
+            </tr>
+        {% endfor %}
     </table>
+    <form class="my-center" name="download" action="/download" method="post" accept-charset="utf-8">
+        <input class="btn btn-success" type="submit" name="download" value="{{ download }}">
+    </form>
+
 </body>
 </html>

@@ -90,3 +90,6 @@ home=Home
 browse=Browse
 wrong_format=Wrong format of message in input.
 groups_of_tests=Groups of tests
+download=Download
+num_of_tests_in_group=Number of tests in group
+select_tests_to_download=Select tests to download
