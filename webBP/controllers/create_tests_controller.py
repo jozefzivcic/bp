@@ -348,6 +348,7 @@ def fill_array_from_text_input(arr, form, length, streams, test_number, param_na
     if param_name not in form:
         arr.append(create_nist_param_from_nist_form(test_number, length, streams,
                                                     NistParam.get_default_param_value(test_number)))
+        return True
     try:
         params = get_int_array_from_string(form[param_name].value)
     except ValueError:

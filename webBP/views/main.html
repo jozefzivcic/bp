@@ -31,13 +31,18 @@
                         {{ your_currently_running }}
                     </a>
                 </li>
+                <li>
+                    <a href="#files">
+                        {{ your_files }}
+                    </a>
+                </li>
             </ul>
         </div>
         <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
             <input class="btn btn-danger" type="submit" value="{{ log_out }}">
         </form>
     <div class="my-center">
-        <h2>{{ your_tests }}:</h2>
+        <h2><a name="tests">{{ your_tests }}:</a></h2>
     </div>
     <br>
     <table class="table tests-table">
@@ -93,7 +98,7 @@
     </table>
     <br>
     <div class="my-center">
-        <h2>{{ your_files }}:</h2>
+        <h2><a name="files">{{ your_files }}</a></h2>
     </div>
     <br>
     <table class="table files-table">
@@ -122,5 +127,8 @@
             </tr>
         {% endfor %}
     </table>
+    <div class="my-center">
+        <h2><a href="#tests">{{ your_tests }}</a></h2>
+    </div>
 </body>
 </html>
