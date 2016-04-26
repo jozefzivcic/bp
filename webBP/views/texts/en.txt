@@ -88,3 +88,4 @@ return_value=Return value
 please_log_in=Please log in
 home=Home
 browse=Browse
+wrong_format=Wrong format of message in input.

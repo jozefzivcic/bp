@@ -37,6 +37,9 @@
         <input class="btn btn-danger" type="submit" value="{{ log_out }}">
     </form>
     <div class="my-center">
+        {% if 'format' in vars['queries'] %}
+            <h3> {{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ wrong_format }}</h3>
+        {% endif %}
         {% if 'l' in vars['queries'] and 't' in vars['queries'] %}
             {% if vars['queries']['l'] is equalto '1' %}
                 <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ length_error }}</h3>
