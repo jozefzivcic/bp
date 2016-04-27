@@ -15,6 +15,8 @@ class FileManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('INSERT INTO files (id_user, hash, name, file_system_path) VALUES (%s, %s, %s, %s);',
                         (file.user_id, file.hash,
@@ -37,6 +39,8 @@ class FileManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('SELECT id, id_user, hash, name, file_system_path FROM files WHERE id = %s;', (id))
             connection.commit()
@@ -65,6 +69,8 @@ class FileManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('SELECT id, id_user, hash, name, file_system_path FROM files WHERE id_user = %s;', (user_id))
             connection.commit()
@@ -91,6 +97,8 @@ class FileManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('SELECT id FROM files WHERE id_user = %s AND name = %s;', (user_id, file_name))
             connection.commit()
@@ -111,6 +119,8 @@ class FileManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('SELECT id, id_user, hash, name, file_system_path FROM files WHERE id_user = %s AND file_system_path IS NOT NULL;', (user_id))
             connection.commit()
@@ -137,6 +147,8 @@ class FileManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('UPDATE files SET file_system_path = NULL WHERE id = %s;', (file.id))
             connection.commit()
@@ -154,6 +166,8 @@ class FileManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('DELETE FROM files WHERE id = %s;', (file.id))
             connection.commit()

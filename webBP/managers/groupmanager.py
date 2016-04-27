@@ -14,6 +14,8 @@ class GroupManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'SELECT groups.id, id_user, time_of_add, id_test FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE id_user = %s;',
@@ -45,6 +47,8 @@ class GroupManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'SELECT groups.id, id_user, time_of_add, id_test FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE groups.id = %s AND id_user = %s;',
@@ -77,6 +81,8 @@ class GroupManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'INSERT INTO groups (id_user) VALUES(%s);', (id_user))
@@ -96,6 +102,8 @@ class GroupManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('SELECT groups.id FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE id_test = %s;', (test.id))
             group_id = None

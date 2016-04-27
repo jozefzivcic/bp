@@ -13,6 +13,8 @@ class NistTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'INSERT INTO nist_tests (id_test, length, test_number, streams, special_parameter) VALUES (%s, %s, %s,%s,%s);',
@@ -33,6 +35,8 @@ class NistTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'SELECT id_test, length, test_number, streams, special_parameter FROM nist_tests WHERE id_test = %s;',
@@ -63,6 +67,8 @@ class NistTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('DELETE FROM nist_tests WHERE id_test = %s', (id))
             connection.commit()

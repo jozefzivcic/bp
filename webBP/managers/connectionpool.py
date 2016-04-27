@@ -29,7 +29,7 @@ class ConnectionPool:
                 connection = self.cons.get(block=False)
                 connection.close()
 
-    def get_connection_from_pool_non_block(self):
+    def get_connection_from_pool(self):
         try:
             self.mut.acquire()
             if self.used_cons >= self.num_of_cons:
@@ -41,12 +41,6 @@ class ConnectionPool:
             return connection
         finally:
             self.mut.release()
-
-    def get_connection_from_pool(self):
-        connection = self.get_connection_from_pool_non_block()
-        while connection is None:
-            connection = self.get_connection_from_pool_non_block()
-        return connection
 
     def release_connection(self, c):
         if not c:

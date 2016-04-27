@@ -13,6 +13,8 @@ class UserManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('INSERT INTO users (user_name, user_password) VALUES (%s, %s);',(user.name, user.password))
             user.id = cur.lastrowid
@@ -31,6 +33,8 @@ class UserManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('SELECT id, user_name, user_password FROM users WHERE user_name = %s;',(name))
             connection.commit()
@@ -55,6 +59,8 @@ class UserManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('SELECT user_password FROM users WHERE user_name = %s;',(user.name))
             for row in cur:

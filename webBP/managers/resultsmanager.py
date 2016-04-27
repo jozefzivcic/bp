@@ -14,6 +14,8 @@ class ResultsManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'SELECT directory FROM results WHERE id_test = %s;', (test.id))
@@ -35,6 +37,8 @@ class ResultsManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'DELETE FROM results WHERE id_test = %s;', (test.id))

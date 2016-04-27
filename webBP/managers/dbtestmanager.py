@@ -13,6 +13,8 @@ class DBTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests WHERE id_user = %s;',
@@ -44,6 +46,8 @@ class DBTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'INSERT INTO tests (id_file, id_user, test_table) VALUES(%s,%s,%s);',
@@ -64,6 +68,8 @@ class DBTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests WHERE id = %s AND id_user = %s;',
@@ -97,6 +103,8 @@ class DBTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'INSERT INTO tests (id_file, id_user, test_table) VALUES(%s,%s,%s);',
@@ -123,6 +131,8 @@ class DBTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests WHERE id_file = %s;',
@@ -154,6 +164,8 @@ class DBTestManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute('DELETE FROM tests WHERE id = %s', (test.id))
             connection.commit()

@@ -13,6 +13,8 @@ class CurrentlyRunningManager:
         cur = None
         try:
             connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
                 'SELECT id, id_file, id_user, time_of_add, test_table, loaded, ended FROM tests INNER JOIN currently_running ON tests.id = currently_running.id_test WHERE id_user = %s;',
