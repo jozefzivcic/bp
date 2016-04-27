@@ -80,6 +80,7 @@ CREATE TABLE `groups` (
 CREATE TABLE `groups_tests` (
   `id` int(11),
   `id_test` int(11),
+  CONSTRAINT groups_tests_fk_group_id FOREIGN KEY (`id`) REFERENCES `groups`(`id`),
   CONSTRAINT groups_tests_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;
 

@@ -59,5 +59,6 @@ def delete_test_post(handler):
         shutil.rmtree(path)
     if test.test_table == handler.config_storage.nist:
         handler.nist_manager.delete_nist_param_by_id(test.id)
+    handler.group_manager.delete_test_from_group(test)
     handler.test_manager.delete_test(test)
     return

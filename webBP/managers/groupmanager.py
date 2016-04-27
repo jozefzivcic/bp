@@ -90,3 +90,31 @@ class GroupManager:
             if cur:
                 cur.close()
             self.pool.release_connection(connection)
+
+    def delete_test_from_group(self, test):
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute('SELECT groups.id FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE id_test = %s;', (test.id))
+            group_id = None
+            for row in cur:
+                group_id = row[0]
+            cur.execute(
+                'DELETE FROM groups_tests WHERE id_test = %s;', (test.id))
+            cur.execute('SELECT groups.id, groups_tests.id_test FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE groups.id = %s', (group_id))
+            i = 0
+            for row in cur:
+                i += 1
+            if i < 1:
+                cur.execute('DELETE FROM groups WHERE id = %s;', (group_id))
+            connection.commit()
+            return group_id
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('GroupManager.create_new_group', ex)
+            return None
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
