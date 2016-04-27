@@ -3,6 +3,8 @@ import re
 from os import makedirs, stat
 from os.path import isdir, join
 from hashlib import sha256
+from pathlib import Path
+
 from models.nistparam import NistParam
 from managers.nisttestmanager import NistTestManager
 
@@ -78,4 +80,5 @@ def zip_folders(zip_class, arr):
         for base, dirs, files in os.walk(folder):
             for file in files:
                 file_name = os.path.join(base, file)
-                zip_class.write(file_name)
+                p = Path(file_name).parent
+                zip_class.write(file_name, join('/', p.name, file))

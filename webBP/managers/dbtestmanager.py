@@ -92,7 +92,7 @@ class DBTestManager:
                 cur.close()
             self.pool.release_connection(connection)
 
-    def store_test_with_nist_param(self, test, nist_param):
+    def store_test_with_nist_param(self, test, nist_param, group_id):
         connection = None
         cur = None
         try:
@@ -107,6 +107,7 @@ class DBTestManager:
                 'INSERT INTO nist_tests (id_test, length, test_number, streams, special_parameter) VALUES (%s, %s, %s,%s,%s);',
                 (nist_param.test_id, nist_param.length, nist_param.test_number, nist_param.streams,
                  nist_param.special_parameter))
+            cur.execute('INSERT INTO groups_tests (id, id_test) VALUES(%s, %s)', (group_id, test.id))
             connection.commit()
             return True
         except pymysql.MySQLError as ex:

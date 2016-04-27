@@ -79,10 +79,11 @@ def create_tests_post(handler):
     t = Test()
     t.user_id = user_id
     t.test_table = handler.config_storage.nist
+    group_id = handler.group_manager.create_new_group(user_id)
     for file_id in file_ids:
         t.file_id = file_id
         for nist_param in nist_params[0]:
-            handler.test_manager.store_test_with_nist_param(t, nist_param)
+            handler.test_manager.store_test_with_nist_param(t, nist_param, group_id)
     handler.send_header('Location', '/')
     handler.end_headers()
     return
