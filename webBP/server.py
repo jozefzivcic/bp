@@ -29,6 +29,7 @@ from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
 from managers.groupmanager import GroupManager
 from managers.nisttestmanager import NistTestManager
+from managers.pid_table_manager import PIDTableManager
 from managers.resultsmanager import ResultsManager
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
@@ -112,6 +113,7 @@ def prepare_handler(config_storage):
     MyRequestHandler.results_manager = ResultsManager(pool)
     MyRequestHandler.currently_running_manager = CurrentlyRunningManager(pool)
     MyRequestHandler.group_manager = GroupManager(pool)
+    MyRequestHandler.pid_manager = PIDTableManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
     MyRequestHandler.logger = Logger()
 

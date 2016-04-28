@@ -1,4 +1,6 @@
 import cgi
+import os
+import signal
 from math import log
 from os.path import join
 from urllib.parse import urlencode
@@ -86,6 +88,8 @@ def create_tests_post(handler):
             handler.test_manager.store_test_with_nist_param(t, nist_param, group_id)
     handler.send_header('Location', '/')
     handler.end_headers()
+    pid = handler.pid_manager.get_pid_by_id(handler.config_storage.sched_id_of_pid)
+    os.kill(pid, signal.SIGUSR1)
     return
 
 

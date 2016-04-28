@@ -15,8 +15,13 @@ void interruptHandler(int sig)
     endProgram = true;
 }
 
+void watchDBHandler(int sig) {
+    (void)sig;
+}
+
 int main(void) {
     signal(SIGINT, interruptHandler);
+    signal(SIGUSR1, watchDBHandler);
     ILogger* logger = new Logger();
     try {
         MainClass mainClass;

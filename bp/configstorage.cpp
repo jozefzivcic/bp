@@ -96,7 +96,7 @@ ConfigStorage::ConfigStorage(ConfigParser *parser):
     nameOfApplication(parser->getValue("NAME_OF_APPLICATION")),
     rerunTimes(stoi(parser->getValue("RERUN_TIMES"))),
     rerunAfter(stoi(parser->getValue("RERUN_TEST_IN_SEC"))),
-    idOfPid(stoi(parser->getValue("DAEMON_ID_OF_PID")))
+    idOfPid(stoi(parser->getValue("SCHEDULER_ID_OF_PID")))
 {
     logger = new Logger();
     try {

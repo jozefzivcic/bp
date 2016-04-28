@@ -11,6 +11,9 @@
 #include <sys/wait.h>
 #include <sched.h>
 #include <cppconn/driver.h>
+#include <sys/types.h>
+#include <signal.h>
+
 using namespace std;
 
 TestHandler::TestHandler(int num, const ConfigStorage *stor, MySqlDBPool *pool):
@@ -86,7 +89,12 @@ void TestHandler::addOneTest()
 void TestHandler::subtractOneTest()
 {
     numberOfRunningTestsMutex.lock();
+    bool send = false;
+    if (numberOfRunningTests == maxNumberOfTests)
+        send = true;
     numberOfRunningTests -= 1;
+    if (send)
+        kill(getpid(), SIGUSR1);
     numberOfRunningTestsMutex.unlock();
 }
 

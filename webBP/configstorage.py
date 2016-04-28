@@ -12,3 +12,4 @@ class ConfigStorage:
         self.pooled_connections = int(parser.get_key('POOLED_CONNECTIONS_FOR_WEB'))
         self.path_to_users_dir = parser.get_key('PATH_TO_USERS_DIR_FROM_WEB')
         self.files = parser.get_key('FILES')
+        self.sched_id_of_pid = parser.get_key('SCHEDULER_ID_OF_PID')
