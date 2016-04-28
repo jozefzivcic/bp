@@ -43,7 +43,6 @@ def create_tests_post(handler):
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})
     file_ids = get_file_ids_from_nist_form(form)
-    test_error = None
     ret = None
     nist_params = parse_nist_form(form)
     user_id = handler.sessions[handler.read_cookie()]
@@ -89,7 +88,8 @@ def create_tests_post(handler):
     handler.send_header('Location', '/')
     handler.end_headers()
     pid = handler.pid_manager.get_pid_by_id(handler.config_storage.sched_id_of_pid)
-    os.kill(pid, signal.SIGUSR1)
+    if pid is not None:
+        os.kill(pid, signal.SIGUSR1)
     return
 
 
@@ -304,49 +304,56 @@ def control_nist_forms(handler, user_id, file_ids, nist_params):
                 return (CreateErrors.length_greater_than_size, param.test_number)
             elif (param.special_parameter is not None) and (param.special_parameter < 1):
                 return (CreateErrors.special_param_not_in_range, param.test_number)
-            elif not control_nist_params_range(param):
-                return (CreateErrors.special_param_not_in_range, param.test_number)
+            else:
+                ret = control_nist_params_range(param)
+                if ret != (CreateErrors.ok, 0):
+                    return ret
     return (CreateErrors.ok, 0)
 
 
 def control_nist_params_range(param):
     if param.test_number == 1:
         if param.length <= 100:
-            return False
-    if param.test_number == 2:
+            return (CreateErrors.length_greater_than_size, 1)
+    elif param.test_number == 2:
         if (param.special_parameter < 20) or (param.special_parameter > int(param.length / 100)):
-            return False
-    if param.test_number == 3:
+            return (CreateErrors.special_param_not_in_range, 2)
+    elif param.test_number == 3:
         if param.length <= 100:
-            return False
-    if param.test_number == 4:
+            return (CreateErrors.length_greater_than_size, 3)
+    elif param.test_number == 4:
         if param.length < 100:
-            return False
-    if param.test_number == 6:
+            return (CreateErrors.length_greater_than_size, 4)
+    elif param.test_number == 6:
         if param.length <= 38912:
-            return False
-    if param.test_number == 7:
+            return (CreateErrors.length_greater_than_size, 6)
+    elif param.test_number == 7:
         if param.length < 1000:
-            return False
-    if param.test_number == 8:
+            return (CreateErrors.length_greater_than_size, 7)
+    elif param.test_number == 8:
         if (param.special_parameter < 2) or (param.special_parameter > 21):
-            return False
-    if param.test_number == 9:
+            return (CreateErrors.special_param_not_in_range, 8)
+    elif param.test_number == 9:
         if (param.special_parameter < 1) or (param.special_parameter > param.length):
-            return False
-    if param.test_number == 11:
+            return (CreateErrors.special_param_not_in_range, 9)
+    elif param.test_number == 11:
         if param.special_parameter > (log(param.length, 2) - 6):
-            return False
-    if (param.test_number == 12) or (param.test_number == 13):
+            return (CreateErrors.special_param_not_in_range, 11)
+    elif param.test_number == 12:
         if param.length < 1000000:
-            return False
-    if param.test_number == 14:
+            return (CreateErrors.length_greater_than_size, 12)
+    elif param.test_number == 13:
+        if param.length < 1000000:
+            return (CreateErrors.length_greater_than_size, 13)
+    elif param.test_number == 14:
         if (param.special_parameter < 3) or (param.special_parameter > (log(param.length, 2) - 3)):
-            return False
-    if param.test_number == 15:
-        if (param.length <= 1000000) or (param.special_parameter < 500) or (param.special_parameter > 5000):
-            return False
-    return True
+            return (CreateErrors.special_param_not_in_range, 14)
+    elif param.test_number == 15:
+        if (param.length <= 1000000):
+            return (CreateErrors.length_greater_than_size, 15)
+        elif (param.special_parameter < 500) or (param.special_parameter > 5000):
+            return (CreateErrors.special_param_not_in_range, 15)
+    return (CreateErrors.ok, 0)
 
 
 def fill_array_from_text_input(arr, form, length, streams, test_number, param_name):

@@ -88,5 +88,3 @@ CREATE TABLE `pid_table` (
   `id` int(11) PRIMARY KEY,
   `pid` int(11) NOT NULL
 )DEFAULT CHARSET=utf8;
-
-\. insertTestValues.sql

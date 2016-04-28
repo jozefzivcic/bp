@@ -17,7 +17,7 @@ def delete_file(handler):
         error = True
     user_id = handler.sessions[handler.read_cookie()]
     file = handler.file_manager.get_file_by_id(file_id)
-    if (file.user_id != user_id) or error:
+    if (file is None) or (file.user_id != user_id) or error:
         handler.send_response(303)
         handler.send_header('Content-type', 'text/html')
         handler.send_header('Location', '/not_found')
