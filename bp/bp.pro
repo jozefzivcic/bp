@@ -13,7 +13,6 @@ SOURCES += main.cpp \
     scheduler.cpp \
     queuecomparator.cpp \
     prioritycomparator.cpp \
-    mysqlchangestatemanager.cpp \
     testhandler.cpp \
     threadhandler.cpp \
     testcreator.cpp \
@@ -44,8 +43,6 @@ HEADERS += \
     queuecomparator.h \
     iprioritycomparator.h \
     prioritycomparator.h \
-    ichangestatemanager.h \
-    mysqlchangestatemanager.h \
     itesthandler.h \
     testhandler.h \
     threadhandler.h \

@@ -29,13 +29,6 @@ public:
     virtual void run() = 0;
 
     /**
-     * @brief isStateChanged Checks if database state has changed since last access.
-     * @brief retState This variable is filled with state from database.
-     * @return True if state has changed, false otherwise.
-     */
-    virtual bool isStateChanged(long &retState) = 0;
-
-    /**
      * @brief addTestsAfterCrash Adds tests to the queue of tests for running after these tests
      * were loaded but not finished.
      * @return If an error occurs false, true otherwise.

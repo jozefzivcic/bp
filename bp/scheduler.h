@@ -9,8 +9,6 @@
 #include "prioritycomparator.h"
 #include "itestmanager.h"
 #include "mysqltestmanager.h"
-#include "ichangestatemanager.h"
-#include "mysqlchangestatemanager.h"
 #include "configstorage.h"
 #include "itesthandler.h"
 #include "mysqldbpool.h"
@@ -30,11 +28,6 @@ private:
     std::priority_queue<Test, std::vector<Test>, QueueComparator> queue;
 
     /**
-     * @brief state State of database.
-     */
-    int state = 0;
-
-    /**
      * @brief storage ConfigStorage.
      */
     const ConfigStorage* storage;
@@ -45,7 +38,6 @@ private:
     unsigned int maxTestsRunningParallel;
 
     ITestManager* testManager = nullptr;
-    IChangeStateManager* stateManager = nullptr;
     ITestHandler* testHandler = nullptr;
     MySqlDBPool* dbPool = nullptr;
     size_t sleepInSeconds;
@@ -57,7 +49,6 @@ public:
     virtual bool getTestForRunning(Test& t) override;
     virtual bool addTestsReadyForRunning() override;
     virtual void run() override;
-    virtual bool isStateChanged(long &retState) override;
     virtual bool addTestsAfterCrash() override;
 private:
 

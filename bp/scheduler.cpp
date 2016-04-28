@@ -1,8 +1,6 @@
 #include "scheduler.h"
 #include <stdexcept>
 #include <list>
-#include "ichangestatemanager.h"
-#include "mysqlchangestatemanager.h"
 #include "testhandler.h"
 #include "logger.h"
 #include "mysqlpidtablemanager.h"
@@ -14,13 +12,12 @@ using namespace std;
 extern bool endProgram;
 
 Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor, int maxParallel)
-    : queue(pri), state(-1), storage(stor), maxTestsRunningParallel(maxParallel)
+    : queue(pri), storage(stor), maxTestsRunningParallel(maxParallel)
 {
     dbPool = new MySqlDBPool(stor->getDatabase(), stor->getUserName(), stor->getUserPassword(),
                              stor->getSchema());
     dbPool->createPool(stor->getPooledConnections());
     testManager = new MySqlTestManager(dbPool);
-    stateManager = new MySqlChangeStateManager(dbPool);
     testHandler = new TestHandler(maxParallel, stor, dbPool);
     sleepInSeconds = stor->getSleepInSeconds();
     logger = new Logger();
@@ -34,8 +31,6 @@ Scheduler::~Scheduler()
     removePID();
     if (testManager != nullptr)
         delete testManager;
-    if (stateManager != nullptr)
-        delete stateManager;
     if (testHandler != nullptr)
         delete testHandler;
     if (pidManager != nullptr)
@@ -79,12 +74,9 @@ bool Scheduler::addTestsReadyForRunning()
 
 void Scheduler::run()
 {
-    long tempState = 0;
     while(!endProgram) {
-        if ((queue.size() <= maxTestsRunningParallel * 2) /*&& isStateChanged(tempState)*/) {
+        if ((queue.size() <= maxTestsRunningParallel * 2))
             addTestsReadyForRunning();
-            state = tempState;
-        }
         while(!queue.empty() && testHandler->getNumberOfRunningTests() < maxTestsRunningParallel) {
             Test t;
             getTestForRunning(t);
@@ -95,17 +87,6 @@ void Scheduler::run()
         }
         sleep(sleepInSeconds);
     }
-}
-
-bool Scheduler::isStateChanged(long& retState)
-{
-    long dbState = 0L;
-    if (!stateManager->getDBState(dbState))
-        return true;
-    if (dbState == state)
-        return false;
-    retState = dbState;
-    return true;
 }
 
 bool Scheduler::addTestsAfterCrash()

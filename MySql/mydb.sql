@@ -89,21 +89,4 @@ CREATE TABLE `pid_table` (
   `pid` int(11) NOT NULL
 )DEFAULT CHARSET=utf8;
 
-CREATE TABLE `change_table` (
-  `id` INT(11) DEFAULT 0,
-  `change_number` int(11) DEFAULT 0
-)DEFAULT CHARSET=utf8;
-
-INSERT INTO `change_table` (id,change_number) VALUES (0,0);
-
--- trigger for setting DB last state after insertion on tests
-DELIMITER $$
-CREATE TRIGGER `test_update` AFTER INSERT ON `tests` FOR EACH ROW
-BEGIN
-  DECLARE old_number INT;
-  SELECT `change_number` INTO old_number FROM `change_table`;
-  UPDATE `change_table` SET `change_number` = old_number + 1 WHERE `id` = 0;
-END$$
-DELIMITER ;
-
 \. insertTestValues.sql
