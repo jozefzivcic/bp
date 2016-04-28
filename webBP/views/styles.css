@@ -117,3 +117,8 @@ tbody tr:nth-child(odd) {
     margin-bottom: 10px;
 }
 
+.my-warning {
+    margin: 0 auto;
+    width: 60%;
+    text-align: center;
+}

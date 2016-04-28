@@ -41,53 +41,79 @@
     <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
         <input class="btn btn-danger" type="submit" value="{{ log_out }}">
     </form>
-    <div class="my-center">
+    <div class="my-warning">
         {% if 'format' in vars['queries'] %}
-            <h3> {{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ wrong_format }}</h3>
+            <div class="alert alert-danger">
+                <h3> {{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ wrong_format }}</h3>
+            </div>
         {% endif %}
+
         {% if 'l' in vars['queries'] and 't' in vars['queries'] %}
             {% if vars['queries']['l'] is equalto '1' %}
-                <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ length_error }}</h3>
+                <div class="alert alert-danger">
+                    <h3>{{ length_error }}</h3>
+                </div>
             {% endif %}
+
             {% if vars['queries']['l'] is equalto '2' %}
-                <h3>{{ test }} {{ vars['queries']['t'] }}. {{ length_must_be_filled }}</h3>
+                <div class="alert alert-danger">
+                    <h3>{{ test }} {{ vars['queries']['t'] }}. {{ length_must_be_filled }}</h3>
+                </div>
+            {% endif %}
+
+
+            {% if vars['queries']['l'] is equalto '3' %}
+                <div class="alert alert-danger">
+                    <h3>{{ test }} {{ vars['queries']['t'] }}. {{ length_range }}</h3>
+                </div>
             {% endif %}
         {% endif %}
 
         {% if 's' in vars['queries'] and 't' in vars['queries'] %}
-            <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ streams_error }}</h3>
+            <div class="alert alert-danger">
+                <h3>{{ error_in }} {{ vars['queries']['t'] }}. {{ test_little }}. {{ streams_error }}</h3>
+            </div>
         {% endif %}
 
         {% if 'p' in vars['queries'] and 't' in vars['queries'] %}
-            <h3>
-                {{ error_in }}
-                {% if vars['queries']['t'] == 2 %}
-                    {{ block_frequency }}.
-                {% endif %}
-                {% if vars['queries']['t'] == 8 %}
-                    {{ nonperiodic }}.
-                {% endif %}
-                {% if vars['queries']['t'] == 9 %}
-                    {{ overlapping }}.
-                {% endif %}
-                {% if vars['queries']['t'] == 11 %}
-                    {{ approximate_entropy }}.
-                {% endif %}
-                {% if vars['queries']['t'] == 14 %}
-                    {{ serial }}.
-                {% endif %}
-                {% if vars['queries']['t'] == 15 %}
-                    {{ linear_complex }}.
-                {% endif %} {{ param_error }}
-            </h3>
+            <div class="alert alert-danger">
+                <h3>
+                    {{ error_in }}
+                    {% if vars['queries']['t'] == 2 %}
+                        {{ block_frequency }}.
+                    {% endif %}
+                    {% if vars['queries']['t'] == 8 %}
+                        {{ nonperiodic }}.
+                    {% endif %}
+                    {% if vars['queries']['t'] == 9 %}
+                        {{ overlapping }}.
+                    {% endif %}
+                    {% if vars['queries']['t'] == 11 %}
+                        {{ approximate_entropy }}.
+                    {% endif %}
+                    {% if vars['queries']['t'] == 14 %}
+                        {{ serial }}.
+                    {% endif %}
+                    {% if vars['queries']['t'] == 15 %}
+                        {{ linear_complex }}.
+                    {% endif %} {{ param_error }}
+                </h3>
+            </div>
         {% endif %}
+
         {% if 'f' in vars['queries'] %}
-            <h3>{{ no_file_selected }}</h3>
+            <div class="alert alert-danger">
+                <h3>{{ no_file_selected }}</h3>
+            </div>
         {% endif %}
+
         {% if 'test' in vars['queries'] %}
-            <h3>{{ no_test_selected }}</h3>
+            <div class="alert alert-danger">
+                <h3>{{ no_test_selected }}</h3>
+            </div>
         {% endif %}
     </div>
+
     <form name="create" action="create_tests_submit" method="post" accept-charset="utf-8">
         <div class="my-center">
             {% for file in vars['files'] %}

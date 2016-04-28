@@ -10,3 +10,4 @@ class CreateErrors(Enum):
     special_param_not_in_range = 6
     ok = 7
     param_wrong_format = 8
+    length_range = 9
