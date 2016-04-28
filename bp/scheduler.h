@@ -15,6 +15,7 @@
 #include "itesthandler.h"
 #include "mysqldbpool.h"
 #include "ilogger.h"
+#include "ipidtablemanager.h"
 /**
  * @brief The Scheduler class implements interface IScheduler. For methods documentation
  * see interface.
@@ -49,6 +50,7 @@ private:
     MySqlDBPool* dbPool = nullptr;
     size_t sleepInSeconds;
     ILogger* logger = nullptr;
+    IPIDTableManager* pidManager = nullptr;
 public:
     Scheduler(IPriorityComparator * pri, const ConfigStorage* stor, int maxParallel);
     ~Scheduler();
@@ -57,6 +59,19 @@ public:
     virtual void run() override;
     virtual bool isStateChanged(long &retState) override;
     virtual bool addTestsAfterCrash() override;
+private:
+
+    /**
+     * @brief storePID Stores pid of this process to the database.
+     * @return If an error occurs false, true otherwise.
+     */
+    bool storePID();
+
+    /**
+     * @brief removePID Removes pid of this process from the database.
+     * @return If an error occurs false, true otherwise.
+     */
+    bool removePID();
 };
 
 #endif // SCHEDULER_H

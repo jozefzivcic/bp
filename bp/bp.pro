@@ -27,7 +27,8 @@ SOURCES += main.cpp \
     linuxfilestructurehandler.cpp \
     logger.cpp \
     mysqlresultsmanager.cpp \
-    mysqldbpool.cpp
+    mysqldbpool.cpp \
+    mysqlpidtablemanager.cpp
 
 HEADERS += \
     ifilemanager.h \
@@ -66,5 +67,7 @@ HEADERS += \
     iresultsmanager.h \
     mysqlresultsmanager.h \
     generaldbpool.h \
-    mysqldbpool.h
+    mysqldbpool.h \
+    ipidtablemanager.h \
+    mysqlpidtablemanager.h
 

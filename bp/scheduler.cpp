@@ -5,6 +5,9 @@
 #include "mysqlchangestatemanager.h"
 #include "testhandler.h"
 #include "logger.h"
+#include "mysqlpidtablemanager.h"
+#include <sys/types.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -21,16 +24,22 @@ Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor, int ma
     testHandler = new TestHandler(maxParallel, stor, dbPool);
     sleepInSeconds = stor->getSleepInSeconds();
     logger = new Logger();
+    pidManager = new MySqlPIDTableManager(dbPool);
+    if (!storePID())
+        throw runtime_error("Scheduler::Scheduler::storePID()");
 }
 
 Scheduler::~Scheduler()
 {
+    removePID();
     if (testManager != nullptr)
         delete testManager;
     if (stateManager != nullptr)
         delete stateManager;
     if (testHandler != nullptr)
         delete testHandler;
+    if (pidManager != nullptr)
+        delete pidManager;
     if (dbPool != nullptr) {
         dbPool->destroyPool();
         delete dbPool;
@@ -108,4 +117,15 @@ bool Scheduler::addTestsAfterCrash()
         queue.push(t);
     }
     return true;
+}
+
+bool Scheduler::storePID()
+{
+    pid_t this_process = getpid();
+    return pidManager->storePIDForId(storage->getIdOfPid(), this_process);
+}
+
+bool Scheduler::removePID()
+{
+    return pidManager->removePIDForId(storage->getIdOfPid());
 }

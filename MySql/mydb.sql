@@ -84,6 +84,11 @@ CREATE TABLE `groups_tests` (
   CONSTRAINT groups_tests_fk_test_id FOREIGN KEY (`id_test`) REFERENCES `tests`(`id`)
 )DEFAULT CHARSET=utf8;
 
+CREATE TABLE `pid_table` (
+  `id` int(11) PRIMARY KEY,
+  `pid` int(11) NOT NULL
+)DEFAULT CHARSET=utf8;
+
 CREATE TABLE `change_table` (
   `id` INT(11) DEFAULT 0,
   `change_number` int(11) DEFAULT 0

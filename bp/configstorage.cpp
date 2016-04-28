@@ -80,6 +80,11 @@ unsigned int ConfigStorage::getRerunAfter() const
     return rerunAfter;
 }
 
+int ConfigStorage::getIdOfPid() const
+{
+    return idOfPid;
+}
+
 ConfigStorage::ConfigStorage(ConfigParser *parser):
     database(parser->getValue("DATABASE")), userName(parser->getValue("USERNAME")),
     userPassword(parser->getValue("USER_PASSWORD")), schema(parser->getValue("SCHEMA")),
@@ -90,7 +95,8 @@ ConfigStorage::ConfigStorage(ConfigParser *parser):
     testsResults(parser->getValue("TESTS_RESULTS")),
     nameOfApplication(parser->getValue("NAME_OF_APPLICATION")),
     rerunTimes(stoi(parser->getValue("RERUN_TIMES"))),
-    rerunAfter(stoi(parser->getValue("RERUN_TEST_IN_SEC")))
+    rerunAfter(stoi(parser->getValue("RERUN_TEST_IN_SEC"))),
+    idOfPid(stoi(parser->getValue("DAEMON_ID_OF_PID")))
 {
     logger = new Logger();
     try {
