@@ -62,7 +62,7 @@ int ThreadHandler::getIndexOfFreeThread()
     return -1;
 }
 
-bool ThreadHandler::shouldThreadStopped()
+bool ThreadHandler::shouldThreadStop()
 {
     return endThreads;
 }

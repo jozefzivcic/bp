@@ -62,10 +62,10 @@ public:
     int getIndexOfFreeThread();
 
     /**
-     * @brief shouldThreadStopped Getter that returns if all thread should stop.
+     * @brief shouldThreadStop Getter that returns if all thread should stop.
      * @return True if all threads should stop, false otherwise.
      */
-    bool shouldThreadStopped();
+    bool shouldThreadStop();
 
     /**
      * @brief stopAllThreads Sets attribute that in next call of shouldThreadStopped() it

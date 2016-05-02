@@ -129,10 +129,10 @@ void threadFunction(TestHandler* handler, int i)
     if (chdir(bin.c_str()) != 0)
         throw runtime_error("chdir");
     handler->thHandler->setThreadAtPositionIsReady(i);
-    while(!(handler->thHandler)->shouldThreadStopped()) {
+    while(!(handler->thHandler)->shouldThreadStop()) {
         handler->vars[i].wait(lck);
         handler->setSignal(i);
-        if (handler->thHandler->shouldThreadStopped())
+        if (handler->thHandler->shouldThreadStop())
             break;
         Test myTest;
         handler->thHandler->getTestAtPosition(i, myTest);
