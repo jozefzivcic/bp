@@ -2,6 +2,11 @@ import os
 
 
 def get_bootstrap(handler):
+    """
+    Returns bootstrap css.
+    :param handler: MyRequestHandler.
+    :return: None
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/css')
     handler.end_headers()
@@ -14,6 +19,11 @@ def get_bootstrap(handler):
 
 
 def get_own_styles(handler):
+    """
+    Returns own css.
+    :param handler: MyRequestHandler.
+    :return: None
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/css')
     handler.end_headers()

@@ -7,6 +7,11 @@ from helpers import get_param_for_test
 
 
 def delete_test(handler):
+    """
+    Generates HTML page for deleting selected test and it's associated results.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     parsed_path = urlparse(handler.path)
     queries = parse_qs(parsed_path.query)
     error = False
@@ -39,6 +44,11 @@ def delete_test(handler):
 
 
 def delete_test_post(handler):
+    """
+    Controls URL query string and if test id belongs to user which sends request, then deletes test and its results.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})

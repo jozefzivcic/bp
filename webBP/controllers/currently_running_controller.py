@@ -1,4 +1,9 @@
 def currently_running(handler):
+    """
+    Generates HTML page with currently running tests for logged in user.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()

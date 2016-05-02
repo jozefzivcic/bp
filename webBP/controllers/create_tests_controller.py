@@ -12,6 +12,12 @@ from enums import CreateErrors
 
 
 def create_tests(handler):
+    """
+    Generates HTML page for creating new tests, and fills it with values if some were filled, but an error occurred,
+    for example if length*streams was greater than file size.
+    :param handler: MyRequestHandler.
+    :return: None
+    """
     parsed_path = urlparse(handler.path)
     queries = parse_qs(parsed_path.query)
     parsed_queries = parse_queries(queries)
@@ -39,6 +45,12 @@ def create_tests(handler):
 
 
 def create_tests_post(handler):
+    """
+    Controls forms in create_tests page and of everything is OK stores new tests into the database. If some values are
+     out of range, redirects user to create_tests page with filled values.
+    :param handler:
+    :return:
+    """
     form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})
@@ -96,6 +108,10 @@ def create_tests_post(handler):
 
 
 def get_possible_keys_and_values():
+    """
+    Possible keys in URL query and their domain values.
+    :return: Dictionary of keys and their domains.
+    """
     arr = {'l': str, 't': int, 'p': int, 'frequency': int, 'block_frequency': int, 'block_frequency_param': str,
            'cumulative_sums': int, 'runs': int, 'longest_run_of_ones': int, 'rank': int,
            'discrete_fourier_transform': int, 'nonperiodic': int, 'nonperiodic_param': str, 'overlapping': int,
@@ -110,6 +126,12 @@ def get_possible_keys_and_values():
 
 
 def parse_queries(queries):
+    """
+    Parse URL queries.
+    :param queries: URL queries.
+    :return: If some key is not in allowed keys, or its domain is wrong, None, else dictionary of parsed queries
+    and their values.
+    """
     possible = get_possible_keys_and_values()
     possible_keys = list(possible.keys())
     temp_dict = {}
@@ -139,6 +161,14 @@ def parse_queries(queries):
 
 
 def convert_nist_form_params_to_query(file_ids, params, length, streams):
+    """
+    Converts filled forms of create_tests web page into URL query string.
+    :param file_ids: Ids of checked files.
+    :param params: Tests params.
+    :param length: Filled length.
+    :param streams: Filled streams.
+    :return: URL query string.
+    """
     temp_dict = {}
     encoded_ids = get_string_from_int_array(file_ids)
     temp_dict['files'] = encoded_ids
@@ -165,6 +195,11 @@ def convert_nist_form_params_to_query(file_ids, params, length, streams):
 
 
 def get_checkbox_name(test_number):
+    """
+    Returns checkbox name for page create_tests according to number of test.
+    :param test_number: Number of test which checkbox is returned.
+    :return: Checkbox name.
+    """
     if test_number == 1:
         return 'frequency'
     elif test_number == 2:
@@ -199,6 +234,11 @@ def get_checkbox_name(test_number):
 
 
 def get_param_name(test_number):
+    """
+    Returns name of parameter block_length for some tests.
+    :param test_number: Number of test which input is returned.
+    :return: Checkbox Block length name.
+    """
     if test_number == 2:
         return 'block_frequency_param'
     elif test_number == 8:
@@ -215,16 +255,34 @@ def get_param_name(test_number):
 
 
 def get_string_from_int_array(arr):
+    """
+    Converts int array into string separated with commas.
+    :param arr: Array to be converted.
+    :return: String that contains values from int array.
+    """
     return str(arr).strip('[]')
 
 
 def get_int_array_from_string(str_param):
+    """
+    Converts string separated with commas into int array.
+    :param str_param: String to be converted.
+    :return: Int array.
+    """
     temp_arr = str_param.split(',')
     ret_array = [int(num) for num in temp_arr]
     return ret_array
 
 
 def create_nist_param_from_nist_form(test, length, streams, block_size=None):
+    """
+    Creates nist param according to values given into this function.
+    :param test: Number of test.
+    :param length: Length.
+    :param streams: Streams.
+    :param block_size: Block length, if test can have it.
+    :return: New NistParam().
+    """
     param = NistParam()
     param.test_number = test
     param.length = length
@@ -235,6 +293,11 @@ def create_nist_param_from_nist_form(test, length, streams, block_size=None):
 
 
 def parse_nist_form(form):
+    """
+    Parses form on page create_tests and returns array of params and return value.
+    :param form: Form to be parsed.
+    :return: Array of parsed nist params and number of test in which an error occurs during parsing (wrong syntax).
+    """
     arr = []
     ret = None
     if 'length' in form:
@@ -289,6 +352,14 @@ def parse_nist_form(form):
 
 
 def control_nist_forms(handler, user_id, file_ids, nist_params):
+    """
+    Controls form for if given values are in allowed range.
+    :param handler: MyRequestHandler.
+    :param user_id: Id of user, who sends form.
+    :param file_ids: Array with id of files.
+    :param nist_params: Array of nist params.
+    :return: If something is not in range then error code and number of test, else CreateErrors.ok and zero.
+    """
     user_dir = join(handler.path_to_users_dir, str(user_id), handler.config_storage.files)
     if len(file_ids) == 0:
         return (CreateErrors.length_files, 0)
@@ -314,6 +385,11 @@ def control_nist_forms(handler, user_id, file_ids, nist_params):
 
 
 def control_nist_params_range(param):
+    """
+    Controls if nist param has its values in range.
+    :param param: NistParam().
+    :return: If something is not in range then error code and number of test, else CreateErrors.ok and zero.
+    """
     if param.test_number == 1:
         if param.length <= 100:
             return (CreateErrors.length_range, 1)
@@ -359,6 +435,16 @@ def control_nist_params_range(param):
 
 
 def fill_array_from_text_input(arr, form, length, streams, test_number, param_name):
+    """
+    Appends into arr new objects of type NistParam() that were created according to values in text input.
+    :param arr: Array with params.
+    :param form: Form which is parsed.
+    :param length: Length.
+    :param streams: Streams.
+    :param test_number: Number of test.
+    :param param_name: Name of block length parameter.
+    :return: If input field's value has wrong structure, then False, True otherwise.
+    """
     if param_name not in form:
         arr.append(create_nist_param_from_nist_form(test_number, length, streams,
                                                     NistParam.get_default_param_value(test_number)))
@@ -374,6 +460,17 @@ def fill_array_from_text_input(arr, form, length, streams, test_number, param_na
 
 
 def fill_array_from_checkboxes(arr, form, length, streams, test_number, param_name, from_value, to_value):
+    """
+    Appends into arr new objects of type NistParam() that were created according to checked checkboxes.
+    :param arr: Array with params.
+    :param form: Form which is parsed.
+    :param length: Length.
+    :param streams: Streams.
+    :param test_number: Number of test.
+    :param param_name: Name of block length parameter.
+    :param from_value: First value of checkbox defined in attribute name.
+    :param to_value: Last value of checkbox defined in attribute name.
+    """
     j = 0
     for i in range(from_value, to_value):
         param = param_name + str(i)

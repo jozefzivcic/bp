@@ -5,6 +5,11 @@ from models.file import File
 
 
 def upload_file(handler):
+    """
+    Generates HTML page for uploading file.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
@@ -16,6 +21,12 @@ def upload_file(handler):
 
 
 def upload_file_post(handler):
+    """
+    Uploads file from form, stores it into file system and database. If file name is not filled, then sets it to
+    original file name.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})
@@ -41,6 +52,13 @@ def upload_file_post(handler):
 
 
 def create_path(p, user_id, files):
+    """
+    Creates structure of directories (if does not exists) for storing file.
+    :param p:
+    :param user_id:
+    :param files:
+    :return:
+    """
     path = join(p, str(user_id))
     create_dir_if_not_exists(path)
     path = join(path, files)
@@ -49,6 +67,14 @@ def create_path(p, user_id, files):
 
 
 def set_file(file, file_name, user_id, path, file_data):
+    """
+    Sets file object's attributes according to function parameters.
+    :param file: File().
+    :param file_name: Name of file.
+    :param user_id: Id of user.
+    :param path: Path in filesystem, where is stored.
+    :param file_data: File content for computing hash.
+    """
     file.name = file_name
     file.user_id = user_id
     file.file_system_path = path

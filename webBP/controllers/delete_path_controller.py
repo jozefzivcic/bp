@@ -5,6 +5,11 @@ import os
 
 
 def delete_path(handler):
+    """
+    Generates HTML page for deleting selected file without deleting associated record in database.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     parsed_path = urlparse(handler.path)
     queries = parse_qs(parsed_path.query)
     error = False
@@ -34,6 +39,12 @@ def delete_path(handler):
 
 
 def delete_path_post(handler):
+    """
+    Controls URL query string and if file id belongs to user which sends request, then deletes file without deleting
+    it's record in DB.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})
