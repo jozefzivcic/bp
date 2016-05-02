@@ -26,6 +26,10 @@ class MyRequestHandler(BaseHTTPRequestHandler):
                             '/styles.css']
 
     def do_GET(self):
+        """
+        Handles HTTP GET request.
+        :return: None.
+        """
         path = urlparse(self.path).path
         ckie = self.read_cookie()
         controller = None
@@ -46,6 +50,10 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         return
 
     def do_POST(self):
+        """
+        Handles HTTP POST request.
+        :return: None.
+        """
         path = urlparse(self.path).path
         controller = self.router.get_controller(path)
         try:
@@ -57,6 +65,10 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         return
 
     def read_cookie(self):
+        """
+        Reads cookie from HTTP headers.
+        :return: Cookie with name sid - session id, or None if HTTP does not contains cookie.
+        """
         if "Cookie" in self.headers:
             v = self.headers['Cookie']
             c = SimpleCookie()
@@ -66,6 +78,10 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         return None
 
     def write_cookie(self):
+        """
+        Generates and writes sid - session identifier into HTTP headers and returns value of sid.
+        :return: Session identifier.
+        """
         c = SimpleCookie()
         sid = self.generate_sid()
         while sid in self.sessions:
@@ -75,5 +91,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         return sid
 
     def generate_sid(self):
+        """
+        Generates session identifier UUID.
+        :return: Session identifier.
+        """
         sid = uuid.uuid4()
         return sid

@@ -1,5 +1,8 @@
 class NistParam:
     def __init__(self):
+        """
+        Initializes object NistParam().
+        """
         self.test_id = 0
         self.length = 0
         self.test_number = 0
@@ -7,11 +10,19 @@ class NistParam:
         self.special_parameter = None
 
     def has_special_parameter(self):
+        """
+        Returns if test can have optional parameter.
+        :return: True if test can have parameter Block length, False otherwise.
+        """
         if self.test_number == 2 or self.test_number == 8 or self.test_number == 9 or self.test_number == 11 or self.test_number == 14 or self.test_number == 15:
             return True
         return False
 
     def get_test_name(self):
+        """
+        Returns name for test.
+        :return: Name of test.
+        """
         if self.test_number == 1:
             return 'Frequency'
         elif self.test_number == 2:
@@ -45,6 +56,10 @@ class NistParam:
         return 'None'
 
     def get_special_parameter_name(self):
+        """
+        Returns block length name.
+        :return: Block length name.
+        """
         if self.test_number == 2:
             return 'block length(M)'
         elif self.test_number == 8:
@@ -61,6 +76,11 @@ class NistParam:
 
     @staticmethod
     def get_default_param_value(test_number):
+        """
+        Returns default value of block length for given test.
+        :param test_number: Test which default value of block length is returned.
+        :return: If test can have an optional block length parameter, then is's default value, if can't then 0.
+        """
         if test_number == 2:
             return 128
         elif test_number == 8:
@@ -76,4 +96,7 @@ class NistParam:
         return 0
 
     def set_default_param_value_according_to_test(self):
+        """
+        Sets block length parameter to default value.
+        """
         self.special_parameter = self.get_default_param_value(self.test_number)

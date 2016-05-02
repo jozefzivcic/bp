@@ -1,5 +1,8 @@
 class Test:
     def __init__(self):
+        """
+        Initializes object Test().
+        """
         self.id = 0
         self.file_id = 0
         self.user_id = 0

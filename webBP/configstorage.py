@@ -1,6 +1,11 @@
 class ConfigStorage:
 
     def __init__(self, parser):
+        """
+        Initializes class ConfigStorage. This class is used for getting options for setting application. Once
+        initialized, their attributes should never be modified.
+        :param parser: Parser from which values associated to keys can be get.
+        """
         self.database = parser.get_key('DATABASE')
         self.user_name = parser.get_key('USERNAME')
         self.user_password = parser.get_key('USER_PASSWORD')
