@@ -5,6 +5,10 @@ from models.user import User
 
 class UserManager:
     def __init__(self, con_pool):
+        """
+        Initializes class with pool and logger.
+        :param con_pool: Connection pool for acquiring connection.
+        """
         self.pool = con_pool
         self.logger = logger.Logger()
 

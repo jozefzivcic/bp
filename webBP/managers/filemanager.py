@@ -7,6 +7,10 @@ from models.file import File
 
 class FileManager:
     def __init__(self, pool):
+        """
+        Initializes class with pool and logger.
+        :param pool: Connection pool for acquiring connection.
+        """
         self.pool = pool
         self.logger = Logger()
 
