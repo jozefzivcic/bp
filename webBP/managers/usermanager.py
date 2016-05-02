@@ -13,6 +13,11 @@ class UserManager:
         self.logger = logger.Logger()
 
     def save_user(self, user):
+        """
+        Saves user into users table in database.
+        :param user: User to be saved into database.
+        :return: If an error occurs False, True otherwise.
+        """
         connection = None
         cur = None
         try:
@@ -33,6 +38,11 @@ class UserManager:
             self.pool.release_connection(connection)
 
     def get_users_with_name(self, name):
+        """
+        Selects users with name from database table users.
+        :param name: Name of users, that are searched in database.
+        :return: Array of users with given name, or empty array.
+        """
         connection = None
         cur = None
         try:
@@ -59,6 +69,11 @@ class UserManager:
             self.pool.release_connection(connection)
 
     def check_user_password(self, user):
+        """
+        Checks user password on equality.
+        :param user: User which password is compared to database one.
+        :return: True if passwords are the same or False if aren't, or an error occurs.
+        """
         connection = None
         cur = None
         try:

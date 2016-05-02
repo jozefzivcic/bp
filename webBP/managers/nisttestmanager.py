@@ -13,6 +13,11 @@ class NistTestManager:
         self.logger = Logger()
 
     def store_nist_param(self, nist_param):
+        """
+        Saves nist_param into database.
+        :param nist_param: NistParam() to be saved.
+        :return: If an error occurs False, True otherwise.
+        """
         connection = None
         cur = None
         try:
@@ -35,6 +40,11 @@ class NistTestManager:
             self.pool.release_connection(connection)
 
     def get_nist_param_for_test(self, test):
+        """
+        Returns NistParam() object from database for test given as parameter for this method.
+        :param test: Test for which nist param is searched.
+        :return: If an error occurs None, NistParam() otherwise.
+        """
         connection = None
         cur = None
         try:
@@ -67,6 +77,11 @@ class NistTestManager:
             self.pool.release_connection(connection)
 
     def delete_nist_param_by_id(self, id):
+        """
+        Deletes nist param from database, according to its id.
+        :param id: Id of param for deletion.
+        :return: If an error occurs False, True otherwise.
+        """
         connection = None
         cur = None
         try:

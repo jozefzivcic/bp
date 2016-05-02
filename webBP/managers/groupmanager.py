@@ -14,6 +14,11 @@ class GroupManager:
         self.logger = Logger()
 
     def get_groups_for_user(self, user_id):
+        """
+        Returns all groups for user.
+        :param user_id: Id of user for whom groups are searched.
+        :return: If an error occurs None, else list of groups.
+        """
         connection = None
         cur = None
         try:
@@ -47,6 +52,12 @@ class GroupManager:
             self.pool.release_connection(connection)
 
     def get_group_by_id_for_user(self, group_id, user_id):
+        """
+        Returns group with id group_id for given user.
+        :param group_id: Id of group which is searched.
+        :param user_id: Id of user to whom group belongs.
+        :return: If an error occurs None is returned, Group() object otherwise.
+        """
         connection = None
         cur = None
         try:
@@ -81,6 +92,11 @@ class GroupManager:
             self.pool.release_connection(connection)
 
     def create_new_group(self, id_user):
+        """
+        Creates new group for user with id id_user.
+        :param id_user: Id of user for whom new group is created.
+        :return: If an error occurs None, else id of newly created group.
+        """
         connection = None
         cur = None
         try:
@@ -102,6 +118,12 @@ class GroupManager:
             self.pool.release_connection(connection)
 
     def delete_test_from_group(self, test):
+        """
+        Deletes given test from groups_tests table and if no record for test.group_id is in groups_tests, deletes group
+        from groups also.
+        :param test: test which is deleted from groups_tests.
+        :return: If an error occurs None, group_id otherwise.
+        """
         connection = None
         cur = None
         try:

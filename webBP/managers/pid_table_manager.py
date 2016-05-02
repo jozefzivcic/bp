@@ -14,6 +14,12 @@ class PIDTableManager:
         self.logger = Logger()
 
     def get_pid_by_id(self, table_id):
+        """
+        Returns pid that is associated with id table_id.
+        :param table_id: Id of pid that is searched.
+        :return: If an error occurs or in the table is not exactly one id with value table_id, then False, True
+        otherwise.
+        """
         connection = None
         cur = None
         try:

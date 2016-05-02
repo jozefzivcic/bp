@@ -14,6 +14,11 @@ class ResultsManager:
         self.logger = Logger()
 
     def get_path_for_test(self, test):
+        """
+        Returns directory where test's result are stored.
+        :param test: Test which directory with results is searched for.
+        :return: Path to directory with results or None of an error occurs.
+        """
         connection = None
         cur = None
         try:
@@ -37,6 +42,11 @@ class ResultsManager:
             self.pool.release_connection(connection)
 
     def delete_result(self, test):
+        """
+        Deletes record from results table for test.
+        :param test: Test which result is deleted.
+        :return: If an error occurs False, True otherwise.
+        """
         connection = None
         cur = None
         try:
