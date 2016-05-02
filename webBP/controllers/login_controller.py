@@ -5,6 +5,11 @@ from models.user import User
 
 
 def login(handler):
+    """
+    Generates HTML form for logging.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
@@ -13,6 +18,11 @@ def login(handler):
 
 
 def wrong_user_name(handler):
+    """
+    Generates HTML form for logging if given username does not exists.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
@@ -21,6 +31,11 @@ def wrong_user_name(handler):
 
 
 def wrong_password(handler):
+    """
+    Generates HTML form for logging if user typed wrong password.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()

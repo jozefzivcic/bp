@@ -8,6 +8,11 @@ from models.test import Test
 
 
 def get_groups(handler):
+    """
+    Generates page with available groups of tests.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
@@ -23,6 +28,11 @@ def get_groups(handler):
 
 
 def groups_download_post(handler):
+    """
+    Function for downloading selected zipped groups of tests.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})
@@ -57,6 +67,11 @@ def groups_download_post(handler):
 
 
 def get_group_ids(form):
+    """
+    Extracts id's of groups from form.
+    :param form: Form from which id's are extracted.
+    :return: Array of id's.
+    """
     groups = [group for group in form.keys() if group.startswith('group')]
     ids = []
     for group in groups:

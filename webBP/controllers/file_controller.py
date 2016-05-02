@@ -54,10 +54,10 @@ def upload_file_post(handler):
 def create_path(p, user_id, files):
     """
     Creates structure of directories (if does not exists) for storing file.
-    :param p:
-    :param user_id:
-    :param files:
-    :return:
+    :param p: Root directory of users dirs.
+    :param user_id: Id of user.
+    :param files: Name of files.
+    :return: Joined path.
     """
     path = join(p, str(user_id))
     create_dir_if_not_exists(path)

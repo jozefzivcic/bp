@@ -5,6 +5,11 @@ from models.user import User
 
 
 def sign_up(handler):
+    """
+    Generates HTML page for sign up new user.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
@@ -13,6 +18,12 @@ def sign_up(handler):
 
 
 def sign_up_user_exists(handler):
+    """
+    Generates HTML page for sign up new user if previous attempt with name was unsuccessful, because of existing user
+    name.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
@@ -21,6 +32,12 @@ def sign_up_user_exists(handler):
 
 
 def sign_up_passwords_are_not_the_same(handler):
+    """
+    Generates HTML page for sign up new user if previous attempt finished with failure, because passwords are not the
+    same.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
@@ -29,6 +46,11 @@ def sign_up_passwords_are_not_the_same(handler):
 
 
 def post_sign_up(handler):
+    """
+    Creates new user and redirect to main page.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})

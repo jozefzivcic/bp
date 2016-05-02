@@ -4,6 +4,11 @@ from os.path import isfile, join
 
 
 def results_controller(handler):
+    """
+    Generates HTML page with files that represents results of particular test.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     parsed_path = urlparse(handler.path)
     queries = parse_qs(parsed_path.query)
     error = False
@@ -40,6 +45,11 @@ def results_controller(handler):
 
 
 def view_file_content(handler):
+    """
+    Displays content for selected file.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     parsed_path = urlparse(handler.path)
     queries = parse_qs(parsed_path.query)
     error = False

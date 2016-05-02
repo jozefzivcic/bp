@@ -4,6 +4,11 @@ from helpers import get_param_for_test
 
 
 def test_controller(handler):
+    """
+    Generates HTML page for test and it's details.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     parsed_path = urlparse(handler.path)
     queries = parse_qs(parsed_path.query)
     error = False

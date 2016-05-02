@@ -1,4 +1,9 @@
 def main_page(handler):
+    """
+    Generates main page with tests, files.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
@@ -16,6 +21,11 @@ def main_page(handler):
 
 
 def logout(handler):
+    """
+    Logs out user who send this request.
+    :param handler: MyRequestHandler.
+    :return: None.
+    """
     ckie = handler.read_cookie()
     del handler.sessions[ckie]
     handler.send_response(303)
