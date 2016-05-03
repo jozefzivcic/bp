@@ -38,6 +38,10 @@ from logger import Logger
 
 
 def register_pages_into_router(router):
+    """
+    Creates mapping between URL and it's controller functions.
+    :param router: Object of type Router().
+    """
     router.register_controller('/', main_page)
     router.register_controller('/login_submit', post_login)
     router.register_controller('/logout', logout)
@@ -73,6 +77,10 @@ def register_pages_into_router(router):
 
 
 def load_texts():
+    """
+    Loads all texts from texts folder.
+    :return: Dictionary with loaded texts.
+    """
     parser = ConfigParser()
     ret = {}
     texts_folder = 'views/texts'
@@ -85,6 +93,11 @@ def load_texts():
 
 
 def extract_values_for_pool(config_storage):
+    """
+    Extracts values from config, that are needed for connection pool creation.
+    :param config_storage: Object of type ConfigStorage().
+    :return: Dictionary with values needed for ConnectionPool() creation.
+    """
     res = re.search(r'^([a-zA-Z]+://)?([0-9\.]+|[a-zA-Z]+)[:]([0-9]+)?$', config_storage.database).groups()
     db = res[1]
     db_port = res[2]
@@ -96,6 +109,10 @@ def extract_values_for_pool(config_storage):
 
 
 def prepare_handler(config_storage):
+    """
+    Initializes MyRequestHandler with used objects inside this class.
+    :param config_storage: ConfigStorage() object.
+    """
     MyRequestHandler.config_storage = config_storage
     router = Router()
     register_pages_into_router(router)
@@ -119,11 +136,15 @@ def prepare_handler(config_storage):
 
 
 def prepare_environment(config_storage):
+    """
+    Creates file system structure.
+    :param config_storage: ConfigStorage().
+    """
     create_dir_if_not_exists(config_storage.path_to_users_dir)
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    """Handle requests in a separate thread."""
+    """Class for handling requests in a separate threads."""
 
 if __name__ == '__main__':
     cp = ConfigParser()

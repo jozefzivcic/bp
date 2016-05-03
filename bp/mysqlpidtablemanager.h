@@ -4,6 +4,9 @@
 #include "ipidtablemanager.h"
 #include "mysqldbpool.h"
 
+/**
+ * @brief The MySqlPIDTableManager class implements interface IPIDTableManager. For methods documentation see here.
+ */
 class MySqlPIDTableManager : public IPIDTableManager
 {
 private:
