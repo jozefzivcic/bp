@@ -64,7 +64,7 @@ def groups_download_post(handler):
                         for file in files:
                             file_name = os.path.join(base, file)
                             output_file_name = param.get_output_file_name(test_file.name)
-                            output_file_name = '-'.join([output_file_name, file])
+                            output_file_name = '_'.join([output_file_name, file])
                             zip.write(file_name, join('/', output_file_name))
         ok = True
     finally:
