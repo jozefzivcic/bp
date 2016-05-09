@@ -100,3 +100,18 @@ class NistParam:
         Sets block length parameter to default value.
         """
         self.special_parameter = self.get_default_param_value(self.test_number)
+
+    def get_output_file_name(self, tested_file):
+        """
+        Creates output file name, that can be placed in .zip file. This method should be overridden by all attributes.
+        :param tested_file: Name of file, which was tested for randomness.
+        :return: File name.
+        """
+        length = 'length-' + str(self.length)
+        streams = 'streams-' + str(self.streams)
+        special_param = None
+        if self.special_parameter is not None:
+            special_param = 'blockLength-' + str(self.special_parameter)
+            return '_'.join([tested_file, self.get_test_name(), length, streams,special_param])
+        return '_'.join([tested_file, self.get_test_name(), length, streams])
+

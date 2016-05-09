@@ -1,9 +1,14 @@
 import cgi
 import io
+import os
 import re
 import zipfile
+from os import listdir
+
+from os.path import isfile, join
+
 from models.group import Group
-from helpers import zip_folders
+from helpers import zip_folders, get_param_for_test
 from models.test import Test
 
 
@@ -43,8 +48,6 @@ def groups_download_post(handler):
     handler.end_headers()
     user_id = handler.sessions[handler.read_cookie()]
     group_ids = get_group_ids(form)
-    dirs_with_results = []
-    test = Test()
     ok = False
     try:
         file_object = io.BytesIO()
@@ -52,11 +55,17 @@ def groups_download_post(handler):
         for group_id in group_ids:
             group = handler.group_manager.get_group_by_id_for_user(group_id, user_id)
             for test_id in group.test_id_arr:
-                test.id = test_id
+                test = handler.test_manager.get_test_for_user_by_id(user_id, test_id)
                 directory = handler.results_manager.get_path_for_test(test)
                 if directory is not None:
-                    dirs_with_results.append(directory)
-        zip_folders(zip, dirs_with_results)
+                    test_file = handler.file_manager.get_file_by_id(test.file_id)
+                    param = get_param_for_test(handler, test)
+                    for base, dirs, files in os.walk(directory):
+                        for file in files:
+                            file_name = os.path.join(base, file)
+                            output_file_name = param.get_output_file_name(test_file.name)
+                            output_file_name = '-'.join([output_file_name, file])
+                            zip.write(file_name, join('/', output_file_name))
         ok = True
     finally:
         zip.close()
