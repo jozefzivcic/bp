@@ -26,7 +26,7 @@ class ConfigParser:
         with io.open(file, mode='r', encoding='utf-8') as file_handle:
             tempDict = {}
             for line in file_handle:
-                if line[0] == '#':
+                if line[0] == '#' or line == '\n':
                     continue
                 res = re.search(r'^(.+[^\\])[=](.+)$', line)
                 if not res:
