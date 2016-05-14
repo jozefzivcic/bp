@@ -5,7 +5,7 @@ from socketserver import ThreadingMixIn
 
 from jinja2 import FileSystemLoader, Environment
 
-from configparser import ConfigParser
+from myconfigparser import MyConfigParser
 from configstorage import ConfigStorage
 from controllers.css_controller import get_bootstrap, get_own_styles
 from controllers.common_controller import error_occurred
@@ -81,7 +81,7 @@ def load_texts():
     Loads all texts from texts folder.
     :return: Dictionary with loaded texts.
     """
-    parser = ConfigParser()
+    parser = MyConfigParser()
     ret = {}
     texts_folder = 'views/texts'
     for file in os.listdir(texts_folder):
@@ -147,7 +147,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Class for handling requests in a separate threads."""
 
 if __name__ == '__main__':
-    cp = ConfigParser()
+    cp = MyConfigParser()
     cp.parse_file('../config')
     config_storage = ConfigStorage(cp)
     prepare_environment(config_storage)

@@ -2,7 +2,7 @@ import io
 import re
 
 
-class ConfigParser:
+class MyConfigParser:
     def __init__(self):
         """
         Initializes dictionary.
