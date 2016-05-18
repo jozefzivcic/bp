@@ -16,7 +16,8 @@ Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor, int ma
 {
     dbPool = new MySqlDBPool(stor->getDatabase(), stor->getUserName(), stor->getUserPassword(),
                              stor->getSchema());
-    dbPool->createPool(stor->getPooledConnections());
+    if (!dbPool->createPool(stor->getPooledConnections()))
+        throw runtime_error("Scheduler::Scheduler::createPool");
     testManager = new MySqlTestManager(dbPool);
     testHandler = new TestHandler(maxParallel, stor, dbPool);
     sleepInSeconds = stor->getSleepInSeconds();
