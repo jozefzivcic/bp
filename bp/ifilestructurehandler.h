@@ -52,7 +52,7 @@ public:
      * NIST tests.
      * @param directory Directory to be searched for.
      * @param num Number of subdirectories, which should be included in directory.
-     * @return true if structure is OK, else false.
+     * @return true if structure is OK, false otherwise.
      */
     virtual bool controlPoolStructure(std::string directory, int num) = 0;
 
@@ -110,7 +110,7 @@ public:
     /**
      * @brief getFileNameFromPath Extracts name of file from structure.
      * @param path Path from which file is extracted.
-     * @return If fileName could not be extracted then empty string is returned, else file name.
+     * @return If fileName could not be extracted then empty string is returned, else it returns file name.
      */
     virtual std::string getFileNameFromPath(std::string path) = 0;
 

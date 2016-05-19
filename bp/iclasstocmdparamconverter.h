@@ -30,7 +30,7 @@ public:
      * Memory needed is allocated into this pointer.
      * @param binary Name of binary to be executed.
      * @param t Test, with which is ptr filled.
-     * @param param NistTestParameter, with which is ptr filled.
+     * @param param NistTestParameter, with which ptr is filled.
      * @return If test table of test is not nist, or ptr is nullptr, or an error occurs,
      * then false. True otherwise.
      */

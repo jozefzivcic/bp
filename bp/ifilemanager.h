@@ -14,7 +14,7 @@ public:
      * as the second parameter. If any error occurs, given parameter file is not modified.
      * @param id Id of file which is to be searched.
      * @param file File which will be set according to data in database.
-     * @return true is everything goes normally else false.
+     * @return true if everything goes normally, false otherwise.
      */
     virtual bool getFileById(long id, File* file) = 0;
 

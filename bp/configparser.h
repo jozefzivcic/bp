@@ -5,7 +5,7 @@
 
 /**
  * @brief The ConfigParser class This class is used to parse files with format key=value,
- * comments must begin with # as first character on line. Escape character is \.
+ * comments must begin with # as first character on the line. Escape character is \.
  */
 class ConfigParser
 {
@@ -20,15 +20,15 @@ public:
     /**
      * @brief parseFile Loads all keys and their values. If an error occurs during parsing,
      * loaded content is not changed.
-     * @param file File, from which keys and values will be readed.
-     * @return false if given file does not exists or if some error in config file
-     * structure occurs, true otherwise.
+     * @param file File, from which keys and values will be read.
+     * @return false if given file does not exists or if some error occurs in config file
+     * structure, true otherwise.
      */
     bool parseFile(std::string file);
 
     /**
      * @brief getValue Returns value associated with key.
-     * @param key Key which will be searched in dictionary.
+     * @param key Key which will be searched in a dictionary.
      * @return If key was found in dictionary, then associated value, if key was not
      * found in dictionary, then empty string.
      */

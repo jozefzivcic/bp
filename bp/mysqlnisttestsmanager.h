@@ -10,7 +10,7 @@
 
 /**
  * @brief The MySqlNistTestsManager class implements interface INistTestsManager. For methods
- * documentation see interface.
+ * documentation see the interface.
  */
 class MySqlNistTestsManager : public INistTestsManager
 {

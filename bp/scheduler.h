@@ -16,7 +16,7 @@
 #include "ipidtablemanager.h"
 /**
  * @brief The Scheduler class implements interface IScheduler. For methods documentation
- * see interface.
+ * see the interface.
  */
 class Scheduler : public IScheduler
 {

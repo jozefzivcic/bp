@@ -17,7 +17,7 @@ class TestHandler;
 /**
  * @brief threadFunction This is function that is executed by each thread.
  * @param handler Pointer to TestHandler to access its attributes.
- * @param i Serial number of thread.
+ * @param i Sequence number of thread.
  */
 void threadFunction(TestHandler* handler, int i);
 
@@ -45,7 +45,7 @@ public:
 
     /**
      * @brief TestHandler Constructor.
-     * @param num Maximum number of running tests at same time.
+     * @param num Maximum number of running tests at the same time.
      * @param stor ConfigStorage.
      */
     TestHandler(int num, const ConfigStorage* stor, MySqlDBPool* pool);

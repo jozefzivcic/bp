@@ -11,7 +11,7 @@
 
 /**
  * @brief The ClassToCmdParamConverter class implements interface IClassToCmdParamConverter.
- * For methods documentation see here.
+ * For methods documentation see interface.
  */
 class ClassToCmdParamConverter : public IClassToCmdParamConverter
 {

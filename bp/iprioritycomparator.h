@@ -8,10 +8,10 @@
 class IPriorityComparator {
 public:
     /**
-     * @brief betterThan Compares two tests according their time of add.
+     * @brief betterThan Compares two tests which has better priority.
      * @param t1 First test to be compared.
      * @param t2 Second test to be compared.
-     * @return True if time of add of first test is less than time of add of second test.
+     * @return True first test has better priority than second test.
      */
     virtual bool betterThan(const Test& t1, const Test& t2) = 0;
 

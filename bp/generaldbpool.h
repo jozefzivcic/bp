@@ -17,16 +17,17 @@ private:
 
     /**
      * @brief cons Map of connections, key is connection, value is true or false.
+     * True means that connection can be used, false means that certain connection can't be used.
      */
     std::map<T*, bool> cons;
 
     /**
-     * @brief isReady If thread can be used already.
+     * @brief isReady If pool can be used already.
      */
     bool isReady = false;
 
     /**
-     * @brief numOfCons Defines number of connections that are created with this class.
+     * @brief numOfCons Defines number of connections that are created within this class.
      */
     volatile int numOfCons = 0;
 
@@ -52,7 +53,7 @@ public:
     /**
      * @brief createPool Creates new pool, this method is not thread safe.
      * @param num Number of connections to create.
-     * @return If pool is already created of num is less than 1 false, true otherwise.
+     * @return If pool is already created or num is less than 1 false, true otherwise.
      */
     bool createPool(int num) {
         if (isReady || num < 1)
@@ -139,7 +140,7 @@ protected:
     virtual bool deleteConnection(T* con) = 0;
 
     /**
-     * @brief pingConnection Ping database if connection can be used.
+     * @brief pingConnection Ping database if connection is valid.
      * @param con Connection to ping.
      * @return False if connection is not available and can't be used, true if everything is OK.
      */

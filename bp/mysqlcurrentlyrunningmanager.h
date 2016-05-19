@@ -11,7 +11,7 @@
 
 /**
  * @brief The MySqlCurrentlyRunningManager class implements interface ICurrentlyRunningManager.
- * For methods documentation see interface.
+ * For methods documentation see the interface.
  */
 class MySqlCurrentlyRunningManager : public ICurrentlyRunningManager
 {

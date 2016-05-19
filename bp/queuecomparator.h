@@ -24,7 +24,7 @@ public:
     QueueComparator(IPriorityComparator* comp);
 
     /**
-     * @brief operator () Compares two tests according IPriorityComparator.
+     * @brief operator () Compares two tests according to IPriorityComparator.
      * @param t1 First test to be compared.
      * @param t2 Second test to be compared.
      * @return true, if t1 should be erased from queue earlier, false otherwise.

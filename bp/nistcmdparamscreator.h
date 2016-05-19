@@ -89,16 +89,16 @@ public:
 
     /**
      * @brief fillArrayOfArguments Allocates memory to pointer ptr and then fills array with
-     * parameters setted with methods above.
+     * parameters set with methods above.
      * @param ptr Pointer to array, that will hold parameters.
-     * @return if given pointer is nullptr then false, else true.
+     * @return if given pointer is nullptr then false, true otherwise.
      */
     bool fillArrayOfArguments(char*** ptr);
 
     /**
      * @brief deleteArrayOfArguments Frees allocated space on pointer ptr.
      * @param ptr Pointer to array to be freed.
-     * @return if given pointer is nullptr then false, else true.
+     * @return if given pointer is nullptr then false, true otherwise.
      */
     bool deleteArrayOfArguments(char*** ptr);
 private:

@@ -10,7 +10,7 @@
 
 /**
  * @brief The MySqlResultsManager class implements interface IResultsManager. For methods description
- * see interface.
+ * see the interface.
  */
 class MySqlResultsManager : public IResultsManager
 {

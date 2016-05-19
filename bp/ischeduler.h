@@ -4,7 +4,7 @@
 
 /**
  * @brief The IScheduler class fills tests from database, decides, which test to execute
- * and can also re-run tests, which not finished according to program crash.
+ * and can also re-run tests, which not finished because of program crash.
  */
 class IScheduler {
 public:
@@ -18,7 +18,7 @@ public:
     virtual bool getTestForRunning(Test& t) = 0;
 
     /**
-     * @brief addTestsReadyForRunning Adds tests from database into queue of tests for running.
+     * @brief addTestsReadyForRunning Adds tests from database into a queue of tests for running.
      * @return If an error occurs false, true otherwise.
      */
     virtual bool addTestsReadyForRunning() = 0;

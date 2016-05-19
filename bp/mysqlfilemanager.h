@@ -11,7 +11,7 @@
 
 /**
  * @brief The MySqlFileManager class implements interface IFileManager. For methods
- * documentation see interface.
+ * documentation see the interface.
  */
 class MySqlFileManager : public IFileManager {
 private:
