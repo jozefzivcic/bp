@@ -44,11 +44,6 @@ def groups_download_post(handler):
                                                                                     'Content-Type'],})
     user_id = handler.sessions[handler.read_cookie()]
     lang = handler.get_user_language(user_id)
-    handler.send_response(200)
-    handler.send_header('Content-type', 'application/octet-stream')
-    handler.send_header('Content-type', 'application/zip')
-    handler.send_header('Content-Disposition', 'attachment; filename="{0}"'.format(handler.texts[lang]['resultszip']))
-    handler.end_headers()
     group_ids = get_group_ids(form)
     ok = False
     try:
@@ -56,6 +51,12 @@ def groups_download_post(handler):
         zip = zipfile.ZipFile(file_object, 'w', zipfile.ZIP_DEFLATED)
         for group_id in group_ids:
             group = handler.group_manager.get_group_by_id_for_user(group_id, user_id)
+            if group.id is None:
+                handler.send_response(303)
+                handler.send_header('Content-type', 'text/html')
+                handler.send_header('Location', '/not_found')
+                handler.end_headers()
+                return
             for test_id in group.test_id_arr:
                 test = handler.test_manager.get_test_for_user_by_id(user_id, test_id)
                 directory = handler.results_manager.get_path_for_test(test)
@@ -69,6 +70,11 @@ def groups_download_post(handler):
                             output_file_name = '_'.join([output_file_name, file])
                             zip.write(file_name, join('/', output_file_name))
         ok = True
+        handler.send_response(200)
+        handler.send_header('Content-type', 'application/octet-stream')
+        handler.send_header('Content-type', 'application/zip')
+        handler.send_header('Content-Disposition', 'attachment; filename="{0}"'.format(handler.texts[lang]['resultszip']))
+        handler.end_headers()
     finally:
         zip.close()
         if ok:
