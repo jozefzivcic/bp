@@ -112,7 +112,7 @@ def create_tests_post(handler):
 
 def get_files_length(files):
     """
-    Computes length of each file in files. This length is in bits and returns dictionary.
+    Computes length of each file in files. This length is in bits and it is returned in a dictionary.
     :param files: Array of files, which length is computed.
     :return: Dictionary, where key is id of file and value is it's length in bits.
     """

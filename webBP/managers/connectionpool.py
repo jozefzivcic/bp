@@ -10,7 +10,7 @@ class ConnectionPool:
         """
         Initializes pool with params.
         :param params: Dictionary, that must contain following keys and their values from domain: DATABASE: str,
-        PORT: int, USERNAME: str, USER_PASSWORD: str, SCHEMA: str
+        PORT: int, USERNAME: str, USER_PASSWORD: str, SCHEMA: str.
         :param size: Number of connections to create.
         """
         self.db_name = params.get('DATABASE')

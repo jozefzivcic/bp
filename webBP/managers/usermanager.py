@@ -72,7 +72,7 @@ class UserManager:
         """
         Checks user password on equality.
         :param user: User which password is compared to database one.
-        :return: True if passwords are the same or False if aren't, or an error occurs.
+        :return: True if passwords are the same or False if they aren't, or an error occurs.
         """
         connection = None
         cur = None

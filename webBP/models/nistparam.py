@@ -103,7 +103,8 @@ class NistParam:
 
     def get_output_file_name(self, tested_file):
         """
-        Creates output file name, that can be placed in .zip file. This method should be overridden by all attributes.
+        Creates output file name, that can be placed in .zip file. This method should be implemented by all
+        attributes, if the code would be extended for another tests.
         :param tested_file: Name of file, which was tested for randomness.
         :return: File name.
         """

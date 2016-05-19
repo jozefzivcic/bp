@@ -142,8 +142,7 @@ class FileManager:
     def get_existing_files_for_user(self, user_id):
         """
         Returns dictionary of all files for user with user id user_id, that are present in system - their
-        file_system_path is not. Keys are represented with file.id and values with file objects - File().
-        NULL.
+        file_system_path is not NULL. Keys are represented with file.id and values with file objects - File().
         :param user_id: Id of user which files are searched.
         :return: If an error occurs None, dictionary otherwise.
         """

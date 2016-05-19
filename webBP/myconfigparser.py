@@ -50,6 +50,6 @@ class MyConfigParser:
         """
         Returns value associated to the key.
         :param key: Key, which value is returned.
-        :return: Value of key, that is given as attribute.
+        :return: Value of key, that is given as an attribute.
         """
         return self._dict[key]

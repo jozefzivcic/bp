@@ -15,7 +15,7 @@ class DBTestManager:
     def get_tests_for_user(self, id):
         """
         Returns array of tests for user with id id.
-        :param id: Id of user for who tests are searched.
+        :param id: Id of user for whom tests are searched.
         :return: Array of tests or None if an error occurs.
         """
         connection = None

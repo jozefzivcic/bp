@@ -13,6 +13,11 @@ class CurrentlyRunningManager:
         self.logger = Logger()
 
     def get_running_tests_for_user(self, user_id):
+        """
+        Returns array of tests that are now running for given user.
+        :param user_id:
+        :return:
+        """
         connection = None
         cur = None
         try:
