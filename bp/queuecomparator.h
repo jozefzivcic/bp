@@ -27,7 +27,7 @@ public:
      * @brief operator () Compares two tests according to IPriorityComparator.
      * @param t1 First test to be compared.
      * @param t2 Second test to be compared.
-     * @return true, if t1 should be erased from queue earlier, false otherwise.
+     * @return true, if t2 should be erased from queue earlier, false otherwise.
      */
     bool operator () (const Test& t1, const Test& t2);
 };
