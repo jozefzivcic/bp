@@ -8,7 +8,8 @@ def not_found(handler):
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
     template = handler.environment.get_template('not_found.html')
-    output = template.render(handler.texts['en'])
+    lang = handler.get_user_language(None)
+    output = template.render(handler.texts[lang])
     handler.wfile.write(output.encode(encoding='utf-8'))
     return
 
@@ -23,6 +24,7 @@ def error_occurred(handler):
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
     template = handler.environment.get_template('error_occurred.html')
-    output = template.render(handler.texts['en'])
+    lang = handler.get_user_language(None)
+    output = template.render(handler.texts[lang])
     handler.wfile.write(output.encode(encoding='utf-8'))
     return

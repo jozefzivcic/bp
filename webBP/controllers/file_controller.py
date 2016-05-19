@@ -14,7 +14,9 @@ def upload_file(handler):
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
     template = handler.environment.get_template('upload_file.html')
-    temp_dict = dict(handler.texts['en'])
+    user_id = handler.sessions[handler.read_cookie()]
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     output = template.render(temp_dict)
     handler.wfile.write(output.encode(encoding='utf-8'))
     return

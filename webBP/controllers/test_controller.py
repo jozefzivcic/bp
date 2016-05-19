@@ -17,8 +17,8 @@ def test_controller(handler):
         test_id = queries.get('id')[0]
     except KeyError:
         error = True
-    id = handler.sessions[handler.read_cookie()]
-    test = handler.test_manager.get_test_for_user_by_id(id, test_id)
+    user_id = handler.sessions[handler.read_cookie()]
+    test = handler.test_manager.get_test_for_user_by_id(user_id, test_id)
     if (test is None) or error:
         handler.send_response(303)
         handler.send_header('Content-type', 'text/html')
@@ -30,7 +30,8 @@ def test_controller(handler):
     handler.end_headers()
     file = handler.file_manager.get_file_by_id(test.file_id)
     test_param = get_param_for_test(handler, test)
-    temp_dict = dict(handler.texts['en'])
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['test'] = test
     temp_dict['vars']['file'] = file

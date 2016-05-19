@@ -24,7 +24,8 @@ def get_groups(handler):
     template = handler.environment.get_template('groups.html')
     user_id = handler.sessions[handler.read_cookie()]
     groups = handler.group_manager.get_groups_for_user(user_id)
-    temp_dict = dict(handler.texts['en'])
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['groups'] = groups
     output = template.render(temp_dict)
@@ -41,12 +42,13 @@ def groups_download_post(handler):
     form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})
+    user_id = handler.sessions[handler.read_cookie()]
+    lang = handler.get_user_language(user_id)
     handler.send_response(200)
     handler.send_header('Content-type', 'application/octet-stream')
     handler.send_header('Content-type', 'application/zip')
-    handler.send_header('Content-Disposition', 'attachment; filename="{0}"'.format(handler.texts['en']['resultszip']))
+    handler.send_header('Content-Disposition', 'attachment; filename="{0}"'.format(handler.texts[lang]['resultszip']))
     handler.end_headers()
-    user_id = handler.sessions[handler.read_cookie()]
     group_ids = get_group_ids(form)
     ok = False
     try:

@@ -97,3 +97,11 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         """
         sid = uuid.uuid4()
         return sid
+
+    def get_user_language(self, user_id):
+        """
+        Returns user preferred language according to user_id.
+        :param user_id: Id of user.
+        :return: String with language that is preferred by the user.
+        """
+        return 'en'

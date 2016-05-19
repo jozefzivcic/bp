@@ -29,7 +29,8 @@ def delete_path(handler):
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
-    temp_dict = dict(handler.texts['en'])
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['file_id'] = file_id
     template = handler.environment.get_template('delete_path.html')

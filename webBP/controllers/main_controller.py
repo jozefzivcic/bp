@@ -8,10 +8,11 @@ def main_page(handler):
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
     template = handler.environment.get_template('main.html')
-    id = handler.sessions[handler.read_cookie()]
-    tests = handler.test_manager.get_tests_for_user(id)
-    files = handler.file_manager.get_files_for_user(id)
-    temp_dict = dict(handler.texts['en'])
+    user_id = handler.sessions[handler.read_cookie()]
+    tests = handler.test_manager.get_tests_for_user(user_id)
+    files = handler.file_manager.get_files_for_user(user_id)
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['tests'] = tests
     temp_dict['vars']['files'] = files

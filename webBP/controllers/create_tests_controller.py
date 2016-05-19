@@ -33,7 +33,8 @@ def create_tests(handler):
     user_id = handler.sessions[handler.read_cookie()]
     files = handler.file_manager.get_existing_files_for_user(user_id).values()
     template = handler.environment.get_template('create_tests.html')
-    temp_dict = dict(handler.texts['en'])
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['files'] = files
     temp_dict['vars']['queries'] = parsed_queries

@@ -32,7 +32,8 @@ def delete_test(handler):
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
     param = get_param_for_test(handler, test)
-    temp_dict = dict(handler.texts['en'])
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['test'] = test
     temp_dict['vars']['test_param'] = param

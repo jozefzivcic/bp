@@ -17,8 +17,8 @@ def results_controller(handler):
         test_id = queries.get('id')[0]
     except KeyError:
         error = True
-    id = handler.sessions[handler.read_cookie()]
-    test = handler.test_manager.get_test_for_user_by_id(id, test_id)
+    user_id = handler.sessions[handler.read_cookie()]
+    test = handler.test_manager.get_test_for_user_by_id(user_id, test_id)
     if (test == None) or error or len(queries) != 1:
         handler.send_response(303)
         handler.send_header('Content-type', 'text/html')
@@ -34,7 +34,8 @@ def results_controller(handler):
     ret_files = []
     for file in files:
         ret_files.append((file, quote_plus(file)))
-    temp_dict = dict(handler.texts['en'])
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['test_id'] = test_id
     temp_dict['vars']['files'] = ret_files
@@ -60,8 +61,8 @@ def view_file_content(handler):
         file_name = queries.get('file')[0]
     except KeyError:
         error = True
-    id = handler.sessions[handler.read_cookie()]
-    test = handler.test_manager.get_test_for_user_by_id(id, test_id)
+    user_id = handler.sessions[handler.read_cookie()]
+    test = handler.test_manager.get_test_for_user_by_id(user_id, test_id)
     if (test == None) or error or len(queries) != 2:
         handler.send_response(303)
         handler.send_header('Content-type', 'text/html')
@@ -76,7 +77,8 @@ def view_file_content(handler):
     file_content = None
     with open(file) as f:
         file_content = f.readlines()
-    temp_dict = dict(handler.texts['en'])
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['file_content'] = file_content
     template = handler.environment.get_template('file_view.html')

@@ -13,7 +13,8 @@ def currently_running(handler):
     files = {}
     for test in tests:
         files[test.file_id] = handler.file_manager.get_file_by_id(test.file_id)
-    temp_dict = dict(handler.texts['en'])
+    lang = handler.get_user_language(user_id)
+    temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['tests'] = tests
     temp_dict['vars']['files'] = files
