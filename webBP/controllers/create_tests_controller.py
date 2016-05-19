@@ -37,6 +37,8 @@ def create_tests(handler):
     temp_dict = dict(handler.texts[lang])
     temp_dict['vars'] = {}
     temp_dict['vars']['files'] = files
+    files_length = get_files_length(files)
+    temp_dict['vars']['files_length'] = files_length
     temp_dict['vars']['queries'] = parsed_queries
     if (parsed_queries is not None) and ('files' in parsed_queries):
         temp_dict['vars']['file_ids'] = get_int_array_from_string(parsed_queries.get('files'))
@@ -106,6 +108,18 @@ def create_tests_post(handler):
     if pid is not None:
         os.kill(pid, signal.SIGUSR1)
     return
+
+
+def get_files_length(files):
+    """
+    Computes length of each file in files. This length is in bits and returns dictionary.
+    :param files: Array of files, which length is computed.
+    :return: Dictionary, where key is id of file and value is it's length in bits.
+    """
+    temp_dict = {}
+    for file in files:
+        temp_dict[file.id] = get_file_size_in_bits(file.file_system_path)
+    return temp_dict
 
 
 def get_possible_keys_and_values():
