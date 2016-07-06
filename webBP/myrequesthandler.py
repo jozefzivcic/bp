@@ -3,6 +3,8 @@ from http.cookies import SimpleCookie
 from urllib.parse import urlparse
 import uuid
 
+from controllers.index_controller import index_get
+
 
 class MyRequestHandler(BaseHTTPRequestHandler):
     config_storage = None
@@ -23,7 +25,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     logger = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
                             '/sign_up_passwords_are_not_the_same', '/bootstrap/css/bootstrap.min.css',
-                            '/styles.css']
+                            '/styles.css', '/login']
 
     def do_GET(self):
         """
@@ -34,7 +36,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         ckie = self.read_cookie()
         controller = None
         if (ckie is None) or (self.sessions.get(ckie) is None):
-            if path in self.not_authorised_paths:
+            if path == '/':
+                controller = index_get
+            elif path in self.not_authorised_paths:
                 controller = self.router.get_controller(path)
             else:
                 controller = self.router.get_login_controller()
@@ -59,7 +63,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         try:
             controller(self)
         except (FileNotFoundError, ValueError, KeyError) as e:
-            self.logger.log_error('do_GET', e)
+            self.logger.log_error('do_POST', e)
             controller = self.router.get_error_controller()
             controller(self)
         return

@@ -16,7 +16,7 @@ from controllers.delete_path_controller import delete_path, delete_path_post
 from controllers.delete_test_controller import delete_test, delete_test_post
 from controllers.file_controller import upload_file_post, upload_file
 from controllers.groups_controller import get_groups, groups_download_post
-from controllers.login_controller import post_login, wrong_user_name, wrong_password
+from controllers.login_controller import post_login, wrong_user_name, wrong_password, login
 from controllers.main_controller import main_page, logout
 from controllers.results_controller import results_controller, view_file_content
 from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up_passwords_are_not_the_same, \
@@ -43,6 +43,7 @@ def register_pages_into_router(router):
     :param router: Object of type Router().
     """
     router.register_controller('/', main_page)
+    router.register_controller('/login', login)
     router.register_controller('/login_submit', post_login)
     router.register_controller('/logout', logout)
     router.register_controller('/wrong_user_name', wrong_user_name)
