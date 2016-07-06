@@ -43,7 +43,14 @@ Connection *MySqlDBPool::createConnection()
 {
     Connection* con;
     try {
-        con = driver->connect(database, user, password);
+        if (password != "no")
+            con = driver->connect(database, user, password);
+        else {
+            ConnectOptionsMap com;
+            com["database"] = database;
+            com["user"] = user;
+            con = driver->connect(com);
+        }
         if (isSchema)
             con->setSchema(schema);
         return con;

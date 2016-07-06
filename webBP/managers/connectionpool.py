@@ -78,7 +78,10 @@ class ConnectionPool:
         Creates new connection.
         :return: New connection.
         """
-        return pymysql.connect(host=self.db_name, port=self.port, user=self.user, passwd=self.password,
+        if self.password == 'no':
+            return pymysql.connect(host=self.db_name, port=self.port, user=self.user, db=self.schema)
+        else:
+            return pymysql.connect(host=self.db_name, port=self.port, user=self.user, passwd=self.password,
                                db=self.schema)
 
     def ping_connection(self, conn):
