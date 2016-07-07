@@ -42,3 +42,4 @@ Makefile*
 /webBP/models/__pycache__/
 /webBP/controllers/__pycache__/
 /webBP/views/bootstrap/
+/ca/

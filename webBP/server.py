@@ -1,5 +1,6 @@
 import os
 import re
+import ssl
 from http.server import HTTPServer
 from socketserver import ThreadingMixIn
 
@@ -157,6 +158,8 @@ if __name__ == '__main__':
     prepare_handler(config_storage)
     server_class = ThreadedHTTPServer
     httpd = server_class((ip_address, port), MyRequestHandler)
+    httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=config_storage.server_key,
+                                   certfile=config_storage.server_cert, server_side=True)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
