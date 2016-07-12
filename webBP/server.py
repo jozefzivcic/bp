@@ -8,7 +8,7 @@ from jinja2 import FileSystemLoader, Environment
 
 from myconfigparser import MyConfigParser
 from configstorage import ConfigStorage
-from controllers.css_controller import get_bootstrap, get_own_styles
+from controllers.css_controller import get_bootstrap, get_own_styles, get_index
 from controllers.common_controller import error_occurred
 from controllers.create_tests_controller import create_tests, create_tests_post
 from controllers.currently_running_controller import currently_running
@@ -76,6 +76,7 @@ def register_pages_into_router(router):
     router.register_controller('/test/results/styles.css', get_own_styles)
     router.register_controller('/groups', get_groups)
     router.register_controller('/download', groups_download_post)
+    router.register_controller('/index.css', get_index)
 
 
 def load_texts():

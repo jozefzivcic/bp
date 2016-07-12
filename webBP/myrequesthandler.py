@@ -25,7 +25,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     logger = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
                             '/sign_up_passwords_are_not_the_same', '/bootstrap/css/bootstrap.min.css',
-                            '/styles.css', '/login']
+                            '/styles.css', '/login', '/index.css']
 
     def do_GET(self):
         """
