@@ -6,9 +6,12 @@ function validateForm() {
     var block_length_range_not_allowed = document.getElementsByName("block_length_range_not_allowed")[0].value;
     var wrong_format = document.getElementsByName("wrong_format")[0].value;
     var checked_any_test = false;
+    if (isNaN(streams))
+        streams = 1;
 
-    if (!checkFiles(length, streams))
+    if (!checkFiles(length, streams)) {
         return false;
+    }
 
     if (document.getElementsByName("frequency")[0].checked) {
         checked_any_test = true;
@@ -55,6 +58,11 @@ function validateForm() {
             return false;
         }
     }
+
+    if (document.getElementsByName("longest_run_of_ones")[0].checked) {
+        checked_any_test = true;
+    }
+
     if (document.getElementsByName("rank")[0].checked) {
         checked_any_test = true;
         if (length <= 38912) {
@@ -71,6 +79,11 @@ function validateForm() {
             return false;
         }
     }
+
+    if (document.getElementsByName("nonperiodic")[0].checked) {
+        checked_any_test = true;
+    }
+
     if (document.getElementsByName("overlapping")[0].checked) {
         checked_any_test = true;
         var arr = document.getElementsByName("overlapping_param")[0].value.split(',');
@@ -87,6 +100,10 @@ function validateForm() {
                 return false;
             }
         }
+    }
+
+    if (document.getElementsByName("universal")[0].checked) {
+        checked_any_test = true;
     }
 
     if (document.getElementsByName("apen")[0].checked) {
@@ -162,25 +179,45 @@ function validateForm() {
             }
             arr[i] = +arr[i];
             if (arr[i] < 500 || arr[i] > 5000) {
-                var res = test.concat(" 14. ", block_length_range_not_allowed, ". (", arr[i], ")");
+                var res = test.concat(" 15. ", block_length_range_not_allowed, ". (", arr[i], ")");
                 alert(res);
                 return false;
             }
         }
     }
+
     if (!checked_any_test) {
         alert(document.getElementsByName("no_test_selected")[0].value);
         return false;
     }
+
     return true;
 }
 
 function checkFiles(length, streams) {
-    var eles = [];
     var inputs = document.getElementsByTagName("input");
+    var checked_any = false;
+    var file_length = 0;
+    var file_name = "";
     for(var i = 0; i < inputs.length; i++) {
         if(inputs[i].name.indexOf('file') == 0) {
-            eles.push(inputs[i]);
+            if (inputs[i].checked) {
+                if (!checked_any)
+                    checked_any = true;
+                file_name = "length_".concat(inputs[i].name);
+                file_length = parseInt(document.getElementsByName(file_name)[0].value);
+                if (file_length < length * streams) {
+                    var message = document.getElementsByName("length_error")[0].value;
+                    alert(message);
+                    return false;
+                }
+            }
         }
     }
+    if (!checked_any) {
+        var message = document.getElementsByName("no_file_selected")[0].value;
+        alert(message);
+        return false;
+    }
+    return true;
 }
