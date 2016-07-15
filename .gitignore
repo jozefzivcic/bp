@@ -43,3 +43,5 @@ Makefile*
 /webBP/controllers/__pycache__/
 /webBP/views/bootstrap/
 /ca/
+/webBP/views/index.css
+/webBP/views/index.html

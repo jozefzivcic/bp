@@ -114,7 +114,7 @@
         {% endif %}
     </div>
 
-    <form name="create" action="create_tests_submit" method="post" accept-charset="utf-8">
+    <form name="create" action="create_tests_submit" method="post" accept-charset="utf-8" onsubmit="return validateForm()">
         <div class="my-center">
             {% for file in vars['files'] %}
                 <label>
@@ -286,5 +286,6 @@
     <FORM class="my-center">
       <INPUT class="btn btn-default" Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
     </FORM>
+    <script src="create_tests.js"></script>
 </body>
 </html>
