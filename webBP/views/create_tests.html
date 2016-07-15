@@ -286,6 +286,9 @@
     <FORM class="my-center">
       <INPUT class="btn btn-default" Type="button" VALUE="{{ back }}" onClick="history.go(-1);return true;">
     </FORM>
+    <input type="hidden" name="test" value="{{ test }}">
+    <input type="hidden" name="block_length_range_not_allowed" value="{{ param_error }}">
+    <input type="hidden" name="length_range_not_allowed" value="{{ length_range }}">
     <script src="create_tests.js"></script>
 </body>
 </html>
