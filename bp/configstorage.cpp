@@ -80,7 +80,7 @@ unsigned int ConfigStorage::getRerunAfter() const
     return rerunAfter;
 }
 
-int ConfigStorage::getIdOfPid() const
+long ConfigStorage::getIdOfPid() const
 {
     return idOfPid;
 }
