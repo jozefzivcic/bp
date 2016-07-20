@@ -121,6 +121,7 @@
                     <input class="checkbox checkbox-inline" type="checkbox" name="file{{ file.id }}" {% if file.id in vars['file_ids'] %} checked {% endif %} > {{ file.name }}
                 </label>
                 <input type="hidden" name="length_file{{ file.id }}" value="{{ vars['files_length'][file.id] }}">
+                <input type="hidden" name="name_file{{ file.id }}" value="{{ file.name }}">
             {% endfor %}
         </div>
         <h2 class="my-center">{{ create_nist_test }}</h2>

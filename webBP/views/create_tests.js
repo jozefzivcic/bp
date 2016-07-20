@@ -24,7 +24,9 @@ function validateForm() {
 
     if (document.getElementsByName("block_frequency")[0].checked) {
         checked_any_test = true;
-        var arr = document.getElementsByName("block_frequency_param")[0].value.split(',');
+        var param_array = document.getElementsByName("linear_param")[0].value;
+        if (param_array.length == 0)
+            return true;
         for(var i=0; i<arr.length; i++) {
             if (isNaN(arr[i])) {
                 var res = test.concat(" 2. ", wrong_format, ". (", arr[i], ")");
@@ -86,7 +88,9 @@ function validateForm() {
 
     if (document.getElementsByName("overlapping")[0].checked) {
         checked_any_test = true;
-        var arr = document.getElementsByName("overlapping_param")[0].value.split(',');
+        var param_array = document.getElementsByName("linear_param")[0].value;
+        if (param_array.length == 0)
+            return true;
         for(var i=0; i<arr.length; i++) {
             if (isNaN(arr[i])) {
                 var res = test.concat(" 2. ", wrong_format, ". (", arr[i], ")");
@@ -108,7 +112,9 @@ function validateForm() {
 
     if (document.getElementsByName("apen")[0].checked) {
         checked_any_test = true;
-        var arr = document.getElementsByName("apen_param")[0].value.split(',');
+        var param_array = document.getElementsByName("linear_param")[0].value;
+        if (param_array.length == 0)
+            return true;
         var boundary = Math.floor(Math.log(length) / Math.log(2)) - 6;
         for(var i=0; i<arr.length; i++) {
             if (isNaN(arr[i])) {
@@ -135,7 +141,7 @@ function validateForm() {
     }
 
     if (document.getElementsByName("excursion_var")[0].checked) {
-
+        checked_any_test = true;
         if (length < 1000000) {
             var res = test.concat(" 13. ", length_range_not_allowed);
             alert(res);
@@ -145,7 +151,9 @@ function validateForm() {
 
     if (document.getElementsByName("serial")[0].checked) {
         checked_any_test = true;
-        var arr = document.getElementsByName("serial_param")[0].value.split(',');
+        var param_array = document.getElementsByName("linear_param")[0].value;
+        if (param_array.length == 0)
+            return true;
         var boundary = Math.floor(Math.log(length) / Math.log(2)) - 3;
         for(var i=0; i<arr.length; i++) {
             if (isNaN(arr[i])) {
@@ -170,7 +178,10 @@ function validateForm() {
             return false;
         }
 
-        var arr = document.getElementsByName("linear_param")[0].value.split(',');
+        var param_array = document.getElementsByName("linear_param")[0].value;
+        if (param_array.length == 0)
+            return true;
+        var arr = param_array.split(',');
         for(var i=0; i<arr.length; i++) {
             if (isNaN(arr[i])) {
                 var res = test.concat(" 2. ", wrong_format, ". (", arr[i], ")");
@@ -198,16 +209,21 @@ function checkFiles(length, streams) {
     var inputs = document.getElementsByTagName("input");
     var checked_any = false;
     var file_length = 0;
+    var length_tag_name = "";
+    var name_tag = "";
     var file_name = "";
     for(var i = 0; i < inputs.length; i++) {
         if(inputs[i].name.indexOf('file') == 0) {
             if (inputs[i].checked) {
                 if (!checked_any)
                     checked_any = true;
-                file_name = "length_".concat(inputs[i].name);
-                file_length = parseInt(document.getElementsByName(file_name)[0].value);
+                length_tag_name = "length_".concat(inputs[i].name);
+                file_length = parseInt(document.getElementsByName(length_tag_name)[0].value);
+                name_tag = "name_".concat(inputs[i].name);
+                file_name = document.getElementsByName(name_tag)[0].value;
                 if (file_length < length * streams) {
                     var message = document.getElementsByName("length_error")[0].value;
+                    message = message.concat(". (", file_name, ")");
                     alert(message);
                     return false;
                 }
