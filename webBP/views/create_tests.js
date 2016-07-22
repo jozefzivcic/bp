@@ -72,7 +72,7 @@ function validateForm() {
     if (document.getElementsByName("apen")[0].checked) {
         checked_any_test = true;
         var boundary = Math.floor(Math.log(length) / Math.log(2)) - 6;
-        if (!checkBlockLengthInput("apen_param", 11, null, boundary, error_in, wrong_format,
+        if (!checkBlockLengthInput("apen_param", 11, 1, boundary, error_in, wrong_format,
                 block_length_range_not_allowed))
             return false;
     }
@@ -225,7 +225,8 @@ function checkBlockLengthInput(tag_name , test_num, lower_bound, upper_bound, er
     for(var i = 0; i < arr.length; i++) {
         if (isNaN(arr[i])) {
             var test_name = getTestName(test_num);
-            var res = error_in.concat(" ", test_name, ": ", wrong_format, ". (", arr[i], ")");
+            var wrong_input = arr[i].trim();
+            var res = error_in.concat(" ", test_name, ": ", wrong_format, ". (", wrong_input, ")");
             alert(res);
             return false;
         }
