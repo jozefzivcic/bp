@@ -2,6 +2,8 @@
 import os
 import re
 import ssl
+import signal
+import sys
 from http.server import HTTPServer
 from socketserver import ThreadingMixIn
 
@@ -153,6 +155,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Class for handling requests in a separate threads."""
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     cp = MyConfigParser()
     cp.parse_file('../config')
     config_storage = ConfigStorage(cp)
@@ -163,7 +166,7 @@ if __name__ == '__main__':
     server_class = ThreadedHTTPServer
     httpd = server_class((ip_address, port), MyRequestHandler)
     httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=config_storage.server_key,
-                                   certfile=config_storage.server_cert, server_side=True)
+                                   certfile=config_storage.server_cert, server_side=True, ca_certs=config_storage.ca_certs)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

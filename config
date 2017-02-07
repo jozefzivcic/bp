@@ -24,3 +24,4 @@ SCHEDULER_ID_OF_PID=0
 SERVER_KEY=../ca/server.key
 # This path is relative to file server.py in webBP.
 SERVER_CERT=../ca/server.crt
+CA_CERTS=../ca/ca.crt

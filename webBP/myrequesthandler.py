@@ -77,8 +77,9 @@ class MyRequestHandler(BaseHTTPRequestHandler):
             v = self.headers['Cookie']
             c = SimpleCookie()
             c.load(v)
-            value = c['sid'].value
-            return value
+            if 'sid' in c:
+                value = c['sid'].value
+                return value
         return None
 
     def write_cookie(self):
