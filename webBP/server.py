@@ -165,8 +165,11 @@ if __name__ == '__main__':
     prepare_handler(config_storage)
     server_class = ThreadedHTTPServer
     httpd = server_class((ip_address, port), MyRequestHandler)
-    httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=config_storage.server_key,
-                                   certfile=config_storage.server_cert, server_side=True, ca_certs=config_storage.ca_certs)
+    if ((config_storage.server_key != 'no') and
+    (config_storage.server_cert != 'no') and (config_storage.ca_certs != 'no')):
+        httpd.socket = ssl.wrap_socket(httpd.socket,
+        keyfile=config_storage.server_key, certfile=config_storage.server_cert,
+        server_side=True, ca_certs=config_storage.ca_certs)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
