@@ -21,7 +21,7 @@ PATH_TO_USERS_DIR_FROM_WEB=../users/
 FILES=files
 SCHEDULER_ID_OF_PID=0
 # This path is relative to file server.py in webBP.
-SERVER_KEY=../ca/server.key
+SERVER_KEY=no
 # This path is relative to file server.py in webBP.
-SERVER_CERT=../ca/server.crt
-CA_CERTS=../ca/ca.crt
+SERVER_CERT=no
+CA_CERTS=no
