@@ -46,3 +46,7 @@ Makefile*
 /webBP/views/index.css
 /webBP/views/index.html
 /bp/.qmake.stash
+/bp/nohup.out
+/bp/service.pid
+/webBP/nohup.out
+/webBP/server.pid
