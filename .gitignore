@@ -45,3 +45,4 @@ Makefile*
 /ca/
 /webBP/views/index.css
 /webBP/views/index.html
+/bp/.qmake.stash

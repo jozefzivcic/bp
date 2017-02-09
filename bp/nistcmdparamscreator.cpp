@@ -8,8 +8,7 @@ using namespace std;
 NistCmdParamsCreator::NistCmdParamsCreator() : testNumber(0)
 {
     logger = new Logger();
-    params.clear();
-    params.push_back("-fast");
+    prepareDefaultParams();
 }
 
 NistCmdParamsCreator::~NistCmdParamsCreator()
@@ -31,8 +30,7 @@ string NistCmdParamsCreator::getCmdParams() const
 
 void NistCmdParamsCreator::resetParams()
 {
-    params.clear();
-    params.push_back("-fast");
+    prepareDefaultParams();
     testNumber = 0;
 }
 
@@ -43,8 +41,6 @@ void NistCmdParamsCreator::setBinary(string bin)
 
 void NistCmdParamsCreator::setLength(long length)
 {
-    string temp = "-length";
-    params.push_back(temp);
     params.push_back(convertLongToString(length));
 }
 
@@ -144,4 +140,12 @@ string NistCmdParamsCreator::convertLongToString(long n)
     strstream << n;
     strstream >> number;
     return number;
+}
+
+void NistCmdParamsCreator::prepareDefaultParams()
+{
+    params.clear();
+    params.push_back("-fast");
+    params.push_back("-binary");
+    params.push_back("-fileoutput");
 }
