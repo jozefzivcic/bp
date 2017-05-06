@@ -18,3 +18,6 @@ class ConfigStorage:
         self.path_to_users_dir = parser.get_key('PATH_TO_USERS_DIR_FROM_WEB')
         self.files = parser.get_key('FILES')
         self.sched_id_of_pid = parser.get_key('SCHEDULER_ID_OF_PID')
+        self.server_key = parser.get_key('SERVER_KEY')
+        self.server_cert = parser.get_key('SERVER_CERT')
+        self.ca_certs = parser.get_key('CA_CERTS')

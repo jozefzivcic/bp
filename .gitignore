@@ -42,6 +42,9 @@ Makefile*
 /webBP/models/__pycache__/
 /webBP/controllers/__pycache__/
 /webBP/views/bootstrap/
+/ca/
+/webBP/views/index.css
+/webBP/views/index.html
 /bp/.qmake.stash
 /bp/nohup.out
 /bp/service.pid

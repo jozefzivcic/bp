@@ -15,8 +15,13 @@ POOLED_CONNECTIONS=1
 RERUN_TIMES=3
 RERUN_TEST_IN_SEC=7200
 IP_ADDRESS=127.0.0.1
-PORT=8080
+PORT=4443
 POOLED_CONNECTIONS_FOR_WEB=1
 PATH_TO_USERS_DIR_FROM_WEB=../users/
 FILES=files
 SCHEDULER_ID_OF_PID=0
+# This path is relative to file server.py in webBP.
+SERVER_KEY=no
+# This path is relative to file server.py in webBP.
+SERVER_CERT=no
+CA_CERTS=no

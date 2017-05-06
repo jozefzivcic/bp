@@ -6,6 +6,7 @@
 #include "mysqlpidtablemanager.h"
 #include <sys/types.h>
 #include <unistd.h>
+#include <signal.h>
 
 using namespace std;
 
@@ -23,13 +24,14 @@ Scheduler::Scheduler(IPriorityComparator *pri, const ConfigStorage* stor, int ma
     sleepInSeconds = stor->getSleepInSeconds();
     logger = new Logger();
     pidManager = new MySqlPIDTableManager(dbPool);
-    if (!storePID())
-        throw runtime_error("Scheduler::Scheduler::storePID()");
+    if (!controllPIDInDatabase())
+        throw runtime_error("Scheduler::controllPIDInDatabase(): This process can't run. Another process is already running.");
 }
 
 Scheduler::~Scheduler()
 {
-    removePID();
+    if (removePIDAtTheEnd)
+        removePID();
     if (testManager != nullptr)
         delete testManager;
     if (testHandler != nullptr)
@@ -82,7 +84,7 @@ void Scheduler::run()
             Test t;
             getTestForRunning(t);
             if (!testHandler->createTest(t)) {
-                logger->logWarning("Test was not created and is pushed back to queue " + to_string(t.getId()));
+                logger->logWarning("Test was not created and is push back to queue " + to_string(t.getId()));
                 queue.push(t);
             }
         }
@@ -103,6 +105,7 @@ bool Scheduler::addTestsAfterCrash()
 
 bool Scheduler::storePID()
 {
+    removePIDAtTheEnd = true;
     pid_t this_process = getpid();
     return pidManager->storePIDForId(storage->getIdOfPid(), this_process);
 }
@@ -110,4 +113,26 @@ bool Scheduler::storePID()
 bool Scheduler::removePID()
 {
     return pidManager->removePIDForId(storage->getIdOfPid());
+}
+
+bool Scheduler::checkIfProcessExists(pid_t pid)
+{
+    int ret = kill(pid, 0);
+    return ret == 0;
+}
+
+bool Scheduler::controllPIDInDatabase()
+{
+    pid_t pid;
+    if (pidManager->getPIDForId(storage->getIdOfPid(), pid)) {
+        if (checkIfProcessExists(pid))
+            return false;
+        else {
+            pidManager->removePIDForId(storage->getIdOfPid());
+            storePID();
+            return true;
+        }
+    }
+    storePID();
+    return true;
 }

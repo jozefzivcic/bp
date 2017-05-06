@@ -37,6 +37,11 @@ private:
      */
     unsigned int maxTestsRunningParallel;
 
+    /**
+     * @brief removePIDAtTheEnd Flag that states, if PID can be deleted from database at the end of this program.
+     */
+    bool removePIDAtTheEnd = false;
+
     ITestManager* testManager = nullptr;
     ITestHandler* testHandler = nullptr;
     MySqlDBPool* dbPool = nullptr;
@@ -63,6 +68,21 @@ private:
      * @return If an error occurs false, true otherwise.
      */
     bool removePID();
+
+    /**
+     * @brief checkIfProcessExists Checks if process with pid exists in the system.
+     * @param pid PID of process, which is cotrolled for running.
+     * @return True if process with such PID exists, false otherwise.
+     */
+    bool checkIfProcessExists(pid_t pid);
+
+    /**
+     * @brief controllPIDInDatabase Controlls if database contains any record in table pid_table with id,
+     * that is stored under key SCHEDULER_ID_OF_PID. If table contains any record and process with this PID is running,
+     * then do nothing. Else removes record with this PID and stores new PID for this program.
+     * @return True if program can continue, false if can't.
+     */
+    bool controllPIDInDatabase();
 };
 
 #endif // SCHEDULER_H

@@ -1,13 +1,18 @@
+#!/usr/bin/python3.5
 import os
 import re
+import ssl
+import signal
+import sys
 from http.server import HTTPServer
 from socketserver import ThreadingMixIn
 
 from jinja2 import FileSystemLoader, Environment
 
+from controllers.js_controller import get_js_create_tests
 from myconfigparser import MyConfigParser
 from configstorage import ConfigStorage
-from controllers.css_controller import get_bootstrap, get_own_styles
+from controllers.css_controller import get_bootstrap, get_own_styles, get_index
 from controllers.common_controller import error_occurred
 from controllers.create_tests_controller import create_tests, create_tests_post
 from controllers.currently_running_controller import currently_running
@@ -16,7 +21,7 @@ from controllers.delete_path_controller import delete_path, delete_path_post
 from controllers.delete_test_controller import delete_test, delete_test_post
 from controllers.file_controller import upload_file_post, upload_file
 from controllers.groups_controller import get_groups, groups_download_post
-from controllers.login_controller import post_login, wrong_user_name, wrong_password
+from controllers.login_controller import post_login, wrong_user_name, wrong_password, login
 from controllers.main_controller import main_page, logout
 from controllers.results_controller import results_controller, view_file_content
 from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up_passwords_are_not_the_same, \
@@ -43,6 +48,7 @@ def register_pages_into_router(router):
     :param router: Object of type Router().
     """
     router.register_controller('/', main_page)
+    router.register_controller('/login', login)
     router.register_controller('/login_submit', post_login)
     router.register_controller('/logout', logout)
     router.register_controller('/wrong_user_name', wrong_user_name)
@@ -74,6 +80,8 @@ def register_pages_into_router(router):
     router.register_controller('/test/results/styles.css', get_own_styles)
     router.register_controller('/groups', get_groups)
     router.register_controller('/download', groups_download_post)
+    router.register_controller('/index.css', get_index)
+    router.register_controller('/create_tests.js', get_js_create_tests)
 
 
 def load_texts():
@@ -147,6 +155,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Class for handling requests in a separate threads."""
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     cp = MyConfigParser()
     cp.parse_file('../config')
     config_storage = ConfigStorage(cp)
@@ -156,6 +165,11 @@ if __name__ == '__main__':
     prepare_handler(config_storage)
     server_class = ThreadedHTTPServer
     httpd = server_class((ip_address, port), MyRequestHandler)
+    if ((config_storage.server_key != 'no') and
+    (config_storage.server_cert != 'no') and (config_storage.ca_certs != 'no')):
+        httpd.socket = ssl.wrap_socket(httpd.socket,
+        keyfile=config_storage.server_key, certfile=config_storage.server_cert,
+        server_side=True, ca_certs=config_storage.ca_certs)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

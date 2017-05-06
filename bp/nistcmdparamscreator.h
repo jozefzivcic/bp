@@ -109,6 +109,12 @@ private:
      * @return String representation of long parameter.
      */
     std::string convertLongToString(long n);
+
+    /**
+     * @brief prepareDefaultParams Clears all parameters and adds default parameters to list params.
+     * These parameters are common for running all tests.
+     */
+    void prepareDefaultParams();
 };
 
 #endif // NISTCMDPARAMSCREATOR_H
