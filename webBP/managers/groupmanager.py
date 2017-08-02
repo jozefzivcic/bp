@@ -122,7 +122,7 @@ class GroupManager:
         Deletes given test from groups_tests table and if no record for test.group_id is in groups_tests, deletes group
         from groups also.
         :param test: test which is deleted from groups_tests.
-        :return: If an error occurs None, group_id otherwise.
+        :return: If an error occurs False, True otherwise.
         """
         connection = None
         cur = None
@@ -131,23 +131,50 @@ class GroupManager:
             while connection is None:
                 connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
-            cur.execute('SELECT groups.id FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE id_test = %s;', (test.id))
+            cur.execute('SELECT id FROM groups_tests WHERE id_test = %s;', (test.id))
             group_id = None
             for row in cur:
                 group_id = row[0]
-            cur.execute(
-                'DELETE FROM groups_tests WHERE id_test = %s;', (test.id))
-            cur.execute('SELECT groups.id, groups_tests.id_test FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE groups.id = %s', (group_id))
+            cur.execute('DELETE FROM groups_tests WHERE id_test = %s;', (test.id))
+            cur.execute('SELECT id, id_test FROM groups_tests WHERE id = %s', (group_id))
             i = 0
             for row in cur:
                 i += 1
+                break
             if i < 1:
                 cur.execute('DELETE FROM groups WHERE id = %s;', (group_id))
+            else:
+                cur.execute('UPDATE groups SET total_tests = total_tests - 1 WHERE id = %s;', (group_id))
             connection.commit()
-            return group_id
+            return True
         except pymysql.MySQLError as ex:
-            self.logger.log_error('GroupManager.create_new_group', ex)
-            return None
+            self.logger.log_error('GroupManager.delete_test_from_group', ex)
+            return False
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
+
+    def set_num_of_tests(self, group_id, num):
+        """
+        Sets number of tests, that group contains.
+        :param group_id: Id of group which group id should be set.
+        :param num: Number of tests which group contains
+        :return: If an error occurs False, True otherwise.
+        """
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute('UPDATE groups SET total_tests = %s WHERE groups.id = %s', (num, group_id))
+            connection.commit()
+            return True
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('GroupManager.set_num_of_tests', ex)
+            return False
         finally:
             if cur:
                 cur.close()
