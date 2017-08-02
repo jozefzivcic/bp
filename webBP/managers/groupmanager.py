@@ -144,7 +144,7 @@ class GroupManager:
             if i < 1:
                 cur.execute('DELETE FROM groups WHERE id = %s;', (group_id))
             else:
-                cur.execute('UPDATE groups SET total_tests = total_tests - 1 WHERE id = %s;', (group_id))
+                cur.execute('UPDATE groups SET total_tests = total_tests - 1, finished_tests = finished_tests - 1 WHERE id = %s;', (group_id))
             connection.commit()
             return True
         except pymysql.MySQLError as ex:
