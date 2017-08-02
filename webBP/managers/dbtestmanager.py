@@ -134,8 +134,8 @@ class DBTestManager:
                 connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
-                'INSERT INTO tests (id_file, id_user, test_table) VALUES(%s,%s,%s);',
-                (test.file_id, test.user_id, test.test_table))
+                'INSERT INTO tests (id_file, id_user, test_table, group_id) VALUES(%s,%s,%s,%s);',
+                (test.file_id, test.user_id, test.test_table, test.group_id))
             test.id = cur.lastrowid
             nist_param.test_id = test.id
             cur.execute(

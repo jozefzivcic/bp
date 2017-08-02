@@ -11,3 +11,4 @@ class Test:
         self.loaded = 0
         self.ended = 0
         self.return_value = 0
+        self.group_id = 0;

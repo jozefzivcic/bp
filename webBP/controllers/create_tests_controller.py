@@ -98,6 +98,7 @@ def create_tests_post(handler):
     t.user_id = user_id
     t.test_table = handler.config_storage.nist
     group_id = handler.group_manager.create_new_group(user_id)
+    t.group_id = group_id
     for file_id in file_ids:
         t.file_id = file_id
         for nist_param in nist_params[0]:
