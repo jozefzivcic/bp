@@ -8,6 +8,7 @@
 #include "mysqlresultsmanager.h"
 #include "logger.h"
 #include "mysqltestmanager.h"
+#include "mysqlgroupsmanager.h"
 #include <string>
 
 using namespace std;
@@ -20,6 +21,7 @@ TestCreator::TestCreator(const ConfigStorage* stor, MySqlDBPool* pool) : storage
     fileHandler = new LinuxFileStructureHandler(stor);
     resManager = new MySqlResultsManager(dbPool);
     testManager = new MySqlTestManager(dbPool);
+    groupsManager = new MySqlGroupsManager(dbPool);
     logger = new Logger();
 }
 
@@ -37,6 +39,8 @@ TestCreator::~TestCreator()
         delete logger;
     if (testManager != nullptr)
         delete testManager;
+    if (groupsManager)
+        delete groupsManager;
 }
 
 bool TestCreator::createTest(Test t)
@@ -102,6 +106,7 @@ bool TestCreator::waitOnNistChild(pid_t pid, Test t, NistTestParameter param)
     string absPath = fileHandler->getAbsolutePath(destination);
     resManager->storePathForTest(t, absPath);
     testManager->setTestHasFinished(t);
+    groupsManager->increaseFinishedTests(t);
     return true;
 }
 

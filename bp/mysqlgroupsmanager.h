@@ -16,6 +16,7 @@ private:
 public:
 
     MySqlGroupsManager(MySqlDBPool* pool);
+    ~MySqlGroupsManager();
     virtual bool increaseFinishedTests(Test t) override;
 };
 

@@ -9,6 +9,7 @@
 #include "mysqldbpool.h"
 #include "ilogger.h"
 #include "itestmanager.h"
+#include "igroupsmanager.h"
 
 /**
  * @brief The TestCreator class implements interface ITestCreator. For methods comments see the
@@ -30,6 +31,7 @@ private:
     MySqlDBPool* dbPool = nullptr;
     ILogger* logger = nullptr;
     ITestManager* testManager = nullptr;
+    IGroupsManager* groupsManager = nullptr;
 public:
     TestCreator(const ConfigStorage* stor, MySqlDBPool* pool);
     ~TestCreator();

@@ -12,6 +12,12 @@ using namespace sql;
 MySqlGroupsManager::MySqlGroupsManager(MySqlDBPool *pool) :
     logger(new Logger()), dbPool(pool) {}
 
+MySqlGroupsManager::~MySqlGroupsManager()
+{
+    if (logger)
+        delete logger;
+}
+
 bool MySqlGroupsManager::increaseFinishedTests(Test t)
 {
     Connection* connection = nullptr;
