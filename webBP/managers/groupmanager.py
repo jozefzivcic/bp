@@ -59,7 +59,8 @@ class GroupManager:
         Returns group with id group_id for given user.
         :param group_id: Id of group which is searched.
         :param user_id: Id of user to whom group belongs.
-        :return: If an error occurs None is returned, Group() object otherwise.
+        :return: If an error occurs None is returned. None is returned also, when user does not own group
+         with group_id. Otherwise Group() object is returned.
         """
         connection = None
         cur = None
@@ -74,7 +75,9 @@ class GroupManager:
             connection.commit()
             group = Group()
             group.id = None
+            i = 0
             for row in cur:
+                i += 1
                 group_id = row[0]
                 if group.id is None:
                     group.id = group_id
@@ -88,7 +91,10 @@ class GroupManager:
                     group.test_id_arr.append(row[6])
                 else:
                     return None
-            return group
+            if i != 0:
+                return group
+            else:
+                return None
         except pymysql.MySQLError as ex:
             self.logger.log_error('GroupManager.get_group_by_id_for_user', ex)
             return None
@@ -180,6 +186,31 @@ class GroupManager:
             return True
         except pymysql.MySQLError as ex:
             self.logger.log_error('GroupManager.set_num_of_tests', ex)
+            return False
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
+
+    def set_statistics_computed(self, group_id):
+        """
+        Sets attribute stats in table groups to 1. That means, that statistics for group of tests with id group_id
+        is computed.
+        :param group_id: Id of group which attribute stat should be set.
+        :return: If an error occurs False, True otherwise.
+        """
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute('UPDATE groups SET stats = 1 WHERE groups.id = %s', (group_id))
+            connection.commit()
+            return True
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('GroupManager.set_statistics_computed', ex)
             return False
         finally:
             if cur:
