@@ -7,6 +7,9 @@ class Group:
         self.id = 0
         self.user_id = 0
         self.time_of_add = 0
+        self.total_tests = 0
+        self.finished_tests = 0
+        self.stats = 0
         self.test_id_arr = []
 
     def get_num_of_tests(self):
@@ -14,4 +17,4 @@ class Group:
         Returns number of tests that is in this group,
         :return: Number of tests.
         """
-        return len(self.test_id_arr)
+        return self.total_tests

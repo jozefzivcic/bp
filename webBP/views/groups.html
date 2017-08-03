@@ -50,7 +50,8 @@
                 <th>{{ select }}</th>
                 <th>{{ id }}</th>
                 <th>{{ time_of_add }}</th>
-                <th>{{ num_of_tests_in_group}}</th>
+                <th>{{ num_of_tests_in_group }}</th>
+                <th>{{ compute_view_results }}</th>
             </tr>
             {% for group in vars['groups'] %}
                 <tr>
@@ -58,6 +59,18 @@
                     <td>{{ group.id }}</td>
                     <td>{{ group.time_of_add }}</td>
                     <td>{{ group.get_num_of_tests() }}</td>
+                    <td>
+                        <input type="button"
+                               {% if group.total_tests != group.finished_tests %}
+                                class="btn btn-default" value="{{ compute_statistics }}"
+                                disabled
+                                title="{{ cannot_view_until_finish }}"
+                               {% elif group.stats is equalto 0 %}
+                                class="btn btn-default" value="{{ compute_statistics }}"
+                               {% else %}
+                                class="btn btn-success" value="{{ view_results }}"
+                               {% endif %}>
+                    </td>
                 </tr>
             {% endfor %}
         </table>

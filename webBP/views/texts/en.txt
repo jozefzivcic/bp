@@ -95,3 +95,7 @@ num_of_tests_in_group=Number of tests in group
 select_tests_to_download=Select tests to download
 resultszip=results.zip
 length_range=Length is not in allowed range for this test.
+compute_statistics=Compute statistics
+cannot_view_until_finish=Statistics cannot be computed unless all tests finish.
+compute_view_results=Compute/View results
+view_results=View results
