@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css">
     <link href="styles.css" rel="stylesheet">
     <title>{{ groups_of_tests }}</title>
+
+    <script type="text/javascript">
+        function RedirectAndLoadComputeStats(grp_id) {
+            var button = document.getElementById('placeLoading');
+            var btnChild = document.createElement('div');
+            btnChild.setAttribute('class', 'loader my-center');
+            button.appendChild(btnChild);
+            location.href='/compute_stats?id='.concat(grp_id);
+        }
+    </script>
+
 </head>
 <body>
     <div class="main-menu">
@@ -44,6 +55,10 @@
     <div class="my-center">
         <h2>{{ select_tests_to_download }}</h2>
     </div>
+
+    <div id="placeLoading">
+    </div>
+
     <form name="download" action="/download" method="post" accept-charset="utf-8">
         <table class="table tests-table">
             <tr>
@@ -67,17 +82,18 @@
                                 title="{{ cannot_view_until_finish }}"
                                {% elif group.stats is equalto 0 %}
                                 class="btn btn-default" value="{{ compute_statistics }}"
+                                onclick="RedirectAndLoadComputeStats({{ group.id }})"
                                {% else %}
                                 class="btn btn-success" value="{{ view_results }}"
+                                onclick="location.href='grp_results?id={{ group.id }}';"
                                {% endif %}>
                     </td>
                 </tr>
             {% endfor %}
         </table>
         <div class="my-center">
-            <input class="btn btn-success" type="submit" name="download" value="{{ download }}">
+            <input class="btn btn-success" type="submit" name="download" value="{{ download }}" id="submit_button">
         </div>
     </form>
-
 </body>
 </html>

@@ -9,6 +9,7 @@ from socketserver import ThreadingMixIn
 
 from jinja2 import FileSystemLoader, Environment
 
+from controllers.compute_stats import compute_stats
 from controllers.js_controller import get_js_create_tests
 from myconfigparser import MyConfigParser
 from configstorage import ConfigStorage
@@ -82,6 +83,7 @@ def register_pages_into_router(router):
     router.register_controller('/download', groups_download_post)
     router.register_controller('/index.css', get_index)
     router.register_controller('/create_tests.js', get_js_create_tests)
+    router.register_controller('/compute_stats', compute_stats)
 
 
 def load_texts():
