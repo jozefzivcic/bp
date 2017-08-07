@@ -26,5 +26,5 @@ class StatCreatorTest(unittest.TestCase):
         this_dir = dirname(abspath(__file__))
         created_file = join(this_dir, 'users', str(user_id), 'groups', str(group_id), 'grp_' + str(group_id) + '_f_' +
                             str(file.id))
-        another_file = join(this_dir, 'good_file.txt')
+        another_file = join(this_dir,   'test_files', 'header_test_file.txt')
         self.assertTrue(cmp(created_file, another_file), 'Files are not the same')
