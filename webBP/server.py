@@ -5,6 +5,7 @@ import ssl
 import signal
 import sys
 from http.server import HTTPServer
+from os.path import join
 from socketserver import ThreadingMixIn
 
 from jinja2 import FileSystemLoader, Environment
@@ -151,6 +152,8 @@ def prepare_environment(config_storage):
     :param config_storage: ConfigStorage().
     """
     create_dir_if_not_exists(config_storage.path_to_users_dir)
+    groups_dir = join(config_storage.path_to_users_dir, config_storage.groups)
+    create_dir_if_not_exists(groups_dir)
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):

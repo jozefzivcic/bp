@@ -21,3 +21,4 @@ class ConfigStorage:
         self.server_key = parser.get_key('SERVER_KEY')
         self.server_cert = parser.get_key('SERVER_CERT')
         self.ca_certs = parser.get_key('CA_CERTS')
+        self.groups = parser.get_key('GROUPS')

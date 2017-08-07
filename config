@@ -25,3 +25,4 @@ SERVER_KEY=no
 # This path is relative to file server.py in webBP.
 SERVER_CERT=no
 CA_CERTS=no
+GROUPS=groups

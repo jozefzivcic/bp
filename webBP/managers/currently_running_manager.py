@@ -9,7 +9,7 @@ class CurrentlyRunningManager:
         Initializes class with pool and logger.
         :param pool: Connection pool for acquiring connection.
         """
-        self.pool = pool;
+        self.pool = pool
         self.logger = Logger()
 
     def get_running_tests_for_user(self, user_id):
