@@ -1,4 +1,4 @@
-from os.path import join
+from os.path import join, dirname, abspath
 
 
 class StatisticsCreator:
@@ -7,11 +7,12 @@ class StatisticsCreator:
         self.logger = logger
         self.config_storage = config_storage
 
-        with open('./template1.txt', 'r') as f:
+        this_dir = dirname(abspath(__file__))
+        with open(join(this_dir, 'templates', 'template1.txt'), 'r') as f:
             self.template1 = f.read()
-        with open('./template2.txt', 'r') as f:
+        with open(join(this_dir, 'templates', 'template2.txt'), 'r') as f:
             self.template2 = f.read()
-        with open('./template3.txt', 'r') as f:
+        with open(join(this_dir, 'templates', 'template3.txt'), 'r') as f:
             self.template3 = f.read()
 
     def compute_statistics(self, group_id):

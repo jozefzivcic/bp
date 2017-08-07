@@ -216,3 +216,43 @@ class GroupManager:
             if cur:
                 cur.close()
             self.pool.release_connection(connection)
+
+    def get_tests_for_group(self, group_id):
+        """
+        This function returns array of Test objects which are contained in group with id group_id.
+        :param group_id: Id of group in which tests we are looking for belong.
+        :return: Array of tests or None if an error occurs.
+        """
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute(
+                'SELECT tests.id, tests.id_file, tests.id_user, tests.time_of_add, tests.test_table, tests.loaded, '
+                'tests.return_value, tests.ended FROM tests INNER JOIN groups_tests ON tests.id = groups_tests.id_test '
+                'WHERE groups_tests.id = %s;',
+                (group_id))
+            connection.commit()
+            my_list = []
+            for row in cur:
+                test = Test()
+                test.id = row[0]
+                test.file_id = row[1]
+                test.user_id = row[2]
+                test.time_of_add = row[3]
+                test.test_table = row[4]
+                test.loaded = row[5]
+                test.return_value = row[6]
+                test.ended = row[7]
+                my_list.append(test)
+            return my_list
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('GroupManager.get_tests_for_group', ex)
+            return None
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
