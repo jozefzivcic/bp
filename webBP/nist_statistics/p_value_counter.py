@@ -1,3 +1,6 @@
+from nist_statistics.test_statistics import TestStatistics
+
+
 class PValueCounter:
     def __init__(self, alpha=0.01):
         self.alpha = alpha
@@ -13,9 +16,8 @@ class PValueCounter:
     def reset(self):
         self.total_passed = 0
         self.total_tested = 0
-        self.arr = []
         for i in range(0, 10):
-            self.arr.append(0)
+            self.arr[i] = 0
 
     def count_p_values_in_file(self, file):
         with open(file, 'r') as f:
@@ -42,8 +44,14 @@ class PValueCounter:
         elif (num >= 0.8) and (num < 0.9):
             self.arr[8] += 1
         else:
-            self.arr[9] += 1 # TODO: [0.9, 1.0) interval ???
+            self.arr[9] += 1  # TODO: [0.9, 1.0) interval ???
         # TODO: > or >= ???
         if num > self.alpha:
             self.total_passed += 1
         self.total_tested += 1
+
+    def generate_test_statistics_obj(self):
+        test_statistics = TestStatistics()
+        test_statistics.p_value_array = list(self.arr)
+        test_statistics.proportions = self.get_proportions()
+        return test_statistics

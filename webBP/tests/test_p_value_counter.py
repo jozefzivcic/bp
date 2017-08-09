@@ -1,7 +1,7 @@
 import unittest
 from os.path import abspath, dirname, join
 
-from nist_statistics.PValueCounter import PValueCounter
+from nist_statistics.p_value_counter import PValueCounter
 
 this_dir = dirname(abspath(__file__))
 file1 = join(this_dir, 'test_files', 'pvalues1.txt')
