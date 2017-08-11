@@ -13,3 +13,4 @@ class TestConverter:
                 my_dict[test.file_id].append(test)
             else:
                 my_dict[test.file_id] = [test]
+        return my_dict

@@ -5,9 +5,11 @@ from nist_statistics.test_statistics_dto import TestStatisticsDTO
 
 p_values_str = '  1   2   3   4   5   6   7   8   9  10'
 
+
 def fnc_assert_output(tester, output, expected_output):
     tester.assertEqual(output, expected_output, '\n             Output: ' + output + '\nand expected output: ' +
-                     expected_output + '\nare not the same')
+                       expected_output + '\nare not the same')
+
 
 class TestLineGenerator(TestCase):
     def setUp(self):
@@ -27,7 +29,7 @@ class TestLineGenerator(TestCase):
         fnc_assert_output(self, output, expected_output)
 
     def test_tens_of_seq(self):
-        expected_output =  p_values_str + '  0.500000     40/55      Frequency'
+        expected_output = p_values_str + '  0.500000     40/55      Frequency'
         output = self.line_generator.generate_line_from_test_statistics(self.test_stat)
         fnc_assert_output(self, output, expected_output)
 
@@ -73,7 +75,7 @@ class TestLineGenerator(TestCase):
         output = self.line_generator.generate_line_from_test_statistics(self.test_stat)
         fnc_assert_output(self, output, expected_output)
 
-# Testing of zero p-value
+    # Testing of zero p-value
 
     def test_units_of_seq_zero_p_value(self):
         self.test_stat.p_value = 0.0
@@ -85,7 +87,7 @@ class TestLineGenerator(TestCase):
 
     def test_tens_of_seq_zero_p_value(self):
         self.test_stat.p_value = 0.0
-        expected_output =  p_values_str + '  0.000000 *   40/55 *    Frequency'
+        expected_output = p_values_str + '  0.000000 *   40/55 *    Frequency'
         output = self.line_generator.generate_line_from_test_statistics(self.test_stat)
         fnc_assert_output(self, output, expected_output)
 
