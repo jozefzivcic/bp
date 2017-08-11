@@ -1,4 +1,4 @@
-from nist_statistics.test_statistics import TestStatistics
+from nist_statistics.test_statistics_dto import TestStatisticsDTO
 
 
 class PValueCounter:
@@ -50,9 +50,12 @@ class PValueCounter:
             self.total_passed += 1
         self.total_tested += 1
 
-    def generate_test_statistics_obj(self):
-        test_statistics = TestStatistics()
+    def generate_test_statistics_obj(self, test_name):
+        test_statistics = TestStatisticsDTO()
         test_statistics.p_value_array = list(self.arr)
         test_statistics.total_passed = self.total_passed
         test_statistics.total_tested = self.total_tested
+        # TODO: add useful p-value
+        test_statistics.p_value = 0.0
+        test_statistics.test_name = test_name
         return test_statistics
