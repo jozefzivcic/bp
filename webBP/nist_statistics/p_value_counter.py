@@ -53,5 +53,6 @@ class PValueCounter:
     def generate_test_statistics_obj(self):
         test_statistics = TestStatistics()
         test_statistics.p_value_array = list(self.arr)
-        test_statistics.proportions = self.get_proportions()
+        test_statistics.total_passed = self.total_passed
+        test_statistics.total_tested = self.total_tested
         return test_statistics

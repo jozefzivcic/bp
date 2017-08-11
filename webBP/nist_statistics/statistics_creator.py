@@ -5,6 +5,7 @@ from os import makedirs
 from managers.filemanager import FileManager
 from managers.groupmanager import GroupManager
 from managers.resultsmanager import ResultsManager
+from nist_statistics.line_generator import LineGenerator
 from nist_statistics.my_fs_manager import MyFSManager
 from nist_statistics.p_value_counter import PValueCounter
 from nist_statistics.test_converter import TestConverter
@@ -29,6 +30,7 @@ class StatisticsCreator:
         self.results_dao = ResultsManager(self.pool)
         self.p_value_counter = PValueCounter()
         self.my_fs_mgr = MyFSManager()
+        self.line_generator = LineGenerator()
 
     def compute_statistics(self, group_id, user_id):
         # TODO: Flag in DB that stats are computed
@@ -37,9 +39,9 @@ class StatisticsCreator:
         my_dict = test_converter.get_tests_for_files(tests)
         for key, tests_arr in my_dict.items():
             file = self.file_dao.get_file_by_id(key)
-            self.prepare_file(group_id, user_id, file)
+            file_name = self.prepare_file(group_id, user_id, file)
             for test in tests_arr:
-                self.append_lines_for_test(test)
+                self.append_lines_for_test(file_name, test)
 
     def prepare_file(self, group_id, user_id, file):
         dir_name = join(self.config_storage.path_to_users_dir, str(user_id), self.config_storage.groups, str(group_id))
@@ -50,12 +52,16 @@ class StatisticsCreator:
         to_write = self.template1 + self.template2 + ' <' + file.name + '>\n' + self.template3
         with open(file_loc, 'w') as f:
             f.write(to_write)
+        return file_loc
 
-    def append_lines_for_test(self, test):
+    def append_lines_for_test(self, file_name, test):
         path = self.results_dao.get_path_for_test(test)
         files = self.my_fs_mgr.get_data_files_in_dir(path)
         for file in files:
             self.p_value_counter.reset()
             self.p_value_counter.count_p_values_in_file(file)
             test_stats = self.p_value_counter.generate_test_statistics_obj()
+            line = self.line_generator.generate_line_from_test_statistics(test_stats)
+            with open(file_name, 'a') as f:
+                f.write(line)
         return
