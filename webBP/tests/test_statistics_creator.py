@@ -60,6 +60,7 @@ class StatCreatorTest(unittest.TestCase):
 
         self.stat_creator.append_lines_for_test(file_name, test)
         expected_line = '  1   0   2   1   1   1   1   0   2   1  0.000000 *   10/10 *    Frequency'
+        expected_line += os.linesep
         with open(file_name, 'r') as f:
             read_line = f.read()
         self.assertEqual(read_line, expected_line, 'File does not contain a line as expected')
@@ -89,7 +90,7 @@ class StatCreatorTest(unittest.TestCase):
             file.id = f_id
             file.user_id = user_id
             file.name = file_name
-            file.file_system_path = join('users', str(user_id), 'files', str(file_id))
+            file.file_system_path = join('users', str(user_id), 'files', str(f_id))
             file.hash = 'ABCD456'
             return file
 
@@ -135,10 +136,91 @@ class StatCreatorTest(unittest.TestCase):
 
         with open(created_file, 'r') as f:
             file_content = f.read()
-        with open('/home/jozef/Plocha/foo.txt', 'w') as f:
-            f.write(content)
 
         self.assertEqual(content, file_content, 'Generated file content does not match the expected one')
 
         os.remove(created_file)
+        rmtree(group_dir)
+
+    def test_compute_statistics_two_files(self):
+        group_id = 54
+        test1_id = 13
+        test2_id = 14
+        file1_id = 75
+        file2_id = 87
+        user_id = 4
+        file_name = 'My testing file'
+
+        test1 = Test()
+        test1.id = test1_id
+        test1.file_id = file1_id
+        test1.user_id = user_id
+        test2 = deepcopy(test1)
+        test2.id = test2_id
+        test2.file_id = file2_id
+
+        def file_dao_side_effect(f_id):
+            file = File()
+            file.id = f_id
+            file.user_id = user_id
+            file.name = file_name
+            file.file_system_path = join('users', str(user_id), 'files', str(f_id))
+            file.hash = 'ABCD456'
+            return file
+
+        def result_dao_side_effect(test):
+            return abspath(join(this_dir, 'users', str(user_id), 'tests_results', str(test.id)))
+
+        def nist_dao_side_effect(test):
+            nist_param = NistParam()
+            if test.id == test1_id:
+                nist_param.test_number = 2
+            else:
+                nist_param.test_number = 3
+            return nist_param
+
+        self.stat_creator.group_dao.get_tests_for_group = MagicMock(return_value=[test1, test2])
+        self.stat_creator.file_dao.get_file_by_id = MagicMock(side_effect=file_dao_side_effect)
+        self.stat_creator.results_dao.get_path_for_test = MagicMock(side_effect=result_dao_side_effect)
+        self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_side_effect)
+
+        self.stat_creator.compute_statistics(group_id, user_id)
+        group_dir = join(this_dir, 'users', str(user_id), 'groups', str(group_id))
+        first_created_file = join(group_dir, 'grp_' + str(group_id) + '_f_' + str(file1_id))
+        second_created_file = join(group_dir, 'grp_' + str(group_id) + '_f_' + str(file2_id))
+        self.assertTrue(exists(first_created_file))
+        self.assertTrue(exists(second_created_file))
+
+        header_dir = join(this_dir, '..', 'nist_statistics', 'templates')
+        with open(join(header_dir, 'template1.txt'), 'r') as f:
+            header = f.read()
+        with open(join(header_dir, 'template2.txt'), 'r') as f:
+            header += ' '.join(f.read().rsplit(os.linesep))
+            header += '<'
+            header += file_name
+            header += '>'
+            header += os.linesep
+        with open(join(header_dir, 'template3.txt'), 'r') as f:
+            header += f.read()
+
+        expected_line = '  1   0   2   1   1   1   1   0   2   1  0.000000 *   10/10 *    Block Frequency'
+        content = header + expected_line + os.linesep
+
+        with open(first_created_file, 'r') as f:
+            file_content = f.read()
+
+        self.assertEqual(content, file_content, 'Generated file content does not match the expected one')
+
+        expected_line = '  0   2   1   0   0   2   1   0   3   1  0.000000 *   10/10 *    Cumulative Sums'
+        content = header + expected_line + os.linesep
+        expected_line = '  0   1   1   0   4   1   0   2   1   0  0.000000 *   10/10 *    Cumulative Sums'
+        content += expected_line + os.linesep
+
+        with open(second_created_file, 'r') as f:
+            file_content = f.read()
+
+        self.assertEqual(content, file_content, 'Generated file content does not match the expected one')
+
+        os.remove(first_created_file)
+        os.remove(second_created_file)
         rmtree(group_dir)
