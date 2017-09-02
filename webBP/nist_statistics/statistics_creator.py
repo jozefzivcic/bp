@@ -1,6 +1,6 @@
 from os.path import join, dirname, abspath, exists
 
-from os import makedirs
+from os import makedirs, linesep
 
 from managers.filemanager import FileManager
 from managers.groupmanager import GroupManager
@@ -67,4 +67,5 @@ class StatisticsCreator:
             line = self.line_generator.generate_line_from_test_statistics(test_stats)
             with open(file_name, 'a') as f:
                 f.write(line)
+                f.write(linesep) # write new line
         return
