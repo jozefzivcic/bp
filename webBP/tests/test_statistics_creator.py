@@ -23,7 +23,7 @@ class StatCreatorTest(unittest.TestCase):
         storage_mock = MagicMock()
         storage_mock.path_to_users_dir = join(this_dir, 'users')
         storage_mock.groups = 'groups'
-        self.stat_creator = StatisticsCreator(None, Logger(), storage_mock)
+        self.stat_creator = StatisticsCreator(None, storage_mock)
 
     def test_prepare_file(self):
         user_id = 4
@@ -109,6 +109,7 @@ class StatCreatorTest(unittest.TestCase):
         self.stat_creator.file_dao.get_file_by_id = MagicMock(side_effect=file_dao_side_effect)
         self.stat_creator.results_dao.get_path_for_test = MagicMock(side_effect=result_dao_side_effect)
         self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_side_effect)
+        self.stat_creator.group_dao.set_statistics_computed = MagicMock(return_value=True)
 
         self.stat_creator.compute_statistics(group_id, user_id)
         group_dir = join(this_dir, 'users', str(user_id), 'groups', str(group_id))
@@ -183,6 +184,7 @@ class StatCreatorTest(unittest.TestCase):
         self.stat_creator.file_dao.get_file_by_id = MagicMock(side_effect=file_dao_side_effect)
         self.stat_creator.results_dao.get_path_for_test = MagicMock(side_effect=result_dao_side_effect)
         self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_side_effect)
+        self.stat_creator.group_dao.set_statistics_computed = MagicMock(return_value=True)
 
         self.stat_creator.compute_statistics(group_id, user_id)
         group_dir = join(this_dir, 'users', str(user_id), 'groups', str(group_id))

@@ -22,7 +22,7 @@ from controllers.delete_file_controller import delete_file, delete_file_post
 from controllers.delete_path_controller import delete_path, delete_path_post
 from controllers.delete_test_controller import delete_test, delete_test_post
 from controllers.file_controller import upload_file_post, upload_file
-from controllers.groups_controller import get_groups, groups_download_post
+from controllers.groups_controller import get_groups, groups_download_post, get_download_report
 from controllers.login_controller import post_login, wrong_user_name, wrong_password, login
 from controllers.main_controller import main_page, logout
 from controllers.results_controller import results_controller, view_file_content
@@ -40,6 +40,7 @@ from managers.pid_table_manager import PIDTableManager
 from managers.resultsmanager import ResultsManager
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
+from nist_statistics.statistics_creator import StatisticsCreator
 from router import Router
 from logger import Logger
 
@@ -85,6 +86,7 @@ def register_pages_into_router(router):
     router.register_controller('/index.css', get_index)
     router.register_controller('/create_tests.js', get_js_create_tests)
     router.register_controller('/compute_stats', compute_stats)
+    router.register_controller('/grp_results', get_download_report)
 
 
 def load_texts():
@@ -144,6 +146,7 @@ def prepare_handler(config_storage):
     MyRequestHandler.pid_manager = PIDTableManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
     MyRequestHandler.logger = Logger()
+    MyRequestHandler.stat_creator = StatisticsCreator(pool, config_storage)
 
 
 def prepare_environment(config_storage):

@@ -1,10 +1,10 @@
 import pymysql
 from models.group import Group
 from logger import Logger
+from models.test import Test
 
 
 class GroupManager:
-
     def __init__(self, pool):
         """
         Initializes class with pool and logger.
@@ -15,7 +15,7 @@ class GroupManager:
 
     def get_groups_for_user(self, user_id):
         """
-        Returns all groups for user.
+        Returns all groups for user sorted by group id ascending.
         :param user_id: Id of user for whom groups are searched.
         :return: If an error occurs None, else list of groups.
         """
@@ -27,7 +27,8 @@ class GroupManager:
                 connection = self.pool.get_connection_from_pool()
             cur = connection.cursor()
             cur.execute(
-                'SELECT groups.id, id_user, time_of_add, total_tests, finished_tests, stats, id_test FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE id_user = %s;',
+                'SELECT groups.id, id_user, time_of_add, total_tests, finished_tests, stats, id_test FROM groups '
+                'INNER JOIN groups_tests ON groups.id = groups_tests.id WHERE id_user = %s;',
                 (user_id))
             connection.commit()
             my_dict = {}
@@ -45,7 +46,9 @@ class GroupManager:
                     group.stats = row[5]
                     group.test_id_arr.append(row[6])
                     my_dict[group_id] = group
-            return list(my_dict.values())
+            ret = list(my_dict.values())
+            ret.sort(key=lambda x: x.id, reverse=False)
+            return ret
         except pymysql.MySQLError as ex:
             self.logger.log_error('GroupManager.get_groups_for_user', ex)
             return None
@@ -156,7 +159,9 @@ class GroupManager:
             if i < 1:
                 cur.execute('DELETE FROM groups WHERE id = %s;', (group_id))
             else:
-                cur.execute('UPDATE groups SET total_tests = total_tests - 1, finished_tests = finished_tests - 1 WHERE id = %s;', (group_id))
+                cur.execute(
+                    'UPDATE groups SET total_tests = total_tests - 1, finished_tests = finished_tests - 1 WHERE id = %s;',
+                    (group_id))
             connection.commit()
             return True
         except pymysql.MySQLError as ex:
@@ -211,6 +216,31 @@ class GroupManager:
             return True
         except pymysql.MySQLError as ex:
             self.logger.log_error('GroupManager.set_statistics_computed', ex)
+            return False
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
+
+    def set_statistics_not_computed(self, group_id):
+        """
+        Sets attribute stats in table groups to 0. That means, that statistics for group of tests with id group_id
+        is NOT computed.
+        :param group_id: Id of group which attribute stat should be set.
+        :return: If an error occurs False, True otherwise.
+        """
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute('UPDATE groups SET stats = 0 WHERE groups.id = %s', (group_id))
+            connection.commit()
+            return True
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('GroupManager.set_statistics_not_computed', ex)
             return False
         finally:
             if cur:

@@ -2,6 +2,7 @@ from os.path import join, dirname, abspath, exists
 
 from os import makedirs, linesep
 
+from logger import Logger
 from managers.filemanager import FileManager
 from managers.groupmanager import GroupManager
 from managers.nisttestmanager import NistTestManager
@@ -13,9 +14,9 @@ from nist_statistics.test_converter import TestConverter
 
 
 class StatisticsCreator:
-    def __init__(self, pool, logger, config_storage):
+    def __init__(self, pool, config_storage):
         self.pool = pool
-        self.logger = logger
+        self.logger = Logger()
         self.config_storage = config_storage
 
         this_dir = dirname(abspath(__file__))
@@ -36,7 +37,6 @@ class StatisticsCreator:
         self.test_converter = TestConverter()
 
     def compute_statistics(self, group_id, user_id):
-        # TODO: Flag in DB that stats are computed
         tests = self.group_dao.get_tests_for_group(group_id)
         my_dict = self.test_converter.get_tests_for_files(tests)
         for file_id, tests_arr in my_dict.items():
@@ -44,6 +44,7 @@ class StatisticsCreator:
             file_name = self.prepare_file(group_id, user_id, file)
             for test in tests_arr:
                 self.append_lines_for_test(file_name, test)
+        self.group_dao.set_statistics_computed(group_id)
 
     def prepare_file(self, group_id, user_id, file):
         dir_name = join(self.config_storage.path_to_users_dir, str(user_id), self.config_storage.groups, str(group_id))

@@ -73,7 +73,11 @@
                     <td><input class="checkbox" type="checkbox" name="group{{ group.id }}"></td>
                     <td>{{ group.id }}</td>
                     <td>{{ group.time_of_add }}</td>
+                    {% if group.get_num_of_tests() == None %}
+                    <td>{{ no_tests_in_group }}</td>
+                    {% else %}
                     <td>{{ group.get_num_of_tests() }}</td>
+                    {% endif %}
                     <td>
                         <input type="button"
                                {% if group.total_tests != group.finished_tests %}
@@ -84,7 +88,7 @@
                                 class="btn btn-default" value="{{ compute_statistics }}"
                                 onclick="RedirectAndLoadComputeStats({{ group.id }})"
                                {% else %}
-                                class="btn btn-success" value="{{ view_results }}"
+                                class="btn btn-success" value="{{ download_report }}"
                                 onclick="location.href='grp_results?id={{ group.id }}';"
                                {% endif %}>
                     </td>

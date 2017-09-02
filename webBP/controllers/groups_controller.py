@@ -5,7 +5,8 @@ import re
 import zipfile
 from os import listdir
 
-from os.path import isfile, join
+from os.path import isfile, join, isdir
+from urllib.parse import urlparse, parse_qs
 
 from models.group import Group
 from helpers import zip_folders, get_param_for_test
@@ -95,3 +96,58 @@ def get_group_ids(form):
         group_id = re.search(r'group([0-9]+)', group).groups()[0]
         ids.append(int(group_id))
     return ids
+
+
+def get_download_report(handler):
+    user_id = handler.sessions[handler.read_cookie()]
+    parsed_path = urlparse(handler.path)
+    queries = parse_qs(parsed_path.query)
+
+    if len(queries) != 1:
+        handler.send_response(303)
+        handler.send_header('Content-type', 'text/html')
+        handler.send_header('Location', '/not_found')
+        handler.end_headers()
+        return
+
+    group_id = queries.get('id')[0]
+    group = handler.group_manager.get_group_by_id_for_user(group_id, user_id)
+
+    this_dir = os.path.dirname(os.path.realpath(__file__))
+    res_dir = join(this_dir, '..', handler.config_storage.path_to_users_dir, str(user_id),
+                   handler.config_storage.groups, str(group_id))
+
+    if group is None or (group.total_tests != group.finished_tests) or (not isdir(res_dir)):
+        handler.send_response(303)
+        handler.send_header('Content-type', 'text/html')
+        handler.send_header('Location', '/groups')
+        handler.end_headers()
+        if not isdir(res_dir):
+            handler.group_manager.set_statistics_not_computed(group_id)
+        return
+
+    ok = False
+    files = listdir(res_dir)
+    try:
+        regex = re.compile(r'^(grp_)(\d+)(_f_)(\d+)$')
+        file_object = io.BytesIO()
+        zip = zipfile.ZipFile(file_object, 'w', zipfile.ZIP_DEFLATED)
+        for file in files:
+            file_name = os.path.join(res_dir, file)
+            file_id = regex.search(file).groups()[3]
+            output_file_name = handler.file_manager.get_file_by_id(file_id).name + '.txt'
+            zip.write(file_name, join('/', output_file_name))
+        ok = True
+        lang = handler.get_user_language(user_id)
+        handler.send_response(200)
+        handler.send_header('Content-type', 'application/octet-stream')
+        handler.send_header('Content-type', 'application/zip')
+        handler.send_header('Content-Disposition',
+                            'attachment; filename="{0}"'.format(handler.texts[lang]['summary_report']))
+        handler.end_headers()
+    finally:
+        zip.close()
+        if ok:
+            handler.wfile.write(file_object.getvalue())
+        file_object.close()
+    return

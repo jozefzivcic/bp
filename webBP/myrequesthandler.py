@@ -23,6 +23,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     pid_manager = None
     path_to_users_dir = None
     logger = None
+    stat_creator = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
                             '/sign_up_passwords_are_not_the_same', '/bootstrap/css/bootstrap.min.css',
                             '/styles.css', '/login', '/index.css', '/create_tests.js']

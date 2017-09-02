@@ -26,5 +26,5 @@ def compute_stats(handler):
     handler.end_headers()
     if group.stats == 1:
         return
-    
+    handler.stat_creator.compute_statistics(group_id, user_id)
     return
