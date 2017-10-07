@@ -66,7 +66,8 @@
                 <th>{{ id }}</th>
                 <th>{{ time_of_add }}</th>
                 <th>{{ num_of_tests_in_group }}</th>
-                <th>{{ compute_view_results }}</th>
+                <th>{{ compute_download_results }}</th>
+                <th>{{ charts }}</th>
             </tr>
             {% for group in vars['groups'] %}
                 <tr>
@@ -91,6 +92,23 @@
                                 class="btn btn-success" value="{{ download_report }}"
                                 onclick="location.href='grp_results?id={{ group.id }}';"
                                {% endif %}>
+                    </td>
+                    <td>
+                        <input type="button"
+                            {% if group.total_tests != group.finished_tests %}
+                                class="btn btn-default"
+                                disabled
+                                title="{{ cannot_display_chart }}"
+                            {% elif group.stats is equalto 0 %}
+                                class="btn btn-default"
+                                disabled
+                                title="{{ cannot_display_chart_stats }}"
+                            {% else %}
+                                class="btn btn-success" value="{{ charts }}"
+                                onclick="location.href='charts?id={{ group.id }}';"
+                            {% endif %}
+                        value="{{ compute_statistics }}"
+                        >
                     </td>
                 </tr>
             {% endfor %}

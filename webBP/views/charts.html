@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css">
+    <link href="styles.css" rel="stylesheet">
+    <title>{{ charts }}</title>
+</head>
+<body>
+{% include 'header.html'%}
+<div class="container">
+    {% for test in vars['tests'] %}
+        <div class="row">
+            <a href="/charts/base?test_id={{ test.id }}"> Test with id: {{ test.id}}</a>
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>

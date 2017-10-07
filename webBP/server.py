@@ -10,8 +10,11 @@ from socketserver import ThreadingMixIn
 
 from jinja2 import FileSystemLoader, Environment
 
+from controllers.chart_data_controller import get_data_for_base_chart
+from controllers.chart_draw_controller import draw_base_chart_for_test
+from controllers.charts_controller import get_charts
 from controllers.compute_stats import compute_stats
-from controllers.js_controller import get_js_create_tests
+from controllers.js_controller import get_js_create_tests, get_js_base_chart
 from myconfigparser import MyConfigParser
 from configstorage import ConfigStorage
 from controllers.css_controller import get_bootstrap, get_own_styles, get_index
@@ -40,6 +43,7 @@ from managers.pid_table_manager import PIDTableManager
 from managers.resultsmanager import ResultsManager
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
+from nist_statistics.p_value_provider import PValueProvider
 from nist_statistics.statistics_creator import StatisticsCreator
 from router import Router
 from logger import Logger
@@ -87,7 +91,10 @@ def register_pages_into_router(router):
     router.register_controller('/create_tests.js', get_js_create_tests)
     router.register_controller('/compute_stats', compute_stats)
     router.register_controller('/grp_results', get_download_report)
-
+    router.register_controller('/charts', get_charts)
+    router.register_controller('/charts_data/base', get_data_for_base_chart)
+    router.register_controller('/charts/base', draw_base_chart_for_test)
+    router.register_controller('/js/base_chart.js', get_js_base_chart)
 
 def load_texts():
     """
@@ -147,6 +154,7 @@ def prepare_handler(config_storage):
     MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
     MyRequestHandler.logger = Logger()
     MyRequestHandler.stat_creator = StatisticsCreator(pool, config_storage)
+    MyRequestHandler.p_value_provider = PValueProvider(pool)
 
 
 def prepare_environment(config_storage):
@@ -160,6 +168,7 @@ def prepare_environment(config_storage):
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Class for handling requests in a separate threads."""
 
+
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     cp = MyConfigParser()
@@ -172,10 +181,10 @@ if __name__ == '__main__':
     server_class = ThreadedHTTPServer
     httpd = server_class((ip_address, port), MyRequestHandler)
     if ((config_storage.server_key != 'no') and
-    (config_storage.server_cert != 'no') and (config_storage.ca_certs != 'no')):
+            (config_storage.server_cert != 'no') and (config_storage.ca_certs != 'no')):
         httpd.socket = ssl.wrap_socket(httpd.socket,
-        keyfile=config_storage.server_key, certfile=config_storage.server_cert,
-        server_side=True, ca_certs=config_storage.ca_certs)
+                                       keyfile=config_storage.server_key, certfile=config_storage.server_cert,
+                                       server_side=True, ca_certs=config_storage.ca_certs)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

@@ -10,7 +10,7 @@ class GroupManager:
         Initializes class with pool and logger.
         :param pool: Connection pool for acquiring connection.
         """
-        self.pool = pool;
+        self.pool = pool
         self.logger = Logger()
 
     def get_groups_for_user(self, user_id):
