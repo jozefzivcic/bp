@@ -23,6 +23,7 @@ class PValueCounterTest(unittest.TestCase):
         self.counter.reset()
         for i in range(0, 10):
             self.assertTrue(self.counter.arr[i] < 0.000000001, 'Counter.arr[' + str(i) + '] is not 0.0')
+        self.assertEqual(len(self.counter.get_p_values()), 0, 'raw p values are not reset')
 
     def test_file_load(self):
         self.counter.count_p_values_in_file(file1)
@@ -53,3 +54,16 @@ class PValueCounterTest(unittest.TestCase):
         for i in range(0, 10):
             self.assertTrue(self.counter.arr[i] == res[i], 'Counter.arr[' + str(i) + '] and res[' + str(i) +
                             '] are not the same')
+
+    def test_loaded_pvalues(self):
+        file1_p_values = [0.779952, 0.468925, 0.468925, 0.511232, 0.462545, 0.666913, 0.171598, 0.375557, 0.746548,
+                        0.558648]
+        self.counter.count_p_values_in_file(file1)
+        self.assertEqual(file1_p_values, self.counter.get_p_values(), 'Loaded p_values from file are different than '
+                                                                      'the expected ones')
+
+        file2_p_values = [0.01, 0.02, 0.009, 0.11, 0.06]
+        self.counter.count_p_values_in_file(file2)
+        expected_p_values = file1_p_values + file2_p_values
+        self.assertEqual(expected_p_values, self.counter.get_p_values(), 'Loaded p_values from file are different than '
+                                                                         'the expected ones')
