@@ -43,8 +43,6 @@ from managers.pid_table_manager import PIDTableManager
 from managers.resultsmanager import ResultsManager
 from managers.usermanager import UserManager
 from myrequesthandler import MyRequestHandler
-from nist_statistics.p_value_provider import PValueProvider
-from nist_statistics.statistics_creator import StatisticsCreator
 from router import Router
 from logger import Logger
 
@@ -153,8 +151,6 @@ def prepare_handler(config_storage):
     MyRequestHandler.pid_manager = PIDTableManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
     MyRequestHandler.logger = Logger()
-    MyRequestHandler.stat_creator = StatisticsCreator(pool, config_storage)
-    MyRequestHandler.p_value_provider = PValueProvider(pool)
 
 
 def prepare_environment(config_storage):

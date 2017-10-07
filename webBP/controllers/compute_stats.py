@@ -1,5 +1,7 @@
 from urllib.parse import urlparse, parse_qs
 
+from nist_statistics.statistics_creator import StatisticsCreator
+
 
 def compute_stats(handler):
     handler.send_response(303)
@@ -26,5 +28,6 @@ def compute_stats(handler):
     handler.end_headers()
     if group.stats == 1:
         return
-    handler.stat_creator.compute_statistics(group_id, user_id)
+    stat_creator = StatisticsCreator(handler.pool, handler.config_storage)
+    stat_creator.compute_statistics(group_id, user_id)
     return
