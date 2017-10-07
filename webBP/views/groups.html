@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" type="text/css">
-    <link href="styles.css" rel="stylesheet">
+    {% include 'include_head.html' %}
     <title>{{ groups_of_tests }}</title>
 
     <script type="text/javascript">
@@ -20,38 +16,7 @@
 
 </head>
 <body>
-    <div class="main-menu">
-        <ul>
-            <li>
-                <a href="/">
-                    {{ home }}
-                </a>
-            </li>
-            <li>
-                <a href="/create_tests">
-                    {{ create_tests }}
-                </a>
-            </li>
-            <li>
-                <a href="/upload_file">
-                    {{ upload_file }}
-                </a>
-            </li>
-            <li>
-                <a href="/currently_running">
-                    {{ your_currently_running }}
-                </a>
-            </li>
-            <li>
-                <a href="/groups">
-                    {{ groups_of_tests }}
-                </a>
-            </li>
-        </ul>
-    </div>
-    <form class="logout" name="logout" action="/logout" method="post" accept-charset="utf-8">
-        <input class="btn btn-danger" type="submit" value="{{ log_out }}">
-    </form>
+    {% include 'header.html' %}
     <div class="my-center">
         <h2>{{ select_tests_to_download }}</h2>
     </div>
