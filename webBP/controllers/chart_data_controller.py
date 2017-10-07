@@ -28,7 +28,7 @@ def get_data_for_base_chart(handler: MyRequestHandler):
         return
 
     p_value_provider = PValueProvider(handler.pool)
-    p_values = p_value_provider.get_p_values_for_test(test)
+    p_values = p_value_provider.get_p_values_with_order_for_test(test)
     data['data'] = p_values
     to_write = json.dumps(data)
     handler.wfile.write(to_write.encode(encoding='utf-8'))
