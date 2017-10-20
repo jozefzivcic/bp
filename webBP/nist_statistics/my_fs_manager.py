@@ -15,3 +15,8 @@ class MyFSManager:
         filtered_files = sorted(filtered_files, key=lambda x: int(regex.match(x).groups()[1]))
         full_paths = [join(directory, file) for file in filtered_files]
         return full_paths
+
+    def get_results_file_in_dir(self, directory):
+        if directory is None:
+            return None
+        return join(directory, 'results.txt')

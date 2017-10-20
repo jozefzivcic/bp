@@ -40,5 +40,5 @@ class PValueProvider:
         path_to_results = self.result_dao.get_path_for_test(test)
         if path_to_results is None:
             return None
-        files = self.fs_manager.get_data_files_in_dir(path_to_results)
-        return files
+        files = self.fs_manager.get_results_file_in_dir(path_to_results)
+        return [files]

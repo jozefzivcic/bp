@@ -106,3 +106,5 @@ charts=Charts
 cannot_display_chart=Chart(s) cannot be accessed unless all tests finish
 cannot_display_chart_stats=Chart(s) cannot be accessed unless statistics are computed
 p_values_chart=p-values chart
+pvalue=p-value
+sequence=sequence
