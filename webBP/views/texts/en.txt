@@ -108,3 +108,5 @@ cannot_display_chart_stats=Chart(s) cannot be accessed unless statistics are com
 p_values_chart=p-values chart
 pvalue=p-value
 sequence=sequence
+barplot=Barplot
+barplot_title=Number of p-values in each interval

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from models.nistparam import NistParam
 from managers.nisttestmanager import NistTestManager
+from myrequesthandler import MyRequestHandler
 
 
 def hash_password(password):
@@ -138,3 +139,16 @@ def zip_folders(zip_class, arr):
                 file_name = os.path.join(base, file)
                 p = Path(file_name).parent
                 zip_class.write(file_name, join('/', p.name, file))
+
+
+def set_response_not_found(handler: MyRequestHandler):
+    handler.send_response(303)
+    handler.send_header('Content-type', 'text/html')
+    handler.send_header('Location', '/not_found')
+    handler.end_headers()
+
+
+def set_response_ok(handler: MyRequestHandler):
+    handler.send_response(200)
+    handler.send_header('Content-type', 'text/html')
+    handler.end_headers()

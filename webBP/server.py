@@ -10,11 +10,11 @@ from socketserver import ThreadingMixIn
 
 from jinja2 import FileSystemLoader, Environment
 
-from controllers.chart_data_controller import get_data_for_base_chart
-from controllers.chart_draw_controller import draw_base_chart_for_test
+from controllers.chart_data_controller import get_data_for_base_chart, get_data_for_barplot
+from controllers.chart_draw_controller import draw_base_chart_for_test, draw_barplot_for_test
 from controllers.charts_controller import get_charts
 from controllers.compute_stats import compute_stats
-from controllers.js_controller import get_js_create_tests, get_js_base_chart
+from controllers.js_controller import get_js_create_tests, get_js_base_chart, get_js_barplot
 from myconfigparser import MyConfigParser
 from configstorage import ConfigStorage
 from controllers.css_controller import get_bootstrap, get_own_styles, get_index
@@ -91,8 +91,11 @@ def register_pages_into_router(router):
     router.register_controller('/grp_results', get_download_report)
     router.register_controller('/charts', get_charts)
     router.register_controller('/charts_data/base', get_data_for_base_chart)
+    router.register_controller('/charts_data/barplot', get_data_for_barplot)
     router.register_controller('/charts/base', draw_base_chart_for_test)
+    router.register_controller('/charts/barplot', draw_barplot_for_test)
     router.register_controller('/js/base_chart.js', get_js_base_chart)
+    router.register_controller('/js/barplot.js', get_js_barplot)
 
 def load_texts():
     """
