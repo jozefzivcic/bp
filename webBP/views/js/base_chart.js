@@ -64,7 +64,8 @@ function drawLineChart(jsonData) {
 
     var options = {
         hAxis: {
-            title: sequenceString
+            title: sequenceString,
+            minValue: 0
         },
 
         vAxis: {
