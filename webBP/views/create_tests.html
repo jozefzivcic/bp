@@ -79,7 +79,7 @@
         {% endif %}
     </div>
 
-    <form name="create" action="create_tests_submit" method="post" accept-charset="utf-8" onsubmit="return validateForm()">
+    <form name="create" action="/create_tests_submit" method="post" accept-charset="utf-8" onsubmit="return validateForm()">
         <div class="my-center">
             {% for file in vars['files'] %}
                 <label>

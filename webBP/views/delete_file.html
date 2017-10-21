@@ -10,7 +10,7 @@
         <h2>{{ do_you_really }} {{ vars['file'].name }}?</h2>
         <h2>{{ all_tests_removed }}</h2>
         <div class="btn-group">
-            <form name="delete_file" action="delete_file_submit" method="post" accept-charset="utf-8">
+            <form name="delete_file" action="/delete_file_submit" method="post" accept-charset="utf-8">
                 <input type="hidden" name="file_id" value="{{ vars['file'].id }}">
                 <input class="btn btn-success" type="submit" value="{{ yes }}">
                 <input class="btn btn-default" type="button" value="{{ no }}" onclick="window.location = '/';">
