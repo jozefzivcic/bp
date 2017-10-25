@@ -1,12 +1,19 @@
 import unittest
 from os.path import abspath, dirname, join
 
+import math
+
 from nist_statistics.p_value_counter import PValueCounter
 
 this_dir = dirname(abspath(__file__))
 file1 = join(this_dir, 'test_files', 'pvalues1.txt')
 file2 = join(this_dir, 'test_files', 'pvalues2.txt')
 file3 = join(this_dir, 'test_files', 'pvalues3.txt')
+freq_pvalues = join(this_dir, 'test_files', 'frequency_pvalues.txt')
+nine_pvalues = join(this_dir, 'test_files', 'nine_pvalues.txt')
+block_freq_pvalues = join(this_dir, 'test_files', 'block_freq_pvalues.txt')
+
+threshold = 0.000001
 
 
 class PValueCounterTest(unittest.TestCase):
@@ -57,7 +64,7 @@ class PValueCounterTest(unittest.TestCase):
 
     def test_loaded_pvalues(self):
         file1_p_values = [0.779952, 0.468925, 0.468925, 0.511232, 0.462545, 0.666913, 0.171598, 0.375557, 0.746548,
-                        0.558648]
+                          0.558648]
         self.counter.count_p_values_in_file(file1)
         self.assertEqual(file1_p_values, self.counter.get_p_values(), 'Loaded p_values from file are different than '
                                                                       'the expected ones')
@@ -67,3 +74,43 @@ class PValueCounterTest(unittest.TestCase):
         expected_p_values = file1_p_values + file2_p_values
         self.assertEqual(expected_p_values, self.counter.get_p_values(), 'Loaded p_values from file are different than '
                                                                          'the expected ones')
+
+    def test_compute_p_value_zero(self):
+        expected_p_value = 0.0
+        self.counter.count_p_values_in_file(file2)
+        res = self.counter.compute_uniformity_p_value()
+        self.assertEqual(expected_p_value, res)
+
+    def test_compute_p_value_zero_2(self):
+        expected_p_value = 0.0
+        self.counter.count_p_values_in_file(nine_pvalues)
+        res = self.counter.compute_uniformity_p_value()
+        self.assertEqual(expected_p_value, res)
+
+    def test_compute_p_value(self):
+        expected_p_value = 0.090936
+        self.counter.count_p_values_in_file(freq_pvalues)
+        res = self.counter.compute_uniformity_p_value()
+        diff = math.fabs(res - expected_p_value)
+        self.assertTrue(diff < threshold, 'Expected: %f, but got: %f' % (expected_p_value, res))
+
+    def test_compute_p_value_2(self):
+        expected_p_value = 0.350485
+        self.counter.count_p_values_in_file(block_freq_pvalues)
+        res = self.counter.compute_uniformity_p_value()
+        diff = math.fabs(res - expected_p_value)
+        self.assertTrue(diff < threshold, 'Expected: %f, but got: %f' % (expected_p_value, res))
+
+    def test_generate_test_statistics_dto(self):
+        test_name = 'test_name'
+        self.counter.count_p_values_in_file(freq_pvalues)
+        dto = self.counter.generate_test_statistics_obj(test_name)
+        expected_p_value_arr = [0, 2, 3, 0, 3, 1, 2, 2, 0, 2]
+        expected_passed = 15
+        expected_total_tested = 15
+        expected_p_value = 0.090936
+        self.assertEqual(expected_p_value_arr, dto.p_value_array)
+        self.assertEqual(expected_passed, dto.total_passed)
+        self.assertEqual(expected_total_tested, dto.total_tested)
+        diff = math.fabs(dto.p_value - expected_p_value)
+        self.assertTrue(diff < threshold, 'Expected: %f, but got: %f' % (expected_p_value, dto.p_value))

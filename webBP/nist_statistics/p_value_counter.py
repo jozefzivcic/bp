@@ -1,3 +1,8 @@
+import math
+
+from scipy.special import gammaincc
+
+from nist_statistics.helpers import K
 from nist_statistics.test_statistics_dto import TestStatisticsDTO
 
 
@@ -7,22 +12,28 @@ class PValueCounter:
         self.total_passed = 0
         self.total_tested = 0
         self.arr = []
+        self.raw_p_values = []
         for i in range(0, 10):
             self.arr.append(0)
 
     def get_proportions(self):
         return self.total_passed / self.total_tested
 
+    def get_p_values(self):
+        return list(self.raw_p_values)
+
     def reset(self):
         self.total_passed = 0
         self.total_tested = 0
         for i in range(0, 10):
             self.arr[i] = 0
+        self.raw_p_values = []
 
     def count_p_values_in_file(self, file):
         with open(file, 'r') as f:
             for line in f:
-                self.get_num_into_array(float(line))
+                if not line.isspace():
+                    self.get_num_into_array(float(line))
 
     def get_num_into_array(self, num):
         if (num >= 0.0) and (num < 0.1):
@@ -45,17 +56,26 @@ class PValueCounter:
             self.arr[8] += 1
         else:
             self.arr[9] += 1  # TODO: [0.9, 1.0) interval ???
-        # TODO: > or >= ???
         if num > self.alpha:
             self.total_passed += 1
         self.total_tested += 1
+        self.raw_p_values.append(num)
 
     def generate_test_statistics_obj(self, test_name):
         test_statistics = TestStatisticsDTO()
         test_statistics.p_value_array = list(self.arr)
         test_statistics.total_passed = self.total_passed
         test_statistics.total_tested = self.total_tested
-        # TODO: add useful p-value
-        test_statistics.p_value = 0.0
+        test_statistics.p_value = self.compute_uniformity_p_value()
         test_statistics.test_name = test_name
         return test_statistics
+
+    def compute_uniformity_p_value(self):
+        sampleSize = self.total_tested
+        expCount = int(sampleSize / 10)
+        if expCount == 0:
+            return 0.0
+        chi2 = 0.0
+        for pvalue in self.arr:
+            chi2 += math.pow(pvalue - expCount, 2) / expCount
+        return gammaincc(9.0 / 2.0, chi2 / 2.0)
