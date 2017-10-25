@@ -20,6 +20,12 @@ class PValueCounterTest(unittest.TestCase):
     def setUp(self):
         self.counter = PValueCounter()
 
+    def helper_uniformity_p_value(self, expected: float, file: str):
+        self.counter.count_p_values_in_file(file)
+        res = self.counter.compute_uniformity_p_value()
+        diff = math.fabs(res - expected)
+        self.assertTrue(diff < threshold, 'Expected: %f, but got: %f' % (expected, res))
+
     def test_reset(self):
         x = 0.01
         for i in range(0, 10):
@@ -75,31 +81,17 @@ class PValueCounterTest(unittest.TestCase):
         self.assertEqual(expected_p_values, self.counter.get_p_values(), 'Loaded p_values from file are different than '
                                                                          'the expected ones')
 
-    def test_compute_p_value_zero(self):
-        expected_p_value = 0.0
-        self.counter.count_p_values_in_file(file2)
-        res = self.counter.compute_uniformity_p_value()
-        self.assertEqual(expected_p_value, res)
+    def test_compute_uniformity_p_value_zero(self):
+        self.helper_uniformity_p_value(0.0, file2)
 
-    def test_compute_p_value_zero_2(self):
-        expected_p_value = 0.0
-        self.counter.count_p_values_in_file(nine_pvalues)
-        res = self.counter.compute_uniformity_p_value()
-        self.assertEqual(expected_p_value, res)
+    def test_compute_uniformity_p_value_zero_2(self):
+        self.helper_uniformity_p_value(0.0, nine_pvalues)
 
-    def test_compute_p_value(self):
-        expected_p_value = 0.090936
-        self.counter.count_p_values_in_file(freq_pvalues)
-        res = self.counter.compute_uniformity_p_value()
-        diff = math.fabs(res - expected_p_value)
-        self.assertTrue(diff < threshold, 'Expected: %f, but got: %f' % (expected_p_value, res))
+    def test_compute_uniformity_p_value(self):
+        self.helper_uniformity_p_value(0.090936, freq_pvalues)
 
-    def test_compute_p_value_2(self):
-        expected_p_value = 0.350485
-        self.counter.count_p_values_in_file(block_freq_pvalues)
-        res = self.counter.compute_uniformity_p_value()
-        diff = math.fabs(res - expected_p_value)
-        self.assertTrue(diff < threshold, 'Expected: %f, but got: %f' % (expected_p_value, res))
+    def test_compute_uniformity_p_value_2(self):
+        self.helper_uniformity_p_value(0.350485, block_freq_pvalues)
 
     def test_generate_test_statistics_dto(self):
         test_name = 'test_name'
