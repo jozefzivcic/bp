@@ -12,8 +12,7 @@ file3 = join(this_dir, 'test_files', 'pvalues3.txt')
 freq_pvalues = join(this_dir, 'test_files', 'frequency_pvalues.txt')
 nine_pvalues = join(this_dir, 'test_files', 'nine_pvalues.txt')
 block_freq_pvalues = join(this_dir, 'test_files', 'block_freq_pvalues.txt')
-
-threshold = 0.000001
+runs_pvalues = join(this_dir, 'test_files', 'runs_pvalues.txt')
 
 
 class PValueCounterTest(unittest.TestCase):
@@ -21,8 +20,16 @@ class PValueCounterTest(unittest.TestCase):
         self.counter = PValueCounter()
 
     def helper_uniformity_p_value(self, expected: float, file: str):
+        threshold = 0.000001
         self.counter.count_p_values_in_file(file)
         res = self.counter.compute_uniformity_p_value()
+        diff = math.fabs(res - expected)
+        self.assertTrue(diff < threshold, 'Expected: %f, but got: %f' % (expected, res))
+
+    def helper_KS_p_value(self, expected: float, file: str):
+        threshold = 0.000003
+        self.counter.count_p_values_in_file(file)
+        res = self.counter.compute_KS_p_value()
         diff = math.fabs(res - expected)
         self.assertTrue(diff < threshold, 'Expected: %f, but got: %f' % (expected, res))
 
@@ -93,7 +100,20 @@ class PValueCounterTest(unittest.TestCase):
     def test_compute_uniformity_p_value_2(self):
         self.helper_uniformity_p_value(0.350485, block_freq_pvalues)
 
+    def test_compute_uniformity_p_value_runs(self):
+        self.helper_uniformity_p_value(0.082177, runs_pvalues)
+
+    def test_compute_KS_p_value(self):
+        self.helper_KS_p_value(0.767161, freq_pvalues)
+
+    def test_compute_KS_p_value_2(self):
+        self.helper_KS_p_value(0.654596, block_freq_pvalues)
+
+    def test_compute_KS_p_value_runs(self):
+        self.helper_KS_p_value(0.265525, runs_pvalues)
+
     def test_generate_test_statistics_dto(self):
+        threshold = 0.000001
         test_name = 'test_name'
         self.counter.count_p_values_in_file(freq_pvalues)
         dto = self.counter.generate_test_statistics_obj(test_name)

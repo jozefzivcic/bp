@@ -79,3 +79,18 @@ class PValueCounter:
         for pvalue in self.arr:
             chi2 += math.pow(pvalue - expCount, 2) / expCount
         return gammaincc(9.0 / 2.0, chi2 / 2.0)
+
+    def compute_KS_p_value(self):
+        Dmax = -1.0
+        sampleSize = self.total_tested
+        sorted_arr = sorted(self.raw_p_values)
+        for j in range(1, sampleSize + 1):
+            Dplus = math.fabs(j / float(sampleSize) - sorted_arr[j - 1])
+            Dminus = math.fabs(sorted_arr[j - 1] - (j - 1) / float(sampleSize))
+
+            if Dplus > Dmax:
+                Dmax = Dplus
+            if Dminus > Dmax:
+                Dmax = Dminus
+
+        return 1 - K(sampleSize, Dmax)
