@@ -52,3 +52,4 @@ Makefile*
 /webBP/server.pid
 /webBP/nist_statistics/__pycache__/
 /webBP/*__pycache__*
+*__pycache__*
