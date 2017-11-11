@@ -1,5 +1,7 @@
 import math
 
+from nist_statistics.test_statistics_dto import TestStatisticsDTO
+
 
 def mMultiply(A: list, B: list, C: list, m: int):
     for i in range(0, m):
@@ -80,3 +82,13 @@ def K(n: int, d: float) -> float:
 
     s *= math.pow(10., eQ[0])
     return s
+
+
+def get_proportion_threshold_min(test_stat_obj: TestStatisticsDTO):
+    p_hat = 1.0 - test_stat_obj.alpha
+    return p_hat - 3.0 * math.sqrt((p_hat * test_stat_obj.alpha) / test_stat_obj.sample_size)
+
+
+def get_proportion_threshold_max(test_stat_obj: TestStatisticsDTO):
+    p_hat = 1.0 - test_stat_obj.alpha
+    return p_hat + 3.0 * math.sqrt((p_hat * test_stat_obj.alpha) / test_stat_obj.sample_size)
