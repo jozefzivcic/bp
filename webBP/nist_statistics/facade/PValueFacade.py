@@ -2,7 +2,7 @@ import json
 
 from managers.resultsmanager import ResultsManager
 from nist_statistics.my_fs_manager import MyFSManager
-from nist_statistics.p_value_counter import PValueCounter
+from nist_statistics.p_vals_processor import PValsProcessor
 from models.test import Test
 
 
@@ -20,8 +20,8 @@ class PValueFacade:
         if results_file is None:
             return None
 
-        p_value_counter = PValueCounter()
-        p_value_counter.count_p_values_in_file(results_file)
+        p_value_counter = PValsProcessor()
+        p_value_counter.process_p_vals_in_file(results_file)
         arr = p_value_counter.arr
         data = {'data': []}
         temp = data['data']

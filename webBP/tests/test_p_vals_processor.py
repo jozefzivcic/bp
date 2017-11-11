@@ -3,7 +3,7 @@ from os.path import abspath, dirname, join
 
 import math
 
-from nist_statistics.p_value_counter import PValueCounter
+from nist_statistics.p_vals_processor import PValsProcessor
 
 this_dir = dirname(abspath(__file__))
 file1 = join(this_dir, 'test_files', 'pvalues1.txt')
@@ -15,9 +15,9 @@ block_freq_pvalues = join(this_dir, 'test_files', 'block_freq_pvalues.txt')
 runs_pvalues = join(this_dir, 'test_files', 'runs_pvalues.txt')
 
 
-class PValueCounterTest(unittest.TestCase):
+class PValsProcessorTest(unittest.TestCase):
     def setUp(self):
-        self.counter = PValueCounter()
+        self.counter = PValsProcessor()
 
     def helper_uniformity_p_value(self, expected: float, file: str):
         threshold = 0.000001
@@ -57,7 +57,7 @@ class PValueCounterTest(unittest.TestCase):
         self.assertEqual(self.counter.get_proportions(), 3 / 5, 'Proportions are not the same for the file ' + file2 +
                          ' with alpha ' + '0.05')
 
-        another_counter = PValueCounter(0.05)
+        another_counter = PValsProcessor(0.05)
         another_counter.count_p_values_in_file(file2)
         self.assertEqual(another_counter.get_proportions(), 2 / 5,
                          'Proportions are not the same for the file ' + file2 +

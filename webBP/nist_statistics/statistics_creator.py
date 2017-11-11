@@ -9,7 +9,7 @@ from managers.nisttestmanager import NistTestManager
 from managers.resultsmanager import ResultsManager
 from nist_statistics.line_generator import LineGenerator
 from nist_statistics.my_fs_manager import MyFSManager
-from nist_statistics.p_value_counter import PValueCounter
+from nist_statistics.p_vals_processor import PValsProcessor
 from nist_statistics.test_converter import TestConverter
 
 
@@ -31,7 +31,7 @@ class StatisticsCreator:
         self.file_dao = FileManager(self.pool)
         self.results_dao = ResultsManager(self.pool)
         self.nist_dao = NistTestManager(self.pool)
-        self.p_value_counter = PValueCounter()
+        self.p_value_counter = PValsProcessor()
         self.my_fs_mgr = MyFSManager()
         self.line_generator = LineGenerator()
         self.test_converter = TestConverter()
@@ -63,10 +63,10 @@ class StatisticsCreator:
         test_name = self.nist_dao.get_nist_param_for_test(test).get_test_name()
         for file in files:
             self.p_value_counter.reset()
-            self.p_value_counter.count_p_values_in_file(file)
+            self.p_value_counter.process_p_vals_in_file(file)
             test_stats = self.p_value_counter.generate_test_statistics_obj(test_name)
             line = self.line_generator.generate_line_from_test_statistics(test_stats)
             with open(file_name, 'a') as f:
                 f.write(line)
-                f.write(linesep) # write new line
+                f.write(linesep)  # write a new line
         return

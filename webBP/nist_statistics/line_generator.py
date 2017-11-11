@@ -1,4 +1,3 @@
-from nist_statistics.helpers import get_proportion_threshold_min, get_proportion_threshold_max
 from nist_statistics.test_statistics_dto import TestStatisticsDTO
 
 
@@ -24,8 +23,8 @@ class LineGenerator:
 
         if test_stat_obj.sample_size == 0:
             output += ' ----     ' + test_stat_obj.test_name
-        elif (test_stat_obj.proportion < get_proportion_threshold_min(test_stat_obj)) or \
-                (test_stat_obj.proportion > get_proportion_threshold_max(test_stat_obj)):
+        elif (test_stat_obj.proportion < test_stat_obj.proportion_threshold_min) or \
+                (test_stat_obj.proportion > test_stat_obj.proportion_threshold_max):
             output += '%6.4f *  ' % test_stat_obj.proportion
             output += test_stat_obj.test_name
         else:
