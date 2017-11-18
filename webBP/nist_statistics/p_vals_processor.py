@@ -42,6 +42,7 @@ class PValsProcessor:
             self.proportion = 0.0
         else:
             self.proportion = 1.0 - float(self.count / self.sample_size)
+        self.raw_p_values.sort()
 
     def get_num_into_array(self, num):
         if num > PValsProcessor.zero_threshold:
@@ -49,9 +50,9 @@ class PValsProcessor:
             self.sample_size += 1
             if num < self.alpha:
                 self.count += 1
-            self.get_p_value_to_interval(num)
+            self.add_p_value_to_interval(num)
 
-    def get_p_value_to_interval(self, p_value):
+    def add_p_value_to_interval(self, p_value):
         pos = int(math.floor(p_value) * 10)
         if pos >= 10:
             pos -= 1
@@ -84,10 +85,9 @@ class PValsProcessor:
     def compute_KS_p_value(self):
         Dmax = -1.0
         sampleSize = self.sample_size
-        sorted_arr = sorted(self.raw_p_values)
         for j in range(1, sampleSize + 1):
-            Dplus = math.fabs(j / float(sampleSize) - sorted_arr[j - 1])
-            Dminus = math.fabs(sorted_arr[j - 1] - (j - 1) / float(sampleSize))
+            Dplus = math.fabs(j / float(sampleSize) - self.raw_p_values[j - 1])
+            Dminus = math.fabs(self.raw_p_values[j - 1] - (j - 1) / float(sampleSize))
 
             if Dplus > Dmax:
                 Dmax = Dplus
