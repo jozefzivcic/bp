@@ -41,10 +41,12 @@ class PValueProviderTest(unittest.TestCase):
         self.assertEqual(expected_p_values, ret, 'Loaded p_values from file are different than the expected ones')
 
     def test_load_p_values_from_two_files_with_order(self):
-        expected_p_values = [[1, 0.593063], [2, 0.759852], [3, 0.584171], [4, 0.483106], [5, 0.849583], [6, 0.475200],
-                             [7, 0.131536], [8, 0.131536], [9, 0.206201], [10, 0.252025], [11, 0.911652],
-                             [12, 0.796727], [13, 0.882140], [14, 0.467379], [15, 0.814758], [16, 0.897326],
-                             [17, 0.160236], [18, 0.483106], [19, 0.684836], [20, 0.532261]]
+        expected_p_values = [
+            [1, 0.593063], [2, 0.584171], [3, 0.849583], [4, 0.131536], [5, 0.206201], [6, 0.911652], [7, 0.882140],
+            [8, 0.814758], [9, 0.160236], [10, 0.684836], [11, 0.759852], [12, 0.483106], [13, 0.475200],
+            [14, 0.131536], [15, 0.252025], [16, 0.796727], [17, 0.467379], [18, 0.897326], [19, 0.483106],
+            [20, 0.532261]
+        ]
         test = Test()
         dir_with_results = join(this_dir, 'users', '4', 'tests_results', '14')
         self.provider.result_dao.get_path_for_test = MagicMock(return_value=dir_with_results)
