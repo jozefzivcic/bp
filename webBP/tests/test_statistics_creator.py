@@ -9,7 +9,6 @@ from copy import deepcopy
 
 from shutil import rmtree
 
-from logger import Logger
 from nist_statistics.statistics_creator import StatisticsCreator
 from models.file import File
 from models.nistparam import NistParam
@@ -24,25 +23,37 @@ class StatCreatorTest(unittest.TestCase):
         storage_mock.path_to_users_dir = join(this_dir, 'users')
         storage_mock.groups = 'groups'
         self.stat_creator = StatisticsCreator(None, storage_mock)
+        self.user_id = 4
+        self.group_id = 54
+        self.file_id = 75
+        self.test1_id = 13
+        self.test2_id = 14
+        self.file_name = 'TestFile.txt'
+        self.group_dir = join(this_dir, 'users', str(self.user_id), 'groups', str(self.group_id))
+        self.summary_file = join(self.group_dir, 'grp_' + str(self.group_id) + '_f_' + str(self.file_id))
+        if not exists(self.group_dir):
+            os.mkdir(self.group_dir)
+
+    def tearDown(self):
+        if os.path.exists(self.group_dir):
+            rmtree(self.group_dir)
 
     def test_prepare_file(self):
-        user_id = 4
-        group_id = 5
         file = File()
-        file.id = 6
-        file.name = 'TestFile.txt'
-        self.stat_creator.prepare_file(group_id, user_id, file)
-        created_file = join(this_dir, 'users', str(user_id), 'groups', str(group_id), 'grp_' + str(group_id) + '_f_' +
-                            str(file.id))
+        file.id = self.file_id
+        file.name = self.file_name
+
+        self.stat_creator.prepare_file(self.group_id, self.user_id, file)
         another_file = join(this_dir, 'test_files', 'header_test_file.txt')
-        self.assertTrue(cmp(created_file, another_file), 'Files are not the same')
+
+        self.assertTrue(cmp(self.summary_file, another_file), 'Files are not the same')
 
     def test_append_lines_frequency(self):
         test = Test()
-        test.id = 13
+        test.id = self.test1_id
 
         nist_param = NistParam()
-        nist_param.test_id = 13
+        nist_param.test_id = self.test1_id
         nist_param.length = 10000
         nist_param.test_number = 1
         nist_param.streams = 10
@@ -52,54 +63,37 @@ class StatCreatorTest(unittest.TestCase):
                                                                          '13'))
         self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(return_value=nist_param)
 
-        file_name = join(this_dir, 'users', '4', 'groups', '5', 'grp_5_f_7')
-        try:
-            os.remove(file_name)
-        except OSError:
-            pass
-
-        self.stat_creator.append_lines_for_test(file_name, test)
-        expected_line = '  1   0   2   1   1   1   1   0   2   1  0.000000 *   10/10 *    Frequency'
+        self.stat_creator.append_lines_for_test(self.summary_file, test)
+        expected_line = '  1   0   2   1   1   1   1   0   2   1 ' + ' 0.911413   ' + ' 0.934601   ' + \
+                        '1.0000    Frequency'
         expected_line += os.linesep
-        with open(file_name, 'r') as f:
+        with open(self.summary_file, 'r') as f:
             read_line = f.read()
         self.assertEqual(read_line, expected_line, 'File does not contain a line as expected')
 
-        try:
-            os.remove(file_name)
-        except OSError:
-            pass
-
     def test_compute_statistics_one_file(self):
-        group_id = 54
-        test1_id = 13
-        test2_id = 14
-        file_id = 75
-        user_id = 4
-        file_name = 'My testing file'
-
         test1 = Test()
-        test1.id = test1_id
-        test1.file_id = file_id
-        test1.user_id = user_id
+        test1.id = self.test1_id
+        test1.file_id = self.file_id
+        test1.user_id = self.user_id
         test2 = deepcopy(test1)
-        test2.id = test2_id
+        test2.id = self.test2_id
 
         def file_dao_side_effect(f_id):
             file = File()
             file.id = f_id
-            file.user_id = user_id
-            file.name = file_name
-            file.file_system_path = join('users', str(user_id), 'files', str(f_id))
+            file.user_id = self.user_id
+            file.name = self.file_name
+            file.file_system_path = join('users', str(self.user_id), 'files', str(f_id))
             file.hash = 'ABCD456'
             return file
 
         def result_dao_side_effect(test):
-            return abspath(join(this_dir, 'users', str(user_id), 'tests_results', str(test.id)))
+            return abspath(join(this_dir, 'users', str(self.user_id), 'tests_results', str(test.id)))
 
         def nist_dao_side_effect(test):
             nist_param = NistParam()
-            if test.id == test1_id:
+            if test.id == self.test1_id:
                 nist_param.test_number = 2
             else:
                 nist_param.test_number = 3
@@ -111,10 +105,8 @@ class StatCreatorTest(unittest.TestCase):
         self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_side_effect)
         self.stat_creator.group_dao.set_statistics_computed = MagicMock(return_value=True)
 
-        self.stat_creator.compute_statistics(group_id, user_id)
-        group_dir = join(this_dir, 'users', str(user_id), 'groups', str(group_id))
-        created_file = join(group_dir, 'grp_' + str(group_id) + '_f_' + str(file_id))
-        self.assertTrue(exists(created_file))
+        self.stat_creator.compute_statistics(self.group_id, self.user_id)
+        self.assertTrue(exists(self.summary_file))
 
         header_dir = join(this_dir, '..', 'nist_statistics', 'templates')
         with open(join(header_dir, 'template1.txt'), 'r') as f:
@@ -122,7 +114,7 @@ class StatCreatorTest(unittest.TestCase):
         with open(join(header_dir, 'template2.txt'), 'r') as f:
             header += ' '.join(f.read().rsplit(os.linesep))
             header += '<'
-            header += file_name
+            header += self.file_name
             header += '>'
             header += os.linesep
         with open(join(header_dir, 'template3.txt'), 'r') as f:
