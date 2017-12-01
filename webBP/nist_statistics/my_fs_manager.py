@@ -6,9 +6,9 @@ import re
 
 
 class MyFSManager:
-    def get_data_files_in_dir(self, directory):
+    def get_data_files_in_dir(self, directory, get_results_file = True):
         files = [file for file in listdir(directory) if isfile(join(directory, file))]
-        if len(files) == 2:
+        if len(files) == 2 and get_results_file:
             return [join(directory, 'results.txt')]
         regex = re.compile(r'^(data)(\d+)(.txt)$')
         filtered_files = list(filter(regex.search, files))
@@ -20,3 +20,10 @@ class MyFSManager:
         if directory is None:
             return None
         return join(directory, 'results.txt')
+
+    def get_files_with_p_values_in_dir(self, directory: str) -> list:
+        files = self.get_data_files_in_dir(directory, False)
+        results_file = join(directory, 'results.txt')
+        if isfile(results_file):
+            files.append(results_file)
+        return files
