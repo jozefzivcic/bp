@@ -111,7 +111,7 @@ class StatCreatorTest(unittest.TestCase):
         self.stat_creator.compute_statistics(self.group_id, self.user_id)
         self.assertTrue(exists(self.summary_file1))
 
-        header_dir = join(this_dir, '..', 'nist_statistics', 'templates')
+        header_dir = join(this_dir, '..', '..', 'nist_statistics', 'templates')
         with open(join(header_dir, 'template1.txt'), 'r') as f:
             header = f.read()
         with open(join(header_dir, 'template2.txt'), 'r') as f:
@@ -154,7 +154,7 @@ class StatCreatorTest(unittest.TestCase):
         self.assertTrue(exists(self.summary_file1))
         self.assertTrue(exists(self.summary_file2))
 
-        header_dir = join(this_dir, '..', 'nist_statistics', 'templates')
+        header_dir = join(this_dir, '..', '..', 'nist_statistics', 'templates')
         with open(join(header_dir, 'template1.txt'), 'r') as f:
             header = f.read()
         with open(join(header_dir, 'template2.txt'), 'r') as f:
