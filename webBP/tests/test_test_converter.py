@@ -4,7 +4,7 @@ import datetime
 
 import copy
 
-from nist_statistics.test_converter import TestConverter
+from common.test_converter import TestConverter
 from models.test import Test
 
 file1_id = 4

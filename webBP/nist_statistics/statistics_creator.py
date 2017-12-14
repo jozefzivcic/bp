@@ -10,7 +10,7 @@ from managers.resultsmanager import ResultsManager
 from nist_statistics.line_generator import LineGenerator
 from common.my_fs_manager import MyFSManager
 from nist_statistics.p_vals_processor import PValsProcessor
-from nist_statistics.test_converter import TestConverter
+from common.test_converter import TestConverter
 
 
 class StatisticsCreator:
