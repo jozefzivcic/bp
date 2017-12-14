@@ -6,14 +6,15 @@ import math
 from nist_statistics.p_vals_processor import PValsProcessor
 
 this_dir = dirname(abspath(__file__))
-file1 = join(this_dir, 'test_files', 'pvalues1.txt')
-file2 = join(this_dir, 'test_files', 'pvalues2.txt')
-file3 = join(this_dir, 'test_files', 'pvalues3.txt')
-freq_pvalues = join(this_dir, 'test_files', 'frequency_pvalues.txt')
-nine_pvalues = join(this_dir, 'test_files', 'nine_pvalues.txt')
-block_freq_pvalues = join(this_dir, 'test_files', 'block_freq_pvalues.txt')
-runs_pvalues = join(this_dir, 'test_files', 'runs_pvalues.txt')
-zero_pvalues = join(this_dir, 'test_files', 'zero_pvalues.txt')
+sample_files_dir = join(this_dir, '..', 'sample_files_for_tests')
+file1 = join(sample_files_dir, 'pvalues1.txt')
+file2 = join(sample_files_dir, 'pvalues2.txt')
+file3 = join(sample_files_dir, 'pvalues3.txt')
+freq_pvalues = join(sample_files_dir, 'frequency_pvalues.txt')
+nine_pvalues = join(sample_files_dir, 'nine_pvalues.txt')
+block_freq_pvalues = join(sample_files_dir, 'block_freq_pvalues.txt')
+runs_pvalues = join(sample_files_dir, 'runs_pvalues.txt')
+zero_pvalues = join(sample_files_dir, 'zero_pvalues.txt')
 
 
 class PValsProcessorTest(unittest.TestCase):

@@ -6,6 +6,7 @@ from nist_statistics.p_value_provider import PValueProvider
 from models.test import Test
 
 this_dir = dirname(abspath(__file__))
+sample_files_dir = join(this_dir, '..', 'sample_files_for_tests')
 
 
 class PValueProviderTest(unittest.TestCase):
@@ -16,7 +17,7 @@ class PValueProviderTest(unittest.TestCase):
         expected_p_values = [0.857153, 0.298340, 0.674485, 0.078408, 0.200545, 0.888660, 0.471525, 0.920344, 0.357573,
                              0.509254]
         test = Test()
-        dir_with_results = join(this_dir, 'users', '4', 'tests_results', '13')
+        dir_with_results = join(sample_files_dir, 'users', '4', 'tests_results', '13')
         self.provider.result_dao.get_path_for_test = MagicMock(return_value=dir_with_results)
         ret = self.provider.get_p_values_for_test(test)
         self.assertEqual(expected_p_values, ret, 'Loaded p_values from file are different than the expected ones')
@@ -26,7 +27,7 @@ class PValueProviderTest(unittest.TestCase):
                              0.684836, 0.759852, 0.483106, 0.475200, 0.131536, 0.252025, 0.796727, 0.467379, 0.897326,
                              0.483106, 0.532261]
         test = Test()
-        dir_with_results = join(this_dir, 'users', '4', 'tests_results', '14')
+        dir_with_results = join(sample_files_dir, 'users', '4', 'tests_results', '14')
         self.provider.result_dao.get_path_for_test = MagicMock(return_value=dir_with_results)
         ret = self.provider.get_p_values_for_test(test)
         self.assertEqual(expected_p_values, ret, 'Loaded p_values from file are different than the expected ones')
@@ -35,7 +36,7 @@ class PValueProviderTest(unittest.TestCase):
         expected_p_values = [[1, 0.857153], [2, 0.298340], [3, 0.674485], [4, 0.078408], [5, 0.200545], [6, 0.888660],
                              [7, 0.471525], [8, 0.920344], [9, 0.357573], [10, 0.509254]]
         test = Test()
-        dir_with_results = join(this_dir, 'users', '4', 'tests_results', '13')
+        dir_with_results = join(sample_files_dir, 'users', '4', 'tests_results', '13')
         self.provider.result_dao.get_path_for_test = MagicMock(return_value=dir_with_results)
         ret = self.provider.get_p_values_with_order_for_test(test)
         self.assertEqual(expected_p_values, ret, 'Loaded p_values from file are different than the expected ones')
@@ -48,7 +49,7 @@ class PValueProviderTest(unittest.TestCase):
             [20, 0.532261]
         ]
         test = Test()
-        dir_with_results = join(this_dir, 'users', '4', 'tests_results', '14')
+        dir_with_results = join(sample_files_dir, 'users', '4', 'tests_results', '14')
         self.provider.result_dao.get_path_for_test = MagicMock(return_value=dir_with_results)
         ret = self.provider.get_p_values_with_order_for_test(test)
         self.assertEqual(expected_p_values, ret, 'Loaded p_values from file are different than the expected ones')

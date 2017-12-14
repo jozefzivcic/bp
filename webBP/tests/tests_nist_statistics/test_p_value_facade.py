@@ -14,8 +14,9 @@ class PValueFacadeTest(TestCase):
         self.facade = PValueFacade(None)
 
     def test_get_json_p_value_intervals(self):
-        self.facade.results_dao.get_path_for_test = MagicMock(return_value=join(this_dir, 'users', '4', 'tests_results',
-                                                                                '14'))
+        self.facade.results_dao.get_path_for_test = MagicMock(return_value=join(this_dir, '..',
+                                                                                'sample_files_for_tests','users', '4',
+                                                                                'tests_results', '14'))
         ret = self.facade.get_json_p_value_intervals_for_test(Test())
         arr = [['[0.0, 0.1)', 0], ['[0.1, 0.2)', 3], ['[0.2, 0.3)', 2], ['[0.3, 0.4)', 0], ['[0.4, 0.5)', 4],
         ['[0.5, 0.6)', 3], ['[0.6, 0.7)', 1], ['[0.7, 0.8)', 2], ['[0.8, 0.9)', 4], ['[0.9, 1.0]', 1]]

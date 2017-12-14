@@ -15,6 +15,7 @@ from models.nistparam import NistParam
 from models.test import Test
 
 this_dir = dirname(abspath(__file__))
+sample_files_dir = join(this_dir, '..', 'sample_files_for_tests')
 
 
 class StatCreatorTest(unittest.TestCase):
@@ -29,7 +30,7 @@ class StatCreatorTest(unittest.TestCase):
         return file
 
     def result_dao_side_effect(self, test):
-        return abspath(join(this_dir, 'users', str(self.user_id), 'tests_results', str(test.id)))
+        return abspath(join(sample_files_dir, 'users', str(self.user_id), 'tests_results', str(test.id)))
 
     def nist_dao_side_effect(self, test):
         nist_param = NistParam()
@@ -41,7 +42,7 @@ class StatCreatorTest(unittest.TestCase):
 
     def setUp(self):
         storage_mock = MagicMock()
-        storage_mock.path_to_users_dir = join(this_dir, 'users')
+        storage_mock.path_to_users_dir = join(sample_files_dir, 'users')
         storage_mock.groups = 'groups'
         self.stat_creator = StatisticsCreator(None, storage_mock)
         self.user_id = 4
@@ -51,7 +52,7 @@ class StatCreatorTest(unittest.TestCase):
         self.test1_id = 13
         self.test2_id = 14
         self.file_name = 'TestFile.txt'
-        self.group_dir = join(this_dir, 'users', str(self.user_id), 'groups', str(self.group_id))
+        self.group_dir = join(sample_files_dir, 'users', str(self.user_id), 'groups', str(self.group_id))
         self.summary_file1 = join(self.group_dir, 'grp_' + str(self.group_id) + '_f_' + str(self.file1_id))
         self.summary_file2 = join(self.group_dir, 'grp_' + str(self.group_id) + '_f_' + str(self.file2_id))
         if not exists(self.group_dir):
@@ -67,7 +68,7 @@ class StatCreatorTest(unittest.TestCase):
         file.name = self.file_name
 
         self.stat_creator.prepare_file(self.group_id, self.user_id, file)
-        another_file = join(this_dir, 'test_files', 'header_test_file.txt')
+        another_file = join(sample_files_dir, 'header_test_file.txt')
 
         self.assertTrue(cmp(self.summary_file1, another_file), 'Files are not the same')
 
@@ -82,7 +83,7 @@ class StatCreatorTest(unittest.TestCase):
         nist_param.streams = 10
 
         self.stat_creator.results_dao.get_path_for_test = MagicMock(return_value=
-                                                                    join(this_dir, 'users', '4', 'tests_results',
+                                                                    join(sample_files_dir, 'users', '4', 'tests_results',
                                                                          '13'))
         self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(return_value=nist_param)
 
@@ -111,7 +112,7 @@ class StatCreatorTest(unittest.TestCase):
         self.stat_creator.compute_statistics(self.group_id, self.user_id)
         self.assertTrue(exists(self.summary_file1))
 
-        header_dir = join(this_dir, '..', '..', 'nist_statistics', 'templates')
+        header_dir = join(sample_files_dir, '..', '..', 'nist_statistics', 'templates')
         with open(join(header_dir, 'template1.txt'), 'r') as f:
             header = f.read()
         with open(join(header_dir, 'template2.txt'), 'r') as f:
@@ -154,7 +155,7 @@ class StatCreatorTest(unittest.TestCase):
         self.assertTrue(exists(self.summary_file1))
         self.assertTrue(exists(self.summary_file2))
 
-        header_dir = join(this_dir, '..', '..', 'nist_statistics', 'templates')
+        header_dir = join(sample_files_dir, '..', '..', 'nist_statistics', 'templates')
         with open(join(header_dir, 'template1.txt'), 'r') as f:
             header = f.read()
         with open(join(header_dir, 'template2.txt'), 'r') as f:
