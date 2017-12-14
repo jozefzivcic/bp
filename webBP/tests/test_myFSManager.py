@@ -1,7 +1,7 @@
 from os.path import abspath, dirname, join
 from unittest import TestCase
 
-from nist_statistics.my_fs_manager import MyFSManager
+from common.my_fs_manager import MyFSManager
 
 
 class TestMyFSManager(TestCase):

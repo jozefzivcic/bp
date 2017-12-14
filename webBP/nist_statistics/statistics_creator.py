@@ -8,7 +8,7 @@ from managers.groupmanager import GroupManager
 from managers.nisttestmanager import NistTestManager
 from managers.resultsmanager import ResultsManager
 from nist_statistics.line_generator import LineGenerator
-from nist_statistics.my_fs_manager import MyFSManager
+from common.my_fs_manager import MyFSManager
 from nist_statistics.p_vals_processor import PValsProcessor
 from nist_statistics.test_converter import TestConverter
 

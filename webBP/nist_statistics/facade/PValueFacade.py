@@ -1,7 +1,7 @@
 import json
 
 from managers.resultsmanager import ResultsManager
-from nist_statistics.my_fs_manager import MyFSManager
+from common.my_fs_manager import MyFSManager
 from nist_statistics.p_vals_processor import PValsProcessor
 from models.test import Test
 

@@ -1,6 +1,6 @@
 from managers.resultsmanager import ResultsManager
 from models.test import Test
-from nist_statistics.my_fs_manager import MyFSManager
+from common.my_fs_manager import MyFSManager
 
 
 class PValueProvider:
