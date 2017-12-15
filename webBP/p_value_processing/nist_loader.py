@@ -1,6 +1,7 @@
 from os.path import basename, splitext
 
 from common.my_fs_manager import MyFSManager
+from p_value_processing.p_values_dto import PValuesDto
 
 
 class NistLoader():
@@ -22,3 +23,8 @@ class NistLoader():
         name_with_ext = basename(full_path)
         name, extension = splitext(name_with_ext)
         return name
+
+    def generate_dto(self) -> PValuesDto:
+        dto = PValuesDto(dict(self._p_values_in_files))
+        return dto
+
