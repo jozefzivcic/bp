@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from p_value_processing.data_file_error import DataFileError
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14
 from p_value_processing.p_values_dto import PValuesDto
 
@@ -18,6 +19,11 @@ class TestPValuesDtoOnTest13(TestCase):
         with self.assertRaises(ValueError) as context:
             self.dto.get_data_p_values(data_num)
             self.assertTrue(str(data_num) in str(context.exception))
+
+    def test_get_data_indices(self):
+        with self.assertRaises(DataFileError) as context:
+            self.dto.get_data_files_indices()
+            self.assertTrue('No data file' in str(context.exception))
 
 
 class TestPValuesDtoOnTest14(TestCase):
@@ -56,3 +62,35 @@ class TestPValuesDtoOnTest14(TestCase):
         with self.assertRaises(ValueError) as context:
             self.dto.get_data_p_values(data_num)
             self.assertTrue(str(data_num) in str(context.exception))
+
+    def test_data_indices(self):
+        expected = [1, 2]
+        ret = self.dto.get_data_files_indices()
+        self.assertEqual(expected, ret)
+
+
+class TestPValuesDto(TestCase):
+    def test_data_indices_sorted(self):
+        p_values_dict = {}
+        num_of_iterations = PValuesDto.max_num_of_data_files
+        expected = []
+        for i in range(1, num_of_iterations + 1):
+            key = 'data' + str(i)
+            p_values_dict[key] = []
+            expected.append(i)
+
+        dto = PValuesDto(p_values_dict)
+        ret = dto.get_data_files_indices()
+        self.assertEqual(expected, ret)
+
+    def test_too_many_data_files(self):
+        p_values_dict = {}
+        num_of_iterations = PValuesDto.max_num_of_data_files + 1
+        for i in range(1, num_of_iterations + 1):
+            key = 'data' + str(i)
+            p_values_dict[key] = []
+
+        with self.assertRaises(DataFileError) as context:
+            dto = PValuesDto(p_values_dict)
+            self.assertEqual('Too many data files. Allowed maximum is ' + str(PValuesDto.max_num_of_data_files) in
+                             str(context.exception))
