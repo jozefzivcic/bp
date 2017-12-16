@@ -12,3 +12,6 @@ class ProcessingDto:
 
     def __next__(self):
         return next(self._iterable)
+
+    def empty(self):
+        return not self._data

@@ -1,0 +1,2 @@
+class PValuesProcessingError(Exception):
+    pass
