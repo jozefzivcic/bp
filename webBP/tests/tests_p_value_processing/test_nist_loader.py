@@ -43,3 +43,12 @@ class TestNistLoader(TestCase):
         dto = self._nist_loader.generate_dto()
         self.assertEqual(dict_for_test_13, dto._p_values_dict)
 
+    def test_reset(self):
+        directory = join(sample_files_dir, 'users', '4', 'tests_results', '13')
+        self._nist_loader.load_p_values_in_dir(directory)
+        dict_in_loader = self._nist_loader._p_values_in_files
+        self.assertTrue(dict_in_loader)
+
+        self._nist_loader.reset()
+        self.assertFalse(dict_in_loader)
+

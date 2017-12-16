@@ -28,3 +28,6 @@ class NistLoader():
         dto = PValuesDto(dict(self._p_values_in_files))
         return dto
 
+    def reset(self):
+        self._p_values_in_files.clear()
+
