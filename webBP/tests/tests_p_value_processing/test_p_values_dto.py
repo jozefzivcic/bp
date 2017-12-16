@@ -1,7 +1,7 @@
 from unittest import TestCase
 
+from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14
 from p_value_processing.p_values_dto import PValuesDto
-from tests.tests_p_value_processing.common_data import dict_for_test_13, dict_for_test_14
 
 
 class TestPValuesDto(TestCase):
@@ -13,3 +13,7 @@ class TestPValuesDto(TestCase):
         expected_p_values = dict_for_test_13['results']
         ret = self.dto_13.get_results_p_values()
         self.assertEqual(expected_p_values, ret)
+
+    def test_data_raise_exception(self):
+        with self.assertRaises(ValueError):
+            self.dto_13.get_data_p_values(1)

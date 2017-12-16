@@ -3,7 +3,7 @@ from unittest import TestCase
 from os.path import join, dirname, abspath
 
 from p_value_processing.nist_loader import NistLoader
-from tests.tests_p_value_processing.common_data import dict_for_test_14, dict_for_test_13
+from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14
 
 this_dir = dirname(abspath(__file__))
 sample_files_dir = join(this_dir, '..', 'sample_files_for_tests')
