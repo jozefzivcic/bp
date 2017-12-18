@@ -1,10 +1,14 @@
+from itertools import repeat
 from unittest import TestCase
 from unittest.mock import MagicMock
 
 from charts.chart_options import ChartOptions
+from charts.p_values.data_for_chart import DataForChart
 from charts.p_values.extractor import Extractor
 from models.nistparam import NistParam
 from models.test import Test
+from p_value_processing.p_values_dto import PValuesDto
+from tests.data_for_tests.common_data import dict_for_test_13
 
 
 class TestExtractor(TestCase):
@@ -61,3 +65,28 @@ class TestExtractor(TestCase):
         expected = 'Undefined'
         name = self.extractor.get_test_name(self.non_existing_test_id)
         self.assertEqual(expected, name)
+
+    def test_replace_p_values(self):
+        input = [0.857153, 0.0000009, 0.000000, 0.000001, 0.0000009999999999, 0.888660, 0.471525, 0.920344, 0.357573, 0.509254]
+        expected = [0.857153, 0.000001, 0.000001, 0.000001, 0.000001, 0.888660, 0.471525, 0.920344, 0.357573, 0.509254]
+        ret = self.extractor.replace_zero_p_values(input)
+        self.assertEqual(expected, ret)
+
+    def test_add_data_none_index(self):
+        dto = PValuesDto(dict_for_test_13)
+        data = DataForChart()
+        self.extractor.add_data(dto, data, self.test1_id)
+
+        expected = [self.test1_name]
+        self.assertEqual(expected, data.x_ticks_labels)
+
+        expected = [1]
+        self.assertEqual(expected, data.x_ticks_positions)
+
+        expected = list(repeat(1, 10))
+        self.assertEqual(expected, data.x_values)
+
+        expected = dict_for_test_13['results']
+        self.assertEqual(expected, data.y_values)
+
+        self.assertEqual(2, self.extractor._i)
