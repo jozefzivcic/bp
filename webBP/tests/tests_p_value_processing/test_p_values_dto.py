@@ -94,3 +94,11 @@ class TestPValuesDto(TestCase):
             dto = PValuesDto(p_values_dict)
             self.assertEqual('Too many data files. Allowed maximum is ' + str(PValuesDto.max_num_of_data_files) in
                              str(context.exception))
+
+    def test_has_data_files_true(self):
+        dto = PValuesDto(dict_for_test_14)
+        self.assertTrue(dto.has_data_files())
+
+    def test_has_data_files_false(self):
+        dto = PValuesDto(dict_for_test_13)
+        self.assertFalse(dto.has_data_files())

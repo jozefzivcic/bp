@@ -28,6 +28,13 @@ class PValuesDto:
         ret.sort()
         return ret
 
+    def has_data_files(self) -> bool:
+        try:
+            self.get_data_files_indices()
+        except DataFileError:
+            return False
+        return True
+
     def check_data_files(self, p_values):
         counter = 0
         for i in range(1, PValuesDto.max_num_of_data_files + 2):

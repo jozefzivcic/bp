@@ -77,6 +77,46 @@ class DBTestManager:
                 cur.close()
             self.pool.release_connection(connection)
 
+    def get_test_by_id(self, test_id):
+        """
+        Returns test with id test_id.
+        :param test_id: Id of test.
+        :return: Test() or None if such test does not exist or an error occurs.
+        """
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute(
+                'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests '
+                'WHERE id = %s;', test_id)
+            connection.commit()
+            i = 0
+            test = Test()
+            for row in cur:
+                test.id = row[0]
+                test.file_id = row[1]
+                test.user_id = row[2]
+                test.time_of_add = row[3]
+                test.test_table = row[4]
+                test.loaded = row[5]
+                test.return_value = row[6]
+                test.ended = row[7]
+                i += 1
+            if i == 1:
+                return test
+            return None
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('DBTestManager.get_test_by_id', ex)
+            return None
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
+
     def get_test_for_user_by_id(self, user_id, test_id):
         """
         Returns test for user with id.
