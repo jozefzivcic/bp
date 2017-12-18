@@ -25,6 +25,7 @@ class PValuesDto:
             ret.append(i)
         if not ret:
             raise DataFileError('No data file')
+        ret.sort()
         return ret
 
     def check_data_files(self, p_values):
