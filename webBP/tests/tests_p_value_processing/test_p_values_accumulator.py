@@ -38,3 +38,12 @@ class TestPValuesAccumulator(TestCase):
         with self.assertRaises(ValueError) as context:
             self.accumulator.get_dto_for_test(self.test2_id)
             self.assertTrue(str(self.test2_id) in str(context.exception))
+
+    def test_get_all_test_ids(self):
+        self.accumulator.add(self.test2_id, self.dto2)
+        self.accumulator.add(self.test1_id, self.dto1)
+
+        expected = sorted([self.test1_id, self.test2_id])
+        ret = self.accumulator.get_all_test_ids()
+
+        self.assertEqual(expected, ret)

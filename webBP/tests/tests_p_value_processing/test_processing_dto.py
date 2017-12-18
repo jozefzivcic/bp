@@ -17,3 +17,10 @@ class TestProcessingDto(TestCase):
             ret.append((first, second))
 
         self.assertEqual(self.arr, ret)
+
+        ret = []
+
+        for first, second in self.dto:
+            ret.append((first, second))
+
+        self.assertEqual(self.arr, ret)
