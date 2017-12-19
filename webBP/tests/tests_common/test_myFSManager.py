@@ -28,6 +28,10 @@ class TestMyFSManager(TestCase):
                              'File on index ' + str(i) + ' is ' + dir_arr[i] + ' not ' +
                              join(self.sample_files_dir, relative_path, 'data' + str(i + 1) + '.txt'))
 
+    def test_get_results_file_in_none_dir(self):
+        ret = self.fs_mgr.get_results_file_in_dir(None)
+        self.assertIsNone(ret)
+
     def test_get_results_file_in_dir(self):
         relative_path = 'users/4/tests_results/11'
         test_dir = join(self.sample_files_dir, relative_path)
