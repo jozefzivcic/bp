@@ -7,8 +7,9 @@ from charts.p_values.data_for_chart import DataForChart
 from charts.p_values.extractor import Extractor
 from models.nistparam import NistParam
 from models.test import Test
+from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
-from tests.data_for_tests.common_data import dict_for_test_13
+from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14
 
 
 class TestExtractor(TestCase):
@@ -90,3 +91,59 @@ class TestExtractor(TestCase):
         self.assertEqual(expected, data.y_values)
 
         self.assertEqual(2, self.extractor._i)
+
+    def test_add_data_index_one(self):
+        dto = PValuesDto(dict_for_test_14)
+        data = DataForChart()
+        self.extractor.add_data(dto, data, self.test2_id, 1)
+
+        expected = [self.test2_name + '_1']
+        self.assertEqual(expected, data.x_ticks_labels)
+
+        expected = [1]
+        self.assertEqual(expected, data.x_ticks_positions)
+
+        expected = list(repeat(1, 10))
+        self.assertEqual(expected, data.x_values)
+
+        expected = dict_for_test_14['data1']
+        self.assertEqual(expected, data.y_values)
+
+        self.assertEqual(2, self.extractor._i)
+
+    def test_get_data_from_acc(self):
+        dto_13 = PValuesDto(dict_for_test_13)
+        dto_14 = PValuesDto(dict_for_test_14)
+        acc = PValuesAccumulator()
+        acc.add(self.test1_id, dto_13)
+        acc.add(self.test2_id, dto_14)
+
+        data = self.extractor.get_data_from_accumulator(acc)
+
+        expected = 0.01
+        self.assertAlmostEqual(expected, data.alpha, places=1E-6)
+
+        expected = list(repeat(1, 10))
+        expected.extend(list(repeat(2, 10)))
+        expected.extend(list(repeat(3, 10)))
+        self.assertEqual(expected, data.x_values)
+
+        expected = list(dict_for_test_13['results'])
+        expected.extend(list(dict_for_test_14['data1']))
+        expected.extend(list(dict_for_test_14['data2']))
+        self.assertEqual(expected, data.y_values)
+
+        expected = [1, 2, 3]
+        self.assertEqual(expected, data.x_ticks_positions)
+
+        expected = [self.test1_name, self.test2_name + '_1', self.test2_name + '_2']
+        self.assertEqual(expected, data.x_ticks_labels)
+
+        expected = 'test'
+        self.assertEqual(expected, data.x_label)
+
+        expected = 'p-value'
+        self.assertEqual(expected, data.y_label)
+
+        expected = 'p-values from selected tests'
+        self.assertEqual(expected, data.title)
