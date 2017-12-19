@@ -1,3 +1,4 @@
+from filecmp import cmp
 from itertools import repeat
 from os import makedirs
 from os.path import dirname, abspath, join, exists, isfile
@@ -28,6 +29,15 @@ class TestPValuesDrawer(TestCase):
         file = join(working_dir, 'graph.png')
         self.drawer.draw_chart(self.data, file)
         self.assertTrue(isfile(file))
+
+    def test_create_two_same_graphs(self):
+        file_1 = join(working_dir, 'graph1.png')
+        file_2 = join(working_dir, 'graph2.png')
+        self.drawer.draw_chart(self.data, file_1)
+        self.drawer.draw_chart(self.data, file_2)
+        self.assertTrue(isfile(file_1))
+        self.assertTrue(isfile(file_2))
+        self.assertTrue(cmp(file_1, file_2))
 
     def get_data(self):
         data = DataForChart()
