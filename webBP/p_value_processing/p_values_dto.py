@@ -43,3 +43,9 @@ class PValuesDto:
             counter += 1
         if counter > PValuesDto.max_num_of_data_files:
             raise DataFileError('Too many data files. Allowed maximum is ' + str(PValuesDto.max_num_of_data_files))
+
+    def __eq__(self, other):
+        return self._p_values_dict == other._p_values_dict
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

@@ -102,3 +102,18 @@ class TestPValuesDto(TestCase):
     def test_has_data_files_false(self):
         dto = PValuesDto(dict_for_test_13)
         self.assertFalse(dto.has_data_files())
+
+    def test_obj_are_equal(self):
+        my_dict = {'results': [0.1, 0.2, 0.456]}
+        dto1 = PValuesDto(my_dict)
+        dto2 = PValuesDto(my_dict)
+        self.assertTrue(dto1 == dto2)
+        self.assertFalse(dto1 != dto2)
+
+    def test_obj_are_not_equal(self):
+        my_dict1 = {'results': [0.1, 0.2, 0.456]}
+        my_dict2 = {'results': [0.1, 0.456, 0.2]}
+        dto1 = PValuesDto(my_dict1)
+        dto2 = PValuesDto(my_dict2)
+        self.assertFalse(dto1 == dto2)
+        self.assertTrue(dto1 != dto2)
