@@ -82,7 +82,8 @@ class ResultsManager:
             cur = connection.cursor()
             format_strings = ','.join(['%s'] * len(test_ids))
             cur.execute(
-                'SELECT id_test, directory FROM results WHERE id_test IN (%s);' % format_strings, tuple(test_ids))
+                'SELECT id_test, directory FROM results WHERE id_test IN (%s) ORDER BY id_test;' % format_strings,
+                tuple(test_ids))
             connection.commit()
             ret = []
             for row in cur:

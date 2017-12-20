@@ -117,6 +117,45 @@ class DBTestManager:
                 cur.close()
             self.pool.release_connection(connection)
 
+    def get_tests_by_id_list(self, test_ids: list):
+        """
+        Returns list of test object which id are specified in test_ids
+        :param test_ids: Id's of tests which are to be loaded.
+        :return: List of Test objects or empty list if such tests do not exist. If an error occurs, then None.
+        """
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            format_strings = ','.join(['%s'] * len(test_ids))
+            cur.execute(
+                'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests '
+                'WHERE id IN (%s) ORDER BY id;' % format_strings,  tuple(test_ids))
+            connection.commit()
+            ret = []
+            for row in cur:
+                test = Test()
+                test.id = row[0]
+                test.file_id = row[1]
+                test.user_id = row[2]
+                test.time_of_add = row[3]
+                test.test_table = row[4]
+                test.loaded = row[5]
+                test.return_value = row[6]
+                test.ended = row[7]
+                ret.append(test)
+            return ret
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('DBTestManager.get_tests_by_id_list', ex)
+            return None
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
+
     def get_test_for_user_by_id(self, user_id, test_id):
         """
         Returns test for user with id.
