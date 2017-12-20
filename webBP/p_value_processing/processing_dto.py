@@ -1,6 +1,9 @@
 class ProcessingDto:
-    def __init__(self):
-        self._data = []
+    def __init__(self, data=None):
+        if data is None:
+            self._data = []
+        else:
+            self._data = data
         self._iterable = None
 
     def add(self, test_id: int, directory: str):

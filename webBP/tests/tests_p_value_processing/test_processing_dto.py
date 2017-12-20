@@ -24,3 +24,19 @@ class TestProcessingDto(TestCase):
             ret.append((first, second))
 
         self.assertEqual(self.arr, ret)
+
+    def test_constructor(self):
+        dto = ProcessingDto(self.arr)
+
+        ret = []
+        for first, second in dto:
+            ret.append((first, second))
+
+        self.assertEqual(self.arr, ret)
+
+        ret = []
+
+        for first, second in dto:
+            ret.append((first, second))
+
+        self.assertEqual(self.arr, ret)
