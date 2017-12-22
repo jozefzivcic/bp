@@ -1,5 +1,9 @@
+from os.path import join, exists
+
 from charts.chart_options import ChartOptions
 from charts.charts_error import ChartsError
+from charts.p_values.extractor import Extractor
+from charts.p_values.p_values_drawer import PValuesDrawer
 from common.test_converter import TestConverter
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
@@ -18,13 +22,24 @@ class ChartsCreator:
         self._results_dao = ResultsManager(pool)
         self._p_values_accumulators = {}
         self.test_converter = TestConverter()
+        self._extractor = Extractor(chart_options, pool, storage)
+        self.p_values_drawer = PValuesDrawer()
 
-    def create_line_charts_for_tests(self, test_ids: list):
+    def create_p_values_charts_for_tests(self, test_ids: list, directory: str):
+        if not exists(directory):
+            raise ValueError('Given directory: ' + directory + ' does not exists')
         self.load_p_values(test_ids)
+        for file_id, acc in self._p_values_accumulators.items():
+            file_name = self.get_file_name_for_p_values_chart(directory, file_id)
+            self.create_one_p_values_chart_for_tests(acc, file_name)
 
-    def create_one_line_chart_for_tests(self, test_ids):
-        if self._tests_with_dirs is None:
-            raise ChartsError('No tests are loaded')
+    def create_one_p_values_chart_for_tests(self, acc: PValuesAccumulator, file: str):
+        if acc is None:
+            raise TypeError('Accumulator cannot be None')
+        if file is None:
+            raise TypeError('File cannot be None')
+        data_for_chart = self._extractor.get_data_from_accumulator(acc)
+        self.p_values_drawer.draw_chart(data_for_chart, file)
 
     def load_p_values(self, test_ids):
         if self._loaded_items:
@@ -47,3 +62,7 @@ class ChartsCreator:
 
     def get_subset_from_tests(self, test_ids: list) -> list:
         return list(filter(lambda x: x[0] in test_ids, self._tests_with_dirs))
+
+    def get_file_name_for_p_values_chart(self, directory, file_id):
+        file_name = 'p_values_for_file_' + str(file_id) + '.png'
+        return join(directory, file_name)
