@@ -238,3 +238,44 @@ class TestChartsCreator(TestCase):
         file_name = join(working_dir, 'graph.png')
         self.charts_creator.create_one_p_values_chart_for_tests(acc, file_name)
         self.assertTrue(exists(file_name))
+
+    def test_create_p_values_charts_for_tests_none_tests(self):
+        with self.assertRaises(TypeError) as context:
+            self.charts_creator.create_p_values_charts_for_tests(None, working_dir)
+            self.assertEqual('Test ids are None' in str(context.exception))
+
+    def test_create_p_values_charts_for_tests_empty_test_list(self):
+        with self.assertRaises(ValueError) as context:
+            self.charts_creator.create_p_values_charts_for_tests([], working_dir)
+            self.assertEqual('No test ids specified' in str(context.exception))
+
+    def test_create_p_values_charts_for_tests_none_directory(self):
+        test_ids = [self.test1_id, self.test2_id]
+        with self.assertRaises(TypeError) as context:
+            self.charts_creator.create_p_values_charts_for_tests(test_ids, None)
+            self.assertEqual('No test ids specified' in str(context.exception))
+
+    def test_create_p_values_charts_for_tests_non_existing_dir(self):
+        test_ids = [self.test1_id, self.test2_id]
+        non_existing_dir = working_dir + '_something'
+        with self.assertRaises(ValueError) as context:
+            self.charts_creator.create_p_values_charts_for_tests(test_ids, non_existing_dir)
+            self.assertEqual('Given directory: ' + non_existing_dir + ' does not exists' in str(context.exception))
+
+    def test_create_p_values_chart_for_tests_one_file(self):
+        expected_file = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
+
+        test_ids = [self.test1_id, self.test2_id, self.test3_id]
+        self.charts_creator.create_p_values_charts_for_tests(test_ids, working_dir)
+
+        self.assertTrue(exists(expected_file))
+
+    def test_create_p_values_chart_for_tests_two_files(self):
+        expected_file1 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
+        expected_file2 = join(working_dir, 'p_values_for_file_' + str(self.file2_id) + '.png')
+
+        test_ids = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
+        self.charts_creator.create_p_values_charts_for_tests(test_ids, working_dir)
+
+        self.assertTrue(exists(expected_file1))
+        self.assertTrue(exists(expected_file2))

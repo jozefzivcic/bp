@@ -26,8 +26,8 @@ class ChartsCreator:
         self.p_values_drawer = PValuesDrawer()
 
     def create_p_values_charts_for_tests(self, test_ids: list, directory: str):
-        if not exists(directory):
-            raise ValueError('Given directory: ' + directory + ' does not exists')
+        self.check_test_ids_and_dir(test_ids, directory)
+
         self.load_p_values(test_ids)
         for file_id, acc in self._p_values_accumulators.items():
             file_name = self.get_file_name_for_p_values_chart(directory, file_id)
@@ -66,3 +66,13 @@ class ChartsCreator:
     def get_file_name_for_p_values_chart(self, directory, file_id):
         file_name = 'p_values_for_file_' + str(file_id) + '.png'
         return join(directory, file_name)
+
+    def check_test_ids_and_dir(self, test_ids, directory):
+        if test_ids is None:
+            raise TypeError('Test ids are None')
+        if not test_ids:  # list is empty
+            raise ValueError('No test ids specified')
+        if directory is None:
+            raise TypeError('Directory is None')
+        if not exists(directory):
+            raise ValueError('Given directory: ' + directory + ' does not exists')
