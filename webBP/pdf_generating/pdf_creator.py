@@ -6,6 +6,8 @@ import subprocess
 
 from shutil import rmtree, copy2
 
+import os
+
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
 
@@ -17,7 +19,6 @@ class PdfCreator:
         If no directory is specified, then directory will be created in platform temporary directory. For example in
         '/tmp' on Linux.
         """
-        self._program = 'pdflatex'
         self._env = jinja2.Environment(
             block_start_string='\BLOCK{',
             block_end_string='}',
@@ -46,8 +47,10 @@ class PdfCreator:
             processed_template = join(tmp_dir, 'processed_template.tex')
             with open(processed_template, 'w') as f:
                 f.write(output)
-            completed = subprocess.run([self._program, '-interaction', 'nonstopmode', '-output-directory',
-                                        tmp_dir, '-jobname', file, processed_template])
+            with open(os.devnull, 'w') as null_output:  # redirect stdout and stderr output from pdflatex to /dev/null
+                completed = subprocess.run(['pdflatex', '-interaction', 'nonstopmode', '-output-directory',
+                                            tmp_dir, '-jobname', file, processed_template], stdout=null_output,
+                                           stderr=null_output)
             if completed.returncode != 0:
                 raise PdfCreatingError('Failed LaTeX compilation when generating ' + pdf_creating_dto.output_file)
             copy2(join(tmp_dir, file + '.pdf'), pdf_creating_dto.output_file)
@@ -62,6 +65,8 @@ class PdfCreator:
             raise TypeError('Template specified is None')
         if not exists(pdf_creating_dto.template):
             raise ValueError('Given template (' + pdf_creating_dto.template + ') does no exists')
+        if pdf_creating_dto.output_file is None:
+            raise TypeError('Output file is None')
         directory = dirname(pdf_creating_dto.output_file)
         if not exists(directory):
             raise ValueError('Directory ' + directory + ' for output file does not exists')
