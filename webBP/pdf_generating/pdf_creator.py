@@ -37,7 +37,7 @@ class PdfCreator:
         else:
             self.tmp_dir_placement = temp_directory
 
-    def generate_pdf(self, pdf_creating_dto: PdfCreatingDto):
+    def create_pdf(self, pdf_creating_dto: PdfCreatingDto):
         self.check_dto(pdf_creating_dto)
         directory, file = self.get_output_dir_and_file(pdf_creating_dto.output_file)
         tmp_dir = mkdtemp(dir=self.tmp_dir_placement)
