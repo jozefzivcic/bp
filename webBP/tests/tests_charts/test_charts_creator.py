@@ -279,3 +279,14 @@ class TestChartsCreator(TestCase):
 
         self.assertTrue(exists(expected_file1))
         self.assertTrue(exists(expected_file2))
+
+    def test_create_p_values_chart_for_tests_return_value(self):
+        expected_file1 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
+        expected_file2 = join(working_dir, 'p_values_for_file_' + str(self.file2_id) + '.png')
+
+        test_ids = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
+        storage = self.charts_creator.create_p_values_charts_for_tests(test_ids, working_dir)
+
+        self.assertEqual(2, len(storage.get_all_paths()))
+        self.assertTrue(expected_file1 in storage.get_all_paths())
+        self.assertTrue(expected_file2 in storage.get_all_paths())

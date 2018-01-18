@@ -4,6 +4,7 @@ from charts.chart_options import ChartOptions
 from charts.charts_error import ChartsError
 from charts.p_values.extractor import Extractor
 from charts.p_values.p_values_drawer import PValuesDrawer
+from common.path_storage import PathStorage
 from common.test_converter import TestConverter
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
@@ -25,13 +26,16 @@ class ChartsCreator:
         self._extractor = Extractor(chart_options, pool, storage)
         self.p_values_drawer = PValuesDrawer()
 
-    def create_p_values_charts_for_tests(self, test_ids: list, directory: str):
+    def create_p_values_charts_for_tests(self, test_ids: list, directory: str) -> PathStorage:
         self.check_test_ids_and_dir(test_ids, directory)
 
+        path_storage = PathStorage()
         self.load_p_values(test_ids)
         for file_id, acc in self._p_values_accumulators.items():
             file_name = self.get_file_name_for_p_values_chart(directory, file_id)
             self.create_one_p_values_chart_for_tests(acc, file_name)
+            path_storage.add_path(file_name)
+        return path_storage
 
     def create_one_p_values_chart_for_tests(self, acc: PValuesAccumulator, file: str):
         if acc is None:

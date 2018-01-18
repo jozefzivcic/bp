@@ -58,6 +58,3 @@ class TestPathStorage(TestCase):
         for i in range(6, 10):
             file = join(working_dir, 'file' + str(i) + '.txt')
             self.assertFalse(exists(file))
-
-
-
