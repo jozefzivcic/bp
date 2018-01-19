@@ -23,13 +23,15 @@ class ChartsCreator:
         self._tests_dao = DBTestManager(pool)
         self._results_dao = ResultsManager(pool)
         self._p_values_accumulators = {}
-        self.test_converter = TestConverter()
+        self._test_converter = TestConverter()
         self._extractor = Extractor(chart_options, pool, storage)
         self._p_values_drawer = PValuesDrawer()
         self._charts_storage = ChartsStorage()
 
     def generate_charts(self, test_ids: list, chart_types: list, directory: str) -> ChartsStorage:
         self.check_input(test_ids, chart_types, directory)
+        for chart_type in chart_types:
+            self.draw_concrete_charts(test_ids, chart_type, directory)
         return self._charts_storage
 
     def create_p_values_charts_for_tests(self, test_ids: list, directory: str):
@@ -53,7 +55,7 @@ class ChartsCreator:
             return
         self._tests_with_dirs = self._results_dao.get_paths_for_test_ids(test_ids)
         tests = self._tests_dao.get_tests_by_id_list(test_ids)
-        divided_on_files = self.test_converter.get_test_ids_for_files(tests)
+        divided_on_files = self._test_converter.get_test_ids_for_files(tests)
         for key, value in divided_on_files.items():
             subset = self.get_subset_from_tests(value)
             processing_dto = ProcessingDto(subset)
@@ -88,3 +90,7 @@ class ChartsCreator:
             raise TypeError('Directory is None')
         if not exists(directory):
             raise ValueError('Given directory: ' + directory + ' does not exists')
+
+    def draw_concrete_charts(self, test_ids: list, chart_type: ChartType, directory: str):
+        if chart_type == ChartType.P_VALUES:
+            self.create_p_values_charts_for_tests(test_ids, directory)
