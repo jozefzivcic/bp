@@ -1,4 +1,4 @@
-from charts.p_values.data_for_chart import DataForChart
+from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 import matplotlib.pyplot as plt
 
 
@@ -7,7 +7,7 @@ class PValuesDrawer:
     y_axis_ticks = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]
     y_axis_labels = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.1', '1.0']
 
-    def draw_chart(self, data: DataForChart, file: str):
+    def draw_chart(self, data: DataForPValuesDrawer, file: str):
         plt.title(data.title)
         plt.xlabel(data.x_label)
         plt.ylabel(data.y_label)

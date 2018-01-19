@@ -1,11 +1,11 @@
 from unittest import TestCase
 
-from charts.p_values.data_for_chart import DataForChart
+from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 
 
 class TestDataForChart(TestCase):
     def setUp(self):
-        self.data = DataForChart()
+        self.data = DataForPValuesDrawer()
 
     def test_has_members(self):
         members = ['alpha', 'x_values', 'y_values', 'x_ticks_positions', 'x_ticks_labels', 'x_label', 'y_label',

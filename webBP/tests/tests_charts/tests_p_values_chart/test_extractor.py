@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from charts.chart_options import ChartOptions
-from charts.p_values.data_for_chart import DataForChart
+from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.extractor import Extractor
 from models.nistparam import NistParam
 from models.test import Test
@@ -36,14 +36,14 @@ class TestExtractor(TestCase):
         return nist_param
 
     def setUp(self):
-        chart_options = ChartOptions()
-        chart_options.title = 'p-values from selected tests'
-        chart_options.x_label = 'test'
-        chart_options.y_label = 'p-value'
+        self.chart_options = ChartOptions()
+        self.chart_options.title = 'p-values from selected tests'
+        self.chart_options.x_label = 'test'
+        self.chart_options.y_label = 'p-value'
 
         storage_mock = MagicMock()
         storage_mock.nist = 'nist'
-        self.extractor = Extractor(chart_options, None, storage_mock)
+        self.extractor = Extractor(None, storage_mock)
         self.extractor._test_dao.get_test_by_id = MagicMock(side_effect=self.dbtest_dao_side_effect)
         self.extractor._nist_dao.get_nist_param_for_test = MagicMock(side_effect=self.nist_dao_side_effect)
 
@@ -75,7 +75,7 @@ class TestExtractor(TestCase):
 
     def test_add_data_none_index(self):
         dto = PValuesDto(dict_for_test_13)
-        data = DataForChart()
+        data = DataForPValuesDrawer()
         self.extractor.add_data(dto, data, self.test1_id)
 
         expected = [self.test1_name]
@@ -94,7 +94,7 @@ class TestExtractor(TestCase):
 
     def test_add_data_index_one(self):
         dto = PValuesDto(dict_for_test_14)
-        data = DataForChart()
+        data = DataForPValuesDrawer()
         self.extractor.add_data(dto, data, self.test2_id, 1)
 
         expected = [self.test2_name + '_1']
@@ -118,7 +118,7 @@ class TestExtractor(TestCase):
         acc.add(self.test1_id, dto_13)
         acc.add(self.test2_id, dto_14)
 
-        data = self.extractor.get_data_from_accumulator(acc)
+        data = self.extractor.get_data_from_accumulator(acc, self.chart_options)
 
         expected = 0.01
         self.assertAlmostEqual(expected, data.alpha, places=1E-6)

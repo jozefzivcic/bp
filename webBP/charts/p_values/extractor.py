@@ -1,5 +1,5 @@
 from charts.chart_options import ChartOptions
-from charts.p_values.data_for_chart import DataForChart
+from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
@@ -11,19 +11,18 @@ from p_value_processing.p_values_dto import PValuesDto
 class Extractor:
     threshold_is_zero = 1E-6
 
-    def __init__(self, chart_options: ChartOptions, pool: ConnectionPool, storage: ConfigStorage):
-        self._chart_options = chart_options
+    def __init__(self, pool: ConnectionPool, storage: ConfigStorage):
         self._test_dao = DBTestManager(pool)
         self._nist_dao = NistTestManager(pool)
         self._config_storage = storage
         self._i = 1
 
-    def get_data_from_accumulator(self, acc: PValuesAccumulator) -> DataForChart:
-        data = DataForChart()
-        data.alpha = self._chart_options.alpha
-        data.x_label = self._chart_options.x_label
-        data.y_label = self._chart_options.y_label
-        data.title = self._chart_options.title
+    def get_data_from_accumulator(self, acc: PValuesAccumulator, chart_options: ChartOptions) -> DataForPValuesDrawer:
+        data = DataForPValuesDrawer()
+        data.alpha = chart_options.alpha
+        data.x_label = chart_options.x_label
+        data.y_label = chart_options.y_label
+        data.title = chart_options.title
 
         test_ids = acc.get_all_test_ids()
         self._i = 1
@@ -38,7 +37,7 @@ class Extractor:
                 self.add_data(p_values_dto, data, test_id)
         return data
 
-    def add_data(self, dto: PValuesDto, data: DataForChart, test_id: int, index=None):
+    def add_data(self, dto: PValuesDto, data: DataForPValuesDrawer, test_id: int, index=None):
         if index is None:
             data.x_ticks_labels.append(self.get_test_name(test_id))
             p_values = dto.get_results_p_values()

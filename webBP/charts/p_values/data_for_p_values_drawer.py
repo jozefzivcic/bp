@@ -1,4 +1,4 @@
-class DataForChart:
+class DataForPValuesDrawer:
     def __init__(self):
         self.alpha = 0.01
         self.x_values = []

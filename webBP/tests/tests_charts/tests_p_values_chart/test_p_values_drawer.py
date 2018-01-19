@@ -6,7 +6,7 @@ from unittest import TestCase
 
 from shutil import rmtree
 
-from charts.p_values.data_for_chart import DataForChart
+from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.p_values_drawer import PValuesDrawer
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14
 
@@ -40,7 +40,7 @@ class TestPValuesDrawer(TestCase):
         self.assertTrue(cmp(file_1, file_2))
 
     def get_data(self):
-        data = DataForChart()
+        data = DataForPValuesDrawer()
 
         data.x_values = list(repeat(1, 10))
         data.x_values.extend(repeat(2, 10))
