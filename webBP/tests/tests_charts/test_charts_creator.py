@@ -5,7 +5,9 @@ from unittest.mock import MagicMock
 
 from shutil import rmtree
 
+from charts.chart_info import ChartInfo
 from charts.chart_options import ChartOptions
+from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
 from models.nistparam import NistParam
@@ -137,10 +139,12 @@ class TestChartsCreator(TestCase):
         self.charts_creator._tests_with_dirs = ['something']
         self.charts_creator._p_values_accumulators[456] = ['asdf']
         self.charts_creator._loaded_items = True
+        charts_storage_id = id(self.charts_creator._charts_storage)
         self.charts_creator.reset()
         self.assertIsNone(self.charts_creator._tests_with_dirs)
         self.assertEqual({}, self.charts_creator._p_values_accumulators)
         self.assertFalse(self.charts_creator._loaded_items)
+        self.assertNotEqual(charts_storage_id, id(self.charts_creator._charts_storage))
 
     def test_load_p_values(self):
         test_ids = [self.test1_id, self.test2_id]
@@ -238,30 +242,40 @@ class TestChartsCreator(TestCase):
         file_name = join(working_dir, 'graph.png')
         self.charts_creator.create_one_p_values_chart_for_tests(acc, file_name)
         self.assertTrue(exists(file_name))
-
-    def test_create_p_values_charts_for_tests_none_tests(self):
+####
+    def test_generate_charts_none_tests(self):
         with self.assertRaises(TypeError) as context:
-            self.charts_creator.create_p_values_charts_for_tests(None, working_dir)
+            self.charts_creator.generate_charts(None, [ChartType.P_VALUES], working_dir)
             self.assertEqual('Test ids are None' in str(context.exception))
 
-    def test_create_p_values_charts_for_tests_empty_test_list(self):
+    def test_generate_charts_empty_test_list(self):
         with self.assertRaises(ValueError) as context:
-            self.charts_creator.create_p_values_charts_for_tests([], working_dir)
+            self.charts_creator.generate_charts([], [ChartType.P_VALUES], working_dir)
             self.assertEqual('No test ids specified' in str(context.exception))
 
-    def test_create_p_values_charts_for_tests_none_directory(self):
+    def test_generate_charts_none_chart_types(self):
+        with self.assertRaises(TypeError) as context:
+            self.charts_creator.generate_charts([self.test1_id], None, working_dir)
+            self.assertEqual('Chart types are None' in str(context.exception))
+
+    def test_generate_charts_empty_chart_types(self):
+        with self.assertRaises(ValueError) as context:
+            self.charts_creator.generate_charts([self.test1_id], [], working_dir)
+            self.assertEqual('No chart type specified' in str(context.exception))
+
+    def test_generate_charts_none_directory(self):
         test_ids = [self.test1_id, self.test2_id]
         with self.assertRaises(TypeError) as context:
-            self.charts_creator.create_p_values_charts_for_tests(test_ids, None)
+            self.charts_creator.generate_charts(test_ids, [ChartType.P_VALUES], None)
             self.assertEqual('No test ids specified' in str(context.exception))
 
-    def test_create_p_values_charts_for_tests_non_existing_dir(self):
+    def test_generate_charts_non_existing_dir(self):
         test_ids = [self.test1_id, self.test2_id]
         non_existing_dir = working_dir + '_something'
         with self.assertRaises(ValueError) as context:
-            self.charts_creator.create_p_values_charts_for_tests(test_ids, non_existing_dir)
+            self.charts_creator.generate_charts(test_ids, [ChartType.P_VALUES], non_existing_dir)
             self.assertEqual('Given directory: ' + non_existing_dir + ' does not exists' in str(context.exception))
-
+####
     def test_create_p_values_chart_for_tests_one_file(self):
         expected_file = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
 
@@ -280,13 +294,18 @@ class TestChartsCreator(TestCase):
         self.assertTrue(exists(expected_file1))
         self.assertTrue(exists(expected_file2))
 
-    def test_create_p_values_chart_for_tests_return_value(self):
-        expected_file1 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
-        expected_file2 = join(working_dir, 'p_values_for_file_' + str(self.file2_id) + '.png')
+    def test_create_p_values_chart_for_tests_charts_storage(self):
+        file1 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
+        file2 = join(working_dir, 'p_values_for_file_' + str(self.file2_id) + '.png')
+
+        info1 = ChartInfo(file1, ChartType.P_VALUES, self.file1_id)
+        info2 = ChartInfo(file2, ChartType.P_VALUES, self.file2_id)
 
         test_ids = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
-        storage = self.charts_creator.create_p_values_charts_for_tests(test_ids, working_dir)
+        self.charts_creator.create_p_values_charts_for_tests(test_ids, working_dir)
 
-        self.assertEqual(2, len(storage.get_all_paths()))
-        self.assertTrue(expected_file1 in storage.get_all_paths())
-        self.assertTrue(expected_file2 in storage.get_all_paths())
+        storage = self.charts_creator._charts_storage
+
+        self.assertEqual(2, len(storage.get_all_infos()))
+        self.assertTrue(info1 in storage.get_all_infos())
+        self.assertTrue(info2 in storage.get_all_infos())

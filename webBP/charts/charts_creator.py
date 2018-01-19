@@ -1,10 +1,11 @@
 from os.path import join, exists
 
+from charts.chart_info import ChartInfo
 from charts.chart_options import ChartOptions
-from charts.charts_error import ChartsError
+from charts.chart_type import ChartType
 from charts.p_values.extractor import Extractor
 from charts.p_values.p_values_drawer import PValuesDrawer
-from common.path_storage import PathStorage
+from charts.charts_storage import ChartsStorage
 from common.test_converter import TestConverter
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
@@ -24,18 +25,20 @@ class ChartsCreator:
         self._p_values_accumulators = {}
         self.test_converter = TestConverter()
         self._extractor = Extractor(chart_options, pool, storage)
-        self.p_values_drawer = PValuesDrawer()
+        self._p_values_drawer = PValuesDrawer()
+        self._charts_storage = ChartsStorage()
 
-    def create_p_values_charts_for_tests(self, test_ids: list, directory: str) -> PathStorage:
-        self.check_test_ids_and_dir(test_ids, directory)
+    def generate_charts(self, test_ids: list, chart_types: list, directory: str) -> ChartsStorage:
+        self.check_input(test_ids, chart_types, directory)
+        return self._charts_storage
 
-        path_storage = PathStorage()
+    def create_p_values_charts_for_tests(self, test_ids: list, directory: str):
         self.load_p_values(test_ids)
         for file_id, acc in self._p_values_accumulators.items():
             file_name = self.get_file_name_for_p_values_chart(directory, file_id)
             self.create_one_p_values_chart_for_tests(acc, file_name)
-            path_storage.add_path(file_name)
-        return path_storage
+            chart_info = ChartInfo(file_name, ChartType.P_VALUES, file_id)
+            self._charts_storage.add_chart_info(chart_info)
 
     def create_one_p_values_chart_for_tests(self, acc: PValuesAccumulator, file: str):
         if acc is None:
@@ -43,7 +46,7 @@ class ChartsCreator:
         if file is None:
             raise TypeError('File cannot be None')
         data_for_chart = self._extractor.get_data_from_accumulator(acc)
-        self.p_values_drawer.draw_chart(data_for_chart, file)
+        self._p_values_drawer.draw_chart(data_for_chart, file)
 
     def load_p_values(self, test_ids):
         if self._loaded_items:
@@ -63,6 +66,7 @@ class ChartsCreator:
         self._loaded_items = False
         self._tests_with_dirs = None
         self._p_values_accumulators = {}
+        self._charts_storage = ChartsStorage()
 
     def get_subset_from_tests(self, test_ids: list) -> list:
         return list(filter(lambda x: x[0] in test_ids, self._tests_with_dirs))
@@ -71,11 +75,15 @@ class ChartsCreator:
         file_name = 'p_values_for_file_' + str(file_id) + '.png'
         return join(directory, file_name)
 
-    def check_test_ids_and_dir(self, test_ids, directory):
+    def check_input(self, test_ids, chart_types, directory):
         if test_ids is None:
             raise TypeError('Test ids are None')
         if not test_ids:  # list is empty
             raise ValueError('No test ids specified')
+        if chart_types is None:
+            raise TypeError('Chart types are None')
+        if not chart_types:
+            raise ValueError('No chart type specified')
         if directory is None:
             raise TypeError('Directory is None')
         if not exists(directory):
