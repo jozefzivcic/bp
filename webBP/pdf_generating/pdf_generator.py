@@ -12,6 +12,7 @@ from charts.generate_charts_dto import GenerateChartsDto
 from common.helper_functions import load_texts_for_generator
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
+from managers.filemanager import FileManager
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
 from pdf_generating.pdf_creator import PdfCreator
@@ -23,6 +24,8 @@ this_dir = dirname(abspath(__file__))
 
 class PdfGenerator:
     def __init__(self, pool: ConnectionPool, storage: ConfigStorage):
+        self.config_storage = storage
+        self.file_dao = FileManager(pool)
         self._charts_creator = ChartsCreator(pool, storage)
         self._pdf_creator = PdfCreator()
         path_to_texts = abspath(join(this_dir, storage.path_to_pdf_texts))
@@ -58,5 +61,30 @@ class PdfGenerator:
         raise PdfGeneratingError('Unsupported chart type')
 
     def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage) -> PdfCreatingDto:
-        dto = PdfCreatingDto()
+        template_path = abspath(join(this_dir, self.config_storage.path_to_tex_templates, 'report_template.tex'))
+        vars_dict = self.prepare_dict_from_charts_storage(storage)
+        keys_for_template = dict(self._texts)
+        keys_for_template['vars'] = vars_dict
+        dto = PdfCreatingDto(template_path, pdf_generating_dto.output_filename, keys_for_template)
         return dto
+
+    def prepare_dict_from_charts_storage(self, storage: ChartsStorage) -> dict:
+        vars_dict = {}
+        for chart_info in storage.get_all_infos():
+            fid = chart_info.file_id
+            file_name = self.get_file_name(fid)
+            if fid in vars_dict:
+                vars_dict[fid]['chart_info'].append({'path_to_chart': chart_info.path_to_chart.name,
+                                                     'chart_type': chart_info.chart_type
+                                                     })
+            else:
+                vars_dict[fid] = {'file_name': file_name,
+                                  'chart_info': [{'path_to_chart': chart_info.path_to_chart.name,
+                                                  'chart_type': chart_info.chart_type
+                                                  }]
+                                  }
+
+        return vars_dict
+
+    def get_file_name(self, fid: int):
+        return self.file_dao.get_file_by_id(fid).name
