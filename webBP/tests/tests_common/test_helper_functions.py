@@ -2,7 +2,7 @@ from configparser import ConfigParser
 from os.path import dirname, abspath, join
 from unittest import TestCase
 
-from common.helper_functions import config_parser_to_dict, load_texts_for_generator
+from common.helper_functions import config_parser_to_dict, load_texts_into_dict, load_texts_into_config_parsers
 
 this_dir = dirname(abspath(__file__))
 sample_texts_dir = join(this_dir, '..', 'sample_files_for_tests', 'sample_texts')
@@ -30,5 +30,18 @@ class TestHelperFunctions(TestCase):
                                 'Section3': {'fourth': 'Štvrtý', 'fifth': 'Piaty', 'key': 'Kľúč', 'value': 'Hodnota'}
                                 }
                          }
-        ret = load_texts_for_generator(sample_texts_dir)
+        ret = load_texts_into_dict(sample_texts_dir)
         self.assertEqual(expected_dict, ret)
+
+    def test_load_texts_into_config_parsers(self):
+        ini_file = join(sample_texts_dir, 'en.ini')
+        cfg_1 = ConfigParser()
+        cfg_1.read(ini_file)
+
+        ini_file = join(sample_texts_dir, 'sk.ini')
+        cfg_2 = ConfigParser()
+        cfg_2.read(ini_file)
+
+        expected = {'en': cfg_1, 'sk': cfg_2}
+        ret = load_texts_into_config_parsers(sample_texts_dir)
+        self.assertEqual(expected, ret)

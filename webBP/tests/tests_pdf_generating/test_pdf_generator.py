@@ -1,14 +1,13 @@
 from os import makedirs
 from os.path import dirname, abspath, join, exists
-from unittest import TestCase
-
 from shutil import rmtree
+from unittest import TestCase
 from unittest.mock import MagicMock
 
 from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
-from common.helper_functions import load_texts_for_generator
+from common.helper_functions import load_texts_into_config_parsers
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
 from pdf_generating.pdf_generating_error import PdfGeneratingError
@@ -41,7 +40,7 @@ class TestPdfGenerator(TestCase):
             side_effect=db_test_dao_get_test_by_id)
         self.pdf_generator._charts_creator._p_values_creator._extractor._nist_dao.get_nist_param_for_test = MagicMock(
             side_effect=nist_dao_get_nist_param_for_test)
-        self.texts = load_texts_for_generator(texts_dir)
+        self.texts = load_texts_into_config_parsers(texts_dir)
 
     def tearDown(self):
         if exists(working_dir):
@@ -67,18 +66,18 @@ class TestPdfGenerator(TestCase):
         generating_dto.language = 'en'
         ret = self.pdf_generator.create_dto_for_concrete_chart(ChartType.P_VALUES, generating_dto)
         self.assertAlmostEqual(0.48, ret.alpha, places=1E-6)
-        self.assertEqual(self.texts['en']['General']['tests'], ret.x_label)
-        self.assertEqual(self.texts['en']['General']['pvalue'], ret.y_label)
-        self.assertEqual(self.texts['en']['PValuesChart']['pvalueschart'], ret.title)
+        self.assertEqual(self.texts['en']['General']['Tests'], ret.x_label)
+        self.assertEqual(self.texts['en']['General']['PValue'], ret.y_label)
+        self.assertEqual(self.texts['en']['PValuesChart']['PValuesChart'], ret.title)
 
     def test_prepare_pdf_creating_dto(self):
+        language = 'en'
         charts_storage, vars_dict = get_charts_storage_and_dict()
         template = join(templates_dir, 'report_template.tex')
-        keys_for_template = self.texts
-        keys_for_template['vars'] = vars_dict
+        keys_for_template = {'texts': self.texts[language], 'vars': vars_dict}
         output_filename = 'something.pdf'
 
-        generating_dto = PdfGeneratingDto(0.01, [1, 2, 3], [ChartType.P_VALUES], 'en', output_filename)
+        generating_dto = PdfGeneratingDto(0.01, [1, 2, 3], [ChartType.P_VALUES], language, output_filename)
         pdf_creating_dto = self.pdf_generator.prepare_pdf_creating_dto(generating_dto, charts_storage)
 
         self.assertEqual(PdfCreatingDto, type(pdf_creating_dto))

@@ -20,7 +20,7 @@ def config_parser_to_dict(config_parser: ConfigParser):
     return resulting_dict
 
 
-def load_texts_for_generator(path_to_dir_with_texts: str) -> dict:
+def load_texts_into_dict(path_to_dir_with_texts: str) -> dict:
     ret = {}
     cfg = ConfigParser()
     for file in listdir(path_to_dir_with_texts):
@@ -29,4 +29,16 @@ def load_texts_for_generator(path_to_dir_with_texts: str) -> dict:
             full_path = join(path_to_dir_with_texts, file)
             cfg.read(full_path)
             ret[file_name] = config_parser_to_dict(cfg)
+    return ret
+
+
+def load_texts_into_config_parsers(path_to_dir_with_texts: str) -> dict:
+    ret = {}
+    for file in listdir(path_to_dir_with_texts):
+        file_name, ext = splitext(file)
+        if ext == '.ini':
+            full_path = join(path_to_dir_with_texts, file)
+            cfg = ConfigParser()
+            cfg.read(full_path)
+            ret[file_name] = cfg
     return ret

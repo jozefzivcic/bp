@@ -1,7 +1,6 @@
 from os.path import dirname, abspath, join
-from tempfile import mkdtemp
-
 from shutil import rmtree
+from tempfile import mkdtemp
 
 from charts.chart_options import ChartOptions
 from charts.chart_type import ChartType
@@ -9,7 +8,7 @@ from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
-from common.helper_functions import load_texts_for_generator
+from common.helper_functions import load_texts_into_config_parsers
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.filemanager import FileManager
@@ -29,9 +28,9 @@ class PdfGenerator:
         self._charts_creator = ChartsCreator(pool, storage)
         self._pdf_creator = PdfCreator()
         path_to_texts = abspath(join(this_dir, storage.path_to_pdf_texts))
-        self._texts = load_texts_for_generator(path_to_texts)
-        self.path_to_templates = abspath(join(this_dir, storage.path_to_tex_templates))
+        self._texts = load_texts_into_config_parsers(path_to_texts)
 
+# TODO: Check if language in PdfGeneratingDto is accepted.
     def generate_pdf(self, pdf_generating_dto: PdfGeneratingDto):
         directory = mkdtemp()
         try:
@@ -54,16 +53,16 @@ class PdfGenerator:
     def create_dto_for_concrete_chart(self, chart_type: ChartType, pdf_generating_dto: PdfGeneratingDto):
         texts = self._texts[pdf_generating_dto.language]
         if chart_type == ChartType.P_VALUES:
-            dto = ChartOptions(pdf_generating_dto.alpha, texts['General']['tests'],
-                               texts['General']['pvalue'], texts['PValuesChart']['pvalueschart'])
+            dto = ChartOptions(pdf_generating_dto.alpha, texts['General']['Tests'],
+                               texts['General']['PValue'], texts['PValuesChart']['PValuesChart'])
             return dto
         raise PdfGeneratingError('Unsupported chart type')
 
     def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage) -> PdfCreatingDto:
         template_path = abspath(join(this_dir, self.config_storage.path_to_tex_templates, 'report_template.tex'))
         vars_dict = self.prepare_dict_from_charts_storage(storage)
-        keys_for_template = dict(self._texts)
-        keys_for_template['vars'] = vars_dict
+        config_parser = self._texts[pdf_generating_dto.language]
+        keys_for_template = {'texts': config_parser, 'vars': vars_dict}
         dto = PdfCreatingDto(template_path, pdf_generating_dto.output_filename, keys_for_template)
         return dto
 
