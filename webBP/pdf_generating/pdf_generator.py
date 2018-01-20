@@ -54,8 +54,8 @@ class PdfGenerator:
     def create_dto_for_concrete_chart(self, chart_type: ChartType, pdf_generating_dto: PdfGeneratingDto):
         texts = self._texts[pdf_generating_dto.language]
         if chart_type == ChartType.P_VALUES:
-            dto = ChartOptions(pdf_generating_dto.alpha, texts['general']['tests'],
-                               texts['general']['pvalue'], texts['pvalueschart']['pvalueschart'])
+            dto = ChartOptions(pdf_generating_dto.alpha, texts['General']['tests'],
+                               texts['General']['pvalue'], texts['PValuesChart']['pvalueschart'])
             return dto
         raise PdfGeneratingError('Unsupported chart type')
 
@@ -82,7 +82,6 @@ class PdfGenerator:
                                                   'chart_type': chart_info.chart_type.name
                                                   }]
                                   }
-
         return vars_dict
 
     def get_file_name(self, fid: int):

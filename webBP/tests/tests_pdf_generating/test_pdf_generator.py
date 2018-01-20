@@ -13,8 +13,9 @@ from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
 from pdf_generating.pdf_generating_error import PdfGeneratingError
 from pdf_generating.pdf_generator import PdfGenerator
-from tests.data_for_tests.common_data import FileIdData
-from tests.data_for_tests.common_functions import get_file_by_id
+from tests.data_for_tests.common_data import FileIdData, TestsIdData
+from tests.data_for_tests.common_functions import get_file_by_id, results_dao_get_paths_for_test_ids, \
+    db_test_dao_get_tests_by_id_list, db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
 
 this_dir = dirname(abspath(__file__))
 working_dir = abspath(join(this_dir, 'working_dir_pdf_generator'))
@@ -32,11 +33,26 @@ class TestPdfGenerator(TestCase):
         config_storage.path_to_tex_templates = 'templates'
         self.pdf_generator = PdfGenerator(None, config_storage)
         self.pdf_generator.file_dao.get_file_by_id = MagicMock(side_effect=get_file_by_id)
+        self.pdf_generator._charts_creator._results_dao.get_paths_for_test_ids = MagicMock(
+            side_effect=results_dao_get_paths_for_test_ids)
+        self.pdf_generator._charts_creator._tests_dao.get_tests_by_id_list = MagicMock(
+            side_effect=db_test_dao_get_tests_by_id_list)
+        self.pdf_generator._charts_creator._p_values_creator._extractor._test_dao.get_test_by_id = MagicMock(
+            side_effect=db_test_dao_get_test_by_id)
+        self.pdf_generator._charts_creator._p_values_creator._extractor._nist_dao.get_nist_param_for_test = MagicMock(
+            side_effect=nist_dao_get_nist_param_for_test)
         self.texts = load_texts_for_generator(texts_dir)
 
     def tearDown(self):
         if exists(working_dir):
             rmtree(working_dir)
+
+    def test_generate_pdf_one_file(self):
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id]
+        output_filename = join(working_dir, 'output.pdf')
+        dto = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename)
+        self.pdf_generator.generate_pdf(dto)
+        self.assertTrue(exists(output_filename))
 
     def test_create_dto_for_concrete_chart_unsupported_chart(self):
         pdf_generating_dto = PdfGeneratingDto()
@@ -45,6 +61,15 @@ class TestPdfGenerator(TestCase):
             self.pdf_generator.create_dto_for_concrete_chart(-1, pdf_generating_dto)
         self.assertEqual('Unsupported chart type', str(context.exception))
 
+    def test_create_dto_for_concrete_chart_p_values_chart(self):
+        generating_dto = PdfGeneratingDto()
+        generating_dto.alpha = 0.48
+        generating_dto.language = 'en'
+        ret = self.pdf_generator.create_dto_for_concrete_chart(ChartType.P_VALUES, generating_dto)
+        self.assertAlmostEqual(0.48, ret.alpha, places=1E-6)
+        self.assertEqual(self.texts['en']['General']['tests'], ret.x_label)
+        self.assertEqual(self.texts['en']['General']['pvalue'], ret.y_label)
+        self.assertEqual(self.texts['en']['PValuesChart']['pvalueschart'], ret.title)
 
     def test_prepare_pdf_creating_dto(self):
         charts_storage, vars_dict = get_charts_storage_and_dict()
