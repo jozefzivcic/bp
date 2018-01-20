@@ -21,3 +21,21 @@ dict_for_test_42 = {'results': [0.311588, 0.821154, 0.743829, 0.981490, 0.238026
 
 dict_for_test_43 = {'results': [0.264086, 0.654380, 0.113092, 0.127290, 0.338964, 0.158597, 0.860141, 0.870057,
                                 0.322788, 0.540625]}
+
+
+class TestsIdData:
+    test1_id = 13
+    test2_id = 14
+    test3_id = 41
+    test4_id = 42
+    test5_id = 43
+    non_existing_test_id = 123456
+
+
+class FileIdData:
+    file1_id = 456
+    file2_id = 786
+
+
+class UserIdData:
+    user1_id = 456789
