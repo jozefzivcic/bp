@@ -21,12 +21,12 @@ class TestPValuesProcessor(TestCase):
     def test_process_None_dirs(self):
         with self.assertRaises(PValuesProcessingError) as context:
             self.processor.process_p_values(None)
-            self.assertTrue('No directory for processing' in str(context.exception))
+        self.assertEqual('No directory for processing', str(context.exception))
 
     def test_process_zero_dirs(self):
         with self.assertRaises(PValuesProcessingError) as context:
             self.processor.process_p_values(ProcessingDto())
-            self.assertTrue('No directory for processing' in str(context.exception))
+        self.assertEqual('No directory for processing', str(context.exception))
 
     def test_process_one_dir(self):
         dto = ProcessingDto()

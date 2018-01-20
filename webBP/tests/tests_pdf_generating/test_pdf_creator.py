@@ -27,7 +27,7 @@ class TestPdfCreator(TestCase):
         dto.template = None
         with self.assertRaises(TypeError) as context:
             self.creator.create_pdf(dto)
-            self.assertEqual('Template specified is None' in str(context.exception))
+        self.assertEqual('Template specified is None', str(context.exception))
 
     def test_check_dto_non_existing_template(self):
         dto = PdfCreatingDto()
@@ -36,7 +36,7 @@ class TestPdfCreator(TestCase):
 
         with self.assertRaises(ValueError) as context:
             self.creator.create_pdf(dto)
-            self.assertEqual('Given template (' + dto.template + ') does no exists' in str(context.exception))
+        self.assertEqual('Given template (' + dto.template + ') does no exists', str(context.exception))
 
     def test_check_none_output_file(self):
         dto = PdfCreatingDto()
@@ -44,7 +44,7 @@ class TestPdfCreator(TestCase):
         dto.output_file = None
         with self.assertRaises(TypeError) as context:
             self.creator.create_pdf(dto)
-            self.assertEqual('Output file is None' in str(context.exception))
+        self.assertEqual('Output file is None', str(context.exception))
 
     def test_check_dto_non_existing_dir_for_output(self):
         dto = PdfCreatingDto()
@@ -55,7 +55,7 @@ class TestPdfCreator(TestCase):
 
         with self.assertRaises(ValueError) as context:
             self.creator.create_pdf(dto)
-            self.assertEqual('Directory ' + output_dir + ' for output file does not exists' in str(context.exception))
+        self.assertEqual('Directory ' + output_dir + ' for output file does not exists', str(context.exception))
 
     def test_get_output_dir_and_file_without_extension(self):
         exp_dir = '/home/something'

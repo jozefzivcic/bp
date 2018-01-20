@@ -86,31 +86,31 @@ class TestPValuesCreator(TestCase):
     def test_create_p_values_chart_none_data(self):
         with self.assertRaises(TypeError) as context:
             self.p_values_creator.create_p_values_chart(None)
-            self.assertEqual('Data cannot be None' in str(context.exception))
+        self.assertEqual('Data cannot be None', str(context.exception))
 
     def test_create_p_values_chart_none_options(self):
         self.data_for_p_values_creator.chart_options = None
         with self.assertRaises(TypeError) as context:
             self.p_values_creator.create_p_values_chart(self.data_for_p_values_creator)
-            self.assertEqual('Chart options cannot be None' in str(context.exception))
+        self.assertEqual('Chart options cannot be None', str(context.exception))
 
     def test_create_p_values_chart_none_accumulator(self):
         self.data_for_p_values_creator.acc = None
         with self.assertRaises(TypeError) as context:
             self.p_values_creator.create_p_values_chart(self.data_for_p_values_creator)
-            self.assertEqual('Accumulator cannot be None' in str(context.exception))
+        self.assertEqual('Accumulator cannot be None', str(context.exception))
 
     def test_create_p_values_chart_none_directory(self):
         self.data_for_p_values_creator.directory = None
         with self.assertRaises(TypeError) as context:
             self.p_values_creator.create_p_values_chart(self.data_for_p_values_creator)
-            self.assertEqual('Directory cannot be None' in str(context.exception))
+        self.assertEqual('Directory cannot be None', str(context.exception))
 
     def test_create_p_values_chart_none_file_id(self):
         self.data_for_p_values_creator.file_id = None
         with self.assertRaises(TypeError) as context:
             self.p_values_creator.create_p_values_chart(self.data_for_p_values_creator)
-            self.assertEqual('file_id cannot be None' in str(context.exception))
+        self.assertEqual('file_id cannot be None', str(context.exception))
 
     def test_create_p_values_chart(self):
         chart_info = self.p_values_creator.create_p_values_chart(self.data_for_p_values_creator)

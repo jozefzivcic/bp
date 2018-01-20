@@ -226,44 +226,44 @@ class TestChartsCreator(TestCase):
     def test_generate_charts_none_dto(self):
         with self.assertRaises(TypeError) as context:
             self.charts_creator.generate_charts(None)
-            self.assertEqual('Charts DTO is None' in str(context.exception))
+        self.assertEqual('Charts DTO is None', str(context.exception))
 
     def test_generate_charts_none_tests(self):
         self.generate_charts_dto.test_ids = None
         with self.assertRaises(TypeError) as context:
             self.charts_creator.generate_charts(self.generate_charts_dto)
-            self.assertEqual('Test ids are None' in str(context.exception))
+        self.assertEqual('Test ids are None', str(context.exception))
 
     def test_generate_charts_empty_test_list(self):
         self.generate_charts_dto.test_ids = []
         with self.assertRaises(ValueError) as context:
             self.charts_creator.generate_charts(self.generate_charts_dto)
-            self.assertEqual('No test ids specified' in str(context.exception))
+        self.assertEqual('No test ids specified', str(context.exception))
 
     def test_generate_charts_none_chart_types(self):
         self.generate_charts_dto.chart_types = None
         with self.assertRaises(TypeError) as context:
             self.charts_creator.generate_charts(self.generate_charts_dto)
-            self.assertEqual('Chart types are None' in str(context.exception))
+        self.assertEqual('Chart types are None', str(context.exception))
 
     def test_generate_charts_empty_chart_types(self):
         self.generate_charts_dto.chart_types = {}
         with self.assertRaises(ValueError) as context:
             self.charts_creator.generate_charts(self.generate_charts_dto)
-            self.assertEqual('No chart type specified' in str(context.exception))
+        self.assertEqual('No chart type specified', str(context.exception))
 
     def test_generate_charts_none_directory(self):
         self.generate_charts_dto.directory = None
         with self.assertRaises(TypeError) as context:
             self.charts_creator.generate_charts(self.generate_charts_dto)
-            self.assertEqual('Directory is None' in str(context.exception))
+        self.assertEqual('Directory is None', str(context.exception))
 
     def test_generate_charts_non_existing_dir(self):
         self.generate_charts_dto.directory = working_dir + '_something'
         with self.assertRaises(ValueError) as context:
             self.charts_creator.generate_charts(self.generate_charts_dto)
-            self.assertEqual('Given directory: ' + self.generate_charts_dto.directory + ' does not exists'
-                             in str(context.exception))
+        self.assertEqual('Given directory: ' + self.generate_charts_dto.directory + ' does not exists',
+                         str(context.exception))
 
     def test_generate_p_values_chart_for_tests_on_one_file(self):
         self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test3_id]

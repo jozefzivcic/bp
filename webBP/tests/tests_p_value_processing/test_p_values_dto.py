@@ -18,12 +18,12 @@ class TestPValuesDtoOnTest13(TestCase):
         data_num = 1
         with self.assertRaises(ValueError) as context:
             self.dto.get_data_p_values(data_num)
-            self.assertTrue(str(data_num) in str(context.exception))
+        self.assertTrue(str(data_num) in str(context.exception))
 
     def test_get_data_indices(self):
         with self.assertRaises(DataFileError) as context:
             self.dto.get_data_files_indices()
-            self.assertTrue('No data file' in str(context.exception))
+        self.assertTrue('No data file', str(context.exception))
 
 
 class TestPValuesDtoOnTest14(TestCase):
@@ -49,19 +49,19 @@ class TestPValuesDtoOnTest14(TestCase):
         data_num = 3
         with self.assertRaises(ValueError) as context:
             self.dto.get_data_p_values(data_num)
-            self.assertTrue(str(data_num) in str(context.exception))
+        self.assertTrue(str(data_num) in str(context.exception))
 
     def test_data_0(self):
         data_num = 0
         with self.assertRaises(ValueError) as context:
             self.dto.get_data_p_values(data_num)
-            self.assertTrue(str(data_num) in str(context.exception))
+        self.assertTrue(str(data_num) in str(context.exception))
 
     def test_data_not_number(self):
         data_num = 'string'
         with self.assertRaises(ValueError) as context:
             self.dto.get_data_p_values(data_num)
-            self.assertTrue(str(data_num) in str(context.exception))
+        self.assertTrue(str(data_num) in str(context.exception))
 
     def test_data_indices(self):
         expected = [1, 2]
@@ -92,8 +92,8 @@ class TestPValuesDto(TestCase):
 
         with self.assertRaises(DataFileError) as context:
             dto = PValuesDto(p_values_dict)
-            self.assertEqual('Too many data files. Allowed maximum is ' + str(PValuesDto.max_num_of_data_files) in
-                             str(context.exception))
+        self.assertEqual('Too many data files. Allowed maximum is ' + str(PValuesDto.max_num_of_data_files),
+                         str(context.exception))
 
     def test_has_data_files_true(self):
         dto = PValuesDto(dict_for_test_14)

@@ -32,25 +32,25 @@ class TestPathStorage(TestCase):
     def test_add_none_chart_info(self):
         with self.assertRaises(TypeError) as context:
             self.charts_storage.add_chart_info(None)
-            self.assertEqual('Chart info is None' in str(context.exception))
+        self.assertEqual('Chart info is None', str(context.exception))
 
     def test_add_none_path(self):
         self.chart_info.path_to_chart = None
         with self.assertRaises(TypeError) as context:
             self.charts_storage.add_chart_info(self.chart_info)
-            self.assertEqual('Path to chart is None' in str(context.exception))
+        self.assertEqual('Path to chart is None', str(context.exception))
 
     def test_add_none_chart_type(self):
         self.chart_info.chart_type= None
         with self.assertRaises(TypeError) as context:
             self.charts_storage.add_chart_info(self.chart_info)
-            self.assertEqual('Chart type is None' in str(context.exception))
+        self.assertEqual('Chart type is None', str(context.exception))
 
     def test_add_none_file_id(self):
         self.chart_info.file_id = None
         with self.assertRaises(TypeError) as context:
             self.charts_storage.add_chart_info(self.chart_info)
-            self.assertEqual('file_id in chart_info is None' in str(context.exception))
+        self.assertEqual('file_id in chart_info is None', str(context.exception))
 
     def test_add_one_path(self):
         self.charts_storage.add_chart_info(self.chart_info)
