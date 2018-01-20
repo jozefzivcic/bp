@@ -30,7 +30,6 @@ class PdfGenerator:
         self._pdf_creator = PdfCreator()
         path_to_texts = abspath(join(this_dir, storage.path_to_pdf_texts))
         self._texts = load_texts_for_generator(path_to_texts)
-        self._texts['vars'] = {}
         self.path_to_templates = abspath(join(this_dir, storage.path_to_tex_templates))
 
     def generate_pdf(self, pdf_generating_dto: PdfGeneratingDto):
@@ -74,13 +73,13 @@ class PdfGenerator:
             fid = chart_info.file_id
             file_name = self.get_file_name(fid)
             if fid in vars_dict:
-                vars_dict[fid]['chart_info'].append({'path_to_chart': chart_info.path_to_chart.name,
-                                                     'chart_type': chart_info.chart_type
+                vars_dict[fid]['chart_info'].append({'path_to_chart': chart_info.path_to_chart,
+                                                     'chart_type': chart_info.chart_type.name
                                                      })
             else:
                 vars_dict[fid] = {'file_name': file_name,
-                                  'chart_info': [{'path_to_chart': chart_info.path_to_chart.name,
-                                                  'chart_type': chart_info.chart_type
+                                  'chart_info': [{'path_to_chart': chart_info.path_to_chart,
+                                                  'chart_type': chart_info.chart_type.name
                                                   }]
                                   }
 
