@@ -1,0 +1,2 @@
+class PdfGeneratingError(Exception):
+    pass

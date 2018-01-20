@@ -26,3 +26,8 @@ SERVER_KEY=no
 SERVER_CERT=no
 CA_CERTS=no
 GROUPS=groups
+# This path must be relative to the file pdf_generator.py
+PATH_TO_PDF_TEXTS=texts
+# This path must be relative to the file pdf_generator.py
+PATH_TO_TEX_TEMPLATES=templates
+

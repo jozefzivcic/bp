@@ -22,3 +22,5 @@ class ConfigStorage:
         self.server_cert = parser.get_key('SERVER_CERT')
         self.ca_certs = parser.get_key('CA_CERTS')
         self.groups = parser.get_key('GROUPS')
+        self.path_to_pdf_texts = parser.get_key('PATH_TO_PDF_TEXTS')
+        self.path_to_tex_templates = parser.get_key('PATH_TO_TEX_TEMPLATES')
