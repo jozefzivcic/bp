@@ -25,6 +25,7 @@ class ChartsCreator:
         self._test_converter = TestConverter()
         self._charts_storage = ChartsStorage()
         self._p_values_creator = PValuesCreator(pool, storage)
+        self.supported_charts = [ChartType.P_VALUES]
 
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
         self.check_input(generate_charts_dto)

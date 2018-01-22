@@ -31,7 +31,6 @@ class PdfGenerator:
         self._texts = load_texts_into_config_parsers(path_to_texts)
         self.supported_languages = {'en': 'english'}
 
-    # TODO: Check if language in PdfGeneratingDto is accepted.
     def generate_pdf(self, pdf_generating_dto: PdfGeneratingDto):
         self.check_input(pdf_generating_dto)
         directory = mkdtemp()
@@ -62,7 +61,7 @@ class PdfGenerator:
 
     def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage) -> PdfCreatingDto:
         template_path = abspath(join(this_dir, self.config_storage.path_to_tex_templates, 'report_template.tex'))
-        vars_dict = self.prepare_dict_from_charts_storage(storage)
+        vars_dict = self.prepare_dict_from_charts_storage(storage, pdf_generating_dto.language)
         config_parser = self._texts[pdf_generating_dto.language]
         keys_for_template = {'texts': config_parser, 'vars': {'package_language':
                                                                   self.supported_languages[pdf_generating_dto.language],
@@ -70,19 +69,22 @@ class PdfGenerator:
         dto = PdfCreatingDto(template_path, pdf_generating_dto.output_filename, keys_for_template)
         return dto
 
-    def prepare_dict_from_charts_storage(self, storage: ChartsStorage) -> dict:
+    def prepare_dict_from_charts_storage(self, storage: ChartsStorage, language: str) -> dict:
         charts_dict = {}
         for chart_info in storage.get_all_infos():
             fid = chart_info.file_id
             file_name = self.get_file_name(fid)
+            chart_name = self.get_chart_name(language, chart_info.chart_type)
             if fid in charts_dict:
                 charts_dict[fid]['chart_info'].append({'path_to_chart': chart_info.path_to_chart,
-                                                       'chart_type': chart_info.chart_type.name
+                                                       'chart_type': chart_info.chart_type.name,
+                                                       'chart_name': chart_name
                                                        })
             else:
                 charts_dict[fid] = {'file_name': file_name,
                                     'chart_info': [{'path_to_chart': chart_info.path_to_chart,
-                                                    'chart_type': chart_info.chart_type.name
+                                                    'chart_type': chart_info.chart_type.name,
+                                                    'chart_name': chart_name
                                                     }]
                                     }
         return charts_dict
@@ -93,3 +95,11 @@ class PdfGenerator:
     def check_input(self, pdf_generating_dto: PdfGeneratingDto):
         if pdf_generating_dto.language not in self.supported_languages.keys():
             raise PdfGeneratingError('Unsupported language (\'' + pdf_generating_dto.language + '\')')
+        for ch_type in pdf_generating_dto.chart_types:
+            if ch_type not in self._charts_creator.supported_charts:
+                raise PdfGeneratingError('Unsupported chart type: (\'' + str(ch_type) + '\')')
+
+    def get_chart_name(self, language: str, ch_type: ChartType) -> str:
+        if ch_type == ChartType.P_VALUES:
+            return self._texts[language]['PValuesChart']['PValuesChart']
+        raise PdfGeneratingError('Undefined chart type: ' + ch_type.name)

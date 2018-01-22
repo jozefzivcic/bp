@@ -16,20 +16,22 @@
 
 \title{\VAR{texts['General']['ReportTitle']}}
 \date{\today}
-\author{\VAR{texts['General']['Author']}}
+%\author{\VAR{texts['General']['Author']}}
 
 \begin{document}
 \maketitle
 \BLOCK{for key, value in vars['charts'].items()}
     \VAR{texts['General']['ChartsForFile']} \textbf{\VAR{value['file_name']}}
-    \BLOCK{for ch_info in value['chart_info']}
+
+	\BLOCK{for ch_info in value['chart_info']}
         \begin{figure}[h]
 		    \begin{center}
 			    \includegraphics[width=0.75\textwidth]{\VAR{ch_info['path_to_chart']}}
 		    \end{center}
-		    \caption{Diagram}
+		    \caption{\VAR{ch_info['chart_name']}}
 		    \label{fig:file_\VAR{key}_\VAR{ch_info['chart_type']}}
 	    \end{figure}
     \BLOCK{ endfor }
+
 \BLOCK{ endfor }
 \end{document}

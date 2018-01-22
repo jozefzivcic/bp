@@ -6,9 +6,11 @@ from unittest.mock import MagicMock
 
 from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
+from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
 from common.helper_functions import load_texts_into_config_parsers
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
+from pdf_generating.pdf_creating_error import PdfCreatingError
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
 from pdf_generating.pdf_generating_error import PdfGeneratingError
 from pdf_generating.pdf_generator import PdfGenerator
@@ -42,16 +44,39 @@ class TestPdfGenerator(TestCase):
             side_effect=nist_dao_get_nist_param_for_test)
         self.texts = load_texts_into_config_parsers(texts_dir)
 
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id]
+        output_filename = join(working_dir, 'output.pdf')
+        self.dto_for_one_file = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename)
+
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
+                 TestsIdData.test5_id]
+        self.dto_for_two_files = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename)
+
     def tearDown(self):
         if exists(working_dir):
             rmtree(working_dir)
 
+    def test_generate_pdf_with_charts_error(self):
+        message = 'Error occured'
+        self.pdf_generator._charts_creator.generate_charts = MagicMock(side_effect=ChartsError(message))
+        with self.assertRaises(PdfGeneratingError) as context:
+            self.pdf_generator.generate_pdf(self.dto_for_one_file)
+        self.assertEqual(message, str(context.exception))
+
+    def test_generate_pdf_with_pdf_creating_error(self):
+        message = 'Error occured'
+        self.pdf_generator._charts_creator.generate_charts = MagicMock(side_effect=PdfCreatingError(message))
+        with self.assertRaises(PdfGeneratingError) as context:
+            self.pdf_generator.generate_pdf(self.dto_for_one_file)
+        self.assertEqual(message, str(context.exception))
+
     def test_generate_pdf_one_file(self):
-        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id]
-        output_filename = join(working_dir, 'output.pdf')
-        dto = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename)
-        self.pdf_generator.generate_pdf(dto)
-        self.assertTrue(exists(output_filename))
+        self.pdf_generator.generate_pdf(self.dto_for_one_file)
+        self.assertTrue(exists(self.dto_for_one_file.output_filename))
+
+    def test_generate_pdf_two_files(self):
+        self.pdf_generator.generate_pdf(self.dto_for_two_files)
+        self.assertTrue(exists(self.dto_for_one_file.output_filename))
 
     def test_create_dto_for_concrete_chart_unsupported_chart(self):
         pdf_generating_dto = PdfGeneratingDto()
@@ -73,9 +98,9 @@ class TestPdfGenerator(TestCase):
     def test_prepare_pdf_creating_dto(self):
         language = 'en'
         package_language = 'english'
-        charts_storage, charts_dict = get_charts_storage_and_dict()
+        charts_storage, charts_dict = self.get_charts_storage_and_dict()
         template = join(templates_dir, 'report_template.tex')
-        keys_for_template = {'texts': self.texts[language], 'vars': {'package_language': 'english',
+        keys_for_template = {'texts': self.texts[language], 'vars': {'package_language': package_language,
                                                                      'charts': charts_dict}}
         output_filename = 'something.pdf'
 
@@ -94,17 +119,20 @@ class TestPdfGenerator(TestCase):
         charts_storage.add_chart_info(chart_info)
         file_1_name = get_file_by_id(FileIdData.file1_id).name
         ch_type = ChartType.P_VALUES.name
+        chart_name = self.texts['en']['PValuesChart']['PValuesChart']
         expected = {FileIdData.file1_id: {'file_name': file_1_name,
                                           'chart_info': [{'path_to_chart': path,
-                                                          'chart_type': ch_type}]
+                                                          'chart_type': ch_type,
+                                                          'chart_name': chart_name
+                                                          }]
                                           }
                     }
-        ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage)
+        ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
         self.assertEqual(expected, ret)
 
     def test_prepare_dict_from_charts_storage_advanced(self):
-        charts_storage, expected = get_charts_storage_and_dict()
-        ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage)
+        charts_storage, expected = self.get_charts_storage_and_dict()
+        ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
         self.assertEqual(expected, ret)
 
     def test_get_file_name(self):
@@ -126,42 +154,59 @@ class TestPdfGenerator(TestCase):
             self.pdf_generator.generate_pdf(dto)
         self.assertEqual('Unsupported language (\'us\')', str(context.exception))
 
+    def test_unsupported_chart_type(self):
+        dto = self.dto_for_one_file
+        dto.chart_types = [ChartType.P_VALUES, -5]
+        with self.assertRaises(PdfGeneratingError) as context:
+            self.pdf_generator.generate_pdf(dto)
+        self.assertEqual('Unsupported chart type: (\'-5\')', str(context.exception))
 
-def get_charts_storage_and_dict():
-    charts_storage = ChartsStorage()
+    def test_get_chart_name(self):
+        expected = self.texts['en']['PValuesChart']['PValuesChart']
+        ret = self.pdf_generator.get_chart_name('en', ChartType.P_VALUES)
+        self.assertEqual(expected, ret)
 
-    path_1 = '/home/something/chart_1.png'
-    chart_info = ChartInfo(path_1, ChartType.P_VALUES, FileIdData.file1_id)
-    charts_storage.add_chart_info(chart_info)
+    def get_charts_storage_and_dict(self):
+        charts_storage = ChartsStorage()
 
-    path_2 = '/home/something/chart_2.png'
-    chart_info = ChartInfo(path_2, ChartType.P_VALUES, FileIdData.file1_id)
-    charts_storage.add_chart_info(chart_info)
+        path_1 = '/home/something/chart_1.png'
+        chart_info = ChartInfo(path_1, ChartType.P_VALUES, FileIdData.file1_id)
+        charts_storage.add_chart_info(chart_info)
 
-    path_3 = '/home/something/chart_3.png'
-    chart_info = ChartInfo(path_3, ChartType.P_VALUES, FileIdData.file2_id)
-    charts_storage.add_chart_info(chart_info)
+        path_2 = '/home/something/chart_2.png'
+        chart_info = ChartInfo(path_2, ChartType.P_VALUES, FileIdData.file1_id)
+        charts_storage.add_chart_info(chart_info)
 
-    path_4 = '/home/something/chart_4.png'
-    chart_info = ChartInfo(path_4, ChartType.P_VALUES, FileIdData.file2_id)
-    charts_storage.add_chart_info(chart_info)
+        path_3 = '/home/something/chart_3.png'
+        chart_info = ChartInfo(path_3, ChartType.P_VALUES, FileIdData.file2_id)
+        charts_storage.add_chart_info(chart_info)
 
-    path_5 = '/home/something/chart_5.png'
-    chart_info = ChartInfo(path_5, ChartType.P_VALUES, FileIdData.file2_id)
-    charts_storage.add_chart_info(chart_info)
+        path_4 = '/home/something/chart_4.png'
+        chart_info = ChartInfo(path_4, ChartType.P_VALUES, FileIdData.file2_id)
+        charts_storage.add_chart_info(chart_info)
 
-    file_1_name = get_file_by_id(FileIdData.file1_id).name
-    file_2_name = get_file_by_id(FileIdData.file2_id).name
+        path_5 = '/home/something/chart_5.png'
+        chart_info = ChartInfo(path_5, ChartType.P_VALUES, FileIdData.file2_id)
+        charts_storage.add_chart_info(chart_info)
 
-    ch_type = ChartType.P_VALUES.name
-    expected = {FileIdData.file1_id: {'file_name': file_1_name,
-                                      'chart_info': [{'path_to_chart': path_1, 'chart_type': ch_type},
-                                                     {'path_to_chart': path_2, 'chart_type': ch_type}]
-                                      },
-                FileIdData.file2_id: {'file_name': file_2_name,
-                                      'chart_info': [{'path_to_chart': path_3, 'chart_type': ch_type},
-                                                     {'path_to_chart': path_4, 'chart_type': ch_type},
-                                                     {'path_to_chart': path_5, 'chart_type': ch_type}]
-                                      }
-                }
-    return charts_storage, expected
+        file_1_name = get_file_by_id(FileIdData.file1_id).name
+        file_2_name = get_file_by_id(FileIdData.file2_id).name
+
+        ch_type = ChartType.P_VALUES.name
+        chart_name = self.texts['en']['PValuesChart']['PValuesChart']
+        expected = {FileIdData.file1_id: {'file_name': file_1_name,
+                                          'chart_info': [{'path_to_chart': path_1, 'chart_type': ch_type,
+                                                          'chart_name': chart_name},
+                                                         {'path_to_chart': path_2, 'chart_type': ch_type,
+                                                          'chart_name': chart_name}]
+                                          },
+                    FileIdData.file2_id: {'file_name': file_2_name,
+                                          'chart_info': [{'path_to_chart': path_3, 'chart_type': ch_type,
+                                                          'chart_name': chart_name},
+                                                         {'path_to_chart': path_4, 'chart_type': ch_type,
+                                                          'chart_name': chart_name},
+                                                         {'path_to_chart': path_5, 'chart_type': ch_type,
+                                                          'chart_name': chart_name}]
+                                          }
+                    }
+        return charts_storage, expected
