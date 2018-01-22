@@ -1,5 +1,5 @@
 \documentclass[12pt]{article}
-\usepackage[english]{babel}
+\usepackage[\VAR{vars['package_language']}]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amssymb}
@@ -14,11 +14,22 @@
 \pagenumbering{arabic}
 \cfoot{\thepage}
 
-\title{\VAR{ReportTitle}}
-\date{\VAR{Date}}
-\author{\VAR{Author}}
+\title{\VAR{texts['General']['ReportTitle']}}
+\date{\today}
+\author{\VAR{texts['General']['Author']}}
 
 \begin{document}
 \maketitle
-jk
+\BLOCK{for key, value in vars['charts'].items()}
+    \VAR{texts['General']['ChartsForFile']} \textbf{\VAR{value['file_name']}}
+    \BLOCK{for ch_info in value['chart_info']}
+        \begin{figure}[h]
+		    \begin{center}
+			    \includegraphics[width=0.75\textwidth]{\VAR{ch_info['path_to_chart']}}
+		    \end{center}
+		    \caption{Diagram}
+		    \label{fig:file_\VAR{key}_\VAR{ch_info['chart_type']}}
+	    \end{figure}
+    \BLOCK{ endfor }
+\BLOCK{ endfor }
 \end{document}

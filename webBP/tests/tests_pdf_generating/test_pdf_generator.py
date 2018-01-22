@@ -72,9 +72,11 @@ class TestPdfGenerator(TestCase):
 
     def test_prepare_pdf_creating_dto(self):
         language = 'en'
-        charts_storage, vars_dict = get_charts_storage_and_dict()
+        package_language = 'english'
+        charts_storage, charts_dict = get_charts_storage_and_dict()
         template = join(templates_dir, 'report_template.tex')
-        keys_for_template = {'texts': self.texts[language], 'vars': vars_dict}
+        keys_for_template = {'texts': self.texts[language], 'vars': {'package_language': 'english',
+                                                                     'charts': charts_dict}}
         output_filename = 'something.pdf'
 
         generating_dto = PdfGeneratingDto(0.01, [1, 2, 3], [ChartType.P_VALUES], language, output_filename)
@@ -116,6 +118,13 @@ class TestPdfGenerator(TestCase):
 
     def test_loaded_texts(self):
         self.assertEqual(self.texts, self.pdf_generator._texts)
+
+    def test_unsupported_language(self):
+        dto = PdfGeneratingDto()
+        dto.language = 'us'
+        with self.assertRaises(PdfGeneratingError) as context:
+            self.pdf_generator.generate_pdf(dto)
+        self.assertEqual('Unsupported language (\'us\')', str(context.exception))
 
 
 def get_charts_storage_and_dict():
