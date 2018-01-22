@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from shutil import rmtree
 
-from charts.chart_options import ChartOptions
+from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.p_values.data_for_p_values_creator import DataForPValuesCreator
 from charts.p_values.p_values_creator import PValuesCreator
@@ -64,7 +64,7 @@ class TestPValuesCreator(TestCase):
         config_storage.nist = 'nist'
         self.p_values_creator = PValuesCreator(None, config_storage)
 
-        self.chart_options = ChartOptions(0.01, 'tests', 'p-value', 'p-values chart')
+        self.p_values_chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
         acc = PValuesAccumulator()
         dto = PValuesDto(dict_for_test_13)
         acc.add(self.test1_id, dto)
@@ -72,7 +72,7 @@ class TestPValuesCreator(TestCase):
         acc.add(self.test2_id, dto)
         dto = PValuesDto(dict_for_test_41)
         acc.add(self.test3_id, dto)
-        self.data_for_p_values_creator = DataForPValuesCreator(self.chart_options, acc, working_dir, self.file1_id)
+        self.data_for_p_values_creator = DataForPValuesCreator(self.p_values_chart_dto, acc, working_dir, self.file1_id)
 
         self.p_values_creator._extractor._test_dao.get_test_by_id = MagicMock(side_effect=
                                                                               self.db_test_dao_get_test_by_id)

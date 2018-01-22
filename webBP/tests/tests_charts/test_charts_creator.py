@@ -6,10 +6,9 @@ from unittest.mock import MagicMock
 from shutil import rmtree
 
 from charts.chart_info import ChartInfo
-from charts.chart_options import ChartOptions
+from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
-from charts.charts_error import ChartsError
 from charts.generate_charts_dto import GenerateChartsDto
 from models.nistparam import NistParam
 from models.test import Test
@@ -129,8 +128,8 @@ class TestChartsCreator(TestCase):
         self.charts_creator._p_values_creator._extractor._nist_dao.get_nist_param_for_test = \
             MagicMock(side_effect=self.nist_dao_get_nist_param_for_test)
         tests_arr = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
-        options = ChartOptions(0.01, 'tests', 'p-value', 'p-values chart')
-        self.generate_charts_dto = GenerateChartsDto(tests_arr, {ChartType.P_VALUES: options}, working_dir)
+        chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
+        self.generate_charts_dto = GenerateChartsDto(tests_arr, {ChartType.P_VALUES: chart_dto}, working_dir)
 
     def tearDown(self):
         if exists(working_dir):

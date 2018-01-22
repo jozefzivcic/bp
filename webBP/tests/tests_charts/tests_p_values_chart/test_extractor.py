@@ -2,7 +2,7 @@ from itertools import repeat
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from charts.chart_options import ChartOptions
+from charts.p_values_chart_dto import PValuesChartDto
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.extractor import Extractor
 from models.nistparam import NistParam
@@ -36,10 +36,10 @@ class TestExtractor(TestCase):
         return nist_param
 
     def setUp(self):
-        self.chart_options = ChartOptions()
-        self.chart_options.title = 'p-values from selected tests'
-        self.chart_options.x_label = 'test'
-        self.chart_options.y_label = 'p-value'
+        self.p_values_chart_dto = PValuesChartDto()
+        self.p_values_chart_dto.title = 'p-values from selected tests'
+        self.p_values_chart_dto.x_label = 'test'
+        self.p_values_chart_dto.y_label = 'p-value'
 
         storage_mock = MagicMock()
         storage_mock.nist = 'nist'
@@ -118,7 +118,7 @@ class TestExtractor(TestCase):
         acc.add(self.test1_id, dto_13)
         acc.add(self.test2_id, dto_14)
 
-        data = self.extractor.get_data_from_accumulator(acc, self.chart_options)
+        data = self.extractor.get_data_from_accumulator(acc, self.p_values_chart_dto)
 
         expected = 0.01
         self.assertAlmostEqual(expected, data.alpha, places=1E-6)

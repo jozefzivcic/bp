@@ -1,4 +1,4 @@
-from charts.chart_options import ChartOptions
+from charts.p_values_chart_dto import PValuesChartDto
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
@@ -17,12 +17,12 @@ class Extractor:
         self._config_storage = storage
         self._i = 1
 
-    def get_data_from_accumulator(self, acc: PValuesAccumulator, chart_options: ChartOptions) -> DataForPValuesDrawer:
+    def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: PValuesChartDto) -> DataForPValuesDrawer:
         data = DataForPValuesDrawer()
-        data.alpha = chart_options.alpha
-        data.x_label = chart_options.x_label
-        data.y_label = chart_options.y_label
-        data.title = chart_options.title
+        data.alpha = dto.alpha
+        data.x_label = dto.x_label
+        data.y_label = dto.y_label
+        data.title = dto.title
 
         test_ids = acc.get_all_test_ids()
         self._i = 1

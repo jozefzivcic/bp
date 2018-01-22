@@ -1,6 +1,6 @@
 from os.path import exists
 
-from charts.chart_options import ChartOptions
+from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
@@ -34,7 +34,7 @@ class ChartsCreator:
             self.draw_concrete_charts(chart_type, chart_dto, generate_charts_dto.directory)
         return self._charts_storage
 
-    def create_p_values_charts_for_tests(self, dto: ChartOptions, directory: str):
+    def create_p_values_charts_for_tests(self, dto: PValuesChartDto, directory: str):
         for file_id, acc in self._p_values_accumulators.items():
             data_for_creator = DataForPValuesCreator(dto, acc, directory, file_id)
             chart_info = self._p_values_creator.create_p_values_chart(data_for_creator)

@@ -2,7 +2,7 @@ from os.path import dirname, abspath, join
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from charts.chart_options import ChartOptions
+from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
@@ -54,8 +54,8 @@ class PdfGenerator:
     def create_dto_for_concrete_chart(self, chart_type: ChartType, pdf_generating_dto: PdfGeneratingDto):
         texts = self._texts[pdf_generating_dto.language]
         if chart_type == ChartType.P_VALUES:
-            dto = ChartOptions(pdf_generating_dto.alpha, texts['General']['Tests'],
-                               texts['General']['PValue'], texts['PValuesChart']['PValuesChart'])
+            dto = PValuesChartDto(pdf_generating_dto.alpha, texts['General']['Tests'],
+                                  texts['General']['PValue'], texts['PValuesChart']['PValuesChart'])
             return dto
         raise PdfGeneratingError('Unsupported chart type')
 
