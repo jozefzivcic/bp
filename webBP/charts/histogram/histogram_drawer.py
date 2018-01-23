@@ -10,5 +10,5 @@ class HistogramDrawer:
         plot.set(xlabel=data.x_label, ylabel=data.y_label)
         fig = plot.get_figure()
         fig.autofmt_xdate()
-        fig.savefig(file)
+        fig.savefig(file, dpi=300)
         fig.clf()

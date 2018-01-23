@@ -24,14 +24,15 @@
     \VAR{texts['General']['ChartsForFile']} \textbf{\VAR{value['file_name']}}
 
 	\BLOCK{for ch_info in value['chart_info']}
-        \begin{figure}[h]
+        \begin{figure}[H]
 		    \begin{center}
-			    \includegraphics[width=0.75\textwidth]{\VAR{ch_info['path_to_chart']}}
+			    \includegraphics[width=0.8\textwidth]{\VAR{ch_info['path_to_chart']}}
 		    \end{center}
 		    \caption{\VAR{ch_info['chart_name']}}
 		    \label{fig:file_\VAR{key}_\VAR{ch_info['chart_type']}}
 	    \end{figure}
     \BLOCK{ endfor }
+	\newpage
 
 \BLOCK{ endfor }
 \end{document}

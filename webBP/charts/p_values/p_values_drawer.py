@@ -21,5 +21,5 @@ class PValuesDrawer:
         plt.xticks(data.x_ticks_positions, data.x_ticks_labels, rotation='vertical')
         plt.yticks(PValuesDrawer.y_axis_ticks, PValuesDrawer.y_axis_labels)
         plt.axhline(y=data.alpha, color='r', linestyle='--')
-        plt.savefig(file, bbox_inches='tight')
+        plt.savefig(file, bbox_inches='tight', dpi=300)
         plt.clf()
