@@ -12,7 +12,7 @@ class HistogramCreator:
         self._extractor = HistogramExtractor()
         self.drawer = HistogramDrawer()
 
-    def create_p_values_chart(self, data: DataForHistogramCreator) -> ChartInfo:
+    def create_histogram(self, data: DataForHistogramCreator) -> ChartInfo:
         self.check_input(data)
         file = self.get_file_name_for_chart(data.directory, data.file_id)
         data_for_histogram = self._extractor.get_data_from_accumulator(data.acc, data.histogram_dto)
