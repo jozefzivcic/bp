@@ -11,7 +11,7 @@ from charts.p_values.p_values_drawer import PValuesDrawer
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14
 
 this_dir = dirname(abspath(__file__))
-working_dir = join(this_dir, 'working_dir')
+working_dir = join(this_dir, 'working_dir_p_values_drawer')
 
 
 class TestPValuesDrawer(TestCase):

@@ -2,39 +2,16 @@ from itertools import repeat
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from charts.p_values_chart_dto import PValuesChartDto
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.extractor import Extractor
-from models.nistparam import NistParam
-from models.test import Test
+from charts.p_values_chart_dto import PValuesChartDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
-from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14
+from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, TestsIdData
+from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
 
 
 class TestExtractor(TestCase):
-
-    def dbtest_dao_side_effect(self, test_id: int):
-        test = Test()
-        if test_id == self.test1_id or test_id == self.test2_id:
-            test.id = test_id
-            test.test_table = 'nist'
-        else:
-            test.id = self.non_existing_test_id
-            test.test_table = 'something'
-        return test
-
-    def nist_dao_side_effect(self, test: Test):
-        nist_param = NistParam()
-        nist_param.test_id = test.id
-        if test.id == self.test1_id:
-            nist_param.test_number = 1
-        elif test.id == self.test2_id:
-            nist_param.test_number = 3
-        else:
-            nist_param.test_number = 15
-        return nist_param
-
     def setUp(self):
         self.p_values_chart_dto = PValuesChartDto()
         self.p_values_chart_dto.title = 'p-values from selected tests'
@@ -44,15 +21,15 @@ class TestExtractor(TestCase):
         storage_mock = MagicMock()
         storage_mock.nist = 'nist'
         self.extractor = Extractor(None, storage_mock)
-        self.extractor._test_dao.get_test_by_id = MagicMock(side_effect=self.dbtest_dao_side_effect)
-        self.extractor._nist_dao.get_nist_param_for_test = MagicMock(side_effect=self.nist_dao_side_effect)
+        self.extractor._test_dao.get_test_by_id = MagicMock(side_effect=db_test_dao_get_test_by_id)
+        self.extractor._nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_get_nist_param_for_test)
 
-        self.test1_id = 13
+        self.test1_id = TestsIdData.test1_id
         self.test1_name = 'Frequency'
-        self.test2_id = 14
+        self.test2_id = TestsIdData.test2_id
         self.test2_name = 'Cumulative Sums'
 
-        self.non_existing_test_id = 15
+        self.non_existing_test_id = TestsIdData.non_existing_test_id
 
     def test_get_test_name(self):
         expected = self.test1_name

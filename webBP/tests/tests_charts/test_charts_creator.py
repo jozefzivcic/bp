@@ -1,22 +1,21 @@
 from os import makedirs
 from os.path import dirname, abspath, join, exists
+from shutil import rmtree
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from shutil import rmtree
-
 from charts.chart_info import ChartInfo
-from charts.histogram_dto import HistogramDto
-from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.generate_charts_dto import GenerateChartsDto
-from models.nistparam import NistParam
-from models.test import Test
+from charts.histogram_dto import HistogramDto
+from charts.p_values_chart_dto import PValuesChartDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, dict_for_test_41, dict_for_test_42, \
     dict_for_test_43
+from tests.data_for_tests.common_functions import results_dao_get_paths_for_test_ids, db_test_dao_get_tests_by_id_list, \
+    db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
 
 this_dir = dirname(abspath(__file__))
 sample_files_dir = join(this_dir, '..', 'sample_files_for_tests')
@@ -25,78 +24,6 @@ working_dir = join(this_dir, 'working_dir_charts_creator')
 
 
 class TestChartsCreator(TestCase):
-    def results_dao_get_paths_for_test_ids(self, test_ids: list) -> list:
-        ret = []
-        if self.test1_id in test_ids:
-            ret.append((self.test1_id, join(path_to_tests_results, str(self.test1_id))))
-        if self.test2_id in test_ids:
-            ret.append((self.test2_id, join(path_to_tests_results, str(self.test2_id))))
-        if self.test3_id in test_ids:
-            ret.append((self.test3_id, join(path_to_tests_results, str(self.test3_id))))
-        if self.test4_id in test_ids:
-            ret.append((self.test4_id, join(path_to_tests_results, str(self.test4_id))))
-        if self.test5_id in test_ids:
-            ret.append((self.test5_id, join(path_to_tests_results, str(self.test5_id))))
-        return ret
-
-    def db_test_dao_get_tests_by_id_list(self, test_ids: list) -> list:
-        ret = []
-        if self.test1_id in test_ids:
-            ret.append(self.db_test_dao_get_test_by_id(self.test1_id))
-        if self.test2_id in test_ids:
-            ret.append(self.db_test_dao_get_test_by_id(self.test2_id))
-        if self.test3_id in test_ids:
-            ret.append(self.db_test_dao_get_test_by_id(self.test3_id))
-        if self.test4_id in test_ids:
-            ret.append(self.db_test_dao_get_test_by_id(self.test4_id))
-        if self.test5_id in test_ids:
-            ret.append(self.db_test_dao_get_test_by_id(self.test5_id))
-        return ret
-
-    def db_test_dao_get_test_by_id(self, test_id: int) -> Test:
-        test = Test()
-        test.test_table = 'nist'
-        if self.test1_id == test_id:
-            test.id = self.test1_id
-            test.file_id = self.file1_id
-            return test
-        if self.test2_id == test_id:
-            test.id = self.test2_id
-            test.file_id = self.file1_id
-            return test
-        if self.test3_id == test_id:
-            test.id = self.test3_id
-            test.file_id = self.file1_id
-            return test
-        if self.test4_id == test_id:
-            test.id = self.test4_id
-            test.file_id = self.file2_id
-            return test
-        if self.test5_id == test_id:
-            test.id = self.test5_id
-            test.file_id = self.file2_id
-            return test
-        return None
-
-    def nist_dao_get_nist_param_for_test(self, test: Test) -> NistParam:
-        param = NistParam()
-        if self.test1_id == test.id:
-            param.test_number = 1
-            return param
-        if self.test2_id == test.id:
-            param.test_number = 3
-            return param
-        if self.test3_id == test.id:
-            param.test_number = 14
-            return param
-        if self.test4_id == test.id:
-            param.test_number = 15
-            return param
-        if self.test5_id == test.id:
-            param.test_number = 5
-            return param
-        return None
-
     def cmp_accumulators(self, acc1: PValuesAccumulator, acc2: PValuesAccumulator):
         self.assertEqual(acc1.get_all_test_ids(), acc2.get_all_test_ids())
         for test_id in acc1.get_all_test_ids():
@@ -121,13 +48,13 @@ class TestChartsCreator(TestCase):
         config_storage.nist = 'nist'
         self.charts_creator = ChartsCreator(None, config_storage)
         self.charts_creator._results_dao.get_paths_for_test_ids = MagicMock(side_effect=
-                                                                            self.results_dao_get_paths_for_test_ids)
+                                                                            results_dao_get_paths_for_test_ids)
         self.charts_creator._tests_dao.get_tests_by_id_list = MagicMock(side_effect=
-                                                                        self.db_test_dao_get_tests_by_id_list)
-        self.charts_creator._p_values_creator._extractor._test_dao.get_test_by_id = MagicMock(side_effect=
-                                                                              self.db_test_dao_get_test_by_id)
+                                                                        db_test_dao_get_tests_by_id_list)
+        self.charts_creator._p_values_creator._extractor._test_dao.get_test_by_id = \
+            MagicMock(side_effect=db_test_dao_get_test_by_id)
         self.charts_creator._p_values_creator._extractor._nist_dao.get_nist_param_for_test = \
-            MagicMock(side_effect=self.nist_dao_get_nist_param_for_test)
+            MagicMock(side_effect=nist_dao_get_nist_param_for_test)
         tests_arr = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
         self.generate_charts_dto = GenerateChartsDto(tests_arr, {ChartType.P_VALUES: chart_dto}, working_dir)
@@ -151,7 +78,7 @@ class TestChartsCreator(TestCase):
 
     def test_load_p_values(self):
         test_ids = [self.test1_id, self.test2_id]
-        expected = self.results_dao_get_paths_for_test_ids(test_ids)
+        expected = results_dao_get_paths_for_test_ids(test_ids)
         self.charts_creator.load_p_values(test_ids)
         self.assertEqual(expected, self.charts_creator._tests_with_dirs)
 
@@ -199,27 +126,27 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected, ret)
 
         test_ids = [self.test1_id]
-        expected = self.results_dao_get_paths_for_test_ids(test_ids)
+        expected = results_dao_get_paths_for_test_ids(test_ids)
         ret = self.charts_creator.get_subset_from_tests(test_ids)
         self.assertEqual(expected, ret)
 
         test_ids = [self.test1_id, self.test2_id]
-        expected = self.results_dao_get_paths_for_test_ids(test_ids)
+        expected = results_dao_get_paths_for_test_ids(test_ids)
         ret = self.charts_creator.get_subset_from_tests(test_ids)
         self.assertEqual(expected, ret)
 
         test_ids = [self.test1_id, self.test2_id, self.test3_id]
-        expected = self.results_dao_get_paths_for_test_ids(test_ids)
+        expected = results_dao_get_paths_for_test_ids(test_ids)
         ret = self.charts_creator.get_subset_from_tests(test_ids)
         self.assertEqual(expected, ret)
 
         test_ids = [self.test1_id, self.test2_id, self.test3_id, self.test4_id]
-        expected = self.results_dao_get_paths_for_test_ids(test_ids)
+        expected = results_dao_get_paths_for_test_ids(test_ids)
         ret = self.charts_creator.get_subset_from_tests(test_ids)
         self.assertEqual(expected, ret)
 
         test_ids = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
-        expected = self.results_dao_get_paths_for_test_ids(test_ids)
+        expected = results_dao_get_paths_for_test_ids(test_ids)
         ret = self.charts_creator.get_subset_from_tests(test_ids)
         self.assertEqual(expected, ret)
 

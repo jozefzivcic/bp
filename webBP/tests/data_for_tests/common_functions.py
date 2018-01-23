@@ -74,6 +74,10 @@ def db_test_dao_get_test_by_id(test_id: int) -> Test:
     if TestsIdData.test5_id == test_id:
         test.file_id = FileIdData.file2_id
         return test
+    if TestsIdData.non_existing_test_id == test_id:
+        test.test_table = 'something'
+        test.file_id = FileIdData.file1_id
+        return test
     raise ValueError('Test id ' + str(test_id) + ' is unsupported')
 
 

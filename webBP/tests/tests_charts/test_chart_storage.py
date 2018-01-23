@@ -9,6 +9,7 @@ from copy import deepcopy
 from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
+from tests.data_for_tests.common_data import FileIdData
 
 this_dir = dirname(abspath(__file__))
 working_dir = abspath(join(this_dir, 'working_dir_charts_storage'))
@@ -23,7 +24,7 @@ class TestPathStorage(TestCase):
         self.chart_info = ChartInfo()
         self.chart_info.path_to_chart = '/home/path/to/file.txt'
         self.chart_info.chart_type = ChartType.P_VALUES
-        self.chart_info.file_id = 456
+        self.chart_info.file_id = FileIdData.file1_id
 
     def tearDown(self):
         if exists(working_dir):
