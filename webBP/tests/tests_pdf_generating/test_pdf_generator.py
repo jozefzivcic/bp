@@ -8,6 +8,7 @@ from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
+from charts.histogram_dto import HistogramDto
 from common.helper_functions import load_texts_into_config_parsers
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
@@ -78,6 +79,11 @@ class TestPdfGenerator(TestCase):
         self.pdf_generator.generate_pdf(self.dto_for_two_files)
         self.assertTrue(exists(self.dto_for_one_file.output_filename))
 
+    def test_generate_pdf_two_files_two_charts(self):
+        self.dto_for_two_files.chart_types = [ChartType.P_VALUES, ChartType.HISTOGRAM]
+        self.pdf_generator.generate_pdf(self.dto_for_two_files)
+        self.assertTrue(exists(self.dto_for_two_files.output_filename))
+
     def test_create_dto_for_concrete_chart_unsupported_chart(self):
         pdf_generating_dto = PdfGeneratingDto()
         pdf_generating_dto.language = 'en'
@@ -94,6 +100,16 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(self.texts['en']['General']['Tests'], ret.x_label)
         self.assertEqual(self.texts['en']['General']['PValue'], ret.y_label)
         self.assertEqual(self.texts['en']['PValuesChart']['PValuesChart'], ret.title)
+
+    def test_create_dto_for_concrete_chart_histogram(self):
+        generating_dto = PdfGeneratingDto()
+        generating_dto.language = 'en'
+        ret = self.pdf_generator.create_dto_for_concrete_chart(ChartType.HISTOGRAM, generating_dto)
+
+        self.assertEqual(HistogramDto, type(ret))
+        self.assertEqual(self.texts['en']['Histogram']['Intervals'], ret.x_label)
+        self.assertEqual(self.texts['en']['Histogram']['NumOfPValues'], ret.y_label)
+        self.assertEqual(self.texts['en']['Histogram']['Histogram'], ret.title)
 
     def test_prepare_pdf_creating_dto(self):
         language = 'en'
@@ -161,9 +177,19 @@ class TestPdfGenerator(TestCase):
             self.pdf_generator.generate_pdf(dto)
         self.assertEqual('Unsupported chart type: (\'-5\')', str(context.exception))
 
-    def test_get_chart_name(self):
+    def test_get_chart_name_undefined_chart(self):
+        with self.assertRaises(PdfGeneratingError) as context:
+            self.pdf_generator.get_chart_name('en', -5)
+        self.assertEqual('Undefined chart type: -5', str(context.exception))
+
+    def test_get_chart_name_p_values(self):
         expected = self.texts['en']['PValuesChart']['PValuesChart']
         ret = self.pdf_generator.get_chart_name('en', ChartType.P_VALUES)
+        self.assertEqual(expected, ret)
+
+    def test_get_chart_name_histogram(self):
+        expected = self.texts['en']['Histogram']['HistogramUpperH']
+        ret = self.pdf_generator.get_chart_name('en', ChartType.HISTOGRAM)
         self.assertEqual(expected, ret)
 
     def get_charts_storage_and_dict(self):

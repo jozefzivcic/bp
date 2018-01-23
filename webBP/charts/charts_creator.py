@@ -1,5 +1,7 @@
 from os.path import exists
 
+from charts.histogram.data_for_histogram_creator import DataForHistogramCreator
+from charts.histogram.histogram_creator import HistogramCreator
 from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
@@ -25,7 +27,8 @@ class ChartsCreator:
         self._test_converter = TestConverter()
         self._charts_storage = ChartsStorage()
         self._p_values_creator = PValuesCreator(pool, storage)
-        self.supported_charts = [ChartType.P_VALUES]
+        self._histogram_creator = HistogramCreator()
+        self.supported_charts = [ChartType.P_VALUES, ChartType.HISTOGRAM]
 
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
         self.check_input(generate_charts_dto)
@@ -38,6 +41,12 @@ class ChartsCreator:
         for file_id, acc in self._p_values_accumulators.items():
             data_for_creator = DataForPValuesCreator(dto, acc, directory, file_id)
             chart_info = self._p_values_creator.create_p_values_chart(data_for_creator)
+            self._charts_storage.add_chart_info(chart_info)
+
+    def create_histograms_for_tests(self, dto, directory):
+        for file_id, acc in self._p_values_accumulators.items():
+            data_for_creator = DataForHistogramCreator(dto, acc, directory, file_id)
+            chart_info = self._histogram_creator.create_histogram(data_for_creator)
             self._charts_storage.add_chart_info(chart_info)
 
     def load_p_values(self, test_ids):
@@ -82,3 +91,5 @@ class ChartsCreator:
     def draw_concrete_charts(self, chart_type: ChartType, dto, directory: str):
         if chart_type == ChartType.P_VALUES:
             self.create_p_values_charts_for_tests(dto, directory)
+        elif chart_type == ChartType.HISTOGRAM:
+            self.create_histograms_for_tests(dto, directory)

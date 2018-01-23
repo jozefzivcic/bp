@@ -2,6 +2,7 @@ from os.path import dirname, abspath, join
 from shutil import rmtree
 from tempfile import mkdtemp
 
+from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
@@ -57,6 +58,10 @@ class PdfGenerator:
             dto = PValuesChartDto(pdf_generating_dto.alpha, texts['General']['Tests'],
                                   texts['General']['PValue'], texts['PValuesChart']['PValuesChart'])
             return dto
+        elif chart_type == ChartType.HISTOGRAM:
+            dto = HistogramDto(texts['Histogram']['Intervals'], texts['Histogram']['NumOfPValues'],
+                               texts['Histogram']['Histogram'])
+            return dto
         raise PdfGeneratingError('Unsupported chart type')
 
     def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage) -> PdfCreatingDto:
@@ -102,4 +107,6 @@ class PdfGenerator:
     def get_chart_name(self, language: str, ch_type: ChartType) -> str:
         if ch_type == ChartType.P_VALUES:
             return self._texts[language]['PValuesChart']['PValuesChart']
-        raise PdfGeneratingError('Undefined chart type: ' + ch_type.name)
+        elif ch_type == ChartType.HISTOGRAM:
+            return self._texts[language]['Histogram']['HistogramUpperH']
+        raise PdfGeneratingError('Undefined chart type: ' + str(ch_type))

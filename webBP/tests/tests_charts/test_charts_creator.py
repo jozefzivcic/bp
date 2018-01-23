@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 from shutil import rmtree
 
 from charts.chart_info import ChartInfo
+from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
@@ -280,6 +281,23 @@ class TestChartsCreator(TestCase):
 
         expected_info_1 = ChartInfo(file1, ChartType.P_VALUES, self.file1_id)
         expected_info_2 = ChartInfo(file2, ChartType.P_VALUES, self.file2_id)
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        self.assertTrue(exists(file1))
+        self.assertTrue(exists(file2))
+        self.assertEqual(2, len(storage.get_all_infos()))
+        self.assertEqual(expected_info_1, storage.get_all_infos()[0])
+        self.assertEqual(expected_info_2, storage.get_all_infos()[1])
+
+    def test_create_histogram_for_two_files(self):
+        file1 = join(working_dir, 'histogram_for_file_' + str(self.file1_id) + '.png')
+        file2 = join(working_dir, 'histogram_for_file_' + str(self.file2_id) + '.png')
+
+        expected_info_1 = ChartInfo(file1, ChartType.HISTOGRAM, self.file1_id)
+        expected_info_2 = ChartInfo(file2, ChartType.HISTOGRAM, self.file2_id)
+
+        histogram_dto = HistogramDto('intervals', 'number of p-values', 'histogram')
+        self.generate_charts_dto.chart_types = {ChartType.HISTOGRAM: histogram_dto}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
 
         self.assertTrue(exists(file1))

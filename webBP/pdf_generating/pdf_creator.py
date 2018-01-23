@@ -1,12 +1,11 @@
+import os
+import shutil
+import subprocess
 from os.path import dirname, join, exists, basename, splitext
+from shutil import rmtree
 from tempfile import mkdtemp, gettempdir
 
 import jinja2
-import subprocess
-
-from shutil import rmtree, copy2
-
-import os
 
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
@@ -53,7 +52,7 @@ class PdfCreator:
                                            stderr=null_output)
             if completed.returncode != 0:
                 raise PdfCreatingError('Failed LaTeX compilation when generating ' + pdf_creating_dto.output_file)
-            copy2(join(tmp_dir, file + '.pdf'), pdf_creating_dto.output_file)
+            shutil.copy2(join(tmp_dir, file + '.pdf'), pdf_creating_dto.output_file)
             if not exists(pdf_creating_dto.output_file):
                 raise PdfCreatingError('An error occurred while copying ' + pdf_creating_dto.output_file)
         finally:
