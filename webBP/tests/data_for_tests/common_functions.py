@@ -22,6 +22,9 @@ def get_file_by_id(file_id: int):
     elif file_id == FileIdData.file2_id:
         file.name = 'Second file'
         return file
+    elif file_id == FileIdData.file3_id:
+        file.name = 'Third_file'
+        return file
     raise ValueError('File id ' + str(file_id) + ' is unsupported')
 
 

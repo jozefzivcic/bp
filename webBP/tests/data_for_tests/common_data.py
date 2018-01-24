@@ -35,6 +35,7 @@ class TestsIdData:
 class FileIdData:
     file1_id = 456
     file2_id = 786
+    file3_id = 4096
 
 
 class UserIdData:

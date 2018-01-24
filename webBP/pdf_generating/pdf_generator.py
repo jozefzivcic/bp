@@ -9,7 +9,7 @@ from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
-from common.helper_functions import load_texts_into_config_parsers
+from common.helper_functions import load_texts_into_config_parsers, escape_latex_special_chars
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.filemanager import FileManager
@@ -79,6 +79,7 @@ class PdfGenerator:
         for chart_info in storage.get_all_infos():
             fid = chart_info.file_id
             file_name = self.get_file_name(fid)
+            file_name = escape_latex_special_chars(file_name)
             chart_name = self.get_chart_name(language, chart_info.chart_type)
             if fid in charts_dict:
                 charts_dict[fid]['chart_info'].append({'path_to_chart': chart_info.path_to_chart,

@@ -2,7 +2,8 @@ from configparser import ConfigParser
 from os.path import dirname, abspath, join
 from unittest import TestCase
 
-from common.helper_functions import config_parser_to_dict, load_texts_into_dict, load_texts_into_config_parsers
+from common.helper_functions import config_parser_to_dict, load_texts_into_dict, load_texts_into_config_parsers, \
+    escape_latex_special_chars
 
 this_dir = dirname(abspath(__file__))
 sample_texts_dir = join(this_dir, '..', 'sample_files_for_tests', 'sample_texts')
@@ -44,4 +45,37 @@ class TestHelperFunctions(TestCase):
 
         expected = {'en': cfg_1, 'sk': cfg_2}
         ret = load_texts_into_config_parsers(sample_texts_dir)
+        self.assertEqual(expected, ret)
+
+    def test_escape_underscore(self):
+        chars_to_escape = ['&', '%', '$', '#', '_', '{', '}']
+        for char in chars_to_escape:
+            text = 'something' + char + 'something'
+            expected = 'something\\' + char + 'something'
+            ret = escape_latex_special_chars(text)
+            self.assertEqual(expected, ret)
+
+        text = 'something~something'
+        expected = 'something\\textasciitilde{}something'
+        ret = escape_latex_special_chars(text)
+        self.assertEqual(expected, ret)
+
+        text = 'something^something'
+        expected = 'something\\^{}something'
+        ret = escape_latex_special_chars(text)
+        self.assertEqual(expected, ret)
+
+        text = 'something\\something'
+        expected = 'something\\textbackslash{}something'
+        ret = escape_latex_special_chars(text)
+        self.assertEqual(expected, ret)
+
+        text = 'something<something'
+        expected = 'something\\textless something'
+        ret = escape_latex_special_chars(text)
+        self.assertEqual(expected, ret)
+
+        text = 'something>something'
+        expected = 'something\\textgreater something'
+        ret = escape_latex_special_chars(text)
         self.assertEqual(expected, ret)

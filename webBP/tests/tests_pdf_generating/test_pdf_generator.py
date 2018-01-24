@@ -128,6 +128,16 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(output_filename, pdf_creating_dto.output_file)
         self.assertEqual(keys_for_template, pdf_creating_dto.keys_for_template)
 
+    def test_prepare_dict_from_charts_storage_escape_chars(self):
+        chart_info = ChartInfo('something', ChartType.P_VALUES, FileIdData.file3_id)
+        charts_storage = ChartsStorage()
+        charts_storage.add_chart_info(chart_info)
+
+        file_name = 'Third\_file'
+        ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
+        ret_file_name = ret[FileIdData.file3_id]['file_name']
+        self.assertEqual(file_name, ret_file_name)
+
     def test_prepare_dict_from_charts_storage_basic(self):
         path = '/home/something/chart.png'
         chart_info = ChartInfo(path, ChartType.P_VALUES, FileIdData.file1_id)
