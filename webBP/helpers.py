@@ -148,7 +148,14 @@ def set_response_not_found(handler: MyRequestHandler):
     handler.end_headers()
 
 
-def set_response_ok(handler: MyRequestHandler):
+def set_response_ok(handler: MyRequestHandler, content_type='text/html'):
     handler.send_response(200)
-    handler.send_header('Content-type', 'text/html')
+    handler.send_header('Content-type', content_type)
     handler.end_headers()
+
+
+def get_params_for_tests(handler: MyRequestHandler, tests: list):
+    if all(t.test_table == handler.config_storage.nist for t in tests):
+        test_ids = [t.id for t in tests]
+        return handler.nist_manager.get_nist_params_for_tests_list(test_ids)
+    raise NotImplementedError('Param for test table is not defined')

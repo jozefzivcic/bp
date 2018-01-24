@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'include_head.html' %}
+    <title>{{ tests_in_group }}</title>
+</head>
+<body>
+    {% include 'header.html' %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <h2>{{ tests_in_group }}</h2>
+                <form method="post" accept-charset="utf-8" name="show_pdf" action="/show_pdf">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th><input type="checkbox" class="checkbox" name="select_all"></th>
+                                    <th>{{ test }} {{ id }}</th>
+                                    <th>{{ test_type }}</th>
+                                    <th>{{ test_name }}</th>
+                                    <th>{{ file }}</th>
+                                    <th>{{ time_of_add }}</th>
+                                    <th>{{ more }}</th>
+                                </tr>
+                                {% for test in vars['tests'] %}
+                                    <tr>
+                                        <td><input type="checkbox" class="checkbox" name="ch_test_{{ test.id }}"></td>
+                                        <td>{{ test.id }}</td>
+                                        <td>{{ test.test_table }}</td>
+                                        <td>{{ vars['params'][test.id].get_test_name() }}</td>
+                                        <td>{{ vars['files'][test.file_id].name }}</td>
+                                        <td>{{ test.time_of_add }}</td>
+                                        <td>
+                                            <a href="/test?id={{ test.id }}">info</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input class="btn btn-success" type="submit" value="{{ show_pdf }}">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

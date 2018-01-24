@@ -133,7 +133,7 @@ class DBTestManager:
             format_strings = ','.join(['%s'] * len(test_ids))
             cur.execute(
                 'SELECT id, id_file, id_user, time_of_add, test_table, loaded, return_value, ended FROM tests '
-                'WHERE id IN (%s) ORDER BY id;' % format_strings,  tuple(test_ids))
+                'WHERE id IN (%s) ORDER BY id;' % format_strings, tuple(test_ids))
             connection.commit()
             ret = []
             for row in cur:
@@ -289,6 +289,32 @@ class DBTestManager:
         except pymysql.MySQLError as ex:
             self.logger.log_error('DBTestManager.delete_test', ex)
             return False
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
+
+    def check_test_ids_belong_to_user(self, test_ids: list, user_id: int):
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            format_strings = ','.join(['%s'] * len(test_ids))
+            temp_list = list(test_ids)
+            temp_list.append(user_id)
+            temp_tuple = tuple(temp_list)
+            cur.execute(
+                'SELECT id FROM tests WHERE id IN (%s) AND id_user = %s;' % (format_strings, '%s'), temp_tuple)
+            connection.commit()
+            if cur.rowcount == len(test_ids):
+                return True
+            return False
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('DBTestManager.check_test_ids_belong_to_user', ex)
+            return None
         finally:
             if cur:
                 cur.close()

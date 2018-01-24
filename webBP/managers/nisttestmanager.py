@@ -99,3 +99,39 @@ class NistTestManager:
             if cur:
                 cur.close()
             self.pool.release_connection(connection)
+
+    def get_nist_params_for_tests_list(self, test_ids: list):
+        """
+        Returns dictionary of keys=test_id and values=NistParam for corresponding key.
+        :param test_ids: Test ids for which nist param is searched.
+        :return: If an error occurs None, dict object as described above.
+        """
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            format_strings = ','.join(['%s'] * len(test_ids))
+            cur.execute(
+                'SELECT id_test, length, test_number, streams, special_parameter FROM nist_tests WHERE id_test '
+                'IN (%s);' % format_strings, tuple(test_ids))
+            connection.commit()
+            ret = {}
+            for row in cur:
+                nist_param = NistParam()
+                nist_param.test_id = row[0]
+                nist_param.length = row[1]
+                nist_param.test_number = row[2]
+                nist_param.streams = row[3]
+                nist_param.special_parameter = row[4]
+                ret[row[0]] = nist_param
+            return ret
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('NistTestManager.get_nist_params_for_tests_list', ex)
+            return None
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)

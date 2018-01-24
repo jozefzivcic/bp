@@ -4,7 +4,6 @@ import json
 from helpers import set_response_ok
 from myrequesthandler import MyRequestHandler
 from nist_statistics.facade.PValueFacade import PValueFacade
-from nist_statistics.p_value_counter import PValueCounter
 from nist_statistics.p_value_provider import PValueProvider
 
 

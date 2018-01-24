@@ -14,6 +14,7 @@ from controllers.chart_data_controller import get_data_for_base_chart, get_data_
 from controllers.chart_draw_controller import draw_base_chart_for_test, draw_barplot_for_test
 from controllers.charts_controller import get_charts
 from controllers.compute_stats import compute_stats
+from controllers.group_tests_controller import get_tests_in_group, show_pdf_post
 from controllers.js_controller import get_js_create_tests, get_js_base_chart, get_js_barplot
 from myconfigparser import MyConfigParser
 from configstorage import ConfigStorage
@@ -96,6 +97,8 @@ def register_pages_into_router(router):
     router.register_controller('/charts/barplot', draw_barplot_for_test)
     router.register_controller('/js/base_chart.js', get_js_base_chart)
     router.register_controller('/js/barplot.js', get_js_barplot)
+    router.register_controller('/groups/tests', get_tests_in_group)
+    router.register_controller('/show_pdf', show_pdf_post)
 
 def load_texts():
     """
