@@ -1,3 +1,4 @@
+import re
 from configparser import ConfigParser
 
 from os import listdir
@@ -42,3 +43,26 @@ def load_texts_into_config_parsers(path_to_dir_with_texts: str) -> dict:
             cfg.read(full_path)
             ret[file_name] = cfg
     return ret
+
+
+def escape_latex_special_chars(text: str) -> str:
+    """
+    :param text: A plain text message.
+    :return: The message escaped to appear correctly in LaTeX.
+    """
+    conv = {
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\^{}',
+        '\\': r'\textbackslash{}',
+        '<': r'\textless ',
+        '>': r'\textgreater ',
+    }
+    regex = re.compile('|'.join(re.escape(key) for key in sorted(conv.keys(), key=lambda item: - len(item))))
+    return regex.sub(lambda match: conv[match.group()], text)

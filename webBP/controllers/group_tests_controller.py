@@ -8,7 +8,8 @@ from shutil import rmtree
 from os.path import join
 
 from charts.chart_type import ChartType
-from helpers import set_response_not_found, set_response_ok, get_params_for_tests
+from controllers.common_controller import not_found, error_occurred
+from helpers import get_params_for_tests, set_response_ok
 from myrequesthandler import MyRequestHandler
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
 from pdf_generating.pdf_generating_error import PdfGeneratingError
@@ -25,12 +26,12 @@ def get_tests_in_group(handler: MyRequestHandler):
     except KeyError:
         error = True
     if error:
-        set_response_not_found(handler)
+        not_found(handler)
         return
     user_id = handler.sessions[handler.read_cookie()]
     group = handler.group_manager.get_group_by_id_for_user(group_id, user_id)
     if group is None:
-        set_response_not_found(handler)
+        not_found(handler)
     else:
         set_response_ok(handler)
 
@@ -58,7 +59,7 @@ def show_pdf_post(handler: MyRequestHandler):
     lang = handler.get_user_language(user_id)
     test_ids = get_test_ids(form)
     if not handler.test_manager.check_test_ids_belong_to_user(test_ids, user_id):
-        set_response_not_found(handler)
+        not_found(handler)
         return
     directory = mkdtemp()
     try:
@@ -70,8 +71,9 @@ def show_pdf_post(handler: MyRequestHandler):
             content = f.read()
         set_response_ok(handler, 'application/pdf')
         handler.wfile.write(content)
-    except PdfGeneratingError:
-        set_response_not_found(handler)
+    except PdfGeneratingError as ex:
+        handler.logger.log_error('Error in show_pdf_post', ex)
+        error_occurred(handler)
     finally:
         rmtree(directory)
 
