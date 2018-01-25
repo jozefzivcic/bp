@@ -16,7 +16,9 @@
                         <div class="col-md-12">
                             <table class="table">
                                 <tr>
-                                    <th><input type="checkbox" class="checkbox" name="select_all"></th>
+                                    <th>
+                                        <input type="checkbox" class="checkbox" name="select_all" onclick="toggle(this)">
+                                    </th>
                                     <th>{{ test }} {{ id }}</th>
                                     <th>{{ test_type }}</th>
                                     <th>{{ test_name }}</th>
@@ -49,5 +51,15 @@
             </div>
         </div>
     </div>
+<script language="JavaScript">
+function toggle(source) {
+    var inputs = document.getElementsByTagName("input");
+    for(var i = 0; i < inputs.length; i++) {
+        if(inputs[i].name.indexOf('ch_test_') === 0) {
+            inputs[i].checked = source.checked;
+        }
+    }
+}
+</script>
 </body>
 </html>
