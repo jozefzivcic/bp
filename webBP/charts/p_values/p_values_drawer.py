@@ -16,7 +16,7 @@ class PValuesDrawer:
         plt.ylim((0.000001, 1.0))
         plt.grid(axis='y', linestyle='-')
 
-        plt.plot(data.x_values, data.y_values, '.', color='blue')
+        plt.plot(data.x_values, data.y_values, '^', color='blue', markersize=5.0, alpha=0.3)
 
         plt.xticks(data.x_ticks_positions, data.x_ticks_labels, rotation='vertical')
         plt.yticks(PValuesDrawer.y_axis_ticks, PValuesDrawer.y_axis_labels)
