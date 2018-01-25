@@ -9,53 +9,93 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-10">
-                <h2>{{ tests_in_group }}</h2>
-                <form method="post" accept-charset="utf-8" name="show_pdf" action="/show_pdf">
+            <form method="post" accept-charset="utf-8" name="show_pdf" action="/show_pdf">
+            <div class="col-md-12">
+                <div class="col-md-9">
                     <div class="row">
                         <div class="col-md-12">
-                            <table class="table">
-                                <tr>
-                                    <th>
-                                        <input type="checkbox" class="checkbox" name="select_all" onclick="toggle(this)">
-                                    </th>
-                                    <th>{{ test }} {{ id }}</th>
-                                    <th>{{ test_type }}</th>
-                                    <th>{{ test_name }}</th>
-                                    <th>{{ file }}</th>
-                                    <th>{{ time_of_add }}</th>
-                                    <th>{{ more }}</th>
-                                </tr>
-                                {% for test in vars['tests'] %}
-                                    <tr>
-                                        <td><input type="checkbox" class="checkbox" name="ch_test_{{ test.id }}"></td>
-                                        <td>{{ test.id }}</td>
-                                        <td>{{ test.test_table }}</td>
-                                        <td>{{ vars['params'][test.id].get_test_name() }}</td>
-                                        <td>{{ vars['files'][test.file_id].name }}</td>
-                                        <td>{{ test.time_of_add }}</td>
-                                        <td>
-                                            <a href="/test?id={{ test.id }}">info</a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
+                            <h2>{{ tests_in_group }}</h2>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
-                            <input class="btn btn-success" type="submit" value="{{ show_pdf }}">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table">
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" class="checkbox" name="select_all_tests" onclick="toggle(this)">
+                                            </th>
+                                            <th>{{ test }} {{ id }}</th>
+                                            <th>{{ test_type }}</th>
+                                            <th>{{ test_name }}</th>
+                                            <th>{{ file }}</th>
+                                            <th>{{ time_of_add }}</th>
+                                            <th>{{ more }}</th>
+                                        </tr>
+                                        {% for test in vars['tests'] %}
+                                            <tr>
+                                                <td><input type="checkbox" class="checkbox" name="ch_test_{{ test.id }}"></td>
+                                                <td>{{ test.id }}</td>
+                                                <td>{{ test.test_table }}</td>
+                                                <td>{{ vars['params'][test.id].get_test_name() }}</td>
+                                                <td>{{ vars['files'][test.file_id].name }}</td>
+                                                <td>{{ test.time_of_add }}</td>
+                                                <td>
+                                                    <a href="/test?id={{ test.id }}">info</a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <!--space -->
+                </div>
+                <div class="col-md-2">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2>{{ options }}</h2>
                         </div>
                     </div>
-                </form>
+                    <div class="row">
+                        {{ alpha }}
+                        <input  type="number" name="alpha" min="0.0" max="1.0" step="any" value="0.01">
+                    </div>
+                    <div class="row">
+                        <input type="checkbox" name="select_all_charts" id="select_all_charts" onclick="toggle(this)">
+                        <label class="form-check-label" for="select_all_charts"> {{ select_all_charts }} </label>
+                    </div>
+                    <div class="row">
+                        <input type="checkbox" name="ch_chart_type_1" id="ch_chart_type_1">
+                        <label class="form-check-label" for="ch_chart_type_1"> {{ p_values_chart  }} </label>
+                    </div>
+                    <div class="row">
+                        <input type="checkbox" name="ch_chart_type_2" id="ch_chart_type_2">
+                        <label class="form-check-label" for="ch_chart_type_2"> {{ histogram }} </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <input class="btn btn-success" type="submit" value="{{ show_pdf }}">
+                    </div>
+                </div>
             </div>
+            </form>
         </div>
     </div>
 <script language="JavaScript">
 function toggle(source) {
     var inputs = document.getElementsByTagName("input");
+    var prefix = '';
+    if (source.name === 'select_all_tests')
+        prefix = 'ch_test_';
+    else if (source.name === 'select_all_charts')
+        prefix = 'ch_chart_type_';
     for(var i = 0; i < inputs.length; i++) {
-        if(inputs[i].name.indexOf('ch_test_') === 0) {
+        if(inputs[i].name.indexOf(prefix) === 0) {
             inputs[i].checked = source.checked;
         }
     }

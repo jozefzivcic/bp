@@ -114,3 +114,7 @@ tests_in_group=Tests in group
 show_tests=Show tests
 cannot_display_tests=Test(s) in group cannot be accessed unless all tests finish
 show_pdf=Show PDF
+options=Options
+alpha=alpha
+select_all_charts=Select all charts
+histogram=histogram

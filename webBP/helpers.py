@@ -159,3 +159,12 @@ def get_params_for_tests(handler: MyRequestHandler, tests: list):
         test_ids = [t.id for t in tests]
         return handler.nist_manager.get_nist_params_for_tests_list(test_ids)
     raise NotImplementedError('Param for test table is not defined')
+
+
+def get_ids_of_elements_starting_with(form, prefix):
+    elements = [element for element in form.keys() if element.startswith(prefix)]
+    ids = []
+    for element in elements:
+        elem_id = re.search(prefix + r'([0-9]+)', element).groups()[0]
+        ids.append(int(elem_id))
+    return ids

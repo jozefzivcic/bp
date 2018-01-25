@@ -9,7 +9,7 @@ from os.path import join
 
 from charts.chart_type import ChartType
 from controllers.common_controller import not_found, error_occurred
-from helpers import get_params_for_tests, set_response_ok
+from helpers import get_params_for_tests, set_response_ok, get_ids_of_elements_starting_with
 from myrequesthandler import MyRequestHandler
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
 from pdf_generating.pdf_generating_error import PdfGeneratingError
@@ -63,8 +63,10 @@ def show_pdf_post(handler: MyRequestHandler):
         return
     directory = mkdtemp()
     try:
+        alpha = get_alpha(form)
+        chart_types = get_chart_types(form)
         file_name = join(directory, 'output.pdf')
-        dto = PdfGeneratingDto(0.01, test_ids, [ChartType.P_VALUES, ChartType.HISTOGRAM], lang, file_name)
+        dto = PdfGeneratingDto(alpha, test_ids, chart_types, lang, file_name)
         generator = PdfGenerator(handler.pool, handler.config_storage)
         generator.generate_pdf(dto)
         with open(file_name, 'rb') as f:
@@ -84,9 +86,20 @@ def get_test_ids(form):
     :param form: Form from which id's are extracted.
     :return: Array of id's.
     """
-    tests = [group for group in form.keys() if group.startswith('ch_test_')]
-    ids = []
-    for test in tests:
-        test_id = re.search(r'ch_test_([0-9]+)', test).groups()[0]
-        ids.append(int(test_id))
-    return ids
+    return get_ids_of_elements_starting_with(form, 'ch_test_')
+
+
+def get_chart_types(form):
+    ids = get_ids_of_elements_starting_with(form, 'ch_chart_type_')
+    types = []
+    if 1 in ids:
+        types.append(ChartType.P_VALUES)
+    if 2 in ids:
+        types.append(ChartType.HISTOGRAM)
+    return types
+
+
+def get_alpha(form):
+    alpha_str = form['alpha'].value
+    alpha = float(alpha_str)
+    return alpha
