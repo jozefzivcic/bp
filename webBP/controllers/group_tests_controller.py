@@ -63,10 +63,11 @@ def show_pdf_post(handler: MyRequestHandler):
         return
     directory = mkdtemp()
     try:
-        alpha = get_alpha(form)
-        chart_types = get_chart_types(form)
         file_name = join(directory, 'output.pdf')
-        dto = PdfGeneratingDto(alpha, test_ids, chart_types, lang, file_name)
+        dto = get_pdf_generating_dto(form, test_ids, lang, file_name)
+        if dto is None:
+            not_found(handler)
+            return
         generator = PdfGenerator(handler.pool, handler.config_storage)
         generator.generate_pdf(dto)
         with open(file_name, 'rb') as f:
@@ -100,6 +101,32 @@ def get_chart_types(form):
 
 
 def get_alpha(form):
-    alpha_str = form['alpha'].value
-    alpha = float(alpha_str)
+    try:
+        alpha_str = form['alpha'].value
+    except (KeyError, AttributeError):
+        return None
+    try:
+        alpha = float(alpha_str)
+    except ValueError:
+        return None
+    if alpha > 1.0 or alpha < 0.0:
+        return None
     return alpha
+
+
+def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str, file_name):
+    """
+    Creates PdfGeneratingDto
+    :param form: Submitted form class.
+    :param test_ids: Ids of tests for which to create a DTO.
+    :param language: User language.
+    :param file_name: Output PDF file.
+    :return: If some error occurs (invalid forms) then None. PdfCreatingDto otherwise.
+    """
+    alpha = get_alpha(form)
+    if alpha is None:
+        return None
+    chart_types = get_chart_types(form)
+    if not chart_types:
+        return None
+    return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name)
