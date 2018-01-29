@@ -57,7 +57,7 @@ class TestChartsCreator(TestCase):
             MagicMock(side_effect=nist_dao_get_nist_param_for_test)
         tests_arr = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
-        self.generate_charts_dto = GenerateChartsDto(tests_arr, {ChartType.P_VALUES: chart_dto}, working_dir)
+        self.generate_charts_dto = GenerateChartsDto(tests_arr, {ChartType.P_VALUES: [chart_dto]}, working_dir)
 
     def tearDown(self):
         if exists(working_dir):
@@ -224,7 +224,7 @@ class TestChartsCreator(TestCase):
         expected_info_2 = ChartInfo(file2, ChartType.HISTOGRAM, self.file2_id)
 
         histogram_dto = HistogramDto('intervals', 'number of p-values', 'histogram')
-        self.generate_charts_dto.chart_types = {ChartType.HISTOGRAM: histogram_dto}
+        self.generate_charts_dto.chart_types = {ChartType.HISTOGRAM: [histogram_dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
 
         self.assertTrue(exists(file1))

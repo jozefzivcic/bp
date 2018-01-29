@@ -57,11 +57,11 @@ class PdfGenerator:
         if chart_type == ChartType.P_VALUES:
             dto = PValuesChartDto(pdf_generating_dto.alpha, texts['General']['Tests'],
                                   texts['General']['PValue'], texts['PValuesChart']['PValuesChart'])
-            return dto
+            return [dto]
         elif chart_type == ChartType.HISTOGRAM:
             dto = HistogramDto(texts['Histogram']['Intervals'], texts['Histogram']['NumOfPValues'],
                                texts['Histogram']['Histogram'])
-            return dto
+            return [dto]
         raise PdfGeneratingError('Unsupported chart type')
 
     def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage) -> PdfCreatingDto:

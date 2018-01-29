@@ -9,6 +9,7 @@ from charts.chart_type import ChartType
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
 from charts.histogram_dto import HistogramDto
+from charts.p_values_chart_dto import PValuesChartDto
 from common.helper_functions import load_texts_into_config_parsers
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
@@ -96,20 +97,24 @@ class TestPdfGenerator(TestCase):
         generating_dto.alpha = 0.48
         generating_dto.language = 'en'
         ret = self.pdf_generator.create_dto_for_concrete_chart(ChartType.P_VALUES, generating_dto)
-        self.assertAlmostEqual(0.48, ret.alpha, places=1E-6)
-        self.assertEqual(self.texts['en']['General']['Tests'], ret.x_label)
-        self.assertEqual(self.texts['en']['General']['PValue'], ret.y_label)
-        self.assertEqual(self.texts['en']['PValuesChart']['PValuesChart'], ret.title)
+
+        self.assertEqual(list, type(ret))
+        self.assertEqual(PValuesChartDto, type(ret[0]))
+        self.assertAlmostEqual(0.48, ret[0].alpha, places=1E-6)
+        self.assertEqual(self.texts['en']['General']['Tests'], ret[0].x_label)
+        self.assertEqual(self.texts['en']['General']['PValue'], ret[0].y_label)
+        self.assertEqual(self.texts['en']['PValuesChart']['PValuesChart'], ret[0].title)
 
     def test_create_dto_for_concrete_chart_histogram(self):
         generating_dto = PdfGeneratingDto()
         generating_dto.language = 'en'
         ret = self.pdf_generator.create_dto_for_concrete_chart(ChartType.HISTOGRAM, generating_dto)
 
-        self.assertEqual(HistogramDto, type(ret))
-        self.assertEqual(self.texts['en']['Histogram']['Intervals'], ret.x_label)
-        self.assertEqual(self.texts['en']['Histogram']['NumOfPValues'], ret.y_label)
-        self.assertEqual(self.texts['en']['Histogram']['Histogram'], ret.title)
+        self.assertEqual(list, type(ret))
+        self.assertEqual(HistogramDto, type(ret[0]))
+        self.assertEqual(self.texts['en']['Histogram']['Intervals'], ret[0].x_label)
+        self.assertEqual(self.texts['en']['Histogram']['NumOfPValues'], ret[0].y_label)
+        self.assertEqual(self.texts['en']['Histogram']['Histogram'], ret[0].title)
 
     def test_prepare_pdf_creating_dto(self):
         language = 'en'

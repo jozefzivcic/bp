@@ -33,8 +33,9 @@ class ChartsCreator:
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
         self.check_input(generate_charts_dto)
         self.load_p_values(generate_charts_dto.test_ids)
-        for chart_type, chart_dto in generate_charts_dto.chart_types.items():
-            self.draw_concrete_charts(chart_type, chart_dto, generate_charts_dto.directory)
+        for chart_type, chart_dto_list in generate_charts_dto.chart_types.items():
+            for chart_dto in chart_dto_list:
+                self.draw_concrete_charts(chart_type, chart_dto, generate_charts_dto.directory)
         return self._charts_storage
 
     def create_p_values_charts_for_tests(self, dto: PValuesChartDto, directory: str):
