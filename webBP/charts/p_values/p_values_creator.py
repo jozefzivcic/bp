@@ -26,12 +26,13 @@ class PValuesCreator:
         if data.file_id is None:
             raise TypeError('file_id cannot be None')
 
-        file = self.get_file_name_for_p_values_chart(data.directory, data.file_id)
+        file = self.get_file_name_for_p_values_chart(data)
         data_for_chart = self._extractor.get_data_from_accumulator(data.acc, data.chart_options)
         self._p_values_drawer.draw_chart(data_for_chart, file)
 
         return ChartInfo(file, ChartType.P_VALUES, data.file_id)
 
-    def get_file_name_for_p_values_chart(self, directory, file_id):
-        file_name = 'p_values_for_file_' + str(file_id) + '.png'
-        return join(directory, file_name)
+    def get_file_name_for_p_values_chart(self, data: DataForPValuesCreator):
+        zoomed_str = '_zoomed' if data.chart_options.zoomed else ''
+        file_name = 'p_values_for_file_' + str(data.file_id) + zoomed_str + '.png'
+        return join(data.directory, file_name)

@@ -80,6 +80,19 @@ class TestPValuesCreator(TestCase):
             self.p_values_creator.create_p_values_chart(self.data_for_p_values_creator)
         self.assertEqual('file_id cannot be None', str(context.exception))
 
+    def test_get_file_name_not_zoomed(self):
+        file_name = 'p_values_for_file_' + str(self.data_for_p_values_creator.file_id) + '.png'
+        expected = join(working_dir, file_name)
+        ret = self.p_values_creator.get_file_name_for_p_values_chart(self.data_for_p_values_creator)
+        self.assertEqual(expected, ret)
+
+    def test_get_file_name_zoomed(self):
+        self.data_for_p_values_creator.chart_options.zoomed = True
+        file_name = 'p_values_for_file_' + str(self.data_for_p_values_creator.file_id) + '_zoomed.png'
+        expected = join(working_dir, file_name)
+        ret = self.p_values_creator.get_file_name_for_p_values_chart(self.data_for_p_values_creator)
+        self.assertEqual(expected, ret)
+
     def test_create_p_values_chart(self):
         chart_info = self.p_values_creator.create_p_values_chart(self.data_for_p_values_creator)
         self.assertTrue(exists(chart_info.path_to_chart))

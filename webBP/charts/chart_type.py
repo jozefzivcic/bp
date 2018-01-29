@@ -6,4 +6,5 @@ class ChartType(Enum):
     This enum represents possible types of charts, which can be generated.
     """
     P_VALUES = 1
-    HISTOGRAM = 2
+    P_VALUES_ZOOMED = 2
+    HISTOGRAM = 3

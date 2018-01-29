@@ -51,9 +51,9 @@ class TestExtractor(TestCase):
         self.assertEqual(expected, ret)
 
     def test_add_data_none_index(self):
-        dto = PValuesDto(dict_for_test_13)
+        p_values_dto = PValuesDto(dict_for_test_13)
         data = DataForPValuesDrawer()
-        self.extractor.add_data(dto, data, self.test1_id)
+        self.extractor.add_data(self.p_values_chart_dto, p_values_dto, data, self.test1_id)
 
         expected = [self.test1_name]
         self.assertEqual(expected, data.x_ticks_labels)
@@ -70,9 +70,9 @@ class TestExtractor(TestCase):
         self.assertEqual(2, self.extractor._i)
 
     def test_add_data_index_one(self):
-        dto = PValuesDto(dict_for_test_14)
+        p_values_dto = PValuesDto(dict_for_test_14)
         data = DataForPValuesDrawer()
-        self.extractor.add_data(dto, data, self.test2_id, 1)
+        self.extractor.add_data(self.p_values_chart_dto, p_values_dto, data, self.test2_id, 1)
 
         expected = [self.test2_name + '_1']
         self.assertEqual(expected, data.x_ticks_labels)
@@ -84,6 +84,56 @@ class TestExtractor(TestCase):
         self.assertEqual(expected, data.x_values)
 
         expected = dict_for_test_14['data1']
+        self.assertEqual(expected, data.y_values)
+
+        self.assertEqual(2, self.extractor._i)
+
+    def test_add_data_none_index_zoomed(self):
+        self.p_values_chart_dto.zoomed = True
+        alpha = dict_for_test_13['results'][0]
+        self.p_values_chart_dto.alpha = alpha
+
+        p_values_dto = PValuesDto(dict_for_test_13)
+        data = DataForPValuesDrawer()
+        self.extractor.add_data(self.p_values_chart_dto, p_values_dto, data, self.test1_id)
+
+        expected = [self.test1_name]
+        self.assertEqual(expected, data.x_ticks_labels)
+
+        expected = [1]
+        self.assertEqual(expected, data.x_ticks_positions)
+
+        expected_p_values = [p_value for p_value in dict_for_test_13['results'] if p_value <= alpha]
+
+        expected = list(repeat(1, len(expected_p_values)))
+        self.assertEqual(expected, data.x_values)
+
+        expected = expected_p_values
+        self.assertEqual(expected, data.y_values)
+
+        self.assertEqual(2, self.extractor._i)
+
+    def test_add_data_index_one_zoomed(self):
+        self.p_values_chart_dto.zoomed = True
+        alpha = dict_for_test_14['data1'][0]
+        self.p_values_chart_dto.alpha = alpha
+
+        p_values_dto = PValuesDto(dict_for_test_14)
+        data = DataForPValuesDrawer()
+        self.extractor.add_data(self.p_values_chart_dto, p_values_dto, data, self.test2_id, 1)
+
+        expected = [self.test2_name + '_1']
+        self.assertEqual(expected, data.x_ticks_labels)
+
+        expected = [1]
+        self.assertEqual(expected, data.x_ticks_positions)
+
+        expected_p_values = [p_value for p_value in dict_for_test_14['data1'] if p_value <= alpha]
+
+        expected = list(repeat(1, len(expected_p_values)))
+        self.assertEqual(expected, data.x_values)
+
+        expected = expected_p_values
         self.assertEqual(expected, data.y_values)
 
         self.assertEqual(2, self.extractor._i)

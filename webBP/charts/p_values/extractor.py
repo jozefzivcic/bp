@@ -16,13 +16,14 @@ class Extractor:
         self._nist_dao = NistTestManager(pool)
         self._config_storage = storage
         self._i = 1
+        self._zoomed = False
 
-    def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: PValuesChartDto) -> DataForPValuesDrawer:
+    def get_data_from_accumulator(self, acc: PValuesAccumulator, chart_dto: PValuesChartDto) -> DataForPValuesDrawer:
         data = DataForPValuesDrawer()
-        data.alpha = dto.alpha
-        data.x_label = dto.x_label
-        data.y_label = dto.y_label
-        data.title = dto.title
+        data.alpha = chart_dto.alpha
+        data.x_label = chart_dto.x_label
+        data.y_label = chart_dto.y_label
+        data.title = chart_dto.title
 
         test_ids = acc.get_all_test_ids()
         self._i = 1
@@ -32,12 +33,13 @@ class Extractor:
             if p_values_dto.has_data_files():
                 indices = p_values_dto.get_data_files_indices()
                 for index in indices:
-                    self.add_data(p_values_dto, data, test_id, index)
+                    self.add_data(chart_dto, p_values_dto, data, test_id, index)
             else:
-                self.add_data(p_values_dto, data, test_id)
+                self.add_data(chart_dto, p_values_dto, data, test_id)
         return data
 
-    def add_data(self, dto: PValuesDto, data: DataForPValuesDrawer, test_id: int, index=None):
+    def add_data(self, chart_dto: PValuesChartDto, dto: PValuesDto, data: DataForPValuesDrawer, test_id: int,
+                 index=None):
         if index is None:
             data.x_ticks_labels.append(self.get_test_name(test_id))
             p_values = dto.get_results_p_values()
@@ -48,6 +50,8 @@ class Extractor:
         data.x_ticks_positions.append(self._i)
         p_values = self.replace_zero_p_values(p_values)
         for p_value in p_values:
+            if chart_dto.zoomed and p_value > chart_dto.alpha:
+                continue
             data.x_values.append(self._i)
             data.y_values.append(p_value)
         self._i += 1
