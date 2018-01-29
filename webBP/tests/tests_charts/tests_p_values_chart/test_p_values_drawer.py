@@ -54,6 +54,9 @@ class TestPValuesDrawer(TestCase):
 
         data.x_ticks_labels = ['Frequency', 'Cumulative Sums_1', 'Cumulative Sums_2']
 
+        data.y_axis_ticks = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]
+        data.y_axis_labels = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.1', '1.0']
+
         data.x_label = 'test'
 
         data.y_label = 'p-value'

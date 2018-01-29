@@ -8,7 +8,7 @@ class TestDataForChart(TestCase):
         self.data = DataForPValuesDrawer()
 
     def test_has_members(self):
-        members = ['alpha', 'x_values', 'y_values', 'x_ticks_positions', 'x_ticks_labels', 'x_label', 'y_label',
-                   'title']
+        members = ['alpha', 'x_values', 'y_values', 'x_ticks_positions', 'x_ticks_labels', 'y_axis_ticks',
+                   'y_axis_labels', 'x_label', 'y_label', 'title']
         existing = list(vars(self.data).keys())
         self.assertEqual(sorted(members), sorted(existing))

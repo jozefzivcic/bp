@@ -25,6 +25,14 @@ class Extractor:
         data.y_label = chart_dto.y_label
         data.title = chart_dto.title
 
+        y_axis_ticks = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]
+        y_axis_labels = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.1', '1.0']
+
+        if not chart_dto.zoomed:
+            data.y_axis_ticks = y_axis_ticks
+            data.y_axis_labels = y_axis_labels
+        else:
+            self.set_y_axis(chart_dto.alpha, y_axis_ticks, y_axis_labels, data)
         test_ids = acc.get_all_test_ids()
         self._i = 1
 
@@ -65,3 +73,22 @@ class Extractor:
 
     def replace_zero_p_values(self, p_values: list):
         return [Extractor.threshold_is_zero if x < Extractor.threshold_is_zero else x for x in p_values]
+
+    def set_y_axis(self, alpha, y_axis_ticks: list, y_axis_labels: list, data: DataForPValuesDrawer):
+        l = len(y_axis_ticks)
+        temp_ticks = [0.000001]
+        temp_labels = ['0.0']
+        if alpha < 0.000001:
+            data.y_axis_ticks = temp_ticks
+            data.y_axis_labels = temp_labels
+            return
+        for i in range(l):
+            if y_axis_ticks[i] < alpha:
+                temp_ticks.append(y_axis_ticks[i])
+                temp_labels.append(y_axis_labels[i])
+            else:
+                break
+        temp_ticks.append(alpha)
+        temp_labels.append('%.6f' % alpha)
+        data.y_axis_ticks = temp_ticks
+        data.y_axis_labels = temp_labels
