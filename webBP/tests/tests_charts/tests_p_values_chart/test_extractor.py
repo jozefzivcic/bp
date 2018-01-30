@@ -31,6 +31,9 @@ class TestExtractor(TestCase):
 
         self.non_existing_test_id = TestsIdData.non_existing_test_id
 
+        self.y_axis_ticks = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]
+        self.y_axis_labels = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.1', '1.0']
+
     def test_get_test_name(self):
         expected = self.test1_name
         name = self.extractor.get_test_name(self.test1_id)
@@ -174,3 +177,79 @@ class TestExtractor(TestCase):
 
         expected = 'p-values from selected tests'
         self.assertEqual(expected, data.title)
+
+    def test_set_y_axis_small_alpha(self):
+        alpha = 0.000001
+        data = DataForPValuesDrawer()
+        self.extractor.set_y_axis(alpha, self.y_axis_ticks, self.y_axis_labels, data)
+
+        expected = [0.000001, 0.00001]
+        self.assertEqual(expected, data.y_axis_ticks)
+
+        expected = ['0.0', '0.00001']
+        self.assertEqual(expected, data.y_axis_labels)
+
+        alpha = 0.0000009999
+        data = DataForPValuesDrawer()
+        self.extractor.set_y_axis(alpha, self.y_axis_ticks, self.y_axis_labels, data)
+
+        expected = [0.000001, 0.00001]
+        self.assertEqual(expected, data.y_axis_ticks)
+
+        expected = ['0.0', '0.00001']
+        self.assertEqual(expected, data.y_axis_labels)
+
+    def test_set_y_axis_bigger_alpha(self):
+        alpha = 0.000002
+        data = DataForPValuesDrawer()
+        self.extractor.set_y_axis(alpha, self.y_axis_ticks, self.y_axis_labels, data)
+
+        expected = [0.000001, 0.000002]
+        self.assertEqual(expected, data.y_axis_ticks)
+        expected = ['0.0', '0.000002']
+        self.assertEqual(expected, data.y_axis_labels)
+
+        alpha = 0.000009
+        data = DataForPValuesDrawer()
+        self.extractor.set_y_axis(alpha, self.y_axis_ticks, self.y_axis_labels, data)
+
+        expected = [0.000001, 0.000009]
+        self.assertEqual(expected, data.y_axis_ticks)
+        expected = ['0.0', '0.000009']
+        self.assertEqual(expected, data.y_axis_labels)
+
+        alpha = 0.00001
+        data = DataForPValuesDrawer()
+        self.extractor.set_y_axis(alpha, self.y_axis_ticks, self.y_axis_labels, data)
+
+        expected = [0.000001, 0.00001]
+        self.assertEqual(expected, data.y_axis_ticks)
+        expected = ['0.0', '0.00001']
+        self.assertEqual(expected, data.y_axis_labels)
+
+        alpha = 0.000011
+        data = DataForPValuesDrawer()
+        self.extractor.set_y_axis(alpha, self.y_axis_ticks, self.y_axis_labels, data)
+
+        expected = [0.000001, 0.00001, 0.000011]
+        self.assertEqual(expected, data.y_axis_ticks)
+        expected = ['0.0', '0.00001', '0.000011']
+        self.assertEqual(expected, data.y_axis_labels)
+
+        alpha = 0.01
+        data = DataForPValuesDrawer()
+        self.extractor.set_y_axis(alpha, self.y_axis_ticks, self.y_axis_labels, data)
+
+        expected = [0.000001, 0.00001, 0.0001, 0.001, 0.01]
+        self.assertEqual(expected, data.y_axis_ticks)
+        expected = ['0.0', '0.00001', '0.0001', '0.001', '0.01']
+        self.assertEqual(expected, data.y_axis_labels)
+
+        alpha = 0.05
+        data = DataForPValuesDrawer()
+        self.extractor.set_y_axis(alpha, self.y_axis_ticks, self.y_axis_labels, data)
+
+        expected = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.05]
+        self.assertEqual(expected, data.y_axis_ticks)
+        expected = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.05']
+        self.assertEqual(expected, data.y_axis_labels)

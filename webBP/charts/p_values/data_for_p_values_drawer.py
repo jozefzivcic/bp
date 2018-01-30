@@ -10,3 +10,4 @@ class DataForPValuesDrawer:
         self.x_label = None
         self.y_label = None
         self.title = None
+        self.zoomed = False

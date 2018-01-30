@@ -24,6 +24,7 @@ class Extractor:
         data.x_label = chart_dto.x_label
         data.y_label = chart_dto.y_label
         data.title = chart_dto.title
+        data.zoomed = chart_dto.zoomed
 
         y_axis_ticks = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]
         y_axis_labels = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.1', '1.0']
@@ -78,17 +79,20 @@ class Extractor:
         l = len(y_axis_ticks)
         temp_ticks = [0.000001]
         temp_labels = ['0.0']
-        if alpha < 0.000001:
+        if alpha <= 0.000001:
+            temp_ticks.append(0.00001)
+            temp_labels.append('0.00001')
             data.y_axis_ticks = temp_ticks
             data.y_axis_labels = temp_labels
             return
-        for i in range(l):
+
+        for i in range(1, l):
             if y_axis_ticks[i] < alpha:
                 temp_ticks.append(y_axis_ticks[i])
                 temp_labels.append(y_axis_labels[i])
             else:
                 break
         temp_ticks.append(alpha)
-        temp_labels.append('%.6f' % alpha)
+        temp_labels.append(('%.6f' % alpha).rstrip('0').rstrip('.'))
         data.y_axis_ticks = temp_ticks
         data.y_axis_labels = temp_labels

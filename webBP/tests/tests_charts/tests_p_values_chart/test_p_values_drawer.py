@@ -5,6 +5,7 @@ from os.path import dirname, abspath, join, exists, isfile
 from unittest import TestCase
 
 from shutil import rmtree
+from unittest.mock import patch
 
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.p_values_drawer import PValuesDrawer
@@ -45,6 +46,35 @@ class TestPValuesDrawer(TestCase):
         self.assertTrue(isfile(file_1))
         self.assertTrue(isfile(file_2))
         self.assertTrue(cmp(file_1, file_2))
+
+    @patch('matplotlib.pyplot.ylim')
+    def test_assert_called_ylim_not_zoomed(self, func):
+        self.data.zoomed = False
+        file = join(working_dir, 'graph.png')
+        self.drawer.draw_chart(self.data, file)
+        func.assert_called_once_with((0.000001, 1.0))
+
+    @patch('matplotlib.pyplot.ylim')
+    def test_assert_called_ylim_zoomed(self, func):
+        self.data.zoomed = True
+        self.data.y_axis_ticks = [0.000001, 0.00001, 0.0001]
+        file = join(working_dir, 'graph.png')
+        self.drawer.draw_chart(self.data, file)
+        func.assert_called_once_with((0.000001, 0.0001))
+
+    @patch('matplotlib.pyplot.axhline')
+    def test_assert_called_axhline_when_not_zoomed(self, func):
+        self.data.zoomed = False
+        file = join(working_dir, 'graph.png')
+        self.drawer.draw_chart(self.data, file)
+        func.assert_called_once_with(y=self.data.alpha, color='r', linestyle='--')
+
+    @patch('matplotlib.pyplot.axhline')
+    def test_assert_not_called_axhline_when_zoomed(self, func):
+        self.data.zoomed = True
+        file = join(working_dir, 'graph.png')
+        self.drawer.draw_chart(self.data, file)
+        self.assertFalse(func.called)
 
     def get_data(self):
         data = DataForPValuesDrawer()
