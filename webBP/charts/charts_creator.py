@@ -1,5 +1,6 @@
 from os.path import exists
 
+from charts.charts_error import ChartsError
 from charts.histogram.data_for_histogram_creator import DataForHistogramCreator
 from charts.histogram.histogram_creator import HistogramCreator
 from charts.p_values_chart_dto import PValuesChartDto
@@ -28,7 +29,7 @@ class ChartsCreator:
         self._charts_storage = ChartsStorage()
         self._p_values_creator = PValuesCreator(pool, storage)
         self._histogram_creator = HistogramCreator()
-        self.supported_charts = [ChartType.P_VALUES, ChartType.HISTOGRAM]
+        self.supported_charts = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM]
 
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
         self.check_input(generate_charts_dto)
@@ -92,5 +93,9 @@ class ChartsCreator:
     def draw_concrete_charts(self, chart_type: ChartType, dto, directory: str):
         if chart_type == ChartType.P_VALUES:
             self.create_p_values_charts_for_tests(dto, directory)
+        elif chart_type == ChartType.P_VALUES_ZOOMED:
+            self.create_p_values_charts_for_tests(dto, directory)
         elif chart_type == ChartType.HISTOGRAM:
             self.create_histograms_for_tests(dto, directory)
+        else:
+            raise ChartsError('Unsupported chart type')

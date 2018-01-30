@@ -70,18 +70,21 @@
                     </div>
                     <div class="row">
                         <input type="checkbox" name="ch_chart_type_1" id="ch_chart_type_1">
-                        <label class="form-check-label" for="ch_chart_type_1"> {{ p_values_chart  }} </label>
+                        <label class="form-check-label" for="ch_chart_type_1"> {{ p_values_chart }} </label>
                     </div>
                     <div class="row">
                         <input type="checkbox" name="ch_chart_type_2" id="ch_chart_type_2">
-                        <label class="form-check-label" for="ch_chart_type_2"> {{ histogram }} </label>
+                        <label class="form-check-label" for="ch_chart_type_2"> {{ zoomed_p_values }} </label>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3">
+                    <div class="row">
+                        <input type="checkbox" name="ch_chart_type_3" id="ch_chart_type_3">
+                        <label class="form-check-label" for="ch_chart_type_3"> {{ histogram }} </label>
+                    </div>
+                    <div class="row">
                         <input class="btn btn-success" type="submit" value="{{ show_pdf }}">
                     </div>
                 </div>
+
             </div>
             </form>
         </div>

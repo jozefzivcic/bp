@@ -30,7 +30,8 @@ class PValuesCreator:
         data_for_chart = self._extractor.get_data_from_accumulator(data.acc, data.chart_options)
         self._p_values_drawer.draw_chart(data_for_chart, file)
 
-        return ChartInfo(file, ChartType.P_VALUES, data.file_id)
+        chart_type = ChartType.P_VALUES_ZOOMED if data.chart_options.zoomed else ChartType.P_VALUES
+        return ChartInfo(file, chart_type, data.file_id)
 
     def get_file_name_for_p_values_chart(self, data: DataForPValuesCreator):
         zoomed_str = '_zoomed' if data.chart_options.zoomed else ''

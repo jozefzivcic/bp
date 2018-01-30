@@ -58,6 +58,10 @@ class PdfGenerator:
             dto = PValuesChartDto(pdf_generating_dto.alpha, texts['General']['Tests'],
                                   texts['General']['PValue'], texts['PValuesChart']['PValuesChart'])
             return [dto]
+        elif chart_type == ChartType.P_VALUES_ZOOMED:
+            dto = PValuesChartDto(pdf_generating_dto.alpha, texts['General']['Tests'],
+                                  texts['General']['PValue'], texts['PValuesChart']['PValuesChart'], True)
+            return [dto]
         elif chart_type == ChartType.HISTOGRAM:
             dto = HistogramDto(texts['Histogram']['Intervals'], texts['Histogram']['NumOfPValues'],
                                texts['Histogram']['Histogram'])
@@ -108,6 +112,8 @@ class PdfGenerator:
     def get_chart_name(self, language: str, ch_type: ChartType) -> str:
         if ch_type == ChartType.P_VALUES:
             return self._texts[language]['PValuesChart']['PValuesChart']
+        elif ch_type == ChartType.P_VALUES_ZOOMED:
+            return self._texts[language]['PValuesChartZoomed']['PValuesChartZoomed']
         elif ch_type == ChartType.HISTOGRAM:
             return self._texts[language]['Histogram']['HistogramUpperH']
         raise PdfGeneratingError('Undefined chart type: ' + str(ch_type))

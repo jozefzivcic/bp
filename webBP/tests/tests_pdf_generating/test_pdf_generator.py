@@ -85,6 +85,11 @@ class TestPdfGenerator(TestCase):
         self.pdf_generator.generate_pdf(self.dto_for_two_files)
         self.assertTrue(exists(self.dto_for_two_files.output_filename))
 
+    def test_generate_pdf_one_file_three_charts(self):
+        self.dto_for_one_file.chart_types = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM]
+        self.pdf_generator.generate_pdf(self.dto_for_one_file)
+        self.assertTrue(exists(self.dto_for_one_file.output_filename))
+
     def test_create_dto_for_concrete_chart_unsupported_chart(self):
         pdf_generating_dto = PdfGeneratingDto()
         pdf_generating_dto.language = 'en'

@@ -98,3 +98,10 @@ class TestPValuesCreator(TestCase):
         self.assertTrue(exists(chart_info.path_to_chart))
         self.assertEqual(ChartType.P_VALUES, chart_info.chart_type)
         self.assertEqual(chart_info.file_id, self.data_for_p_values_creator.file_id)
+
+    def test_create_zoomed_p_values_chart(self):
+        self.data_for_p_values_creator.chart_options.zoomed = True
+        chart_info = self.p_values_creator.create_p_values_chart(self.data_for_p_values_creator)
+        self.assertTrue(exists(chart_info.path_to_chart))
+        self.assertEqual(ChartType.P_VALUES_ZOOMED, chart_info.chart_type)
+        self.assertEqual(chart_info.file_id, self.data_for_p_values_creator.file_id)

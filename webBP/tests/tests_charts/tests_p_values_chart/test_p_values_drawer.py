@@ -30,6 +30,13 @@ class TestPValuesDrawer(TestCase):
         self.drawer.draw_chart(self.data, file)
         self.assertTrue(isfile(file))
 
+    def test_create_zoomed_graph(self):
+        self.data.y_axis_ticks = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.05]
+        self.data.y_axis_labels = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.05']
+        file = join(working_dir, 'graph.png')
+        self.drawer.draw_chart(self.data, file)
+        self.assertTrue(isfile(file))
+
     def test_create_two_same_graphs(self):
         file_1 = join(working_dir, 'graph1.png')
         file_2 = join(working_dir, 'graph2.png')

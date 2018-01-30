@@ -96,6 +96,8 @@ def get_chart_types(form):
     if 1 in ids:
         types.append(ChartType.P_VALUES)
     if 2 in ids:
+        types.append(ChartType.P_VALUES_ZOOMED)
+    if 3 in ids:
         types.append(ChartType.HISTOGRAM)
     return types
 

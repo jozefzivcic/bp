@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
+from charts.charts_error import ChartsError
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
@@ -202,6 +203,30 @@ class TestChartsCreator(TestCase):
         self.assertEqual(1, len(storage.get_all_infos()))
         self.assertEqual(expected_chart_info, storage.get_all_infos()[0])
 
+    def test_generate_zoomed_p_values_chart(self):
+        self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test3_id]
+        chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart', True)
+        self.generate_charts_dto.chart_types[ChartType.P_VALUES_ZOOMED] = [chart_dto]
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        file1 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
+        chart_info1 = ChartInfo(file1, ChartType.P_VALUES, self.file1_id)
+
+        file2 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '_zoomed.png')
+        chart_info2 = ChartInfo(file2, ChartType.P_VALUES_ZOOMED, self.file1_id)
+
+        self.assertTrue(exists(file1))
+        self.assertTrue(exists(file2))
+        self.assertEqual(2, len(storage.get_all_infos()))
+
+        all_infos = storage.get_all_infos()
+
+        info = list(filter(lambda x: x.chart_type == ChartType.P_VALUES, all_infos))[0]
+        self.assertEqual(chart_info1, info)
+
+        info = list(filter(lambda x: x.chart_type == ChartType.P_VALUES_ZOOMED, all_infos))[0]
+        self.assertEqual(chart_info2, info)
+
     def test_create_p_values_chart_for_tests_two_files(self):
         file1 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
         file2 = join(working_dir, 'p_values_for_file_' + str(self.file2_id) + '.png')
@@ -232,3 +257,9 @@ class TestChartsCreator(TestCase):
         self.assertEqual(2, len(storage.get_all_infos()))
         self.assertEqual(expected_info_1, storage.get_all_infos()[0])
         self.assertEqual(expected_info_2, storage.get_all_infos()[1])
+
+    def test_draw_concrete_charts_for_non_existing_chart(self):
+        chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
+        with self.assertRaises(ChartsError) as context:
+            self.charts_creator.draw_concrete_charts(-1, chart_dto, working_dir)
+        self.assertEqual('Unsupported chart type', str(context.exception))

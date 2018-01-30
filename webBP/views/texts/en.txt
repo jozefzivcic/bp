@@ -122,3 +122,4 @@ alpha_not_filled=alpha must be filled in
 alpha_not_in_range=alpha must be in interval (0.0, 1.0)
 no_test_checked=No test selected. Select at least one test.
 no_chart_checked=No chart selected. Select at least one chart.
+zoomed_p_values=zoomed p-values chart
