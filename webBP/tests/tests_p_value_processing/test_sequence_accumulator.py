@@ -45,6 +45,75 @@ class TestSequenceAccumulator(TestCase):
         self.assertEqual(seq2.p_values_file, expected.p_values_file)
         self.assertEqual(seq2.data_num, expected.data_num)
 
+    def test_generate_sequence_pairs_two_sequences(self):
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
+        self.seq_acc.add_sequence(seq1)
+        self.seq_acc.add_sequence(seq2)
+
+        seq_pairs = self.seq_acc.generate_sequence_pairs(self.p_values_acc)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq2)
+        self.assertEqual(dict_for_test_13['results'], values1)
+        self.assertEqual(dict_for_test_14['data1'], values2)
+
+    def test_generate_sequence_pairs_more_sequences(self):
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
+        seq3 = PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2)
+        seq4 = PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS)
+        seq5 = PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS)
+
+        self.seq_acc.add_sequence(seq1)
+        self.seq_acc.add_sequence(seq2)
+        self.seq_acc.add_sequence(seq3)
+        self.seq_acc.add_sequence(seq4)
+        self.seq_acc.add_sequence(seq5)
+
+        seq_pairs = self.seq_acc.generate_sequence_pairs(self.p_values_acc)
+
+        self.assertEqual(10, len(seq_pairs._pairs))
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq2)
+        self.assertEqual(dict_for_test_13['results'], values1)
+        self.assertEqual(dict_for_test_14['data1'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq3)
+        self.assertEqual(dict_for_test_13['results'], values1)
+        self.assertEqual(dict_for_test_41['data2'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq4)
+        self.assertEqual(dict_for_test_13['results'], values1)
+        self.assertEqual(dict_for_test_42['results'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq5)
+        self.assertEqual(dict_for_test_13['results'], values1)
+        self.assertEqual(dict_for_test_43['results'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq2, seq3)
+        self.assertEqual(dict_for_test_14['data1'], values1)
+        self.assertEqual(dict_for_test_41['data2'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq2, seq4)
+        self.assertEqual(dict_for_test_14['data1'], values1)
+        self.assertEqual(dict_for_test_42['results'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq2, seq5)
+        self.assertEqual(dict_for_test_14['data1'], values1)
+        self.assertEqual(dict_for_test_43['results'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq3, seq4)
+        self.assertEqual(dict_for_test_41['data2'], values1)
+        self.assertEqual(dict_for_test_42['results'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq3, seq5)
+        self.assertEqual(dict_for_test_41['data2'], values1)
+        self.assertEqual(dict_for_test_43['results'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq4, seq5)
+        self.assertEqual(dict_for_test_42['results'], values1)
+        self.assertEqual(dict_for_test_43['results'], values2)
+
     def test_get_p_values_for_sequence_from_results_file(self):
         seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
         expected = dict_for_test_13['results']
