@@ -20,3 +20,6 @@ class PValueSequence:
             return self.test_id == other.test_id and self.p_values_file == other.p_values_file and \
                    self.data_num == other.data_num
         return False
+
+    def __hash__(self):
+        return hash((self.test_id, self.p_values_file, self.data_num))

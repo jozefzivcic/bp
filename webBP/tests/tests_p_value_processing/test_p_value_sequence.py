@@ -68,3 +68,7 @@ class TestPValueSequence(TestCase):
 
         self.assertTrue(seq1 == seq2)
         self.assertFalse(seq1 != seq2)
+
+        h1 = hash(seq1)
+        h2 = hash(seq2)
+        self.assertEqual(h1, h2)
