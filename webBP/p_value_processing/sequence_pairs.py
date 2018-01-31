@@ -9,6 +9,8 @@ class SequencePairs:
         pair = (seq1, seq2)
         if pair in self._pairs:
             raise ValueError('Pair of given sequences already exists')
+        if seq1 == seq2:
+            raise ValueError('seq1 and seq2 are the same')
         self._pairs[(seq1, seq2)] = (p_values1, p_values2)
 
     def get_p_values_for_sequences(self, seq1: PValueSequence, seq2: PValueSequence):

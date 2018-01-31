@@ -32,3 +32,57 @@ class TestSequencePairs(TestCase):
         ret3, ret4 = self.seq_pairs.get_p_values_for_sequences(seq3, seq4)
         self.assertEqual(p_values3, ret3)
         self.assertEqual(p_values4, ret4)
+
+    def test_add_existing_pair(self):
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
+
+        p_values1 = dict_for_test_13['results']
+        p_values2 = dict_for_test_14['data1']
+        p_values3 = dict_for_test_42['results']
+        p_values4 = dict_for_test_41['data1']
+
+        self.seq_pairs.add_pair(seq1, p_values1, seq2, p_values2)
+
+        with self.assertRaises(ValueError) as context:
+            self.seq_pairs.add_pair(seq1, p_values1, seq2, p_values2)
+        self.assertEqual('Pair of given sequences already exists', str(context.exception))
+
+        with self.assertRaises(ValueError) as context:
+            self.seq_pairs.add_pair(seq1, p_values3, seq2, p_values4)
+        self.assertEqual('Pair of given sequences already exists', str(context.exception))
+
+    def test_add_pair_same_sequences(self):
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        p_values1 = dict_for_test_13['results']
+        p_values2 = dict_for_test_14['data1']
+        with self.assertRaises(ValueError) as context:
+            self.seq_pairs.add_pair(seq1, p_values1, seq1, p_values2)
+        self.assertEqual('seq1 and seq2 are the same', str(context.exception))
+
+    def test_get_p_values_for_sequences_non_existing_sequence_pair(self):
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
+        seq3 = PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 1)
+        seq4 = PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS)
+
+        p_values1 = dict_for_test_13['results']
+        p_values2 = dict_for_test_14['data1']
+
+        with self.assertRaises(ValueError) as context:
+            self.seq_pairs.get_p_values_for_sequences(seq1, seq2)
+        self.assertEqual('p-values for given sequences do not exist', str(context.exception))
+
+        self.seq_pairs.add_pair(seq1, p_values1, seq2, p_values2)
+
+        with self.assertRaises(ValueError) as context:
+            self.seq_pairs.get_p_values_for_sequences(seq2, seq1)
+        self.assertEqual('p-values for given sequences do not exist', str(context.exception))
+
+        with self.assertRaises(ValueError) as context:
+            self.seq_pairs.get_p_values_for_sequences(seq3, seq4)
+        self.assertEqual('p-values for given sequences do not exist', str(context.exception))
+
+        with self.assertRaises(ValueError) as context:
+            self.seq_pairs.get_p_values_for_sequences(seq4, seq3)
+        self.assertEqual('p-values for given sequences do not exist', str(context.exception))
