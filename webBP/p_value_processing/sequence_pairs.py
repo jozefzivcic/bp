@@ -19,3 +19,26 @@ class SequencePairs:
         if ret is None:
             raise ValueError('p-values for given sequences do not exist')
         return ret
+
+    def get_pairs_in_list(self):
+        ret = []
+        for key, value in self._pairs.items():
+            ret.append(key + value)
+        ret.sort(key=lambda pair: (pair[0].test_id, pair[1].test_id))
+        return ret
+
+    def filter_pairs(self, func):
+        """
+        Filter pairs stored in this object according to func.
+        :param func: Function, which takes two lists of p_values as arguments and returns False if the pair
+        corresponding to the two lists given as argument should not be erased. If this function returns True,
+        the corresponding pair will be erased from this object.
+        """
+        to_delete = []
+        for key, value in self._pairs.items():
+            seq1 = value[0]
+            seq2 = value[1]
+            if func(seq1, seq2):
+                to_delete.append(key)
+        for key in to_delete:
+            del self._pairs[key]
