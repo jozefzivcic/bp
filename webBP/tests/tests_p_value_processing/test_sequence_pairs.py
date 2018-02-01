@@ -151,6 +151,19 @@ class TestSequencePairs(TestCase):
         self.cmp_tuples((self.seq1, self.seq3, self.p_values1, self.p_values3), seq_pairs_list[1])
         self.cmp_tuples((self.seq2, self.seq3, self.p_values2, self.p_values3), seq_pairs_list[2])
 
+    def test_filter_out_all_pairs(self):
+        self.add_all_pairs()
+        seq_pairs_list = self.seq_pairs.get_pairs_in_list()
+        self.assertEqual(10, len(seq_pairs_list))
+
+        self.seq_pairs.filter_pairs(lambda x, y: False)
+        seq_pairs_list = self.seq_pairs.get_pairs_in_list()
+        self.assertEqual(10, len(seq_pairs_list))
+
+        self.seq_pairs.filter_pairs(lambda x, y: True)
+        seq_pairs_list = self.seq_pairs.get_pairs_in_list()
+        self.assertEqual(0, len(seq_pairs_list))
+
     def cmp_tuples(self, expected, ret):
         for i in range(4):
             self.assertEqual(expected[i], ret[i], 'Expected ' + str(expected[i]) + ', but ' + str(ret[i]) + ' was given.')

@@ -45,6 +45,19 @@ class TestSequenceAccumulator(TestCase):
         self.assertEqual(seq2.p_values_file, expected.p_values_file)
         self.assertEqual(seq2.data_num, expected.data_num)
 
+    def test_generate_sequence_pairs_no_sequence(self):
+        seq_pairs = self.seq_acc.generate_sequence_pairs(self.p_values_acc)
+        pairs = seq_pairs.get_pairs_in_list()
+        self.assertEqual(0, len(pairs))
+
+    def test_generate_sequence_pairs_one_sequence(self):
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        self.seq_acc.add_sequence(seq1)
+
+        seq_pairs = self.seq_acc.generate_sequence_pairs(self.p_values_acc)
+        pairs = seq_pairs.get_pairs_in_list()
+        self.assertEqual(0, len(pairs))
+
     def test_generate_sequence_pairs_two_sequences(self):
         seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
         seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
@@ -52,6 +65,9 @@ class TestSequenceAccumulator(TestCase):
         self.seq_acc.add_sequence(seq2)
 
         seq_pairs = self.seq_acc.generate_sequence_pairs(self.p_values_acc)
+
+        seq_pairs_list = seq_pairs.get_pairs_in_list()
+        self.assertEqual(1, len(seq_pairs_list))
 
         values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq2)
         self.assertEqual(dict_for_test_13['results'], values1)

@@ -1,6 +1,6 @@
+import common.helper_functions
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency_dto import TestDependencyDto
-from common.helper_functions import check_for_uniformity
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
@@ -18,7 +18,7 @@ class TestDependencyExtractor:
 
     def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: TestDependencyDto) -> list:
         seq_pairs = dto.seq_accumulator.generate_sequence_pairs(acc)
-        seq_pairs.filter_pairs(check_for_uniformity)
+        seq_pairs.filter_pairs(common.helper_functions.check_for_uniformity)
         tuples = seq_pairs.get_pairs_in_list()
         data_for_drawer_list = []
         for seq1, seq2, p_values1, p_values2 in tuples:
