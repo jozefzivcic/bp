@@ -12,9 +12,9 @@ from p_value_processing.p_values_file_type import PValuesFileType
 
 class TestDependencyExtractor:
     def __init__(self, pool: ConnectionPool, storage: ConfigStorage):
-        self.test_dao = DBTestManager(pool)
-        self.nist_dao = NistTestManager(pool)
-        self.config_storage = storage
+        self._test_dao = DBTestManager(pool)
+        self._nist_dao = NistTestManager(pool)
+        self._config_storage = storage
 
     def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: TestDependencyDto) -> list:
         seq_pairs = dto.seq_accumulator.generate_sequence_pairs(acc)
@@ -29,9 +29,9 @@ class TestDependencyExtractor:
         return data_for_drawer_list
 
     def get_test_name(self, seq: PValueSequence):
-        test = self.test_dao.get_test_by_id(seq.test_id)
-        if test.test_table == self.config_storage.nist:
-            test_name = self.nist_dao.get_nist_param_for_test(test).get_test_name()
+        test = self._test_dao.get_test_by_id(seq.test_id)
+        if test.test_table == self._config_storage.nist:
+            test_name = self._nist_dao.get_nist_param_for_test(test).get_test_name()
             if seq.p_values_file == PValuesFileType.DATA:
                 test_name += '_data_' + str(seq.data_num)
             return test_name
