@@ -102,3 +102,7 @@ def nist_dao_get_nist_param_for_test(test: Test) -> NistParam:
         param.test_number = 5
         return param
     raise ValueError('No NIST param for test id ' + str(test.id) + ' is unsupported')
+
+
+def func_return_false(p_values1: list, p_values2: list):
+    return False

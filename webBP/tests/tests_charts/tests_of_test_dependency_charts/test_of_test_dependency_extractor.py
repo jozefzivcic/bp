@@ -12,11 +12,8 @@ from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41, \
     dict_for_test_42, dict_for_test_43
-from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
-
-
-def func_return_false(p_values1: list, p_values2: list):
-    return False
+from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, \
+    func_return_false
 
 
 class TestOfTestDependencyExtractor(TestCase):
