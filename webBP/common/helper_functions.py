@@ -66,3 +66,7 @@ def escape_latex_special_chars(text: str) -> str:
     }
     regex = re.compile('|'.join(re.escape(key) for key in sorted(conv.keys(), key=lambda item: - len(item))))
     return regex.sub(lambda match: conv[match.group()], text)
+
+
+def check_for_uniformity(p_values1: list, p_values2: list):
+    return False

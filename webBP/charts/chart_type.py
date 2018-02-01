@@ -8,3 +8,4 @@ class ChartType(Enum):
     P_VALUES = 1
     P_VALUES_ZOOMED = 2
     HISTOGRAM = 3
+    TESTS_DEPENDENCY = 4
