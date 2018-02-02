@@ -2,7 +2,7 @@ from os import makedirs
 from os.path import dirname, abspath, join, exists
 from shutil import rmtree
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
@@ -20,7 +20,7 @@ from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, dict_for_test_41, dict_for_test_42, \
     dict_for_test_43, TestsIdData, FileIdData
 from tests.data_for_tests.common_functions import results_dao_get_paths_for_test_ids, db_test_dao_get_tests_by_id_list, \
-    db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
+    db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, func_return_false
 
 this_dir = dirname(abspath(__file__))
 sample_files_dir = join(this_dir, '..', 'sample_files_for_tests')
@@ -267,7 +267,8 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected_info_1, storage.get_all_infos()[0])
         self.assertEqual(expected_info_2, storage.get_all_infos()[1])
 
-    def test_create_tests_dependency_charts_for_one_file(self):
+    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    def test_create_tests_dependency_charts_for_one_file(self, func):
         file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
 
         seq_acc = SequenceAccumulator()
@@ -284,6 +285,90 @@ class TestChartsCreator(TestCase):
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
+
+    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    def test_create_tests_dependency_charts_more_sequences_than_test_ids(self, func):
+        file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
+
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(self.test3_id, PValuesFileType.DATA, 2))
+        seq_acc.add_sequence(PValueSequence(self.test4_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(self.test5_id, PValuesFileType.RESULTS))
+
+        tests_dep_dto = TestDependencyDto(seq_acc, 'Dependency of two tests')
+        self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id]
+        self.generate_charts_dto.chart_types = {ChartType.TESTS_DEPENDENCY: [tests_dep_dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        infos = storage.get_all_infos()
+        info = infos[0]
+        self.assertEqual(1, len(infos))
+        self.assertEqual(file, info.path_to_chart)
+        self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
+        self.assertEqual(self.file1_id, info.file_id)
+
+    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    def test_create_three_tests_dependency_charts_for_one_file(self, func):
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(self.test3_id, PValuesFileType.DATA, 2))
+
+        tests_dep_dto = TestDependencyDto(seq_acc, 'Dependency of two tests')
+        self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test3_id]
+        self.generate_charts_dto.chart_types = {ChartType.TESTS_DEPENDENCY: [tests_dep_dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        infos = storage.get_all_infos()
+        self.assertEqual(3, len(infos))
+
+        info = infos[0]
+        file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
+        self.assertEqual(file, info.path_to_chart)
+        self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
+        self.assertEqual(self.file1_id, info.file_id)
+
+        info = infos[1]
+        file = join(working_dir, 'dependency_of_Frequency_and_Serial_data_2.png')
+        self.assertEqual(file, info.path_to_chart)
+        self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
+        self.assertEqual(self.file1_id, info.file_id)
+
+        info = infos[2]
+        file = join(working_dir, 'dependency_of_Cumulative_Sums_data_1_and_Serial_data_2.png')
+        self.assertEqual(file, info.path_to_chart)
+        self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
+        self.assertEqual(self.file1_id, info.file_id)
+
+    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    def test_create_tests_dependency_charts_for_two_files(self, func):
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(self.test4_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(self.test5_id, PValuesFileType.RESULTS))
+
+        tests_dep_dto = TestDependencyDto(seq_acc, 'Dependency of two tests')
+        self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test4_id, self.test5_id]
+        self.generate_charts_dto.chart_types = {ChartType.TESTS_DEPENDENCY: [tests_dep_dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        infos = storage.get_all_infos()
+        self.assertEqual(2, len(infos))
+
+        info = infos[0]
+        file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
+        self.assertEqual(file, info.path_to_chart)
+        self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
+        self.assertEqual(self.file1_id, info.file_id)
+
+        info = infos[1]
+        file = join(working_dir, 'dependency_of_Linear_Complexity_and_Longest_Run_of_Ones.png')
+        self.assertEqual(file, info.path_to_chart)
+        self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
+        self.assertEqual(self.file2_id, info.file_id)
 
     def test_draw_concrete_charts_for_non_existing_chart_type(self):
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
