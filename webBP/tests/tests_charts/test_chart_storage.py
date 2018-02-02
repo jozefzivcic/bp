@@ -60,7 +60,7 @@ class TestPathStorage(TestCase):
     def test_add_more_paths(self):
         expected = []
         for i in range(0, 10):
-            file = working_dir + 'file' + str(i) + '.txt'
+            file = join(working_dir, 'file' + str(i) + '.txt')
             chart_info = ChartInfo()
             chart_info.path_to_chart = file
             chart_info.chart_type = ChartType.P_VALUES
@@ -68,6 +68,32 @@ class TestPathStorage(TestCase):
             expected.append(deepcopy(chart_info))
             self.charts_storage.add_chart_info(chart_info)
         self.assertEqual(expected, self.charts_storage.get_all_infos())
+
+    def test_extend(self):
+        file = join(working_dir, 'file1000.txt')
+        chart_info = ChartInfo(file, ChartType.P_VALUES_ZOOMED, 1000)
+        self.charts_storage.add_chart_info(chart_info)
+
+        expected = [chart_info]
+        another_storage = ChartsStorage()
+
+        for i in range(0, 10):
+            file = join(working_dir, 'file' + str(i) + '.txt')
+            chart_info = ChartInfo()
+            chart_info.path_to_chart = file
+            chart_info.chart_type = ChartType.HISTOGRAM
+            chart_info.file_id = i
+            expected.append(deepcopy(chart_info))
+            another_storage.add_chart_info(chart_info)
+
+        self.assertEqual(expected[1:], another_storage.get_all_infos())
+        self.charts_storage.extend(another_storage)
+        self.assertEqual(expected, self.charts_storage.get_all_infos())
+        self.assertEqual([], another_storage.get_all_infos())
+
+        another_storage.extend(self.charts_storage)
+        self.assertEqual(expected, another_storage.get_all_infos())
+        self.assertEqual([], self.charts_storage.get_all_infos())
 
     def test_delete_files_on_paths(self):
         expected = []

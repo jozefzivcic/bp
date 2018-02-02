@@ -11,10 +11,14 @@ from charts.charts_error import ChartsError
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
+from charts.test_dependency_dto import TestDependencyDto
+from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
+from p_value_processing.p_values_file_type import PValuesFileType
+from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, dict_for_test_41, dict_for_test_42, \
-    dict_for_test_43
+    dict_for_test_43, TestsIdData, FileIdData
 from tests.data_for_tests.common_functions import results_dao_get_paths_for_test_ids, db_test_dao_get_tests_by_id_list, \
     db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
 
@@ -35,15 +39,15 @@ class TestChartsCreator(TestCase):
     def setUp(self):
         if not exists(working_dir):
             makedirs(working_dir)
-        self.test1_id = 13
-        self.test2_id = 14
-        self.test3_id = 41
-        self.test4_id = 42
-        self.test5_id = 43
-        self.non_existing_test_id = 123456
+        self.test1_id = TestsIdData.test1_id
+        self.test2_id = TestsIdData.test2_id
+        self.test3_id = TestsIdData.test3_id
+        self.test4_id = TestsIdData.test4_id
+        self.test5_id = TestsIdData.test5_id
+        self.non_existing_test_id = TestsIdData.non_existing_test_id
 
-        self.file1_id = 456
-        self.file2_id = 786
+        self.file1_id = FileIdData.file1_id
+        self.file2_id = FileIdData.file2_id
 
         config_storage = MagicMock()
         config_storage.nist = 'nist'
@@ -56,6 +60,11 @@ class TestChartsCreator(TestCase):
             MagicMock(side_effect=db_test_dao_get_test_by_id)
         self.charts_creator._p_values_creator._extractor._nist_dao.get_nist_param_for_test = \
             MagicMock(side_effect=nist_dao_get_nist_param_for_test)
+        self.charts_creator._test_dependency_creator._extractor._test_dao.get_test_by_id = MagicMock(
+            side_effect=db_test_dao_get_test_by_id)
+        self.charts_creator._test_dependency_creator._extractor._nist_dao.get_nist_param_for_test = MagicMock(
+            side_effect=nist_dao_get_nist_param_for_test)
+
         tests_arr = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
         self.generate_charts_dto = GenerateChartsDto(tests_arr, {ChartType.P_VALUES: [chart_dto]}, working_dir)
@@ -258,7 +267,25 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected_info_1, storage.get_all_infos()[0])
         self.assertEqual(expected_info_2, storage.get_all_infos()[1])
 
-    def test_draw_concrete_charts_for_non_existing_chart(self):
+    def test_create_tests_dependency_charts_for_one_file(self):
+        file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
+
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
+        tests_dep_dto = TestDependencyDto(seq_acc, 'Dependency of two tests')
+        self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id]
+        self.generate_charts_dto.chart_types = {ChartType.TESTS_DEPENDENCY: [tests_dep_dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        infos = storage.get_all_infos()
+        info = infos[0]
+        self.assertEqual(1, len(infos))
+        self.assertEqual(file, info.path_to_chart)
+        self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
+        self.assertEqual(self.file1_id, info.file_id)
+
+    def test_draw_concrete_charts_for_non_existing_chart_type(self):
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
         with self.assertRaises(ChartsError) as context:
             self.charts_creator.draw_concrete_charts(-1, chart_dto, working_dir)

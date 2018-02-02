@@ -9,6 +9,9 @@ from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.p_values.data_for_p_values_creator import DataForPValuesCreator
 from charts.p_values.p_values_creator import PValuesCreator
+from charts.test_dependency.data_for_test_dependency_creator import DataForTestDependencyCreator
+from charts.test_dependency.test_dependency_creator import TestDependencyCreator
+from charts.test_dependency_dto import TestDependencyDto
 from common.test_converter import TestConverter
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
@@ -29,7 +32,9 @@ class ChartsCreator:
         self._charts_storage = ChartsStorage()
         self._p_values_creator = PValuesCreator(pool, storage)
         self._histogram_creator = HistogramCreator()
-        self.supported_charts = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM]
+        self._test_dependency_creator = TestDependencyCreator(pool, storage)
+        self.supported_charts = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM,
+                                 ChartType.TESTS_DEPENDENCY]
 
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
         self.check_input(generate_charts_dto)
@@ -50,6 +55,12 @@ class ChartsCreator:
             data_for_creator = DataForHistogramCreator(dto, acc, directory, file_id)
             chart_info = self._histogram_creator.create_histogram(data_for_creator)
             self._charts_storage.add_chart_info(chart_info)
+
+    def create_tests_dependency_charts(self, dto: TestDependencyDto, directory: str):
+        for file_id, acc in self._p_values_accumulators.items():
+            data_for_creator = DataForTestDependencyCreator(dto, acc, directory, file_id)
+            charts_storage = self._test_dependency_creator.create_test_dependency_charts(data_for_creator)
+            self._charts_storage.extend(charts_storage)
 
     def load_p_values(self, test_ids):
         if self._loaded_items:
@@ -97,5 +108,7 @@ class ChartsCreator:
             self.create_p_values_charts_for_tests(dto, directory)
         elif chart_type == ChartType.HISTOGRAM:
             self.create_histograms_for_tests(dto, directory)
+        elif chart_type == ChartType.TESTS_DEPENDENCY:
+            self.create_tests_dependency_charts(dto, directory)
         else:
             raise ChartsError('Unsupported chart type')

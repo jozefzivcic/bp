@@ -21,6 +21,10 @@ class ChartsStorage:
 
         self._info_list.append(chart_info)
 
+    def extend(self, storage: 'ChartsStorage'):
+        self._info_list.extend(storage._info_list)
+        storage._info_list = []
+
     def get_all_infos(self) -> list:
         return list(self._info_list)
 
