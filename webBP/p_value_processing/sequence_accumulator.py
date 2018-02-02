@@ -8,17 +8,24 @@ from p_value_processing.sequence_pairs import SequencePairs
 
 class SequenceAccumulator:
     def __init__(self):
-        self._seq = []
+        self._seq = {}
 
     def add_sequence(self, seq: PValueSequence):
-        self._seq.append(seq)
+        if seq.test_id in self._seq:
+            self._seq[seq.test_id].append(seq)
+        else:
+            self._seq[seq.test_id] = [seq]
 
     def get_all_sequences(self):
-        return list(self._seq)
+        ret = []
+        for key, value in self._seq.items():
+            ret.extend(value)
+        return ret
 
     def generate_sequence_pairs(self, acc: PValuesAccumulator) -> SequencePairs:
         seq_pairs = SequencePairs()
-        combinations = itertools.combinations(self._seq, 2)
+        sequences = self.filter_sequences(acc.get_all_test_ids())
+        combinations = itertools.combinations(sequences, 2)
         for seq1, seq2 in combinations:
             p_values1 = self.get_p_values_for_sequence(seq1, acc)
             p_values2 = self.get_p_values_for_sequence(seq2, acc)
@@ -31,3 +38,12 @@ class SequenceAccumulator:
             return dto.get_results_p_values()
         else:
             return dto.get_data_p_values(sequence.data_num)
+
+    def filter_sequences(self, test_id_list: list):
+        sequences = []
+        for test_id in test_id_list:
+            temp_seq = self._seq.get(test_id, None)
+            if temp_seq is None:
+                continue
+            sequences.extend(temp_seq)
+        return sequences
