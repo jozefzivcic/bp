@@ -4,6 +4,11 @@ from configparser import ConfigParser
 from os import listdir
 from os.path import splitext, join
 
+from p_value_processing.p_value_sequence import PValueSequence
+from p_value_processing.p_values_file_type import PValuesFileType
+from p_value_processing.sequence_accumulator import SequenceAccumulator
+from pdf_generating.options.file_specification import FileSpecification
+
 
 def config_parser_to_dict(config_parser: ConfigParser):
     """
@@ -70,3 +75,16 @@ def escape_latex_special_chars(text: str) -> str:
 
 def check_for_uniformity(p_values1: list, p_values2: list):
     return False
+
+
+def convert_specs_to_seq_acc(specs: list) -> SequenceAccumulator:
+    seq_acc = SequenceAccumulator()
+    for spec in specs:
+        if spec.file_spec == FileSpecification.RESULTS_FILE:
+            s = PValueSequence(spec.test_id, PValuesFileType.RESULTS)
+        elif spec.file_spec == FileSpecification.DATA_FILE:
+            s = PValueSequence(spec.test_id, PValuesFileType.DATA, spec.file_num)
+        else:
+            raise ValueError('Unsupported FileSpecification ' + str(spec.file_spec))
+        seq_acc.add_sequence(s)
+    return seq_acc

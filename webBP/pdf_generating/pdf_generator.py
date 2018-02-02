@@ -9,7 +9,8 @@ from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
-from common.helper_functions import load_texts_into_config_parsers, escape_latex_special_chars
+from charts.test_dependency_dto import TestDependencyDto
+from common.helper_functions import load_texts_into_config_parsers, escape_latex_special_chars, convert_specs_to_seq_acc
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.filemanager import FileManager
@@ -66,6 +67,11 @@ class PdfGenerator:
             dto = HistogramDto(texts['Histogram']['Intervals'], texts['Histogram']['NumOfPValues'],
                                texts['Histogram']['Histogram'])
             return [dto]
+        elif chart_type == ChartType.TESTS_DEPENDENCY:
+            specs = pdf_generating_dto.test_dependency_options.test_file_specs
+            seq_acc = convert_specs_to_seq_acc(specs)
+            dto = TestDependencyDto(seq_acc, texts['TestDependency']['Title'])
+            return [dto]
         raise PdfGeneratingError('Unsupported chart type')
 
     def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage) -> PdfCreatingDto:
@@ -108,6 +114,9 @@ class PdfGenerator:
         for ch_type in pdf_generating_dto.chart_types:
             if ch_type not in self._charts_creator.supported_charts:
                 raise PdfGeneratingError('Unsupported chart type: (\'' + str(ch_type) + '\')')
+        if ChartType.TESTS_DEPENDENCY in pdf_generating_dto.chart_types and \
+                pdf_generating_dto.test_dependency_options is None:
+            raise PdfGeneratingError('No default options for test dependency chart')
 
     def get_chart_name(self, language: str, ch_type: ChartType) -> str:
         if ch_type == ChartType.P_VALUES:
