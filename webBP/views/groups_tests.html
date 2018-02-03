@@ -11,7 +11,7 @@
         <div class="row">
             <form method="post" accept-charset="utf-8" name="show_pdf" action="/show_pdf" onsubmit="return checkForm()">
             <div class="col-md-12">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <div class="row">
                         <div class="col-md-12">
                             <h2>{{ tests_in_group }}</h2>
@@ -37,7 +37,11 @@
                                                 <td><input type="checkbox" class="checkbox" name="ch_test_{{ test.id }}"></td>
                                                 <td>{{ test.id }}</td>
                                                 <td>{{ test.test_table }}</td>
-                                                <td>{{ vars['params'][test.id].get_test_name() }}</td>
+                                                <td>
+                                                    {{ vars['params'][test.id].get_test_name() }}
+                                                    <input type="hidden" name="num_of_data_for_test_id_{{ test.id }}"
+                                                           value="{{ vars['params'][test.id].get_num_of_data_files() }}">
+                                                </td>
                                                 <td>{{ vars['files'][test.file_id].name }}</td>
                                                 <td>{{ test.time_of_add }}</td>
                                                 <td>
@@ -54,7 +58,7 @@
                 <div class="col-md-1">
                     <!--space -->
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="row">
                         <div class="col-md-12">
                             <h2>{{ options }}</h2>
@@ -79,6 +83,10 @@
                     <div class="row">
                         <input type="checkbox" name="ch_chart_type_3" id="ch_chart_type_3">
                         <label class="form-check-label" for="ch_chart_type_3"> {{ histogram }} </label>
+                    </div>
+                    <div class="row">
+                        <input type="checkbox" name="ch_chart_type_4" id="ch_chart_type_4">
+                        <label class="form-check-label" for="ch_chart_type_4">{{ two_tests_dep }}</label>
                     </div>
                     <div class="row">
                         <input class="btn btn-success" type="submit" value="{{ show_pdf }}">

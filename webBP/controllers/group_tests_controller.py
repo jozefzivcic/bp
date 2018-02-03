@@ -11,6 +11,7 @@ from charts.chart_type import ChartType
 from controllers.common_controller import not_found, error_occurred
 from helpers import get_params_for_tests, set_response_ok, get_ids_of_elements_starting_with
 from myrequesthandler import MyRequestHandler
+from pdf_generating.options.test_dependency_options import TestDependencyOptions
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
 from pdf_generating.pdf_generating_error import PdfGeneratingError
 from pdf_generating.pdf_generator import PdfGenerator
@@ -99,6 +100,8 @@ def get_chart_types(form):
         types.append(ChartType.P_VALUES_ZOOMED)
     if 3 in ids:
         types.append(ChartType.HISTOGRAM)
+    if 4 in ids:
+        types.append(ChartType.TESTS_DEPENDENCY)
     return types
 
 
@@ -116,6 +119,10 @@ def get_alpha(form):
     return alpha
 
 
+def create_dep_options() -> TestDependencyOptions:
+    pass
+
+
 def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str, file_name):
     """
     Creates PdfGeneratingDto
@@ -131,4 +138,9 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
     chart_types = get_chart_types(form)
     if not chart_types:
         return None
-    return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name)
+    test_dep_options = None
+    if ChartType.TESTS_DEPENDENCY in chart_types:
+        test_dep_options = create_dep_options()
+        if test_dep_options is None:
+            return None
+    return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name, test_dep_options)

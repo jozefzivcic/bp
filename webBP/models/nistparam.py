@@ -116,3 +116,36 @@ class NistParam:
             return '_'.join([tested_file, self.get_test_name(), length, streams,special_param])
         return '_'.join([tested_file, self.get_test_name(), length, streams])
 
+    def get_num_of_data_files(self):
+        if self.test_number == 1:
+            return 0
+        elif self.test_number == 2:
+            return 0
+        elif self.test_number == 3:
+            return 2
+        elif self.test_number == 4:
+            return 0
+        elif self.test_number == 5:
+            return 0
+        elif self.test_number == 6:
+            return 0
+        elif self.test_number == 7:
+            return 0
+        elif self.test_number == 8:
+            return 148
+        elif self.test_number == 9:
+            return 0
+        elif self.test_number == 10:
+            return 0
+        elif self.test_number == 11:
+            return 0
+        elif self.test_number == 12:
+            return 8
+        elif self.test_number == 13:
+            return 18
+        elif self.test_number == 14:
+            return 2
+        elif self.test_number == 15:
+            return 0
+        else:
+            raise ValueError('Wrong test number ' + str(self.test_number))

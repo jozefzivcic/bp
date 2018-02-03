@@ -234,6 +234,13 @@ class TestPdfGenerator(TestCase):
             self.pdf_generator.generate_pdf(dto)
         self.assertEqual('Unsupported chart type: (\'-5\')', str(context.exception))
 
+    def test_no_default_param_for_test_dependency(self):
+        self.dto_for_one_file.chart_types = [ChartType.TESTS_DEPENDENCY]
+        self.dto_for_one_file.test_dependency_options = None
+        with self.assertRaises(PdfGeneratingError) as context:
+            self.pdf_generator.generate_pdf(self.dto_for_one_file)
+        self.assertEqual('No default options for test dependency chart', str(context.exception))
+
     def test_get_chart_name_undefined_chart(self):
         with self.assertRaises(PdfGeneratingError) as context:
             self.pdf_generator.get_chart_name('en', -5)
