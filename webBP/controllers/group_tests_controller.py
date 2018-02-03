@@ -11,7 +11,9 @@ from charts.chart_type import ChartType
 from controllers.common_controller import not_found, error_occurred
 from helpers import get_params_for_tests, set_response_ok, get_ids_of_elements_starting_with
 from myrequesthandler import MyRequestHandler
+from pdf_generating.options.file_specification import FileSpecification
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
+from pdf_generating.options.test_file_specification import TestFileSpecification
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
 from pdf_generating.pdf_generating_error import PdfGeneratingError
 from pdf_generating.pdf_generator import PdfGenerator
@@ -119,8 +121,20 @@ def get_alpha(form):
     return alpha
 
 
-def create_dep_options() -> TestDependencyOptions:
-    pass
+def create_dep_options(test_ids, form) -> TestDependencyOptions:
+    arr = []
+    for test_id in test_ids:
+        key = 'num_of_data_for_test_id_' + str(test_id)
+        try:
+            num_of_data_files = int(form[key].value)
+        except ValueError:
+            return None
+        if num_of_data_files == 0:
+            arr.append(TestFileSpecification(test_id, FileSpecification.RESULTS_FILE))
+        else:
+            for i in range(1, num_of_data_files + 1):
+                arr.append(TestFileSpecification(test_id, FileSpecification.DATA_FILE, i))
+    return TestDependencyOptions(arr)
 
 
 def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str, file_name):
@@ -140,7 +154,7 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
         return None
     test_dep_options = None
     if ChartType.TESTS_DEPENDENCY in chart_types:
-        test_dep_options = create_dep_options()
+        test_dep_options = create_dep_options(test_ids, form)
         if test_dep_options is None:
             return None
     return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name, test_dep_options)
