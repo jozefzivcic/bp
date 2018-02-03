@@ -3,7 +3,13 @@ from os.path import dirname, abspath, join
 from unittest import TestCase
 
 from common.helper_functions import config_parser_to_dict, load_texts_into_dict, load_texts_into_config_parsers, \
-    escape_latex_special_chars
+    escape_latex_special_chars, convert_specs_to_seq_acc
+from p_value_processing.p_value_sequence import PValueSequence
+from p_value_processing.p_values_file_type import PValuesFileType
+from p_value_processing.sequence_accumulator import SequenceAccumulator
+from pdf_generating.options.file_specification import FileSpecification
+from pdf_generating.options.test_file_specification import TestFileSpecification
+from tests.data_for_tests.common_data import TestsIdData
 
 this_dir = dirname(abspath(__file__))
 sample_texts_dir = join(this_dir, '..', 'sample_files_for_tests', 'sample_texts')
@@ -79,3 +85,53 @@ class TestHelperFunctions(TestCase):
         expected = 'something\\textgreater something'
         ret = escape_latex_special_chars(text)
         self.assertEqual(expected, ret)
+
+    def test_convert_specs_to_seq_acc_no_specs(self):
+        test_spec_list = []
+        seq_acc_ret = convert_specs_to_seq_acc(test_spec_list)
+        ret_sequences = seq_acc_ret.get_all_sequences()
+        self.assertEqual(0, len(ret_sequences))
+
+    def test_convert_specs_to_seq_acc_one_spec(self):
+        test_spec_list = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE)]
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+
+        seq_acc_ret = convert_specs_to_seq_acc(test_spec_list)
+        ret_sequences = seq_acc_ret.get_all_sequences()
+        self.assertEqual(1, len(ret_sequences))
+
+        ret = list(filter(lambda x: x.test_id == TestsIdData.test1_id, ret_sequences))[0]
+        self.assertEqual(seq1, ret)
+
+    def test_convert_specs_to_seq_acc_more_specs(self):
+        test_spec_list = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
+                          TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1),
+                          TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 2),
+                          TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
+                          TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
+
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
+        seq3 = PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2)
+        seq4 = PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS)
+        seq5 = PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS)
+
+        seq_acc_ret = convert_specs_to_seq_acc(test_spec_list)
+        ret_sequences = seq_acc_ret.get_all_sequences()
+
+        self.assertEqual(5, len(ret_sequences))
+
+        ret = list(filter(lambda x: x.test_id == TestsIdData.test1_id, ret_sequences))[0]
+        self.assertEqual(seq1, ret)
+
+        ret = list(filter(lambda x: x.test_id == TestsIdData.test2_id, ret_sequences))[0]
+        self.assertEqual(seq2, ret)
+
+        ret = list(filter(lambda x: x.test_id == TestsIdData.test3_id, ret_sequences))[0]
+        self.assertEqual(seq3, ret)
+
+        ret = list(filter(lambda x: x.test_id == TestsIdData.test4_id, ret_sequences))[0]
+        self.assertEqual(seq4, ret)
+
+        ret = list(filter(lambda x: x.test_id == TestsIdData.test5_id, ret_sequences))[0]
+        self.assertEqual(seq5, ret)

@@ -26,4 +26,4 @@ class PValueSequence:
 
     def __str__(self):
         return '(test_id, file_type, data_num): (' + str(self.test_id) + ', ' + str(self.p_values_file) + ', '\
-               + str(self.data_num)
+               + str(self.data_num) + ')'

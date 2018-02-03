@@ -68,8 +68,11 @@ class PdfGenerator:
                                texts['Histogram']['Histogram'])
             return [dto]
         elif chart_type == ChartType.TESTS_DEPENDENCY:
-            specs = pdf_generating_dto.test_dependency_options.test_file_specs
-            seq_acc = convert_specs_to_seq_acc(specs)
+            try:
+                specs = pdf_generating_dto.test_dependency_options.test_file_specs
+                seq_acc = convert_specs_to_seq_acc(specs)
+            except ValueError as e:
+                raise PdfGeneratingError(e)
             dto = TestDependencyDto(seq_acc, texts['TestDependency']['Title'])
             return [dto]
         raise PdfGeneratingError('Unsupported chart type')
@@ -125,4 +128,6 @@ class PdfGenerator:
             return self._texts[language]['PValuesChartZoomed']['PValuesChartZoomed']
         elif ch_type == ChartType.HISTOGRAM:
             return self._texts[language]['Histogram']['HistogramUpperH']
+        elif ch_type == ChartType.TESTS_DEPENDENCY:
+            return self._texts[language]['TestDependency']['Title']
         raise PdfGeneratingError('Undefined chart type: ' + str(ch_type))

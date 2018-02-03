@@ -11,6 +11,9 @@ from charts.charts_storage import ChartsStorage
 from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
 from common.helper_functions import load_texts_into_config_parsers
+from pdf_generating.options.file_specification import FileSpecification
+from pdf_generating.options.test_dependency_options import TestDependencyOptions
+from pdf_generating.options.test_file_specification import TestFileSpecification
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
@@ -44,6 +47,10 @@ class TestPdfGenerator(TestCase):
             side_effect=db_test_dao_get_test_by_id)
         self.pdf_generator._charts_creator._p_values_creator._extractor._nist_dao.get_nist_param_for_test = MagicMock(
             side_effect=nist_dao_get_nist_param_for_test)
+        self.pdf_generator._charts_creator._test_dependency_creator._extractor._test_dao.get_test_by_id = MagicMock(
+            side_effect=db_test_dao_get_test_by_id)
+        self.pdf_generator._charts_creator._test_dependency_creator._extractor._nist_dao.get_nist_param_for_test = \
+            MagicMock(side_effect=nist_dao_get_nist_param_for_test)
         self.texts = load_texts_into_config_parsers(texts_dir)
 
         tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id]
@@ -89,6 +96,36 @@ class TestPdfGenerator(TestCase):
         self.dto_for_one_file.chart_types = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM]
         self.pdf_generator.generate_pdf(self.dto_for_one_file)
         self.assertTrue(exists(self.dto_for_one_file.output_filename))
+
+    def test_generate_pdf_dependency_charts(self):
+        alpha = 0.01
+        output_filename = join(working_dir, 'output.pdf')
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id]
+        chart_types = [ChartType.TESTS_DEPENDENCY]
+        language = 'en'
+        specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
+                 TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1)]
+        test_dep_options = TestDependencyOptions(specs)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
+        self.pdf_generator.generate_pdf(pdf_gen_dto)
+        self.assertTrue(exists(output_filename))
+
+    def test_generate_pdf_four_dependency_charts(self):
+        alpha = 0.01
+        output_filename = join(working_dir, 'output.pdf')
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
+                 TestsIdData.test5_id]
+        chart_types = [ChartType.TESTS_DEPENDENCY]
+        language = 'en'
+        specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
+                 TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1),
+                 TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 2),
+                 TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
+                 TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
+        test_dep_options = TestDependencyOptions(specs)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
+        self.pdf_generator.generate_pdf(pdf_gen_dto)
+        self.assertTrue(exists(output_filename))
 
     def test_create_dto_for_concrete_chart_unsupported_chart(self):
         pdf_generating_dto = PdfGeneratingDto()
