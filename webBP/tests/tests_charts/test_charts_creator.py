@@ -206,7 +206,7 @@ class TestChartsCreator(TestCase):
         self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test3_id]
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
         file = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
-        expected_chart_info = ChartInfo(file, ChartType.P_VALUES, self.file1_id)
+        expected_chart_info = ChartInfo(None, file, ChartType.P_VALUES, self.file1_id)
 
         self.assertTrue(exists(file))
         self.assertEqual(1, len(storage.get_all_infos()))
@@ -219,10 +219,10 @@ class TestChartsCreator(TestCase):
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
 
         file1 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
-        chart_info1 = ChartInfo(file1, ChartType.P_VALUES, self.file1_id)
+        chart_info1 = ChartInfo(None, file1, ChartType.P_VALUES, self.file1_id)
 
         file2 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '_zoomed.png')
-        chart_info2 = ChartInfo(file2, ChartType.P_VALUES_ZOOMED, self.file1_id)
+        chart_info2 = ChartInfo(None, file2, ChartType.P_VALUES_ZOOMED, self.file1_id)
 
         self.assertTrue(exists(file1))
         self.assertTrue(exists(file2))
@@ -240,8 +240,8 @@ class TestChartsCreator(TestCase):
         file1 = join(working_dir, 'p_values_for_file_' + str(self.file1_id) + '.png')
         file2 = join(working_dir, 'p_values_for_file_' + str(self.file2_id) + '.png')
 
-        expected_info_1 = ChartInfo(file1, ChartType.P_VALUES, self.file1_id)
-        expected_info_2 = ChartInfo(file2, ChartType.P_VALUES, self.file2_id)
+        expected_info_1 = ChartInfo(None, file1, ChartType.P_VALUES, self.file1_id)
+        expected_info_2 = ChartInfo(None, file2, ChartType.P_VALUES, self.file2_id)
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
 
         self.assertTrue(exists(file1))
@@ -254,8 +254,8 @@ class TestChartsCreator(TestCase):
         file1 = join(working_dir, 'histogram_for_file_' + str(self.file1_id) + '.png')
         file2 = join(working_dir, 'histogram_for_file_' + str(self.file2_id) + '.png')
 
-        expected_info_1 = ChartInfo(file1, ChartType.HISTOGRAM, self.file1_id)
-        expected_info_2 = ChartInfo(file2, ChartType.HISTOGRAM, self.file2_id)
+        expected_info_1 = ChartInfo(None, file1, ChartType.HISTOGRAM, self.file1_id)
+        expected_info_2 = ChartInfo(None, file2, ChartType.HISTOGRAM, self.file2_id)
 
         histogram_dto = HistogramDto('intervals', 'number of p-values', 'histogram')
         self.generate_charts_dto.chart_types = {ChartType.HISTOGRAM: [histogram_dto]}

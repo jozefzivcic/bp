@@ -8,9 +8,13 @@ from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
+from charts.data_source_info import DataSourceInfo
 from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
+from charts.tests_in_chart import TestsInChart
 from common.helper_functions import load_texts_into_config_parsers
+from p_value_processing.p_value_sequence import PValueSequence
+from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.options.file_specification import FileSpecification
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
 from pdf_generating.options.test_file_specification import TestFileSpecification
@@ -176,7 +180,7 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(keys_for_template, pdf_creating_dto.keys_for_template)
 
     def test_prepare_dict_from_charts_storage_escape_chars(self):
-        chart_info = ChartInfo('something', ChartType.P_VALUES, FileIdData.file3_id)
+        chart_info = ChartInfo(None, 'something', ChartType.P_VALUES, FileIdData.file3_id)
         charts_storage = ChartsStorage()
         charts_storage.add_chart_info(chart_info)
 
@@ -187,7 +191,7 @@ class TestPdfGenerator(TestCase):
 
     def test_prepare_dict_from_charts_storage_basic(self):
         path = '/home/something/chart.png'
-        chart_info = ChartInfo(path, ChartType.P_VALUES, FileIdData.file1_id)
+        chart_info = ChartInfo(None, path, ChartType.P_VALUES, FileIdData.file1_id)
         charts_storage = ChartsStorage()
         charts_storage.add_chart_info(chart_info)
         file_1_name = get_file_by_id(FileIdData.file1_id).name
@@ -260,23 +264,25 @@ class TestPdfGenerator(TestCase):
         charts_storage = ChartsStorage()
 
         path_1 = '/home/something/chart_1.png'
-        chart_info = ChartInfo(path_1, ChartType.P_VALUES, FileIdData.file1_id)
+        chart_info = ChartInfo(None, path_1, ChartType.P_VALUES, FileIdData.file1_id)
         charts_storage.add_chart_info(chart_info)
 
         path_2 = '/home/something/chart_2.png'
-        chart_info = ChartInfo(path_2, ChartType.P_VALUES, FileIdData.file1_id)
+        chart_info = ChartInfo(None, path_2, ChartType.P_VALUES, FileIdData.file1_id)
         charts_storage.add_chart_info(chart_info)
 
         path_3 = '/home/something/chart_3.png'
-        chart_info = ChartInfo(path_3, ChartType.P_VALUES, FileIdData.file2_id)
+        chart_info = ChartInfo(None, path_3, ChartType.P_VALUES, FileIdData.file2_id)
         charts_storage.add_chart_info(chart_info)
 
         path_4 = '/home/something/chart_4.png'
-        chart_info = ChartInfo(path_4, ChartType.P_VALUES, FileIdData.file2_id)
+        chart_info = ChartInfo(None, path_4, ChartType.P_VALUES, FileIdData.file2_id)
         charts_storage.add_chart_info(chart_info)
 
         path_5 = '/home/something/chart_5.png'
-        chart_info = ChartInfo(path_5, ChartType.P_VALUES, FileIdData.file2_id)
+        ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (PValueSequence(4, PValuesFileType.DATA, 3),
+                                                              PValueSequence(4, PValuesFileType.DATA, 4)))
+        chart_info = ChartInfo(ds_info, path_5, ChartType.TESTS_DEPENDENCY, FileIdData.file2_id)
         charts_storage.add_chart_info(chart_info)
 
         file_1_name = get_file_by_id(FileIdData.file1_id).name
@@ -295,8 +301,9 @@ class TestPdfGenerator(TestCase):
                                                           'chart_name': chart_name},
                                                          {'path_to_chart': path_4, 'chart_type': ch_type,
                                                           'chart_name': chart_name},
-                                                         {'path_to_chart': path_5, 'chart_type': ch_type,
-                                                          'chart_name': chart_name}]
+                                                         {'path_to_chart': path_5, 'chart_type': ChartType
+                                                             .TESTS_DEPENDENCY.name,
+                                                          'chart_name': 'Dependency of two tests'}]
                                           }
                     }
         return charts_storage, expected
