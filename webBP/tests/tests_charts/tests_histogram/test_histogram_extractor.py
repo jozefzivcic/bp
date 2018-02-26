@@ -5,6 +5,7 @@ from charts.histogram.historam_extractor import HistogramExtractor
 from charts.histogram_dto import HistogramDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
+from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14
 
 intervals = ['[0.0, 0.1)', '[0.1, 0.2)', '[0.2, 0.3)', '[0.3, 0.4)', '[0.4, 0.5)', '[0.5, 0.6)', '[0.6, 0.7)',
              '[0.7, 0.8)', '[0.8, 0.9)', '[0.9, 1.0]']
@@ -38,6 +39,18 @@ class TestHistogramExtractor(TestCase):
         self.extractor.add_p_values_to_interval(self.quantities, p_values)
         self.assertEqual(expected_quantities, self.quantities)
 
+    def test_get_data_from_accumulator_none_ds_info(self):
+        test1_id = 456
+        test2_id = 457
+        dto1 = PValuesDto(dict_for_test_13)
+        dto2 = PValuesDto(dict_for_test_14)
+        acc = PValuesAccumulator()
+        acc.add(test1_id, dto1)
+        acc.add(test2_id, dto2)
+        hist_dto = HistogramDto('x_label', 'y_label', 'title')
+        ret = self.extractor.get_data_from_accumulator(acc, hist_dto)
+        self.assertIsNone(ret.ds_info)
+
     def test_get_data_from_accumulator(self):
         dto1 = PValuesDto({'results': self.sample_p_values})
 
@@ -66,7 +79,8 @@ class TestHistogramExtractor(TestCase):
             data.append([intervals[i], total_quantities[i]])
         json_data = json.dumps(data)
 
-        ret = self.extractor.get_data_from_accumulator(acc, hist_dto)
+        extracted_data = self.extractor.get_data_from_accumulator(acc, hist_dto)
+        ret = extracted_data.data_for_drawer
 
         self.assertEqual(hist_dto.x_label, ret.x_label)
         self.assertEqual(hist_dto.y_label, ret.y_label)

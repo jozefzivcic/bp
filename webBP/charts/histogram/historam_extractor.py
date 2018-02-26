@@ -1,6 +1,7 @@
 import json
 import math
 
+from charts.extracted_data import ExtractedData
 from charts.histogram.data_for_histogram_drawer import DataForHistogramDrawer
 from charts.histogram_dto import HistogramDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
@@ -10,7 +11,7 @@ class HistogramExtractor:
     intervals = ['[0.0, 0.1)', '[0.1, 0.2)', '[0.2, 0.3)', '[0.3, 0.4)', '[0.4, 0.5)', '[0.5, 0.6)', '[0.6, 0.7)',
                  '[0.7, 0.8)', '[0.8, 0.9)', '[0.9, 1.0]']
 
-    def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: HistogramDto) -> DataForHistogramDrawer:
+    def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: HistogramDto) -> ExtractedData:
         data = DataForHistogramDrawer()
         data.x_label = dto.x_label
         data.y_label = dto.y_label
@@ -23,7 +24,7 @@ class HistogramExtractor:
         for i in range(10):
             ret.append([HistogramExtractor.intervals[i], quantities[i]])
         data.json_data_string = json.dumps(ret)
-        return data
+        return ExtractedData(None, data)
 
     def add_p_values_to_interval(self, quantities: list, p_values: list):
         for p_value in p_values:
