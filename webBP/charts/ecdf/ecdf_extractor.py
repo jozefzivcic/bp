@@ -1,5 +1,6 @@
 from charts.ecdf.data_for_ecdf_drawer import DataForEcdfDrawer
 from charts.ecdf_dto import EcdfDto
+from charts.extracted_data import ExtractedData
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_file_type import PValuesFileType
 
@@ -16,4 +17,4 @@ class EcdfExtractor:
             raise ValueError('Unsupported file type {}'.format(seq.p_values_file))
         data = DataForEcdfDrawer(ecdf_dto.alpha, ecdf_dto.title, ecdf_dto.x_label, ecdf_dto.y_label,
                                  ecdf_dto.empirical_label, ecdf_dto.theoretical_label, p_values)
-        return data
+        return ExtractedData(data)
