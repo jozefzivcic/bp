@@ -1,9 +1,11 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from charts.data_source_info import DataSourceInfo
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_extractor import TestDependencyExtractor
 from charts.test_dependency_dto import TestDependencyDto
+from charts.tests_in_chart import TestsInChart
 from models.test import Test
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
@@ -38,6 +40,67 @@ class TestOfTestDependencyExtractor(TestCase):
         self.p_values_acc.add(TestsIdData.test5_id, self.p_values_dto_for_test5)
 
     @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    def test_get_data_from_accumulator_ds_info(self, func):
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
+
+        title = 'Dependency of two tests'
+        dto = TestDependencyDto(seq_acc, title)
+        extracted_data_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
+        self.assertEqual(10, len(extracted_data_list))
+        self.assertEqual(10, func.call_count)
+
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
+        seq3 = PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2)
+        seq4 = PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS)
+        seq5 = PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS)
+
+        ret = extracted_data_list[0].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq2))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[1].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq3))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[2].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq4))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[3].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq5))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[4].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq2, seq3))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[5].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq2, seq4))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[6].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq2, seq5))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[7].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq3, seq4))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[8].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq3, seq5))
+        self.assertEqual(expected, ret)
+
+        ret = extracted_data_list[9].ds_info
+        expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq4, seq5))
+        self.assertEqual(expected, ret)
+
+    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
     def test_get_data_from_accumulator(self, func):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
@@ -48,100 +111,110 @@ class TestOfTestDependencyExtractor(TestCase):
 
         title = 'Dependency of two tests'
         dto = TestDependencyDto(seq_acc, title)
-        data_for_drawer_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
+        extracted_data_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
 
-        self.assertEqual(10, len(data_for_drawer_list))
+        self.assertEqual(10, len(extracted_data_list))
         self.assertEqual(10, func.call_count)
 
         # dependency chart for test1 and test2_data1
+        ret_data = extracted_data_list[0].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test1_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         test = db_test_dao_get_test_by_id(TestsIdData.test2_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name() + '_data_1'
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_13['results'], dict_for_test_14['data1'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[0])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test1 and test3_data2
+        ret_data = extracted_data_list[1].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test1_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         test = db_test_dao_get_test_by_id(TestsIdData.test3_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name() + '_data_2'
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_13['results'], dict_for_test_41['data2'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[1])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test1 and test4
+        ret_data = extracted_data_list[2].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test1_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         test = db_test_dao_get_test_by_id(TestsIdData.test4_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_13['results'], dict_for_test_42['results'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[2])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test1 and test5
+        ret_data = extracted_data_list[3].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test1_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         test = db_test_dao_get_test_by_id(TestsIdData.test5_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_13['results'], dict_for_test_43['results'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[3])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test2_data1 and test3_data2
+        ret_data = extracted_data_list[4].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test2_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name() + '_data_1'
         test = db_test_dao_get_test_by_id(TestsIdData.test3_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name() + '_data_2'
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_14['data1'], dict_for_test_41['data2'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[4])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test2_data1 and test4
+        ret_data = extracted_data_list[5].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test2_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name() + '_data_1'
         test = db_test_dao_get_test_by_id(TestsIdData.test4_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_14['data1'], dict_for_test_42['results'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[5])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test2_data1 and test5
+        ret_data = extracted_data_list[6].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test2_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name() + '_data_1'
         test = db_test_dao_get_test_by_id(TestsIdData.test5_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_14['data1'], dict_for_test_43['results'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[6])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test3_data2 and test4
+        ret_data = extracted_data_list[7].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test3_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name() + '_data_2'
         test = db_test_dao_get_test_by_id(TestsIdData.test4_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_41['data2'], dict_for_test_42['results'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[7])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test3_data2 and test5
+        ret_data = extracted_data_list[8].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test3_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name() + '_data_2'
         test = db_test_dao_get_test_by_id(TestsIdData.test5_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_41['data2'], dict_for_test_43['results'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[8])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
         # dependency chart for test4 and test5
+        ret_data = extracted_data_list[9].data_for_drawer
         test = db_test_dao_get_test_by_id(TestsIdData.test4_id)
         x_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         test = db_test_dao_get_test_by_id(TestsIdData.test5_id)
         y_label = nist_dao_get_nist_param_for_test(test).get_test_name()
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_42['results'], dict_for_test_43['results'], title,
                                                       x_label, y_label)
-        self.compare_data_for_drawer(data_for_drawer, data_for_drawer_list[9])
+        self.compare_data_for_drawer(data_for_drawer, ret_data)
 
     def test_get_test_name_wrong_test_type(self):
         test_table_name = 'another_test_table'

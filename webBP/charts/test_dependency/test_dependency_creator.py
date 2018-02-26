@@ -20,10 +20,10 @@ class TestDependencyCreator:
         self.check_input(data)
         storage = ChartsStorage()
         arr_of_data = self._extractor.get_data_from_accumulator(data.acc, data.test_dependency_dto)
-        for data_for_drawer in arr_of_data:
-            file_name = self.get_file_name(data.directory, data_for_drawer)
-            self._drawer.draw_chart(data_for_drawer, file_name)
-            chart_info = ChartInfo(file_name, ChartType.TESTS_DEPENDENCY, data.file_id)
+        for extracted_data in arr_of_data:
+            file_name = self.get_file_name(data.directory, extracted_data.data_for_drawer)
+            self._drawer.draw_chart(extracted_data.data_for_drawer, file_name)
+            chart_info = ChartInfo(extracted_data.ds_info, file_name, ChartType.TESTS_DEPENDENCY, data.file_id)
             storage.add_chart_info(chart_info)
         return storage
 
