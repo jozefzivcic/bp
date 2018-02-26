@@ -1,3 +1,4 @@
+from charts.extracted_data import ExtractedData
 from charts.p_values_chart_dto import PValuesChartDto
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from configstorage import ConfigStorage
@@ -18,7 +19,7 @@ class Extractor:
         self._i = 1
         self._zoomed = False
 
-    def get_data_from_accumulator(self, acc: PValuesAccumulator, chart_dto: PValuesChartDto) -> DataForPValuesDrawer:
+    def get_data_from_accumulator(self, acc: PValuesAccumulator, chart_dto: PValuesChartDto) -> ExtractedData:
         data = DataForPValuesDrawer()
         data.alpha = chart_dto.alpha
         data.x_label = chart_dto.x_label
@@ -45,7 +46,7 @@ class Extractor:
                     self.add_data(chart_dto, p_values_dto, data, test_id, index)
             else:
                 self.add_data(chart_dto, p_values_dto, data, test_id)
-        return data
+        return ExtractedData(None, data)
 
     def add_data(self, chart_dto: PValuesChartDto, dto: PValuesDto, data: DataForPValuesDrawer, test_id: int,
                  index=None):

@@ -141,6 +141,17 @@ class TestExtractor(TestCase):
 
         self.assertEqual(2, self.extractor._i)
 
+    def test_get_data_from_acc_none_ds_info(self):
+        dto_13 = PValuesDto(dict_for_test_13)
+        dto_14 = PValuesDto(dict_for_test_14)
+        acc = PValuesAccumulator()
+        acc.add(self.test1_id, dto_13)
+        acc.add(self.test2_id, dto_14)
+
+        extracted_data = self.extractor.get_data_from_accumulator(acc, self.p_values_chart_dto)
+
+        self.assertIsNone(extracted_data.ds_info)
+
     def test_get_data_from_acc(self):
         dto_13 = PValuesDto(dict_for_test_13)
         dto_14 = PValuesDto(dict_for_test_14)
@@ -148,35 +159,36 @@ class TestExtractor(TestCase):
         acc.add(self.test1_id, dto_13)
         acc.add(self.test2_id, dto_14)
 
-        data = self.extractor.get_data_from_accumulator(acc, self.p_values_chart_dto)
+        extracted_data = self.extractor.get_data_from_accumulator(acc, self.p_values_chart_dto)
+        drawer_data = extracted_data.data_for_drawer
 
         expected = 0.01
-        self.assertAlmostEqual(expected, data.alpha, places=1E-6)
+        self.assertAlmostEqual(expected, drawer_data.alpha, places=1E-6)
 
         expected = list(repeat(1, 10))
         expected.extend(list(repeat(2, 10)))
         expected.extend(list(repeat(3, 10)))
-        self.assertEqual(expected, data.x_values)
+        self.assertEqual(expected, drawer_data.x_values)
 
         expected = list(dict_for_test_13['results'])
         expected.extend(list(dict_for_test_14['data1']))
         expected.extend(list(dict_for_test_14['data2']))
-        self.assertEqual(expected, data.y_values)
+        self.assertEqual(expected, drawer_data.y_values)
 
         expected = [1, 2, 3]
-        self.assertEqual(expected, data.x_ticks_positions)
+        self.assertEqual(expected, drawer_data.x_ticks_positions)
 
         expected = [self.test1_name, self.test2_name + '_1', self.test2_name + '_2']
-        self.assertEqual(expected, data.x_ticks_labels)
+        self.assertEqual(expected, drawer_data.x_ticks_labels)
 
         expected = 'test'
-        self.assertEqual(expected, data.x_label)
+        self.assertEqual(expected, drawer_data.x_label)
 
         expected = 'p-value'
-        self.assertEqual(expected, data.y_label)
+        self.assertEqual(expected, drawer_data.y_label)
 
         expected = 'p-values from selected tests'
-        self.assertEqual(expected, data.title)
+        self.assertEqual(expected, drawer_data.title)
 
     def test_set_y_axis_small_alpha(self):
         alpha = 0.000001
