@@ -2,6 +2,7 @@ from os.path import dirname, abspath, join
 from shutil import rmtree
 from tempfile import mkdtemp
 
+from charts.chart_info import ChartInfo
 from charts.ecdf_dto import EcdfDto
 from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
@@ -15,7 +16,10 @@ from common.helper_functions import load_texts_into_config_parsers, escape_latex
     convert_specs_to_seq_acc, convert_specs_to_p_value_seq
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
+from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
+from managers.nisttestmanager import NistTestManager
+from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
 from pdf_generating.pdf_creator import PdfCreator
@@ -28,7 +32,9 @@ this_dir = dirname(abspath(__file__))
 class PdfGenerator:
     def __init__(self, pool: ConnectionPool, storage: ConfigStorage):
         self.config_storage = storage
-        self.file_dao = FileManager(pool)
+        self._test_dao = DBTestManager(pool)
+        self._nist_dao = NistTestManager(pool)
+        self._file_dao = FileManager(pool)
         self._charts_creator = ChartsCreator(pool, storage)
         self._pdf_creator = PdfCreator()
         path_to_texts = abspath(join(this_dir, storage.path_to_pdf_texts))
@@ -105,7 +111,7 @@ class PdfGenerator:
             fid = chart_info.file_id
             file_name = self.get_file_name(fid)
             file_name = escape_latex_special_chars(file_name)
-            chart_name = self.get_chart_name(language, chart_info.chart_type)
+            chart_name = self.get_chart_name(language, chart_info)
             if fid in charts_dict:
                 charts_dict[fid]['chart_info'].append({'path_to_chart': chart_info.path_to_chart,
                                                        'chart_type': chart_info.chart_type.name,
@@ -121,7 +127,7 @@ class PdfGenerator:
         return charts_dict
 
     def get_file_name(self, fid: int):
-        return self.file_dao.get_file_by_id(fid).name
+        return self._file_dao.get_file_by_id(fid).name
 
     def check_input(self, dto: PdfGeneratingDto):
         if dto.language not in self.supported_languages.keys():
@@ -140,7 +146,8 @@ class PdfGenerator:
             if not dto.ecdf_options:
                 raise PdfGeneratingError('No test for ECDF chart')
 
-    def get_chart_name(self, language: str, ch_type: ChartType) -> str:
+    def get_chart_name(self, language: str, info: ChartInfo) -> str:
+        ch_type = info.chart_type
         if ch_type == ChartType.P_VALUES:
             return self._texts[language]['PValuesChart']['PValuesChart']
         elif ch_type == ChartType.P_VALUES_ZOOMED:
@@ -149,4 +156,20 @@ class PdfGenerator:
             return self._texts[language]['Histogram']['HistogramUpperH']
         elif ch_type == ChartType.TESTS_DEPENDENCY:
             return self._texts[language]['TestDependency']['Title']
+        elif ch_type == ChartType.ECDF:
+            return self.get_ecdf_chart_name(language, info)
         raise PdfGeneratingError('Undefined chart type: ' + str(ch_type))
+
+    def get_ecdf_chart_name(self, language: str, info: ChartInfo):
+        title = '{} {}'.format(self._texts[language]['ECDF']['Title'], self._texts[language]['General']['From'])
+        seq = info.ds_info.p_value_sequence
+        test_id = seq.test_id
+        test = self._test_dao.get_test_by_id(test_id)
+        test_name = self._nist_dao.get_nist_param_for_test(test).get_test_name()
+        title += ' {}'.format(test_name)
+        if seq.p_values_file == PValuesFileType.RESULTS:
+            return title + ' {}'.format(self._texts[language]['General']['Results'])
+        elif seq.p_values_file == PValuesFileType.DATA:
+            return title + ' {} {}'.format(self._texts[language]['General']['Data'], seq.data_num)
+        else:
+            raise RuntimeError('Unknown file type {}'.format(seq.p_values_file))

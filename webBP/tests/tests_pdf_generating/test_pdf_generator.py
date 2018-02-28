@@ -2,7 +2,7 @@ from os import makedirs
 from os.path import dirname, abspath, join, exists
 from shutil import rmtree
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
@@ -15,6 +15,7 @@ from charts.tests_in_chart import TestsInChart
 from common.helper_functions import load_texts_into_config_parsers
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
+from pdf_generating.options.ecdf_options import EcdfOptions
 from pdf_generating.options.file_specification import FileSpecification
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
 from pdf_generating.options.test_file_specification import TestFileSpecification
@@ -42,7 +43,9 @@ class TestPdfGenerator(TestCase):
         config_storage.path_to_pdf_texts = 'texts'
         config_storage.path_to_tex_templates = 'templates'
         self.pdf_generator = PdfGenerator(None, config_storage)
-        self.pdf_generator.file_dao.get_file_by_id = MagicMock(side_effect=get_file_by_id)
+        self.pdf_generator._test_dao.get_test_by_id = MagicMock(side_effect=db_test_dao_get_test_by_id)
+        self.pdf_generator._nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_get_nist_param_for_test)
+        self.pdf_generator._file_dao.get_file_by_id = MagicMock(side_effect=get_file_by_id)
         self.pdf_generator._charts_creator._results_dao.get_paths_for_test_ids = MagicMock(
             side_effect=results_dao_get_paths_for_test_ids)
         self.pdf_generator._charts_creator._tests_dao.get_tests_by_id_list = MagicMock(
@@ -128,6 +131,36 @@ class TestPdfGenerator(TestCase):
                  TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
         test_dep_options = TestDependencyOptions(specs)
         pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
+        self.pdf_generator.generate_pdf(pdf_gen_dto)
+        self.assertTrue(exists(output_filename))
+
+    def test_generate_pdf_one_ecdf(self):
+        alpha = 0.05
+        output_filename = join(working_dir, 'output.pdf')
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
+                 TestsIdData.test5_id]
+        chart_types = [ChartType.ECDF]
+        language = 'en'
+        specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE)]
+        ecdf_options = EcdfOptions(specs)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, ecdf_options)
+        self.pdf_generator.generate_pdf(pdf_gen_dto)
+        self.assertTrue(exists(output_filename))
+
+    def test_generate_pdf_five_ecdf(self):
+        alpha = 0.05
+        output_filename = join(working_dir, 'output.pdf')
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
+                 TestsIdData.test5_id]
+        chart_types = [ChartType.ECDF]
+        language = 'en'
+        specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
+                 TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 2),
+                 TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 1),
+                 TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
+                 TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
+        ecdf_options = EcdfOptions(specs)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, ecdf_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -246,19 +279,66 @@ class TestPdfGenerator(TestCase):
         self.assertEqual('No default options for test dependency chart', str(context.exception))
 
     def test_get_chart_name_undefined_chart(self):
+        ch_info = ChartInfo(None, 'something', -5, 5)
         with self.assertRaises(PdfGeneratingError) as context:
-            self.pdf_generator.get_chart_name('en', -5)
+            self.pdf_generator.get_chart_name('en', ch_info)
         self.assertEqual('Undefined chart type: -5', str(context.exception))
 
     def test_get_chart_name_p_values(self):
+        ch_info = ChartInfo(None, 'something', ChartType.P_VALUES, 5)
         expected = self.texts['en']['PValuesChart']['PValuesChart']
-        ret = self.pdf_generator.get_chart_name('en', ChartType.P_VALUES)
+        ret = self.pdf_generator.get_chart_name('en', ch_info)
+        self.assertEqual(expected, ret)
+
+    def test_get_chart_name_p_values_zoomed(self):
+        ch_info = ChartInfo(None, 'something', ChartType.P_VALUES_ZOOMED, 5)
+        expected = self.texts['en']['PValuesChartZoomed']['PValuesChartZoomed']
+        ret = self.pdf_generator.get_chart_name('en', ch_info)
         self.assertEqual(expected, ret)
 
     def test_get_chart_name_histogram(self):
+        ch_info = ChartInfo(None, 'something', ChartType.HISTOGRAM, 5)
         expected = self.texts['en']['Histogram']['HistogramUpperH']
-        ret = self.pdf_generator.get_chart_name('en', ChartType.HISTOGRAM)
+        ret = self.pdf_generator.get_chart_name('en', ch_info)
         self.assertEqual(expected, ret)
+
+    def test_get_chart_name_test_dependency(self):
+        ch_info = ChartInfo(None, 'something', ChartType.TESTS_DEPENDENCY, 5)
+        expected = self.texts['en']['TestDependency']['Title']
+        ret = self.pdf_generator.get_chart_name('en', ch_info)
+        self.assertEqual(expected, ret)
+
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_ecdf_chart_name')
+    def test_get_chart_name_ecdf(self, func):
+        language = 'en'
+        chart_info = ChartInfo(None, 'something', ChartType.ECDF, 4)
+        self.pdf_generator.get_chart_name(language, chart_info)
+        func.assert_called_once_with(language, chart_info)
+
+    def test_get_ecdf_chart_name_results(self):
+        expected = '{} {} Frequency results'.format(self.texts['en']['ECDF']['Title'], self.texts['en']['General']['From'])
+        seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
+        chart_info = ChartInfo(ds_info, 'something', ChartType.ECDF, FileIdData.file1_id)
+        ret = self.pdf_generator.get_ecdf_chart_name('en', chart_info)
+        self.assertEqual(expected, ret)
+
+    def test_get_ecdf_chart_name_data(self):
+        expected = '{} {} Cumulative Sums data 2'.format(self.texts['en']['ECDF']['Title'],
+                                                         self.texts['en']['General']['From'])
+        seq = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)
+        ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
+        chart_info = ChartInfo(ds_info, 'something', ChartType.ECDF, FileIdData.file1_id)
+        ret = self.pdf_generator.get_ecdf_chart_name('en', chart_info)
+        self.assertEqual(expected, ret)
+
+    def test_get_ecdf_chart_name_unknown_file_type(self):
+        seq = PValueSequence(TestsIdData.test2_id, -5, 2)
+        ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
+        chart_info = ChartInfo(ds_info, 'something', ChartType.ECDF, FileIdData.file1_id)
+        with self.assertRaises(RuntimeError) as ex:
+            self.pdf_generator.get_ecdf_chart_name('en', chart_info)
+        self.assertEqual('Unknown file type -5', str(ex.exception))
 
     def get_charts_storage_and_dict(self):
         charts_storage = ChartsStorage()
