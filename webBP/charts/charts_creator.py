@@ -1,8 +1,12 @@
 from os.path import exists
 
 from charts.charts_error import ChartsError
+from charts.ecdf.data_for_ecdf_creator import DataForEcdfCreator
+from charts.ecdf.ecdf_creator import EcdfCreator
+from charts.ecdf_dto import EcdfDto
 from charts.histogram.data_for_histogram_creator import DataForHistogramCreator
 from charts.histogram.histogram_creator import HistogramCreator
+from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
@@ -33,8 +37,9 @@ class ChartsCreator:
         self._p_values_creator = PValuesCreator(pool, storage)
         self._histogram_creator = HistogramCreator()
         self._test_dependency_creator = TestDependencyCreator(pool, storage)
+        self._ecdf_creator = EcdfCreator()
         self.supported_charts = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM,
-                                 ChartType.TESTS_DEPENDENCY]
+                                 ChartType.TESTS_DEPENDENCY, ChartType.ECDF]
 
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
         self.check_input(generate_charts_dto)
@@ -50,7 +55,7 @@ class ChartsCreator:
             chart_info = self._p_values_creator.create_p_values_chart(data_for_creator)
             self._charts_storage.add_chart_info(chart_info)
 
-    def create_histograms_for_tests(self, dto, directory):
+    def create_histograms_for_tests(self, dto: HistogramDto, directory: str):
         for file_id, acc in self._p_values_accumulators.items():
             data_for_creator = DataForHistogramCreator(dto, acc, directory, file_id)
             chart_info = self._histogram_creator.create_histogram(data_for_creator)
@@ -60,6 +65,12 @@ class ChartsCreator:
         for file_id, acc in self._p_values_accumulators.items():
             data_for_creator = DataForTestDependencyCreator(dto, acc, directory, file_id)
             charts_storage = self._test_dependency_creator.create_test_dependency_charts(data_for_creator)
+            self._charts_storage.extend(charts_storage)
+
+    def create_ecdf_charts(self, dto: EcdfDto, directory: str):
+        for file_id, acc in self._p_values_accumulators.items():
+            data_for_creator = DataForEcdfCreator(dto, acc, directory, file_id)
+            charts_storage = self._ecdf_creator.create_ecdf_charts(data_for_creator)
             self._charts_storage.extend(charts_storage)
 
     def load_p_values(self, test_ids):
@@ -110,5 +121,7 @@ class ChartsCreator:
             self.create_histograms_for_tests(dto, directory)
         elif chart_type == ChartType.TESTS_DEPENDENCY:
             self.create_tests_dependency_charts(dto, directory)
+        elif chart_type == ChartType.ECDF:
+            self.create_ecdf_charts(dto, directory)
         else:
             raise ChartsError('Unsupported chart type')

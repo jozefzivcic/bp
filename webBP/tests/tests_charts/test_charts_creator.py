@@ -8,10 +8,13 @@ from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
+from charts.data_source_info import DataSourceInfo
+from charts.ecdf_dto import EcdfDto
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.histogram_dto import HistogramDto
 from charts.p_values_chart_dto import PValuesChartDto
 from charts.test_dependency_dto import TestDependencyDto
+from charts.tests_in_chart import TestsInChart
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
@@ -72,6 +75,11 @@ class TestChartsCreator(TestCase):
     def tearDown(self):
         if exists(working_dir):
             rmtree(working_dir)
+
+    def test_supported_charts(self):
+        expected = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM,
+                    ChartType.TESTS_DEPENDENCY, ChartType.ECDF]
+        self.assertEqual(expected, self.charts_creator.supported_charts)
 
     def test_reset(self):
         self.charts_creator._tests_with_dirs = ['something']
@@ -369,6 +377,66 @@ class TestChartsCreator(TestCase):
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file2_id, info.file_id)
+
+    def test_create_ecdf_for_one_file(self):
+        file1 = join(working_dir, 'ecdf_for_test_{}_results.png'.format(self.test1_id))
+        file2 = join(working_dir, 'ecdf_for_test_{}_data_1.png'.format(self.test2_id))
+
+        seq1 = PValueSequence(self.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(self.test2_id, PValuesFileType.DATA, 1)
+        ds_info1 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq1)
+        ds_info2 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq2)
+        expected_info_1 = ChartInfo(ds_info1, file1, ChartType.ECDF, self.file1_id)
+        expected_info_2 = ChartInfo(ds_info2, file2, ChartType.ECDF, self.file1_id)
+
+        ecdf_dto = EcdfDto(0.05, 'ECDF', 'p-value', 'Cumulative density', 'Empirical', 'Theoretical', [seq1, seq2])
+        self.generate_charts_dto.chart_types = {ChartType.ECDF: [ecdf_dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        self.assertTrue(exists(file1))
+        self.assertTrue(exists(file2))
+        self.assertEqual(2, len(storage.get_all_infos()))
+        self.assertEqual(expected_info_1, storage.get_all_infos()[0])
+        self.assertEqual(expected_info_2, storage.get_all_infos()[1])
+
+    def test_create_ecdf_for_five_files(self):
+        file1 = join(working_dir, 'ecdf_for_test_{}_results.png'.format(self.test1_id))
+        file2 = join(working_dir, 'ecdf_for_test_{}_data_1.png'.format(self.test2_id))
+        file3 = join(working_dir, 'ecdf_for_test_{}_data_2.png'.format(self.test3_id))
+        file4 = join(working_dir, 'ecdf_for_test_{}_results.png'.format(self.test4_id))
+        file5 = join(working_dir, 'ecdf_for_test_{}_results.png'.format(self.test5_id))
+
+        seq1 = PValueSequence(self.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(self.test2_id, PValuesFileType.DATA, 1)
+        seq3 = PValueSequence(self.test3_id, PValuesFileType.DATA, 2)
+        seq4 = PValueSequence(self.test4_id, PValuesFileType.RESULTS)
+        seq5 = PValueSequence(self.test5_id, PValuesFileType.RESULTS)
+
+        ds_info1 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq1)
+        ds_info2 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq2)
+        ds_info3 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq3)
+        ds_info4 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq4)
+        ds_info5 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq5)
+
+        expected_info_1 = ChartInfo(ds_info1, file1, ChartType.ECDF, self.file1_id)
+        expected_info_2 = ChartInfo(ds_info2, file2, ChartType.ECDF, self.file1_id)
+        expected_info_3 = ChartInfo(ds_info3, file3, ChartType.ECDF, self.file1_id)
+        expected_info_4 = ChartInfo(ds_info4, file4, ChartType.ECDF, self.file2_id)
+        expected_info_5 = ChartInfo(ds_info5, file5, ChartType.ECDF, self.file2_id)
+
+        ecdf_dto = EcdfDto(0.05, 'ECDF', 'p-value', 'Cumulative density', 'Empirical', 'Theoretical',
+                           [seq1, seq2, seq3, seq4, seq5])
+        self.generate_charts_dto.chart_types = {ChartType.ECDF: [ecdf_dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        self.assertTrue(exists(file1))
+        self.assertTrue(exists(file2))
+        self.assertEqual(5, len(storage.get_all_infos()))
+        self.assertEqual(expected_info_1, storage.get_all_infos()[0])
+        self.assertEqual(expected_info_2, storage.get_all_infos()[1])
+        self.assertEqual(expected_info_3, storage.get_all_infos()[2])
+        self.assertEqual(expected_info_4, storage.get_all_infos()[3])
+        self.assertEqual(expected_info_5, storage.get_all_infos()[4])
 
     def test_draw_concrete_charts_for_non_existing_chart_type(self):
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')

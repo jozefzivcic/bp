@@ -13,7 +13,9 @@ class EcdfExtractor:
     def get_data_from_accumulator(self, acc: PValuesAccumulator, ecdf_dto: EcdfDto) -> list:
         data_list = []
         for seq in ecdf_dto.sequences:
-            p_values_dto = acc.get_dto_for_test(seq.test_id)
+            p_values_dto = acc.get_dto_for_test_safe(seq.test_id)
+            if p_values_dto is None:
+                continue
             p_values = self.get_p_values(p_values_dto, seq)
             data = DataForEcdfDrawer(ecdf_dto.alpha, ecdf_dto.title, ecdf_dto.x_label, ecdf_dto.y_label,
                                      ecdf_dto.empirical_label, ecdf_dto.theoretical_label, p_values)
