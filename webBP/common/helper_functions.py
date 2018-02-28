@@ -88,3 +88,17 @@ def convert_specs_to_seq_acc(specs: list) -> SequenceAccumulator:
             raise ValueError('Unsupported FileSpecification ' + str(spec.file_spec))
         seq_acc.add_sequence(s)
     return seq_acc
+
+
+def convert_specs_to_p_value_seq(specs: list) -> list:
+    ret = []
+    for spec in specs:
+        if spec.file_spec == FileSpecification.RESULTS_FILE:
+            seq = PValueSequence(spec.test_id, PValuesFileType.RESULTS)
+            ret.append(seq)
+        elif spec.file_spec == FileSpecification.DATA_FILE:
+            seq = PValueSequence(spec.test_id, PValuesFileType.DATA, spec.file_num)
+            ret.append(seq)
+        else:
+            raise RuntimeError('Unknown file specification type: {}'.format(spec.file_spec))
+    return ret

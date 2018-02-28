@@ -13,15 +13,15 @@ from p_value_processing.p_values_file_type import PValuesFileType
 
 class EcdfCreator:
     def __init__(self):
-        self.drawer = EcdfDrawer()
-        self.extractor = EcdfExtractor()
+        self._drawer = EcdfDrawer()
+        self._extractor = EcdfExtractor()
 
     def create_ecdf_charts(self, data_for_creator: DataForEcdfCreator) -> ChartsStorage:
         storage = ChartsStorage()
-        data_list = self.extractor.get_data_from_accumulator(data_for_creator.acc, data_for_creator.ecdf_dto)
+        data_list = self._extractor.get_data_from_accumulator(data_for_creator.acc, data_for_creator.ecdf_dto)
         for data in data_list:
             file_name = self.get_file_name(data.ds_info, data_for_creator.directory)
-            self.drawer.draw_chart(data.data_for_drawer, file_name)
+            self._drawer.draw_chart(data.data_for_drawer, file_name)
             chart_info = ChartInfo(data.ds_info, file_name, ChartType.ECDF, data_for_creator.file_id)
             storage.add_chart_info(chart_info)
         return storage

@@ -3,7 +3,7 @@ from os.path import dirname, abspath, join
 from unittest import TestCase
 
 from common.helper_functions import config_parser_to_dict, load_texts_into_dict, load_texts_into_config_parsers, \
-    escape_latex_special_chars, convert_specs_to_seq_acc
+    escape_latex_special_chars, convert_specs_to_seq_acc, convert_specs_to_p_value_seq
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_accumulator import SequenceAccumulator
@@ -135,3 +135,11 @@ class TestHelperFunctions(TestCase):
 
         ret = list(filter(lambda x: x.test_id == TestsIdData.test5_id, ret_sequences))[0]
         self.assertEqual(seq5, ret)
+
+    def test_convert_specs_to_p_value_seq(self):
+        specs = [TestFileSpecification(TestsIdData.test3_id, FileSpecification.RESULTS_FILE),
+                 TestFileSpecification(TestsIdData.test4_id, FileSpecification.DATA_FILE, 5)]
+        expected = [PValueSequence(TestsIdData.test3_id, PValuesFileType.RESULTS),
+                    PValueSequence(TestsIdData.test4_id, PValuesFileType.DATA, 5)]
+        ret = convert_specs_to_p_value_seq(specs)
+        self.assertEqual(expected, ret)
