@@ -22,5 +22,7 @@ class EcdfDrawer:
         c_x = [0.0, 1.0]
         c_y = [0.0, 1.0]
         ax.plot(c_x, c_y, 'k--', linewidth=1.0, label=data.theoretical_label)
+        ax.legend(loc=2)
 
         plt.savefig(file, dpi=300)
+        plt.clf()
