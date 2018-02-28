@@ -1,11 +1,10 @@
 import os
 import re
+from hashlib import sha256
 from os import makedirs, stat
 from os.path import isdir, join
-from hashlib import sha256
 from pathlib import Path
 
-from models.nistparam import NistParam
 from managers.nisttestmanager import NistTestManager
 from myrequesthandler import MyRequestHandler
 
@@ -141,11 +140,15 @@ def zip_folders(zip_class, arr):
                 zip_class.write(file_name, join('/', p.name, file))
 
 
-def set_response_not_found(handler: MyRequestHandler):
+def set_response_redirect(handler: MyRequestHandler, location: str):
     handler.send_response(303)
     handler.send_header('Content-type', 'text/html')
-    handler.send_header('Location', '/not_found')
+    handler.send_header('Location', location)
     handler.end_headers()
+
+
+def set_response_not_found(handler: MyRequestHandler):
+    set_response_redirect(handler, '/not_found')
 
 
 def set_response_ok(handler: MyRequestHandler, content_type='text/html'):

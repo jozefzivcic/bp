@@ -26,7 +26,7 @@ def get_tests_in_group(handler: MyRequestHandler):
     group_id = 0
     try:
         group_id = queries.get('gid')[0]
-    except KeyError:
+    except (TypeError, KeyError):
         error = True
     if error:
         not_found(handler)

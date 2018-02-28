@@ -1,6 +1,7 @@
 import cgi
+from urllib.parse import urlparse
 
-import helpers
+from helpers import hash_password, render_login_template, set_response_redirect
 from models.user import User
 
 
@@ -13,7 +14,7 @@ def login(handler):
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
-    helpers.render_login_template(handler, False, False)
+    render_login_template(handler, False, False)
     return
 
 
@@ -26,7 +27,7 @@ def wrong_user_name(handler):
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
-    helpers.render_login_template(handler, True, False)
+    render_login_template(handler, True, False)
     return
 
 
@@ -39,7 +40,7 @@ def wrong_password(handler):
     handler.send_response(200)
     handler.send_header('Content-type', 'text/html')
     handler.end_headers()
-    helpers.render_login_template(handler, False, True)
+    render_login_template(handler, False, True)
     return
 
 
@@ -47,24 +48,32 @@ def post_login(handler):
     form = cgi.FieldStorage(fp=handler.rfile, headers=handler.headers, environ={'REQUEST_METHOD': 'POST',
                                                                                 'CONTENT_TYPE': handler.headers[
                                                                                     'Content-Type'],})
-    handler.send_response(303)
-    handler.send_header('Content-type', 'text/html')
     user_name = form['username'].value
     password = form['password'].value
     users = handler.user_manager.get_users_with_name(user_name)
     if len(users) != 1:
-        handler.send_header('Location', '/wrong_user_name')
-        handler.end_headers()
+        set_response_redirect(handler, '/wrong_user_name')
         return
-    hash_password = helpers.hash_password(password)
-    user = User(user_name, hash_password)
-    if handler.user_manager.check_user_password(user):
-        handler.send_header('Location', '/')
-        sid = handler.write_cookie()
-        handler.end_headers()
-        str_sid = str(sid)
-        handler.sessions[str_sid] = users[0].id
+    psswd_hash = hash_password(password)
+    user = User(user_name, psswd_hash)
+    if not handler.user_manager.check_user_password(user):
+        set_response_redirect(handler, '/wrong_password')
         return
-    handler.send_header('Location', '/wrong_password')
+    referrer = handler.headers.get('Referer')
+    parse_result = urlparse(referrer)
+    if parse_result.path in ['/login', '/wrong_user_name', '/wrong_password']:
+        location = '/'
+    else:
+        if parse_result.query:
+            location = '{}?{}'.format(parse_result.path, parse_result.query)
+        else:
+            location = '{}'.format(parse_result.path)
+
+    handler.send_response(303)
+    handler.send_header('Content-type', 'text/html')
+    handler.send_header('Location', location)
+    sid = handler.write_cookie()
     handler.end_headers()
+    str_sid = str(sid)
+    handler.sessions[str_sid] = users[0].id
     return
