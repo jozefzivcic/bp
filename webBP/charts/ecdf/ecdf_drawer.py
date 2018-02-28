@@ -26,3 +26,4 @@ class EcdfDrawer:
 
         plt.savefig(file, dpi=300)
         plt.clf()
+        plt.close('all')

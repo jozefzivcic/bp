@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 
 from charts.histogram.data_for_histogram_drawer import DataForHistogramDrawer
@@ -12,3 +13,4 @@ class HistogramDrawer:
         fig.autofmt_xdate()
         fig.savefig(file, dpi=300)
         fig.clf()
+        plt.close('all')
