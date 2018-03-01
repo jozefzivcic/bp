@@ -12,4 +12,4 @@ class TestDependencyDrawer:
         plt.ylim((0.0, 1.0))
         plt.savefig(file, bbox_inches='tight', dpi=300)
         plt.clf()
-        plt.close('all')
+        plt.close(plt.gcf())

@@ -13,4 +13,4 @@ class HistogramDrawer:
         fig.autofmt_xdate()
         fig.savefig(file, dpi=300)
         fig.clf()
-        plt.close('all')
+        plt.close(fig)

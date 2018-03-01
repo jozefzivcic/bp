@@ -23,4 +23,4 @@ class PValuesDrawer:
             plt.axhline(y=data.alpha, color='r', linestyle='--')
         plt.savefig(file, bbox_inches='tight', dpi=300)
         plt.clf()
-        plt.close('all')
+        plt.close(plt.gcf())
