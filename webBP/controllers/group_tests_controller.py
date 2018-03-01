@@ -11,6 +11,7 @@ from charts.chart_type import ChartType
 from controllers.common_controller import not_found, error_occurred
 from helpers import get_params_for_tests, set_response_ok, get_ids_of_elements_starting_with
 from myrequesthandler import MyRequestHandler
+from pdf_generating.options.ecdf_options import EcdfOptions
 from pdf_generating.options.file_specification import FileSpecification
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
 from pdf_generating.options.test_file_specification import TestFileSpecification
@@ -104,6 +105,8 @@ def get_chart_types(form):
         types.append(ChartType.HISTOGRAM)
     if 4 in ids:
         types.append(ChartType.TESTS_DEPENDENCY)
+    if 5 in ids:
+        types.append(ChartType.ECDF)
     return types
 
 
@@ -137,6 +140,22 @@ def create_dep_options(test_ids, form) -> TestDependencyOptions:
     return TestDependencyOptions(arr)
 
 
+def create_ecdf_options(test_ids: list, form: cgi.FieldStorage) -> EcdfOptions:
+    arr = []
+    for test_id in test_ids:
+        key = 'num_of_data_for_test_id_' + str(test_id)
+        try:
+            num_of_data_files = int(form[key].value)
+        except ValueError:
+            return None
+        if num_of_data_files == 0:
+            arr.append(TestFileSpecification(test_id, FileSpecification.RESULTS_FILE))
+        else:
+            for i in range(1, num_of_data_files + 1):
+                arr.append(TestFileSpecification(test_id, FileSpecification.DATA_FILE, i))
+    return EcdfOptions(arr)
+
+
 def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str, file_name):
     """
     Creates PdfGeneratingDto
@@ -153,8 +172,13 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
     if not chart_types:
         return None
     test_dep_options = None
+    ecdf_options = None
     if ChartType.TESTS_DEPENDENCY in chart_types:
         test_dep_options = create_dep_options(test_ids, form)
         if test_dep_options is None:
             return None
-    return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name, test_dep_options)
+    if ChartType.ECDF in chart_types:
+        ecdf_options = create_ecdf_options(test_ids, form)
+        if ecdf_options is None:
+            return None
+    return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name, test_dep_options, ecdf_options)

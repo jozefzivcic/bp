@@ -65,8 +65,8 @@
                         </div>
                     </div>
                     <div class="row">
-                        {{ alpha }}
-                        <input  type="number" name="alpha" min="0.0" max="1.0" step="any" value="0.01">
+                        <input  type="number" name="alpha" id="alpha" min="0.0" max="1.0" step="any" value="0.01">
+                        <label for="alpha"> {{ alpha }}</label>
                     </div>
                     <div class="row">
                         <input type="checkbox" name="select_all_charts" id="select_all_charts" onclick="toggle(this)">
@@ -87,6 +87,10 @@
                     <div class="row">
                         <input type="checkbox" name="ch_chart_type_4" id="ch_chart_type_4">
                         <label class="form-check-label" for="ch_chart_type_4">{{ two_tests_dep }}</label>
+                    </div>
+                    <div class="row">
+                        <input type="checkbox" name="ch_chart_type_5" id="ch_chart_type_5">
+                        <label class="form-check-label" for="ch_chart_type_5">{{ ecdf }}</label>
                     </div>
                     <div class="row">
                         <input class="btn btn-success" type="submit" value="{{ show_pdf }}">

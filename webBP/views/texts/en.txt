@@ -124,3 +124,4 @@ no_test_checked=No test selected. Select at least one test.
 no_chart_checked=No chart selected. Select at least one chart.
 zoomed_p_values=zoomed p-values chart
 two_tests_dep=Dependency of two tests
+ecdf=ECDF
