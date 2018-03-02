@@ -3,7 +3,10 @@ from os.path import join, dirname, abspath
 from models.file import File
 from models.nistparam import NistParam
 from models.test import Test
-from tests.data_for_tests.common_data import FileIdData, UserIdData, TestsIdData
+from p_value_processing.p_values_accumulator import PValuesAccumulator
+from p_value_processing.p_values_dto import PValuesDto
+from tests.data_for_tests.common_data import FileIdData, UserIdData, TestsIdData, dict_for_test_13, dict_for_test_14, \
+    dict_for_test_41, dict_for_test_42, dict_for_test_43
 
 this_dir = dirname(abspath(__file__))
 sample_files_dir = abspath(join(this_dir, '..', 'sample_files_for_tests'))
@@ -106,3 +109,19 @@ def nist_dao_get_nist_param_for_test(test: Test) -> NistParam:
 
 def func_return_false(p_values1: list, p_values2: list):
     return False
+
+
+def func_prepare_acc() -> PValuesAccumulator:
+    dto1 = PValuesDto(dict_for_test_13)
+    dto2 = PValuesDto(dict_for_test_14)
+    dto3 = PValuesDto(dict_for_test_41)
+    dto4 = PValuesDto(dict_for_test_42)
+    dto5 = PValuesDto(dict_for_test_43)
+
+    acc = PValuesAccumulator()
+    acc.add(TestsIdData.test1_id, dto1)
+    acc.add(TestsIdData.test2_id, dto2)
+    acc.add(TestsIdData.test3_id, dto3)
+    acc.add(TestsIdData.test4_id, dto4)
+    acc.add(TestsIdData.test5_id, dto5)
+    return acc
