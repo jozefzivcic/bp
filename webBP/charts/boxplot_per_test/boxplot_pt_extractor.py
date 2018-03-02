@@ -20,9 +20,16 @@ class BoxplotPTExtractor:
         self._nist_dao = NistTestManager(pool)
         self._config_storage = storage
 
-    def get_data_from_accumulator(self, acc: PValuesAccumulator, boxplot_dto: BoxplotPTDto) -> ExtractedData:
+    def get_data_from_accumulator(self, acc: PValuesAccumulator, boxplot_dto: BoxplotPTDto) -> list:
+        seqcs_all_charts = boxplot_dto.sequences
+        extracted_data = []
+        for seqcs_for_chart in seqcs_all_charts:
+            ret = self.create_extracted_data(acc, seqcs_for_chart, boxplot_dto)
+            extracted_data.append(ret)
+        return extracted_data
+
+    def create_extracted_data(self, acc: PValuesAccumulator, seqcs: list, boxplot_dto: BoxplotPTDto) -> ExtractedData:
         data_dict = {}
-        seqcs = boxplot_dto.sequences
         for seq in seqcs:
             test_name = self.get_name_from_seq(seq)
             p_values = self.get_p_values(acc, seq)
