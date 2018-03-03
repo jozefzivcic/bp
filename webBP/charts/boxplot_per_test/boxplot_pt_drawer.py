@@ -10,6 +10,7 @@ class BoxplotPTDrawer:
         df = pd.read_json(data.json_data_str)
         ax = sns.boxplot(orient='v', data=df)
         ax.set_title(data.title)
+        ax.set_ylim(0.0, 1.0)
         fig = ax.get_figure()
         fig.savefig(file)
         fig.clf()
