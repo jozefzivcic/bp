@@ -19,15 +19,18 @@ from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, ni
 
 
 class TestBoxplotPTExtractor(TestCase):
-    def setUp(self):
-        mock = patch('managers.dbtestmanager.DBTestManager.get_test_by_id', side_effect=db_test_dao_get_test_by_id)
-        self.addCleanup(mock.stop)
-        mock.start()
-        mock = patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test',
-                     side_effect=nist_dao_get_nist_param_for_test)
-        self.addCleanup(mock.stop)
-        mock.start()
+    def mock_func(self, func_name, side_effect):
+        patcher = patch(func_name, side_effect=side_effect)
+        self.addCleanup(patcher.stop)
+        patcher.start()
 
+    def mock(self):
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_test_by_id', db_test_dao_get_test_by_id)
+        self.mock_func('managers.nisttestmanager.NistTestManager.get_nist_param_for_test',
+                       nist_dao_get_nist_param_for_test)
+
+    def setUp(self):
+        self.mock()
         storage = MagicMock(nist='nist')
         self.extractor = BoxplotPTExtractor(None, storage)
 

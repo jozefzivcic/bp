@@ -35,33 +35,31 @@ templates_dir = abspath(join(this_dir, '..', '..', 'pdf_generating', 'templates'
 
 
 class TestPdfGenerator(TestCase):
+    def mock_func(self, func_name, side_effect):
+        patcher = patch(func_name, side_effect=side_effect)
+        self.addCleanup(patcher.stop)
+        patcher.start()
+
+    def mock(self):
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_test_by_id', db_test_dao_get_test_by_id)
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_tests_by_id_list',
+                       db_test_dao_get_tests_by_id_list)
+        self.mock_func('managers.nisttestmanager.NistTestManager.get_nist_param_for_test',
+                       nist_dao_get_nist_param_for_test)
+        self.mock_func('managers.filemanager.FileManager.get_file_by_id', get_file_by_id)
+        self.mock_func('managers.resultsmanager.ResultsManager.get_paths_for_test_ids',
+                       results_dao_get_paths_for_test_ids)
+
     def setUp(self):
         if not exists(working_dir):
             makedirs(working_dir)
-        config_storage = MagicMock()
-        config_storage.nist = 'nist'
-        config_storage.path_to_pdf_texts = 'texts'
-        config_storage.path_to_tex_templates = 'templates'
+        self.mock()
+        config_storage = MagicMock(nist='nist', path_to_pdf_texts='texts', path_to_tex_templates='templates')
         self.pdf_generator = PdfGenerator(None, config_storage)
-        self.pdf_generator._test_dao.get_test_by_id = MagicMock(side_effect=db_test_dao_get_test_by_id)
-        self.pdf_generator._nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_get_nist_param_for_test)
-        self.pdf_generator._file_dao.get_file_by_id = MagicMock(side_effect=get_file_by_id)
-        self.pdf_generator._charts_creator._results_dao.get_paths_for_test_ids = MagicMock(
-            side_effect=results_dao_get_paths_for_test_ids)
-        self.pdf_generator._charts_creator._tests_dao.get_tests_by_id_list = MagicMock(
-            side_effect=db_test_dao_get_tests_by_id_list)
-        self.pdf_generator._charts_creator._p_values_creator._extractor._test_dao.get_test_by_id = MagicMock(
-            side_effect=db_test_dao_get_test_by_id)
-        self.pdf_generator._charts_creator._p_values_creator._extractor._nist_dao.get_nist_param_for_test = MagicMock(
-            side_effect=nist_dao_get_nist_param_for_test)
-        self.pdf_generator._charts_creator._test_dependency_creator._extractor._test_dao.get_test_by_id = MagicMock(
-            side_effect=db_test_dao_get_test_by_id)
-        self.pdf_generator._charts_creator._test_dependency_creator._extractor._nist_dao.get_nist_param_for_test = \
-            MagicMock(side_effect=nist_dao_get_nist_param_for_test)
         self.texts = load_texts_into_config_parsers(texts_dir)
+        output_filename = join(working_dir, 'output.pdf')
 
         tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id]
-        output_filename = join(working_dir, 'output.pdf')
         self.dto_for_one_file = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename)
 
         tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,

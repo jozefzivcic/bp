@@ -1,6 +1,6 @@
 from itertools import repeat
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.extractor import Extractor
@@ -12,17 +12,25 @@ from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, ni
 
 
 class TestExtractor(TestCase):
+    def mock_func(self, func_name, side_effect):
+        patcher = patch(func_name, side_effect=side_effect)
+        self.addCleanup(patcher.stop)
+        patcher.start()
+
+    def mock(self):
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_test_by_id', db_test_dao_get_test_by_id)
+        self.mock_func('managers.nisttestmanager.NistTestManager.get_nist_param_for_test',
+                       nist_dao_get_nist_param_for_test)
+
     def setUp(self):
+        self.mock()
         self.p_values_chart_dto = PValuesChartDto()
         self.p_values_chart_dto.title = 'p-values from selected tests'
         self.p_values_chart_dto.x_label = 'test'
         self.p_values_chart_dto.y_label = 'p-value'
 
-        storage_mock = MagicMock()
-        storage_mock.nist = 'nist'
+        storage_mock = MagicMock(nist='nist')
         self.extractor = Extractor(None, storage_mock)
-        self.extractor._test_dao.get_test_by_id = MagicMock(side_effect=db_test_dao_get_test_by_id)
-        self.extractor._nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_get_nist_param_for_test)
 
         self.test1_id = TestsIdData.test1_id
         self.test1_name = 'Frequency'

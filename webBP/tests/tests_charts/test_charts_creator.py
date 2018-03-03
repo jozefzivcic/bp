@@ -39,9 +39,25 @@ class TestChartsCreator(TestCase):
             dto2 = acc2.get_dto_for_test(test_id)
             self.assertEqual(dto1, dto2)
 
+    def mock_func(self, func_name, side_effect):
+        patcher = patch(func_name, side_effect=side_effect)
+        self.addCleanup(patcher.stop)
+        patcher.start()
+
+    def mock(self):
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_test_by_id',
+                       db_test_dao_get_test_by_id)
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_tests_by_id_list',
+                       db_test_dao_get_tests_by_id_list)
+        self.mock_func('managers.nisttestmanager.NistTestManager.get_nist_param_for_test',
+                       nist_dao_get_nist_param_for_test)
+        self.mock_func('managers.resultsmanager.ResultsManager.get_paths_for_test_ids',
+                       results_dao_get_paths_for_test_ids)
+
     def setUp(self):
         if not exists(working_dir):
             makedirs(working_dir)
+        self.mock()
         self.test1_id = TestsIdData.test1_id
         self.test2_id = TestsIdData.test2_id
         self.test3_id = TestsIdData.test3_id
@@ -52,21 +68,8 @@ class TestChartsCreator(TestCase):
         self.file1_id = FileIdData.file1_id
         self.file2_id = FileIdData.file2_id
 
-        config_storage = MagicMock()
-        config_storage.nist = 'nist'
+        config_storage = MagicMock(nist='nist')
         self.charts_creator = ChartsCreator(None, config_storage)
-        self.charts_creator._results_dao.get_paths_for_test_ids = MagicMock(side_effect=
-                                                                            results_dao_get_paths_for_test_ids)
-        self.charts_creator._tests_dao.get_tests_by_id_list = MagicMock(side_effect=
-                                                                        db_test_dao_get_tests_by_id_list)
-        self.charts_creator._p_values_creator._extractor._test_dao.get_test_by_id = \
-            MagicMock(side_effect=db_test_dao_get_test_by_id)
-        self.charts_creator._p_values_creator._extractor._nist_dao.get_nist_param_for_test = \
-            MagicMock(side_effect=nist_dao_get_nist_param_for_test)
-        self.charts_creator._test_dependency_creator._extractor._test_dao.get_test_by_id = MagicMock(
-            side_effect=db_test_dao_get_test_by_id)
-        self.charts_creator._test_dependency_creator._extractor._nist_dao.get_nist_param_for_test = MagicMock(
-            side_effect=nist_dao_get_nist_param_for_test)
 
         tests_arr = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
@@ -78,7 +81,7 @@ class TestChartsCreator(TestCase):
 
     def test_supported_charts(self):
         expected = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM,
-                    ChartType.TESTS_DEPENDENCY, ChartType.ECDF]
+                    ChartType.TESTS_DEPENDENCY, ChartType.ECDF, ChartType.BOXPLOT_PT]
         self.assertEqual(expected, self.charts_creator.supported_charts)
 
     def test_reset(self):

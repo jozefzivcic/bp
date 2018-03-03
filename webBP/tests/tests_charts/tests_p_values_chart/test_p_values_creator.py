@@ -2,7 +2,7 @@ from os import makedirs
 from os.path import dirname, abspath, join, exists
 from shutil import rmtree
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from charts.chart_type import ChartType
 from charts.p_values.data_for_p_values_creator import DataForPValuesCreator
@@ -19,18 +19,26 @@ working_dir = join(this_dir, 'working_dir_p_values_creator')
 
 
 class TestPValuesCreator(TestCase):
+    def mock_func(self, func_name, side_effect):
+        patcher = patch(func_name, side_effect=side_effect)
+        self.addCleanup(patcher.stop)
+        patcher.start()
+
+    def mock(self):
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_test_by_id', db_test_dao_get_test_by_id)
+        self.mock_func('managers.nisttestmanager.NistTestManager.get_nist_param_for_test',
+                       nist_dao_get_nist_param_for_test)
+
     def setUp(self):
         if not exists(working_dir):
             makedirs(working_dir)
-
+        self.mock()
         self.test1_id = TestsIdData.test1_id
         self.test2_id = TestsIdData.test2_id
         self.test3_id = TestsIdData.test3_id
         self.file1_id = FileIdData.file1_id
 
-
-        config_storage = MagicMock()
-        config_storage.nist = 'nist'
+        config_storage = MagicMock(nist='nist')
         self.p_values_creator = PValuesCreator(None, config_storage)
 
         self.p_values_chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
@@ -42,10 +50,6 @@ class TestPValuesCreator(TestCase):
         dto = PValuesDto(dict_for_test_41)
         acc.add(self.test3_id, dto)
         self.data_for_p_values_creator = DataForPValuesCreator(self.p_values_chart_dto, acc, working_dir, self.file1_id)
-
-        self.p_values_creator._extractor._test_dao.get_test_by_id = MagicMock(side_effect=db_test_dao_get_test_by_id)
-        self.p_values_creator._extractor._nist_dao.get_nist_param_for_test = \
-            MagicMock(side_effect=nist_dao_get_nist_param_for_test)
 
     def tearDown(self):
         if exists(working_dir):

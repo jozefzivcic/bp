@@ -25,16 +25,22 @@ working_dir = join(this_dir, 'working_dir_test_dependency_creator')
 
 
 class TestOfTestDependencyCreator(TestCase):
+    def mock_func(self, func_name, side_effect):
+        patcher = patch(func_name, side_effect=side_effect)
+        self.addCleanup(patcher.stop)
+        patcher.start()
+
+    def mock(self):
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_test_by_id', db_test_dao_get_test_by_id)
+        self.mock_func('managers.nisttestmanager.NistTestManager.get_nist_param_for_test',
+                       nist_dao_get_nist_param_for_test)
+
     def setUp(self):
         if not exists(working_dir):
             makedirs(working_dir)
-
-        self.config_storage = MagicMock()
-        self.config_storage.nist = 'nist'
+        self.mock()
+        self.config_storage = MagicMock(nist='nist')
         self.creator = TestDependencyCreator(None, self.config_storage)
-        self.creator._extractor._test_dao.get_test_by_id = MagicMock(side_effect=db_test_dao_get_test_by_id)
-        self.creator._extractor._nist_dao.get_nist_param_for_test = MagicMock(
-            side_effect=nist_dao_get_nist_param_for_test)
 
     def tearDown(self):
         if exists(working_dir):

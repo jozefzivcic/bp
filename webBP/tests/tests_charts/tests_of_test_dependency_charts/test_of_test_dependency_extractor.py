@@ -2,42 +2,36 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from charts.data_source_info import DataSourceInfo
+from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_extractor import TestDependencyExtractor
-from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.tests_in_chart import TestsInChart
 from models.test import Test
 from p_value_processing.p_value_sequence import PValueSequence
-from p_value_processing.p_values_accumulator import PValuesAccumulator
-from p_value_processing.p_values_dto import PValuesDto
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41, \
     dict_for_test_42, dict_for_test_43
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, \
-    func_return_false
+    func_return_false, func_prepare_acc
 
 
 class TestOfTestDependencyExtractor(TestCase):
+    def mock_func(self, func_name, side_effect):
+        patcher = patch(func_name, side_effect=side_effect)
+        self.addCleanup(patcher.stop)
+        patcher.start()
+
+    def mock(self):
+        self.mock_func('managers.dbtestmanager.DBTestManager.get_test_by_id', db_test_dao_get_test_by_id)
+        self.mock_func('managers.nisttestmanager.NistTestManager.get_nist_param_for_test',
+                       nist_dao_get_nist_param_for_test)
+
     def setUp(self):
-        self.config_storage = MagicMock()
-        self.config_storage.nist = 'nist'
+        self.mock()
+        self.config_storage = MagicMock(nist='nist')
         self.extractor = TestDependencyExtractor(None, self.config_storage)
-        self.extractor._test_dao.get_test_by_id = MagicMock(side_effect=db_test_dao_get_test_by_id)
-        self.extractor._nist_dao.get_nist_param_for_test = MagicMock(side_effect=nist_dao_get_nist_param_for_test)
-
-        self.p_values_dto_for_test1 = PValuesDto(dict_for_test_13)
-        self.p_values_dto_for_test2 = PValuesDto(dict_for_test_14)
-        self.p_values_dto_for_test3 = PValuesDto(dict_for_test_41)
-        self.p_values_dto_for_test4 = PValuesDto(dict_for_test_42)
-        self.p_values_dto_for_test5 = PValuesDto(dict_for_test_43)
-
-        self.p_values_acc = PValuesAccumulator()
-        self.p_values_acc.add(TestsIdData.test1_id, self.p_values_dto_for_test1)
-        self.p_values_acc.add(TestsIdData.test2_id, self.p_values_dto_for_test2)
-        self.p_values_acc.add(TestsIdData.test3_id, self.p_values_dto_for_test3)
-        self.p_values_acc.add(TestsIdData.test4_id, self.p_values_dto_for_test4)
-        self.p_values_acc.add(TestsIdData.test5_id, self.p_values_dto_for_test5)
+        self.p_values_acc = func_prepare_acc()
 
     @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
     def test_get_data_from_accumulator_ds_info(self, func):
