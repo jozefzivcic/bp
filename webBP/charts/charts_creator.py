@@ -1,6 +1,9 @@
 from os.path import exists
 
+from charts.boxplot_per_test.boxplot_pt_creator import BoxplotPTCreator
+from charts.boxplot_per_test.data_for_boxplot_pt_creator import DataForBoxplotPTCreator
 from charts.charts_error import ChartsError
+from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.ecdf.data_for_ecdf_creator import DataForEcdfCreator
 from charts.ecdf.ecdf_creator import EcdfCreator
 from charts.dto.ecdf_dto import EcdfDto
@@ -38,8 +41,9 @@ class ChartsCreator:
         self._histogram_creator = HistogramCreator()
         self._test_dependency_creator = TestDependencyCreator(pool, storage)
         self._ecdf_creator = EcdfCreator()
+        self._boxplot_pt_creator = BoxplotPTCreator(pool, storage)
         self.supported_charts = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM,
-                                 ChartType.TESTS_DEPENDENCY, ChartType.ECDF]
+                                 ChartType.TESTS_DEPENDENCY, ChartType.ECDF, ChartType.BOXPLOT_PT]
 
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
         self.check_input(generate_charts_dto)
@@ -72,6 +76,12 @@ class ChartsCreator:
             data_for_creator = DataForEcdfCreator(dto, acc, directory, file_id)
             charts_storage = self._ecdf_creator.create_ecdf_charts(data_for_creator)
             self._charts_storage.extend(charts_storage)
+
+    def create_boxplots_pt(self, dto: BoxplotPTDto, directory: str):
+        for file_id, acc in self._p_values_accumulators.items():
+            data_for_creator = DataForBoxplotPTCreator(dto, acc, directory, file_id)
+            storage = self._boxplot_pt_creator.create_boxplots(data_for_creator)
+            self._charts_storage.extend(storage)
 
     def load_p_values(self, test_ids):
         if self._loaded_items:
@@ -123,5 +133,7 @@ class ChartsCreator:
             self.create_tests_dependency_charts(dto, directory)
         elif chart_type == ChartType.ECDF:
             self.create_ecdf_charts(dto, directory)
+        elif chart_type == ChartType.BOXPLOT_PT:
+            self.create_boxplots_pt(dto, directory)
         else:
             raise ChartsError('Unsupported chart type')

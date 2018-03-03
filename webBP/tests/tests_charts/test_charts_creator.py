@@ -9,6 +9,7 @@ from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
 from charts.data_source_info import DataSourceInfo
+from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.dto.ecdf_dto import EcdfDto
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.dto.histogram_dto import HistogramDto
@@ -440,6 +441,60 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected_info_3, storage.get_all_infos()[2])
         self.assertEqual(expected_info_4, storage.get_all_infos()[3])
         self.assertEqual(expected_info_5, storage.get_all_infos()[4])
+
+    def test_generate_boxplots_one_file(self):
+        file = join(working_dir, 'boxplot_pt_{}.png'.format(self.test1_id))
+
+        seq1 = PValueSequence(self.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(self.test2_id, PValuesFileType.DATA, 1)
+
+        seqcs = [[seq1, seq2]]
+        boxplot_dto = BoxplotPTDto('Boxplot(s) per tests', seqcs)
+        self.generate_charts_dto.chart_types = {ChartType.BOXPLOT_PT: [boxplot_dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+        self.assertTrue(exists(file))
+        self.assertEqual(1, len(storage.get_all_infos()))
+
+        ch_info = storage.get_all_infos()[0]
+        expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[0]), file, ChartType.BOXPLOT_PT,
+                             FileIdData.file1_id)
+        self.assertEqual(expected, ch_info)
+
+    def test_generate_boxplots_three_files(self):
+        file1 = join(working_dir, 'boxplot_pt_{}.png'.format(TestsIdData.test1_id))
+        file2 = join(working_dir, 'boxplot_pt_{}.png'.format(TestsIdData.test2_id))
+        file3 = join(working_dir, 'boxplot_pt_{}.png'.format(TestsIdData.test4_id))
+
+        seq1 = PValueSequence(self.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(self.test2_id, PValuesFileType.DATA, 1)
+        seq3 = PValueSequence(self.test2_id, PValuesFileType.DATA, 2)
+        seq4 = PValueSequence(self.test3_id, PValuesFileType.DATA, 1)
+        seq5 = PValueSequence(self.test4_id, PValuesFileType.RESULTS)
+        seq6 = PValueSequence(self.test5_id, PValuesFileType.RESULTS)
+
+        seqcs = [[seq1], [seq2, seq3, seq4], [seq5, seq6]]
+        boxplot_dto = BoxplotPTDto('Boxplot(s) per tests', seqcs)
+        self.generate_charts_dto.chart_types = {ChartType.BOXPLOT_PT: [boxplot_dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+        self.assertTrue(exists(file1))
+        self.assertTrue(exists(file2))
+        self.assertTrue(exists(file3))
+        self.assertEqual(3, len(storage.get_all_infos()))
+
+        ch_info = storage.get_all_infos()[0]
+        expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[0]), file1, ChartType.BOXPLOT_PT,
+                             FileIdData.file1_id)
+        self.assertEqual(expected, ch_info)
+
+        ch_info = storage.get_all_infos()[1]
+        expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[1]), file2, ChartType.BOXPLOT_PT,
+                             FileIdData.file1_id)
+        self.assertEqual(expected, ch_info)
+
+        ch_info = storage.get_all_infos()[2]
+        expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[2]), file3, ChartType.BOXPLOT_PT,
+                             FileIdData.file2_id)
+        self.assertEqual(expected, ch_info)
 
     def test_draw_concrete_charts_for_non_existing_chart_type(self):
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')

@@ -65,6 +65,24 @@ class TestBoxplotPTExtractor(TestCase):
         self.assertEqual(dto.title, drawer_data.title)
         self.assertEqual(expected_str, drawer_data.json_data_str)
 
+    def test_get_data_from_accumulator_skip_seq(self):
+        acc = func_prepare_acc()
+        seqcs = [[PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS),
+                  PValueSequence(TestsIdData.non_existing_test_id, PValuesFileType.DATA, 1)]]
+        dto = BoxplotPTDto('Boxplot(s) for tests', seqcs)
+        ret = self.extractor.get_data_from_accumulator(acc, dto)
+        self.assertEqual(1, len(ret))
+
+        expected_dict = {'Frequency': dict_for_test_13['results']}
+        expected_str = json.dumps(expected_dict)
+        extracted_data = ret[0]
+        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, [PValueSequence(TestsIdData.test1_id,
+                                                                              PValuesFileType.RESULTS)])
+        self.assertEqual(ds_info, extracted_data.ds_info)
+        drawer_data = extracted_data.data_for_drawer
+        self.assertEqual(dto.title, drawer_data.title)
+        self.assertEqual(expected_str, drawer_data.json_data_str)
+
     def test_create_extracted_data(self):
         acc = func_prepare_acc()
         seqcs = [PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS),
@@ -83,6 +101,32 @@ class TestBoxplotPTExtractor(TestCase):
         drawer_data = ret.data_for_drawer
         self.assertEqual(dto.title, drawer_data.title)
         self.assertEqual(expected_str, drawer_data.json_data_str)
+
+    def test_create_extracted_data_skip_seq(self):
+        acc = func_prepare_acc()
+        seqcs = [PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS),
+                 PValueSequence(TestsIdData.non_existing_test_id, PValuesFileType.DATA, 1)]
+        dto = BoxplotPTDto('Boxplot(s) for tests', [seqcs])
+        expected_dict = {'Frequency': dict_for_test_13['results']}
+        expected_str = json.dumps(expected_dict)
+        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS,
+                                 [PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)])
+
+        ret = self.extractor.create_extracted_data(acc, seqcs, dto)
+        self.assertIsInstance(ret, ExtractedData)
+        self.assertEqual(ds_info, ret.ds_info)
+
+        drawer_data = ret.data_for_drawer
+        self.assertEqual(dto.title, drawer_data.title)
+        self.assertEqual(expected_str, drawer_data.json_data_str)
+
+    def test_create_extracted_data_returns_none(self):
+        acc = func_prepare_acc()
+        seqcs = [PValueSequence(TestsIdData.non_existing_test_id, PValuesFileType.DATA, 1)]
+        dto = BoxplotPTDto('Boxplot(s) for tests', [seqcs])
+
+        ret = self.extractor.create_extracted_data(acc, seqcs, dto)
+        self.assertIsNone(ret)
 
     def test_get_name_from_seq_results(self):
         seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
@@ -124,6 +168,12 @@ class TestBoxplotPTExtractor(TestCase):
         expected = dict_for_test_41['data2']
         ret = self.extractor.get_p_values(acc, seq)
         self.assertEqual(expected, ret)
+
+    def test_get_p_values_not_in_acc(self):
+        acc = func_prepare_acc()
+        seq = PValueSequence(TestsIdData.non_existing_test_id, PValuesFileType.DATA, 1)
+        ret = self.extractor.get_p_values(acc, seq)
+        self.assertIsNone(ret)
 
     def test_get_p_values_unknown_file_type(self):
         acc = func_prepare_acc()

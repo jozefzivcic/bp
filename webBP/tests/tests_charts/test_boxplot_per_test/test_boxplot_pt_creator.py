@@ -83,8 +83,13 @@ class TestBoxplotPTCreator(TestCase):
             self.assertEqual(FileIdData.file1_id, ch_info.file_id)
 
     def test_get_filename(self):
-        ret = self.creator.get_filename(working_dir, 5)
+        seq = [PValueSequence(5, PValuesFileType.RESULTS)]
+        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seq)
+        ret = self.creator.get_filename(working_dir, ds_info)
         self.assertEqual(join(working_dir, 'boxplot_pt_5.png'), ret)
 
-        ret = self.creator.get_filename(working_dir, 54)
+        seq = [PValueSequence(54, PValuesFileType.RESULTS),
+               PValueSequence(75, PValuesFileType.DATA, 4)]
+        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seq)
+        ret = self.creator.get_filename(working_dir, ds_info)
         self.assertEqual(join(working_dir, 'boxplot_pt_54.png'), ret)

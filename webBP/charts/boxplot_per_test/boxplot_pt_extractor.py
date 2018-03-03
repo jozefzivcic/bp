@@ -5,6 +5,7 @@ from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.data_source_info import DataSourceInfo
 from charts.extracted_data import ExtractedData
 from charts.tests_in_chart import TestsInChart
+from common.helper_functions import list_difference
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
@@ -25,17 +26,26 @@ class BoxplotPTExtractor:
         extracted_data = []
         for seqcs_for_chart in seqcs_all_charts:
             ret = self.create_extracted_data(acc, seqcs_for_chart, boxplot_dto)
+            if ret is None:
+                continue
             extracted_data.append(ret)
         return extracted_data
 
     def create_extracted_data(self, acc: PValuesAccumulator, seqcs: list, boxplot_dto: BoxplotPTDto) -> ExtractedData:
         data_dict = {}
+        seqcs_not_used = []
         for seq in seqcs:
-            test_name = self.get_name_from_seq(seq)
             p_values = self.get_p_values(acc, seq)
+            if p_values is None:
+                seqcs_not_used.append(seq)
+                continue
+            test_name = self.get_name_from_seq(seq)
             data_dict[test_name] = p_values
+        if not data_dict:
+            return None
         json_str = json.dumps(data_dict)
-        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs)
+        res_seqcs = list_difference(seqcs, seqcs_not_used)
+        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, res_seqcs)
         drawer_data = DataForBoxplotPTDrawer(boxplot_dto.title, json_str)
         return ExtractedData(ds_info, drawer_data)
 
@@ -50,7 +60,9 @@ class BoxplotPTExtractor:
         return test_name
 
     def get_p_values(self, acc: PValuesAccumulator, seq: PValueSequence) -> list:
-        dto = acc.get_dto_for_test(seq.test_id)
+        dto = acc.get_dto_for_test_safe(seq.test_id)
+        if dto is None:
+            return None
         if seq.p_values_file == PValuesFileType.RESULTS:
             return dto.get_results_p_values()
         elif seq.p_values_file == PValuesFileType.DATA:

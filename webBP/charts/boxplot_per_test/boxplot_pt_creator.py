@@ -20,13 +20,14 @@ class BoxplotPTCreator:
     def create_boxplots(self, data: DataForBoxplotPTCreator) -> ChartsStorage:
         storage = ChartsStorage()
         extracted_data_list = self._extractor.get_data_from_accumulator(data.acc, data.dto)
-        for i, extracted_data in enumerate(extracted_data_list):
-            file_name = self.get_filename(data.directory, i)
+        for extracted_data in extracted_data_list:
+            file_name = self.get_filename(data.directory, extracted_data.ds_info)
             self._drawer.draw_chart(extracted_data.data_for_drawer, file_name)
             ch_info = ChartInfo(extracted_data.ds_info, file_name, ChartType.BOXPLOT_PT, data.file_id)
             storage.add_chart_info(ch_info)
         return storage
 
-    def get_filename(self, directory: str, i: int) -> str:
-        name = 'boxplot_pt_{}.png'.format(i)
+    def get_filename(self, directory: str, info: DataSourceInfo) -> str:
+        first_test = info.p_value_sequence[0].test_id
+        name = 'boxplot_pt_{}.png'.format(first_test)
         return join(directory, name)
