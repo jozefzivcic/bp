@@ -102,3 +102,9 @@ def convert_specs_to_p_value_seq(specs: list) -> list:
         else:
             raise RuntimeError('Unknown file specification type: {}'.format(spec.file_spec))
     return ret
+
+
+def list_difference(a: list, b: list) -> list:
+    s = set(b)
+    ret = [x for x in a if x not in s]
+    return ret

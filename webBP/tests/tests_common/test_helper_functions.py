@@ -3,10 +3,9 @@ from os.path import dirname, abspath, join
 from unittest import TestCase
 
 from common.helper_functions import config_parser_to_dict, load_texts_into_dict, load_texts_into_config_parsers, \
-    escape_latex_special_chars, convert_specs_to_seq_acc, convert_specs_to_p_value_seq
+    escape_latex_special_chars, convert_specs_to_seq_acc, convert_specs_to_p_value_seq, list_difference
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
-from p_value_processing.sequence_accumulator import SequenceAccumulator
 from pdf_generating.options.file_specification import FileSpecification
 from pdf_generating.options.test_file_specification import TestFileSpecification
 from tests.data_for_tests.common_data import TestsIdData
@@ -142,4 +141,18 @@ class TestHelperFunctions(TestCase):
         expected = [PValueSequence(TestsIdData.test3_id, PValuesFileType.RESULTS),
                     PValueSequence(TestsIdData.test4_id, PValuesFileType.DATA, 5)]
         ret = convert_specs_to_p_value_seq(specs)
+        self.assertEqual(expected, ret)
+
+    def test_list_difference_simple(self):
+        a = [1, 2, 3, 4]
+        b = [2, 3, 5]
+        expected = [1, 4]
+        ret = list_difference(a, b)
+        self.assertEqual(expected, ret)
+
+    def test_list_difference_more_complex(self):
+        a = [1, 1, 1, 1, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6]
+        b = [2, 3, 3, 5, 5]
+        expected = [1, 1, 1, 1, 4, 4, 4, 6]
+        ret = list_difference(a, b)
         self.assertEqual(expected, ret)
