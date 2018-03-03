@@ -104,6 +104,14 @@ def convert_specs_to_p_value_seq(specs: list) -> list:
     return ret
 
 
+def specs_list_to_p_value_seq_list(specs_list: list) -> list:
+    ret = []
+    for specs in specs_list:
+        s = convert_specs_to_p_value_seq(specs)
+        ret.append(s)
+    return ret
+
+
 def list_difference(a: list, b: list) -> list:
     s = set(b)
     ret = [x for x in a if x not in s]

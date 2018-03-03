@@ -12,6 +12,7 @@ class BoxplotPTDrawer:
         ax.set_title(data.title)
         ax.set_ylim(0.0, 1.0)
         fig = ax.get_figure()
+        fig.autofmt_xdate()
         fig.savefig(file)
         fig.clf()
         plt.close(fig)

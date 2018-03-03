@@ -3,6 +3,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from charts.chart_info import ChartInfo
+from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.dto.ecdf_dto import EcdfDto
 from charts.dto.histogram_dto import HistogramDto
 from charts.dto.p_values_chart_dto import PValuesChartDto
@@ -13,7 +14,7 @@ from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.dto.test_dependency_dto import TestDependencyDto
 from common.helper_functions import load_texts_into_config_parsers, escape_latex_special_chars, \
-    convert_specs_to_seq_acc, convert_specs_to_p_value_seq
+    convert_specs_to_seq_acc, convert_specs_to_p_value_seq, specs_list_to_p_value_seq_list
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
@@ -93,6 +94,14 @@ class PdfGenerator:
                           texts['ECDF']['YLabel'], texts['ECDF']['EmpiricalLabel'], texts['ECDF']['TheoreticalLabel'],
                           p_value_seqcs)
             return [dto]
+        elif chart_type == ChartType.BOXPLOT_PT:
+            try:
+                specs = pdf_generating_dto.boxplot_pt_options.test_file_specs
+                converted = specs_list_to_p_value_seq_list(specs)
+            except (ValueError, TypeError, RuntimeError) as e:
+                raise PdfGeneratingError(e)
+            dto = BoxplotPTDto(texts['BoxplotPT']['Title'], converted)
+            return [dto]
         raise PdfGeneratingError('Unsupported chart type')
 
     def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage) -> PdfCreatingDto:
@@ -145,6 +154,11 @@ class PdfGenerator:
                 raise PdfGeneratingError('No default options for ecdf chart')
             if not dto.ecdf_options:
                 raise PdfGeneratingError('No test for ECDF chart')
+        if ChartType.BOXPLOT_PT in dto.chart_types:
+            if dto.boxplot_pt_options is None:
+                raise PdfGeneratingError('No default options for Boxplot')
+            if not dto.boxplot_pt_options:
+                raise PdfGeneratingError('No tests for boxplot selected')
 
     def get_chart_name(self, language: str, info: ChartInfo) -> str:
         ch_type = info.chart_type
@@ -158,6 +172,8 @@ class PdfGenerator:
             return self._texts[language]['TestDependency']['Title']
         elif ch_type == ChartType.ECDF:
             return self.get_ecdf_chart_name(language, info)
+        elif ch_type == ChartType.BOXPLOT_PT:
+            return self._texts[language]['BoxplotPT']['Title']
         raise PdfGeneratingError('Undefined chart type: ' + str(ch_type))
 
     def get_ecdf_chart_name(self, language: str, info: ChartInfo):

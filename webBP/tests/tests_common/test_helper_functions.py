@@ -3,7 +3,8 @@ from os.path import dirname, abspath, join
 from unittest import TestCase
 
 from common.helper_functions import config_parser_to_dict, load_texts_into_dict, load_texts_into_config_parsers, \
-    escape_latex_special_chars, convert_specs_to_seq_acc, convert_specs_to_p_value_seq, list_difference
+    escape_latex_special_chars, convert_specs_to_seq_acc, convert_specs_to_p_value_seq, list_difference, \
+    specs_list_to_p_value_seq_list
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.options.file_specification import FileSpecification
@@ -155,4 +156,26 @@ class TestHelperFunctions(TestCase):
         b = [2, 3, 3, 5, 5]
         expected = [1, 1, 1, 1, 4, 4, 4, 6]
         ret = list_difference(a, b)
+        self.assertEqual(expected, ret)
+
+    def test_specs_list_to_p_value_seq_list_basic(self):
+        specs = [[TestFileSpecification(TestsIdData.test3_id, FileSpecification.RESULTS_FILE),
+                  TestFileSpecification(TestsIdData.test4_id, FileSpecification.DATA_FILE, 5)]]
+        expected = [[PValueSequence(TestsIdData.test3_id, PValuesFileType.RESULTS),
+                     PValueSequence(TestsIdData.test4_id, PValuesFileType.DATA, 5)]]
+        ret = specs_list_to_p_value_seq_list(specs)
+        self.assertEqual(expected, ret)
+
+    def test_specs_list_to_p_value_seq_list_advanced(self):
+        specs = [[TestFileSpecification(TestsIdData.test3_id, FileSpecification.RESULTS_FILE),
+                  TestFileSpecification(TestsIdData.test4_id, FileSpecification.DATA_FILE, 5)],
+                 [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
+                  TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 5),
+                  TestFileSpecification(TestsIdData.test5_id, FileSpecification.DATA_FILE, 123)]]
+        expected = [[PValueSequence(TestsIdData.test3_id, PValuesFileType.RESULTS),
+                     PValueSequence(TestsIdData.test4_id, PValuesFileType.DATA, 5)],
+                    [PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS),
+                     PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 5),
+                     PValueSequence(TestsIdData.test5_id, PValuesFileType.DATA, 123)]]
+        ret = specs_list_to_p_value_seq_list(specs)
         self.assertEqual(expected, ret)

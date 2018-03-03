@@ -15,6 +15,7 @@ from charts.tests_in_chart import TestsInChart
 from common.helper_functions import load_texts_into_config_parsers
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
+from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
 from pdf_generating.options.ecdf_options import EcdfOptions
 from pdf_generating.options.file_specification import FileSpecification
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
@@ -159,6 +160,40 @@ class TestPdfGenerator(TestCase):
                  TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
         ecdf_options = EcdfOptions(specs)
         pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, ecdf_options)
+        self.pdf_generator.generate_pdf(pdf_gen_dto)
+        self.assertTrue(exists(output_filename))
+
+    def test_generate_pdf_one_boxplots_chart(self):
+        alpha = 0.05
+        output_filename = join(working_dir, 'output.pdf')
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
+                 TestsIdData.test5_id]
+        chart_types = [ChartType.BOXPLOT_PT]
+        language = 'en'
+        specs = [[TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
+                  TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 2),
+                  TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 1)]]
+        options = BoxplotPTOptions(specs)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, None, options)
+        self.pdf_generator.generate_pdf(pdf_gen_dto)
+        self.assertTrue(exists(output_filename))
+
+    def test_generate_pdf_three_boxplot_charts(self):
+        alpha = 0.05
+        output_filename = join(working_dir, 'output.pdf')
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
+                 TestsIdData.test5_id]
+        chart_types = [ChartType.BOXPLOT_PT]
+        language = 'en'
+        specs = [[TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE)],
+                 [TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1),
+                  TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 2),
+                  TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 1),
+                  TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 2)],
+                 [TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
+                  TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]]
+        options = BoxplotPTOptions(specs)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, None, options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -314,7 +349,8 @@ class TestPdfGenerator(TestCase):
         func.assert_called_once_with(language, chart_info)
 
     def test_get_ecdf_chart_name_results(self):
-        expected = '{} {} Frequency results'.format(self.texts['en']['ECDF']['Title'], self.texts['en']['General']['From'])
+        expected = '{} {} Frequency results'.format(self.texts['en']['ECDF']['Title'],
+                                                    self.texts['en']['General']['From'])
         seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
         ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
         chart_info = ChartInfo(ds_info, 'something', ChartType.ECDF, FileIdData.file1_id)
