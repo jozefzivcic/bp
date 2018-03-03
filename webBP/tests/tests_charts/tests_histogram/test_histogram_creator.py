@@ -7,7 +7,7 @@ from shutil import rmtree
 from charts.chart_type import ChartType
 from charts.histogram.data_for_histogram_creator import DataForHistogramCreator
 from charts.histogram.histogram_creator import HistogramCreator
-from charts.histogram_dto import HistogramDto
+from charts.dto.histogram_dto import HistogramDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
 

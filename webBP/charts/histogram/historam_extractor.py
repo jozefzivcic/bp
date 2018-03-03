@@ -3,7 +3,7 @@ import math
 
 from charts.extracted_data import ExtractedData
 from charts.histogram.data_for_histogram_drawer import DataForHistogramDrawer
-from charts.histogram_dto import HistogramDto
+from charts.dto.histogram_dto import HistogramDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 
 

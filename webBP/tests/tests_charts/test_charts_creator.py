@@ -9,11 +9,11 @@ from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
 from charts.data_source_info import DataSourceInfo
-from charts.ecdf_dto import EcdfDto
+from charts.dto.ecdf_dto import EcdfDto
 from charts.generate_charts_dto import GenerateChartsDto
-from charts.histogram_dto import HistogramDto
-from charts.p_values_chart_dto import PValuesChartDto
-from charts.test_dependency_dto import TestDependencyDto
+from charts.dto.histogram_dto import HistogramDto
+from charts.dto.p_values_chart_dto import PValuesChartDto
+from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.tests_in_chart import TestsInChart
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator

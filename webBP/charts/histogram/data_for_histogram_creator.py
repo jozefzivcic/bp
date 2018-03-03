@@ -1,4 +1,4 @@
-from charts.histogram_dto import HistogramDto
+from charts.dto.histogram_dto import HistogramDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 
 

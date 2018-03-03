@@ -1,4 +1,4 @@
-from charts.p_values_chart_dto import PValuesChartDto
+from charts.dto.p_values_chart_dto import PValuesChartDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 
 

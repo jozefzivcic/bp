@@ -2,7 +2,7 @@ import common.helper_functions
 from charts.data_source_info import DataSourceInfo
 from charts.extracted_data import ExtractedData
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
-from charts.test_dependency_dto import TestDependencyDto
+from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.tests_in_chart import TestsInChart
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool

@@ -9,7 +9,7 @@ from charts.chart_type import ChartType
 from charts.test_dependency.data_for_test_dependency_creator import DataForTestDependencyCreator
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_creator import TestDependencyCreator
-from charts.test_dependency_dto import TestDependencyDto
+from charts.dto.test_dependency_dto import TestDependencyDto
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto

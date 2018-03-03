@@ -1,5 +1,5 @@
 from charts.extracted_data import ExtractedData
-from charts.p_values_chart_dto import PValuesChartDto
+from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool

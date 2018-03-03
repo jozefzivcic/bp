@@ -1,4 +1,4 @@
-from charts.boxplot_pt_dto import BoxplotPTDto
+from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 
 

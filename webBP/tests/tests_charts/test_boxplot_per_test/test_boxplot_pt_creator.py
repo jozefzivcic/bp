@@ -8,7 +8,7 @@ from unittest.mock import patch, MagicMock
 
 from charts.boxplot_per_test.boxplot_pt_creator import BoxplotPTCreator
 from charts.boxplot_per_test.data_for_boxplot_pt_creator import DataForBoxplotPTCreator
-from charts.boxplot_pt_dto import BoxplotPTDto
+from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
 from charts.data_source_info import DataSourceInfo

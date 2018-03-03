@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.extractor import Extractor
-from charts.p_values_chart_dto import PValuesChartDto
+from charts.dto.p_values_chart_dto import PValuesChartDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, TestsIdData

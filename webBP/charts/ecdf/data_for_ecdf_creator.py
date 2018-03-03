@@ -1,4 +1,4 @@
-from charts.ecdf_dto import EcdfDto
+from charts.dto.ecdf_dto import EcdfDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 
 

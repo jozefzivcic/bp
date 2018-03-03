@@ -9,8 +9,8 @@ from charts.chart_type import ChartType
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
 from charts.data_source_info import DataSourceInfo
-from charts.histogram_dto import HistogramDto
-from charts.p_values_chart_dto import PValuesChartDto
+from charts.dto.histogram_dto import HistogramDto
+from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.tests_in_chart import TestsInChart
 from common.helper_functions import load_texts_into_config_parsers
 from p_value_processing.p_value_sequence import PValueSequence

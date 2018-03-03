@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from charts.data_source_info import DataSourceInfo
 from charts.ecdf.ecdf_extractor import EcdfExtractor
-from charts.ecdf_dto import EcdfDto
+from charts.dto.ecdf_dto import EcdfDto
 from charts.tests_in_chart import TestsInChart
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator

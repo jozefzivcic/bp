@@ -3,11 +3,11 @@ from os.path import exists
 from charts.charts_error import ChartsError
 from charts.ecdf.data_for_ecdf_creator import DataForEcdfCreator
 from charts.ecdf.ecdf_creator import EcdfCreator
-from charts.ecdf_dto import EcdfDto
+from charts.dto.ecdf_dto import EcdfDto
 from charts.histogram.data_for_histogram_creator import DataForHistogramCreator
 from charts.histogram.histogram_creator import HistogramCreator
-from charts.histogram_dto import HistogramDto
-from charts.p_values_chart_dto import PValuesChartDto
+from charts.dto.histogram_dto import HistogramDto
+from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
@@ -15,7 +15,7 @@ from charts.p_values.data_for_p_values_creator import DataForPValuesCreator
 from charts.p_values.p_values_creator import PValuesCreator
 from charts.test_dependency.data_for_test_dependency_creator import DataForTestDependencyCreator
 from charts.test_dependency.test_dependency_creator import TestDependencyCreator
-from charts.test_dependency_dto import TestDependencyDto
+from charts.dto.test_dependency_dto import TestDependencyDto
 from common.test_converter import TestConverter
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool

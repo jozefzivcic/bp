@@ -3,15 +3,15 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from charts.chart_info import ChartInfo
-from charts.ecdf_dto import EcdfDto
-from charts.histogram_dto import HistogramDto
-from charts.p_values_chart_dto import PValuesChartDto
+from charts.dto.ecdf_dto import EcdfDto
+from charts.dto.histogram_dto import HistogramDto
+from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
-from charts.test_dependency_dto import TestDependencyDto
+from charts.dto.test_dependency_dto import TestDependencyDto
 from common.helper_functions import load_texts_into_config_parsers, escape_latex_special_chars, \
     convert_specs_to_seq_acc, convert_specs_to_p_value_seq
 from configstorage import ConfigStorage

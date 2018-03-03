@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 from charts.data_source_info import DataSourceInfo
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_extractor import TestDependencyExtractor
-from charts.test_dependency_dto import TestDependencyDto
+from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.tests_in_chart import TestsInChart
 from models.test import Test
 from p_value_processing.p_value_sequence import PValueSequence

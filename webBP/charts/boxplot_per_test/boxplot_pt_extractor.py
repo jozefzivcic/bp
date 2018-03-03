@@ -1,7 +1,7 @@
 import json
 
 from charts.boxplot_per_test.data_for_boxplot_pt_drawer import DataForBoxplotPTDrawer
-from charts.boxplot_pt_dto import BoxplotPTDto
+from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.data_source_info import DataSourceInfo
 from charts.extracted_data import ExtractedData
 from charts.tests_in_chart import TestsInChart

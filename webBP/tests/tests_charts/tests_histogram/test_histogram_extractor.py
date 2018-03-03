@@ -2,7 +2,7 @@ import json
 from unittest import TestCase
 
 from charts.histogram.historam_extractor import HistogramExtractor
-from charts.histogram_dto import HistogramDto
+from charts.dto.histogram_dto import HistogramDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14

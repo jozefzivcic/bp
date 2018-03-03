@@ -1,4 +1,4 @@
-from charts.test_dependency_dto import TestDependencyDto
+from charts.dto.test_dependency_dto import TestDependencyDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 
 
