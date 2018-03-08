@@ -3,7 +3,7 @@ from itertools import repeat
 import numpy as np
 from unittest import TestCase
 
-from common.unif_check import get_index_from_p_value, insert_into_2d_array
+from common.unif_check import get_index_from_p_value, insert_into_2d_array, check_for_uniformity
 
 
 class TestUnifCheck(TestCase):
@@ -128,3 +128,8 @@ class TestUnifCheck(TestCase):
                              [0, 0, 0, 0, 0],
                              [0, 0, 0, 0, 0]])
         self.assertTrue(np.array_equal(expected, ret))
+
+    def test_check_for_uniformity_raises_exception(self):
+        with self.assertRaises(RuntimeError) as ex:
+            check_for_uniformity([1, 2, 3], [1, 2, 3, 4])
+        self.assertEqual('Lists do not have the same size: (3, 4)', str(ex.exception))
