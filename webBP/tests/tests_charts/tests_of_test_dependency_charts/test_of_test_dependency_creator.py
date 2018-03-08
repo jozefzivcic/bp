@@ -51,7 +51,7 @@ class TestOfTestDependencyCreator(TestCase):
             self.creator.create_test_dependency_charts(None)
         self.assertEqual('Input data is None', str(context.exception))
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_create_test_dependency_charts_no_chart(self, func):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
@@ -70,7 +70,7 @@ class TestOfTestDependencyCreator(TestCase):
         num_of_files = len(listdir(working_dir))
         self.assertEqual(0, num_of_files)
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_create_test_dependency_charts_one_chart(self, func):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
@@ -96,7 +96,7 @@ class TestOfTestDependencyCreator(TestCase):
         num_of_files = len(listdir(working_dir))
         self.assertEqual(1, num_of_files)
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_create_test_dependency_charts_ten_charts(self, func):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))

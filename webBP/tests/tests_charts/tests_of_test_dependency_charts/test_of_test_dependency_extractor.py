@@ -33,7 +33,7 @@ class TestOfTestDependencyExtractor(TestCase):
         self.extractor = TestDependencyExtractor(None, self.config_storage)
         self.p_values_acc = func_prepare_acc()
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_get_data_from_accumulator_ds_info(self, func):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
@@ -94,7 +94,7 @@ class TestOfTestDependencyExtractor(TestCase):
         expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq4, seq5))
         self.assertEqual(expected, ret)
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_get_data_from_accumulator(self, func):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))

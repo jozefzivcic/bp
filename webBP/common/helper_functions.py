@@ -73,10 +73,6 @@ def escape_latex_special_chars(text: str) -> str:
     return regex.sub(lambda match: conv[match.group()], text)
 
 
-def check_for_uniformity(p_values1: list, p_values2: list):
-    return False
-
-
 def convert_specs_to_seq_acc(specs: list) -> SequenceAccumulator:
     seq_acc = SequenceAccumulator()
     for spec in specs:

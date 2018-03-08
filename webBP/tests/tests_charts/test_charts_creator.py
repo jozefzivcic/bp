@@ -279,7 +279,7 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected_info_1, storage.get_all_infos()[0])
         self.assertEqual(expected_info_2, storage.get_all_infos()[1])
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_create_tests_dependency_charts_for_one_file(self, func):
         file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
 
@@ -298,7 +298,7 @@ class TestChartsCreator(TestCase):
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_create_tests_dependency_charts_more_sequences_than_test_ids(self, func):
         file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
 
@@ -321,7 +321,7 @@ class TestChartsCreator(TestCase):
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_create_three_tests_dependency_charts_for_one_file(self, func):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
@@ -354,7 +354,7 @@ class TestChartsCreator(TestCase):
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
-    @patch('common.helper_functions.check_for_uniformity', side_effect=func_return_false)
+    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
     def test_create_tests_dependency_charts_for_two_files(self, func):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
