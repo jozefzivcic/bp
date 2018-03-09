@@ -12,6 +12,35 @@ class TestUnifCheck(TestCase):
     def setUp(self):
         self.unif_check = UnifCheck(0.01, 5)
 
+    def test_is_approx_fulfilled_raises_exception(self):
+        with self.assertRaises(RuntimeError) as ex:
+            self.unif_check.compute_chisq_p_value([1, 2, 3], [1, 2, 3, 4])
+        self.assertEqual('Verify, compute or check must be called first', str(ex.exception))
+
+    def test_is_approx_fulfilled(self):
+        unif_check = UnifCheck(0.01, 5)
+        unif_check.verify_approximation([0.1, 0.2, 0.3])
+        ret = unif_check.is_approx_fulfilled()
+        self.assertIsNotNone(ret)
+        self.assertEqual(bool, type(ret))
+
+        unif_check = UnifCheck(0.01, 5)
+        unif_check.compute_chisq_p_value([0.1, 0.2, 0.3], [0.1, 0.2, 0.3])
+        ret = unif_check.is_approx_fulfilled()
+        self.assertIsNotNone(ret)
+        self.assertEqual(bool, type(ret))
+
+        unif_check = UnifCheck(0.01, 5)
+        unif_check.compute_chisq_p_value([0.1, 0.2, 0.3], [0.1, 0.2, 0.3])
+        ret = unif_check.is_approx_fulfilled()
+        self.assertIsNotNone(ret)
+        self.assertEqual(bool, type(ret))
+
+    def test_compute_chisq_p_value_raises_exception(self):
+        with self.assertRaises(RuntimeError) as ex:
+            self.unif_check.compute_chisq_p_value([1, 2, 3], [1, 2, 3, 4])
+        self.assertEqual('Lists do not have the same size: (3, 4)', str(ex.exception))
+
     def test_check_for_uniformity_raises_exception(self):
         with self.assertRaises(RuntimeError) as ex:
             self.unif_check.check_for_uniformity([1, 2, 3], [1, 2, 3, 4])
