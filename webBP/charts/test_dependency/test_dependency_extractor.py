@@ -1,10 +1,9 @@
-import common.helper_functions
-import common.unif_check
 from charts.data_source_info import DataSourceInfo
+from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.extracted_data import ExtractedData
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
-from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.tests_in_chart import TestsInChart
+from common.unif_check import UnifCheck
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
@@ -22,7 +21,8 @@ class TestDependencyExtractor:
 
     def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: TestDependencyDto) -> list:
         seq_pairs = dto.seq_accumulator.generate_sequence_pairs(acc)
-        seq_pairs.filter_pairs(common.unif_check.check_for_uniformity)
+        unif_check = UnifCheck(0.01, 5)  # TODO: Replace alpha
+        seq_pairs.filter_pairs(unif_check)
         tuples = seq_pairs.get_pairs_in_list()
         data_for_drawer_list = []
         for seq1, seq2, p_values1, p_values2 in tuples:
