@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch, MagicMock
 
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
@@ -133,17 +134,19 @@ class TestSequencePairs(TestCase):
 
         self.cmp_tuples((self.seq4, self.seq5, self.p_values4, self.p_values5), seq_pairs_list[9])
 
-    def test_filter_pairs(self):
-        def filter_func(values1: list, values2: list):
+    @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
+    def test_filter_pairs(self, func):
+        def should_remove_mock(check_obj, values1: list, values2: list, remove_non_uniform):
             if len(values1) != len(values2):
                 raise ValueError('Lengths are not the same')
             if values1[0] < 0.5 or values2[0] < 0.5:
-                return True
-            return False
-
+                return True, True
+            return False, True
+        func.side_effect = should_remove_mock
         self.add_all_pairs()
 
-        self.seq_pairs.filter_pairs(filter_func)
+        unif_check = MagicMock()
+        self.seq_pairs.filter_pairs(unif_check)
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(3, len(seq_pairs_list))
 
@@ -151,19 +154,32 @@ class TestSequencePairs(TestCase):
         self.cmp_tuples((self.seq1, self.seq3, self.p_values1, self.p_values3), seq_pairs_list[1])
         self.cmp_tuples((self.seq2, self.seq3, self.p_values2, self.p_values3), seq_pairs_list[2])
 
-    def test_filter_out_all_pairs(self):
+    @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
+    def test_filter_out_all_pairs(self, func):
+        def should_remove_all(check_obj, values1: list, values2: list, remove_non_uniform):
+            return True, True
+
+        def should_not_remove_all(check_obj, values1: list, values2: list, remove_non_uniform):
+            return False, True
+
+        func.side_effect = should_not_remove_all
+
         self.add_all_pairs()
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(10, len(seq_pairs_list))
 
-        self.seq_pairs.filter_pairs(lambda x, y: False)
+        unif_check = MagicMock()
+        self.seq_pairs.filter_pairs(unif_check)
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(10, len(seq_pairs_list))
 
-        self.seq_pairs.filter_pairs(lambda x, y: True)
+        func.side_effect = should_remove_all
+        unif_check = MagicMock()
+        self.seq_pairs.filter_pairs(unif_check)
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(0, len(seq_pairs_list))
 
     def cmp_tuples(self, expected, ret):
         for i in range(4):
-            self.assertEqual(expected[i], ret[i], 'Expected ' + str(expected[i]) + ', but ' + str(ret[i]) + ' was given.')
+            self.assertEqual(expected[i], ret[i], 'Expected {}, but {} was given.'
+                             .format(str(expected[i]), str(ret[i])))
