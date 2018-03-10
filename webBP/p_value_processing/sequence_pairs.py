@@ -1,4 +1,8 @@
+from charts.data_source_info import DataSourceInfo
+from charts.tests_in_chart import TestsInChart
 from common.unif_check import UnifCheck
+from p_value_processing.data_from_filter_pairs import DataFromFilterPairs
+from p_value_processing.filtered_item_dto import FilteredItemDto
 from p_value_processing.p_value_sequence import PValueSequence
 
 
@@ -28,7 +32,7 @@ class SequencePairs:
         ret.sort(key=lambda pair: (pair[0].test_id, pair[1].test_id))
         return ret
 
-    def filter_pairs(self, check_obj: UnifCheck, remove_non_uniform=False):
+    def filter_pairs(self, check_obj: UnifCheck, remove_non_uniform=False) -> DataFromFilterPairs:
         """
         Filter pairs stored in this object according to func.
         :param check_obj: UnifCheck object. Based on this object, pairs are filtered out and info about approximation
@@ -36,19 +40,24 @@ class SequencePairs:
         :param remove_non_uniform: If True, pairs whose distribution looks to be non-uniform, will be removed. Only
         pairs, whose distribution looks to be uniform, will not be removed. For False, vice-versa.
         """
-        to_keep = []
         to_delete = []
+        data_from_fp = DataFromFilterPairs()
         for key, value in self._pairs.items():
             seq1 = value[0]
             seq2 = value[1]
-            if self.should_remove(check_obj, seq1, seq2, remove_non_uniform):
-                condition = check_obj.is_approx_fulfilled()
-                to_delete.append((key, condition))
+
+            should_remove, condition = self.should_remove(check_obj, seq1, seq2, remove_non_uniform)
+            ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, key)
+            item = FilteredItemDto(ds_info, condition)
+
+            if should_remove:
+                to_delete.append(key)
+                data_from_fp.add_deleted(item)
             else:
-                condition = check_obj.is_approx_fulfilled()
-                to_keep.append()
+                data_from_fp.add_kept(item)
         for key in to_delete:
             del self._pairs[key]
+        return data_from_fp
 
     def should_remove(self, check_obj: UnifCheck, seq1: list, seq2: list, remove_non_uniform) -> tuple:
         """
