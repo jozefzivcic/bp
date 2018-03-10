@@ -5,6 +5,7 @@ import numpy as np
 from scipy.stats import chisquare
 
 from common.unif_check import UnifCheck
+from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, dict_for_test_42, dict_for_test_43
 
 threshold = 1E-6
 
@@ -86,10 +87,66 @@ class TestUnifCheck(TestCase):
             self.unif_check.compute_chisq_p_value([1, 2, 3], [1, 2, 3, 4])
         self.assertEqual('Lists do not have the same size: (3, 4)', str(ex.exception))
 
+    def test_compute_p_value(self):
+        """
+        resulting categories arr is:
+        [0, 0, 1, 1, 2,
+         0, 0, 1, 0, 0,
+         0, 1, 0, 0, 1,
+         0, 1, 0, 0, 0,
+         1, 1, 0, 0, 0]
+        """
+        p_values1 = dict_for_test_13['results']
+        p_values2 = dict_for_test_14['data1']
+        p_value = self.unif_check.compute_chisq_p_value(p_values1, p_values2)
+        self.assertLessEqual(abs(p_value - 0.6967761), threshold)
+
+    def test_compute_another_p_value(self):
+        """
+        resulting categories arr is:
+        [0, 0, 0, 1, 1,
+         0, 0, 0, 0, 1,
+         0, 0, 0, 1, 0,
+         1, 2, 0, 0, 0,
+         0, 0, 0, 2, 1]
+        """
+        p_values1 = dict_for_test_42['results']
+        p_values2 = dict_for_test_43['results']
+        p_value = self.unif_check.compute_chisq_p_value(p_values1, p_values2)
+        self.assertLessEqual(abs(p_value - 0.4057607), threshold)
+
     def test_check_for_uniformity_raises_exception(self):
         with self.assertRaises(RuntimeError) as ex:
             self.unif_check.check_for_uniformity([1, 2, 3], [1, 2, 3, 4])
         self.assertEqual('Lists do not have the same size: (3, 4)', str(ex.exception))
+
+    @patch('common.unif_check.UnifCheck.compute_chisq_p_value', return_value=0.00999999)
+    def test_check_for_uniformity_hypothesis_rejected_border_value(self, method):
+        p_values1 = dict_for_test_42['results']
+        p_values2 = dict_for_test_43['results']
+        ret = self.unif_check.check_for_uniformity(p_values1, p_values2)
+        self.assertTrue(ret)
+
+    @patch('common.unif_check.UnifCheck.compute_chisq_p_value', return_value=0.00456)
+    def test_check_for_uniformity_hypothesis_rejected(self, method):
+        p_values1 = dict_for_test_42['results']
+        p_values2 = dict_for_test_43['results']
+        ret = self.unif_check.check_for_uniformity(p_values1, p_values2)
+        self.assertTrue(ret)
+
+    @patch('common.unif_check.UnifCheck.compute_chisq_p_value', return_value=0.01)
+    def test_check_for_uniformity_hypothesis_not_rejected_border_value(self, method):
+        p_values1 = dict_for_test_42['results']
+        p_values2 = dict_for_test_43['results']
+        ret = self.unif_check.check_for_uniformity(p_values1, p_values2)
+        self.assertFalse(ret)
+
+    @patch('common.unif_check.UnifCheck.compute_chisq_p_value', return_value=0.12)
+    def test_check_for_uniformity_hypothesis_not_rejected(self, method):
+        p_values1 = dict_for_test_42['results']
+        p_values2 = dict_for_test_43['results']
+        ret = self.unif_check.check_for_uniformity(p_values1, p_values2)
+        self.assertFalse(ret)
 
     def test_scipy_stats_chisq_uniform_data(self):
         empirical = [32309, 30126, 35010, 34761, 34955, 32883, 33255, 31604, 31173, 30536, 28571, 29467]

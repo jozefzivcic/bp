@@ -38,11 +38,11 @@ class UnifCheck:
         if len(p_values1) != len(p_values2):
             raise RuntimeError('Lists do not have the same size: ({}, {})'.format(len(p_values1), len(p_values2)))
         arr = insert_into_2d_array(p_values1, p_values2, self._size)
-        flatten_arr = arr.flatten().tolist()
+        flatten_arr = list(arr.flatten().tolist())
         n = sum(flatten_arr)
         self.verify_approximation(flatten_arr)
-        prob = (1 / (self._size * self._size)) * n
-        expected = list(repeat(prob, self._size * self._size))
+        expected_multiplicity = (1 / (self._size * self._size)) * n
+        expected = list(repeat(expected_multiplicity, self._size * self._size))
         chisq, p_value = chisquare(f_obs=flatten_arr, f_exp=expected)
         return p_value.item()  # return built-in float instead of float64
 
@@ -53,9 +53,9 @@ class UnifCheck:
         :param p_values1: First list of p-values.
         :param p_values2: Second list of p-values.
         :param alpha: Confidence level for hypothesis rejection.
-        :return: False if we do not reject the hypothesis i.e.: p_value > alpha, True otherwise.
+        :return: True if we reject H0 i.e.: p_value < alpha, False otherwise.
         """
         if len(p_values1) != len(p_values2):
             raise RuntimeError('Lists do not have the same size: ({}, {})'.format(len(p_values1), len(p_values2)))
         p_value = self.compute_chisq_p_value(p_values1, p_values2)
-        return p_value <= self._alpha
+        return p_value < self._alpha
