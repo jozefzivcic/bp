@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import patch
 
 import numpy as np
 from scipy.stats import chisquare
@@ -14,7 +15,7 @@ class TestUnifCheck(TestCase):
 
     def test_is_approx_fulfilled_raises_exception(self):
         with self.assertRaises(RuntimeError) as ex:
-            self.unif_check.compute_chisq_p_value([1, 2, 3], [1, 2, 3, 4])
+            self.unif_check.is_approx_fulfilled()
         self.assertEqual('Verify, compute or check must be called first', str(ex.exception))
 
     def test_is_approx_fulfilled(self):
@@ -35,6 +36,50 @@ class TestUnifCheck(TestCase):
         ret = unif_check.is_approx_fulfilled()
         self.assertIsNotNone(ret)
         self.assertEqual(bool, type(ret))
+
+    def test_verify_condition_true_q_one(self):
+        categories = [5, 5, 6, 50, 20, 7, 12]
+        ret = self.unif_check.verify_condition(categories, 1)
+        self.assertTrue(ret)
+
+    def test_verify_condition_false_q_one(self):
+        categories = [5, 4, 6, 50, 20, 7, 12]
+        ret = self.unif_check.verify_condition(categories, 1)
+        self.assertFalse(ret)
+
+    def test_verify_condition_true_q_decimal(self):
+        categories = [8, 8, 9, 50, 20, 10, 12]
+        ret = self.unif_check.verify_condition(categories, 1.5)
+        self.assertTrue(ret)
+
+    def test_verify_condition_false_q_decimal(self):
+        categories = [8, 8, 9, 50, 20, 7, 10, 12]
+        ret = self.unif_check.verify_condition(categories, 1.5)
+        self.assertFalse(ret)
+
+    @patch('common.unif_check.UnifCheck.verify_condition')
+    def test_verify_yarnold(self, method):
+        categories = [4, 5, 6, 5, 1, 10, 12]
+        q = 2 / 7
+        self.unif_check.verify_yarnold(categories)
+        method.assert_called_once_with(categories, q)
+
+    @patch('common.unif_check.UnifCheck.verify_yarnold')
+    def test_verify_approximation_first_succeeds(self, method):
+        categories = [5, 5, 6, 10, 7, 6]
+        self.unif_check.verify_approximation(categories)
+        self.assertTrue(self.unif_check.is_approx_fulfilled())
+        self.assertEqual(0, method.called)
+
+    def test_verify_approximation_yarnold_succeeds(self):
+        categories = [5, 3, 3, 3, 7, 6]
+        self.unif_check.verify_approximation(categories)
+        self.assertTrue(self.unif_check.is_approx_fulfilled())
+
+    def test_verify_approximation_yarnold_fails(self):
+        categories = [5, 2, 3, 3, 7, 6]
+        self.unif_check.verify_approximation(categories)
+        self.assertFalse(self.unif_check.is_approx_fulfilled())
 
     def test_compute_chisq_p_value_raises_exception(self):
         with self.assertRaises(RuntimeError) as ex:
