@@ -1,7 +1,7 @@
 from itertools import repeat
 from scipy.stats import chisquare
 
-from common.helper_functions import insert_into_2d_array
+from common.unif_check_helpers import insert_into_2d_array
 
 
 class UnifCheck:
