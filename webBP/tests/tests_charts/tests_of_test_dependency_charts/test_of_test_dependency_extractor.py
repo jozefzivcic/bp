@@ -13,7 +13,7 @@ from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41, \
     dict_for_test_42, dict_for_test_43
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, \
-    func_return_false, func_prepare_acc
+    func_return_false, func_prepare_acc, func_return_true
 
 
 class TestOfTestDependencyExtractor(TestCase):
@@ -33,8 +33,9 @@ class TestOfTestDependencyExtractor(TestCase):
         self.extractor = TestDependencyExtractor(None, self.config_storage)
         self.p_values_acc = func_prepare_acc()
 
-    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
-    def test_get_data_from_accumulator_ds_info(self, func):
+    @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
+    def test_get_data_from_accumulator_ds_info(self, func_check_unif, func_is_approx):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -46,7 +47,7 @@ class TestOfTestDependencyExtractor(TestCase):
         dto = TestDependencyDto(seq_acc, title)
         extracted_data_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         self.assertEqual(10, len(extracted_data_list))
-        self.assertEqual(10, func.call_count)
+        self.assertEqual(10, func_check_unif.call_count)
 
         seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
         seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
@@ -94,8 +95,9 @@ class TestOfTestDependencyExtractor(TestCase):
         expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq4, seq5))
         self.assertEqual(expected, ret)
 
-    @patch('common.unif_check.check_for_uniformity', side_effect=func_return_false)
-    def test_get_data_from_accumulator(self, func):
+    @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
+    def test_get_data_from_accumulator(self, func_check_unif, func_is_approx):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -108,7 +110,7 @@ class TestOfTestDependencyExtractor(TestCase):
         extracted_data_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
 
         self.assertEqual(10, len(extracted_data_list))
-        self.assertEqual(10, func.call_count)
+        self.assertEqual(10, func_check_unif.call_count)
 
         # dependency chart for test1 and test2_data1
         ret_data = extracted_data_list[0].data_for_drawer
