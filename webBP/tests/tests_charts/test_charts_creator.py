@@ -16,6 +16,7 @@ from charts.dto.histogram_dto import HistogramDto
 from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.tests_in_chart import TestsInChart
+from enums.filter_uniformity import FilterUniformity
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
@@ -287,7 +288,7 @@ class TestChartsCreator(TestCase):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
-        tests_dep_dto = TestDependencyDto(seq_acc, 'Dependency of two tests')
+        tests_dep_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc, 'Dependency of two tests')
         self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id]
         self.generate_charts_dto.chart_types = {ChartType.TESTS_DEPENDENCY: [tests_dep_dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
@@ -311,7 +312,7 @@ class TestChartsCreator(TestCase):
         seq_acc.add_sequence(PValueSequence(self.test4_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(self.test5_id, PValuesFileType.RESULTS))
 
-        tests_dep_dto = TestDependencyDto(seq_acc, 'Dependency of two tests')
+        tests_dep_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc, 'Dependency of two tests')
         self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id]
         self.generate_charts_dto.chart_types = {ChartType.TESTS_DEPENDENCY: [tests_dep_dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
@@ -331,7 +332,7 @@ class TestChartsCreator(TestCase):
         seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
         seq_acc.add_sequence(PValueSequence(self.test3_id, PValuesFileType.DATA, 2))
 
-        tests_dep_dto = TestDependencyDto(seq_acc, 'Dependency of two tests')
+        tests_dep_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc, 'Dependency of two tests')
         self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test3_id]
         self.generate_charts_dto.chart_types = {ChartType.TESTS_DEPENDENCY: [tests_dep_dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
@@ -366,7 +367,7 @@ class TestChartsCreator(TestCase):
         seq_acc.add_sequence(PValueSequence(self.test4_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(self.test5_id, PValuesFileType.RESULTS))
 
-        tests_dep_dto = TestDependencyDto(seq_acc, 'Dependency of two tests')
+        tests_dep_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc, 'Dependency of two tests')
         self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test4_id, self.test5_id]
         self.generate_charts_dto.chart_types = {ChartType.TESTS_DEPENDENCY: [tests_dep_dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)

@@ -21,7 +21,7 @@ class TestDependencyExtractor:
 
     def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: TestDependencyDto) -> list:
         seq_pairs = dto.seq_accumulator.generate_sequence_pairs(acc)
-        unif_check = UnifCheck(0.01, 5)  # TODO: Replace alpha
+        unif_check = UnifCheck(dto.alpha, 5)
         seq_pairs.filter_pairs(unif_check)
         tuples = seq_pairs.get_pairs_in_list()
         data_for_drawer_list = []

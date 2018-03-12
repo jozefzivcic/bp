@@ -6,6 +6,7 @@ from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_extractor import TestDependencyExtractor
 from charts.tests_in_chart import TestsInChart
+from enums.filter_uniformity import FilterUniformity
 from models.test import Test
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
@@ -44,7 +45,7 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc, title)
         extracted_data_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         self.assertEqual(10, len(extracted_data_list))
         self.assertEqual(10, func_check_unif.call_count)
@@ -106,7 +107,7 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc, title)
         extracted_data_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
 
         self.assertEqual(10, len(extracted_data_list))

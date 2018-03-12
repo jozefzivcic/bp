@@ -82,7 +82,8 @@ class PdfGenerator:
                 seq_acc = convert_specs_to_seq_acc(specs)
             except ValueError as e:
                 raise PdfGeneratingError(e)
-            dto = TestDependencyDto(seq_acc, texts['TestDependency']['Title'])
+            filter_unif = pdf_generating_dto.test_dependency_options.filter_unif
+            dto = TestDependencyDto(pdf_generating_dto.alpha, filter_unif, seq_acc, texts['TestDependency']['Title'])
             return [dto]
         elif chart_type == ChartType.ECDF:
             try:

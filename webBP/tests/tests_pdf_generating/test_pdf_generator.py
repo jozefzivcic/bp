@@ -13,6 +13,7 @@ from charts.dto.histogram_dto import HistogramDto
 from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.tests_in_chart import TestsInChart
 from common.helper_functions import load_texts_into_config_parsers
+from enums.filter_uniformity import FilterUniformity
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
@@ -111,7 +112,7 @@ class TestPdfGenerator(TestCase):
         language = 'en'
         specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
                  TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1)]
-        test_dep_options = TestDependencyOptions(specs)
+        test_dep_options = TestDependencyOptions(specs, FilterUniformity.REMOVE_NON_UNIFORM)
         pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
@@ -128,7 +129,7 @@ class TestPdfGenerator(TestCase):
                  TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 2),
                  TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
                  TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
-        test_dep_options = TestDependencyOptions(specs)
+        test_dep_options = TestDependencyOptions(specs, FilterUniformity.REMOVE_NON_UNIFORM)
         pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
