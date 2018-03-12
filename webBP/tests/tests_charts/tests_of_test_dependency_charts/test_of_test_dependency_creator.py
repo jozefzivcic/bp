@@ -87,7 +87,7 @@ class TestOfTestDependencyCreator(TestCase):
         p_values_acc.add(TestsIdData.test1_id, p_values_dto_for_test1)
         p_values_acc.add(TestsIdData.test2_id, p_values_dto_for_test2)
 
-        dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc,
+        dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc,
                                            'Dependency of two tests')
         data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
         storage = self.creator.create_test_dependency_charts(data_for_creator)
@@ -124,7 +124,7 @@ class TestOfTestDependencyCreator(TestCase):
         p_values_acc.add(TestsIdData.test4_id, p_values_dto_for_test4)
         p_values_acc.add(TestsIdData.test5_id, p_values_dto_for_test5)
 
-        dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc,
+        dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc,
                                            'Dependency of two tests')
         data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
         storage = self.creator.create_test_dependency_charts(data_for_creator)

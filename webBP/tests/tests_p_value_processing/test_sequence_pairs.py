@@ -1,14 +1,12 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock
 
-from common.unif_check import UnifCheck
 from enums.filter_uniformity import FilterUniformity
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_pairs import SequencePairs
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41, \
     dict_for_test_42, dict_for_test_43
-from tests.data_for_tests.common_functions import func_return_true
 
 
 class TestSequencePairs(TestCase):
@@ -149,7 +147,7 @@ class TestSequencePairs(TestCase):
         self.add_all_pairs()
 
         unif_check = MagicMock()
-        self.seq_pairs.filter_pairs(unif_check)
+        self.seq_pairs.filter_pairs(unif_check, FilterUniformity.REMOVE_UNIFORM)
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(3, len(seq_pairs_list))
 
@@ -172,13 +170,13 @@ class TestSequencePairs(TestCase):
         self.assertEqual(10, len(seq_pairs_list))
 
         unif_check = MagicMock()
-        self.seq_pairs.filter_pairs(unif_check)
+        self.seq_pairs.filter_pairs(unif_check, FilterUniformity.REMOVE_UNIFORM)
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(10, len(seq_pairs_list))
 
         func.side_effect = should_remove_all
         unif_check = MagicMock()
-        self.seq_pairs.filter_pairs(unif_check)
+        self.seq_pairs.filter_pairs(unif_check, FilterUniformity.REMOVE_UNIFORM)
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(0, len(seq_pairs_list))
 

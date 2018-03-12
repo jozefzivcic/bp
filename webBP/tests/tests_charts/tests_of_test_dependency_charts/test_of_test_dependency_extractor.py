@@ -45,7 +45,7 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title)
         extracted_data_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         self.assertEqual(10, len(extracted_data_list))
         self.assertEqual(10, func_check_unif.call_count)
@@ -107,7 +107,7 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_NON_UNIFORM, seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title)
         extracted_data_list = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
 
         self.assertEqual(10, len(extracted_data_list))
