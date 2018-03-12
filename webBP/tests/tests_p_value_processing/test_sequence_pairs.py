@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch, MagicMock
 
 from common.unif_check import UnifCheck
+from enums.filter_uniformity import FilterUniformity
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_pairs import SequencePairs
@@ -187,7 +188,8 @@ class TestSequencePairs(TestCase):
         unif_check.is_approx_fulfilled = MagicMock(return_value=True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, True)
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                        FilterUniformity.REMOVE_NON_UNIFORM)
         unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
         self.assertTrue(hyp_rej)
@@ -199,7 +201,8 @@ class TestSequencePairs(TestCase):
         unif_check.is_approx_fulfilled = MagicMock(return_value=True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, True)
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                        FilterUniformity.REMOVE_NON_UNIFORM)
         unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
         self.assertFalse(hyp_rej)
@@ -211,7 +214,8 @@ class TestSequencePairs(TestCase):
         unif_check.is_approx_fulfilled = MagicMock(return_value=True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, False)
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                        FilterUniformity.REMOVE_UNIFORM)
         unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
         self.assertFalse(hyp_rej)
@@ -223,7 +227,8 @@ class TestSequencePairs(TestCase):
         unif_check.is_approx_fulfilled = MagicMock(return_value=True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, False)
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                        FilterUniformity.REMOVE_UNIFORM)
         unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
         self.assertTrue(hyp_rej)
@@ -235,7 +240,8 @@ class TestSequencePairs(TestCase):
         unif_check.is_approx_fulfilled = MagicMock(return_value=True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, False)
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                        FilterUniformity.REMOVE_UNIFORM)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
         self.assertTrue(is_cond)
 
@@ -245,7 +251,8 @@ class TestSequencePairs(TestCase):
         unif_check.is_approx_fulfilled = MagicMock(return_value=False)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, False)
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                        FilterUniformity.REMOVE_UNIFORM)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
         self.assertFalse(is_cond)
 

@@ -1,6 +1,7 @@
 from charts.data_source_info import DataSourceInfo
 from charts.tests_in_chart import TestsInChart
 from common.unif_check import UnifCheck
+from enums.filter_uniformity import FilterUniformity
 from p_value_processing.data_from_filter_pairs import DataFromFilterPairs
 from p_value_processing.filtered_item_dto import FilteredItemDto
 from p_value_processing.p_value_sequence import PValueSequence
@@ -32,12 +33,12 @@ class SequencePairs:
         ret.sort(key=lambda pair: (pair[0].test_id, pair[1].test_id))
         return ret
 
-    def filter_pairs(self, check_obj: UnifCheck, remove_non_uniform=False) -> DataFromFilterPairs:
+    def filter_pairs(self, check_obj: UnifCheck, filter_unif: FilterUniformity) -> DataFromFilterPairs:
         """
         Filter pairs stored in this object according to func.
         :param check_obj: UnifCheck object. Based on this object, pairs are filtered out and info about approximation
         condition fulfilling is gained. This object decides, whether points in 2D space are equally distributed.
-        :param remove_non_uniform: If True, pairs whose distribution looks to be non-uniform, will be removed. Only
+        :param filter_unif: If True, pairs whose distribution looks to be non-uniform, will be removed. Only
         pairs, whose distribution looks to be uniform, will not be removed. For False, vice-versa.
         """
         to_delete = []
@@ -46,7 +47,7 @@ class SequencePairs:
             seq1 = value[0]
             seq2 = value[1]
 
-            should_remove, condition = self.should_remove(check_obj, seq1, seq2, remove_non_uniform)
+            should_remove, condition = self.should_remove(check_obj, seq1, seq2, filter_unif)
             ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, key)
             item = FilteredItemDto(ds_info, condition)
 
@@ -59,13 +60,13 @@ class SequencePairs:
             del self._pairs[key]
         return data_from_fp
 
-    def should_remove(self, check_obj: UnifCheck, seq1: list, seq2: list, remove_non_uniform) -> tuple:
+    def should_remove(self, check_obj: UnifCheck, seq1: list, seq2: list, filter_unif: FilterUniformity) -> tuple:
         """
         Decides, whether to remove or not pair of sequences based on the object.
         :param check_obj: UnifCheck object.
         :param seq1: First list of p-values.
         :param seq2: Second list of p-values.
-        :param remove_non_uniform: If True, pairs whose distribution looks to be non-uniform, will be removed. Only
+        :param filter_unif: If True, pairs whose distribution looks to be non-uniform, will be removed. Only
         pairs, whose distribution looks to be uniform, will not be removed. For False, vice-versa.
         :return: Tuple. First element denotes whether to remove given pair of sequences. It is True, if given sequences
         should be removed. False otherwise. The second element denotes, whether the condition of good approximation was
@@ -73,7 +74,9 @@ class SequencePairs:
         """
         hypothesis_rejected = check_obj.check_for_uniformity(seq1, seq2)
         is_condition_fulfilled = check_obj.is_approx_fulfilled()
-        if remove_non_uniform:
+        if filter_unif == FilterUniformity.REMOVE_NON_UNIFORM:
             return hypothesis_rejected, is_condition_fulfilled
-        else:
+        elif filter_unif == FilterUniformity.REMOVE_UNIFORM:
             return not hypothesis_rejected, is_condition_fulfilled
+        else:
+            raise ValueError('Unknown type of FilterUniformity: {}'.format(filter_unif))
