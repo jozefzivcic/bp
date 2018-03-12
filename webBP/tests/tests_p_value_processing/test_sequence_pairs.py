@@ -229,6 +229,26 @@ class TestSequencePairs(TestCase):
         self.assertTrue(hyp_rej)
         self.assertTrue(is_cond)
 
+    def test_is_approx_propagated_true(self):
+        unif_check = MagicMock()
+        unif_check.check_for_uniformity = MagicMock(return_value=True)
+        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, False)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertTrue(is_cond)
+
+    def test_is_approx_propagated_false(self):
+        unif_check = MagicMock()
+        unif_check.check_for_uniformity = MagicMock(return_value=True)
+        unif_check.is_approx_fulfilled = MagicMock(return_value=False)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, False)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertFalse(is_cond)
+
     def cmp_tuples(self, expected, ret):
         for i in range(4):
             self.assertEqual(expected[i], ret[i], 'Expected {}, but {} was given.'
