@@ -1,11 +1,13 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock
 
+from common.unif_check import UnifCheck
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_pairs import SequencePairs
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41, \
     dict_for_test_42, dict_for_test_43
+from tests.data_for_tests.common_functions import func_return_true
 
 
 class TestSequencePairs(TestCase):
@@ -178,6 +180,54 @@ class TestSequencePairs(TestCase):
         self.seq_pairs.filter_pairs(unif_check)
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(0, len(seq_pairs_list))
+
+    def test_should_remove_non_unif_hypothesis_rejected(self):
+        unif_check = MagicMock()
+        unif_check.check_for_uniformity = MagicMock(return_value=True)
+        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, True)
+        unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertTrue(hyp_rej)
+        self.assertTrue(is_cond)
+
+    def test_should_remove_non_unif_hypothesis_not_rejected(self):
+        unif_check = MagicMock()
+        unif_check.check_for_uniformity = MagicMock(return_value=False)
+        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, True)
+        unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertFalse(hyp_rej)
+        self.assertTrue(is_cond)
+
+    def test_should_remove_unif_hypothesis_rejected(self):
+        unif_check = MagicMock()
+        unif_check.check_for_uniformity = MagicMock(return_value=True)
+        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, False)
+        unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertFalse(hyp_rej)
+        self.assertTrue(is_cond)
+
+    def test_should_remove_unif_hypothesis_not_rejected(self):
+        unif_check = MagicMock()
+        unif_check.check_for_uniformity = MagicMock(return_value=False)
+        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        hyp_rej, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2, False)
+        unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertTrue(hyp_rej)
+        self.assertTrue(is_cond)
 
     def cmp_tuples(self, expected, ret):
         for i in range(4):
