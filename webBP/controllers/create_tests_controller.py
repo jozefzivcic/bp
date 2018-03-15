@@ -8,7 +8,7 @@ from urllib.parse import urlparse, parse_qs
 from models.test import Test
 from helpers import get_file_ids_from_nist_form, get_file_size_in_bits
 from models.nistparam import NistParam
-from enums import CreateErrors
+from enums.create_errors import CreateErrors
 
 
 def create_tests(handler):

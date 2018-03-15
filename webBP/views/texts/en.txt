@@ -126,3 +126,7 @@ zoomed_p_values=zoomed p-values chart
 two_tests_dep=Dependency of two tests
 ecdf=ECDF
 boxplot_pt=Boxplot(s) per test
+do_not_filter=Do not filter anything
+filter_uniform=Filter out uniform
+filter_non_uniform=Filter out non-uniform
+no_unif_filter_selected=No filter selected for Dependency of two tests

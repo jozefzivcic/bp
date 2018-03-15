@@ -9,6 +9,7 @@ from os.path import join
 
 from charts.chart_type import ChartType
 from controllers.common_controller import not_found, error_occurred
+from enums.filter_uniformity import FilterUniformity
 from helpers import get_params_for_tests, set_response_ok, get_ids_of_elements_starting_with
 from myrequesthandler import MyRequestHandler
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
@@ -140,7 +141,17 @@ def create_dep_options(test_ids, form) -> TestDependencyOptions:
         else:
             for i in range(1, num_of_data_files + 1):
                 arr.append(TestFileSpecification(test_id, FileSpecification.DATA_FILE, i))
-    return TestDependencyOptions(arr)
+    value = form.getvalue('optuniformity')
+    if value is None:
+        return None
+    if value == 'do_not_filter_unif':
+        return TestDependencyOptions(arr, FilterUniformity.DO_NOT_FILTER)
+    elif value == 'filter_unif':
+        return TestDependencyOptions(arr, FilterUniformity.REMOVE_UNIFORM)
+    elif value == 'filter_non_unif':
+        return TestDependencyOptions(arr, FilterUniformity.REMOVE_NON_UNIFORM)
+    else:
+        return None
 
 
 def create_ecdf_options(test_ids: list, form: cgi.FieldStorage) -> EcdfOptions:

@@ -88,6 +88,18 @@
                         <input type="checkbox" name="ch_chart_type_4" id="ch_chart_type_4">
                         <label class="form-check-label" for="ch_chart_type_4">{{ two_tests_dep }}</label>
                     </div>
+                    <div class="radio">
+                        <input type="radio" name="optuniformity" id="optuniformity1" value="do_not_filter_unif" />
+                        <label for="optuniformity1">{{ do_not_filter }}</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="optuniformity" id="optuniformity2" value="filter_unif" />
+                        <label for="optuniformity2">{{ filter_uniform }}</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="optuniformity" id="optuniformity3" value="filter_non_unif">
+                        <label for="optuniformity3">{{ filter_non_uniform }}</label>
+                    </div>
                     <div class="row">
                         <input type="checkbox" name="ch_chart_type_5" id="ch_chart_type_5">
                         <label class="form-check-label" for="ch_chart_type_5">{{ ecdf }}</label>
@@ -109,6 +121,7 @@
     <input type="hidden" name="alpha_not_in_range" value="{{ alpha_not_in_range }}">
     <input type="hidden" name="no_test_checked" value="{{ no_test_checked }}">
     <input type="hidden" name="no_chart_checked" value="{{ no_chart_checked }}">
+    <input type="hidden" id="no_unif_filter_selected" value="{{ no_unif_filter_selected }}">
 
 <script language="JavaScript">
 function toggle(source) {
@@ -154,6 +167,16 @@ function checkForm() {
         return false;
     }
 
+    var test_dep_checked = document.getElementById("ch_chart_type_4").checked;
+    if (test_dep_checked) {
+        var checked1 = document.getElementById("optuniformity1").checked;
+        var checked2 = document.getElementById("optuniformity2").checked;
+        var checked3 = document.getElementById("optuniformity3").checked;
+        if (!checked1 && !checked2 && !checked3) {
+            alert(document.getElementById("no_unif_filter_selected").value);
+            return false;
+        }
+    }
     return true;
 }
 </script>
