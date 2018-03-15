@@ -78,5 +78,7 @@ class SequencePairs:
             return hypothesis_rejected, is_condition_fulfilled
         elif filter_unif == FilterUniformity.REMOVE_UNIFORM:
             return not hypothesis_rejected, is_condition_fulfilled
+        elif filter_unif == FilterUniformity.DO_NOT_FILTER:
+            return False, None
         else:
             raise ValueError('Unknown type of FilterUniformity: {}'.format(filter_unif))
