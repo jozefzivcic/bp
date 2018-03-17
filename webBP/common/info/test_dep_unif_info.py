@@ -13,3 +13,8 @@ class TestDepUnifInfo(Info):
             return texts.get('InfoTemplates', 'TestDepUnifInfoT').format(self._p_value)
         else:
             return texts.get('InfoTemplates', 'TestDepUnifInfoF').format(self._p_value)
+
+    def __eq__(self, other):
+        if not isinstance(self, other.__class__):
+            return False
+        return self._p_value == other._p_value and self._condition_fulfillment == other._condition_fulfillment

@@ -21,3 +21,9 @@ class TestDepFilteredInfo(Info):
             return texts.get('InfoTemplates', 'TestDepNonUnifFiltered').format(self._filtered_out, self._all_items)
         else:
             raise RuntimeError('{} not allowed'.format(self._filter_unif))
+
+    def __eq__(self, other):
+        if not isinstance(self, other.__class__):
+            return False
+        return self._filtered_out == other._filtered_out and self._all_items == other._all_items \
+               and self._filter_unif == other._filter_unif

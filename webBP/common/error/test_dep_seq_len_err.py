@@ -13,3 +13,8 @@ class TestDepSeqLenErr(Err):
 
     def get_message(self, texts: ConfigParser):
         return texts.get('ErrTemplates', 'TestDepDifferentLen').format(self._seq1_len, self._seq2_len)
+
+    def __eq__(self, other):
+        if not isinstance(self, other.__class__):
+            return False
+        return self._seq1_len == other._seq1_len and self._seq2_len == other._seq2_len
