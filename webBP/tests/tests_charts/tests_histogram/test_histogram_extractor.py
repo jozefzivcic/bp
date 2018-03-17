@@ -49,7 +49,9 @@ class TestHistogramExtractor(TestCase):
         acc.add(test2_id, dto2)
         hist_dto = HistogramDto('x_label', 'y_label', 'title')
         ret = self.extractor.get_data_from_accumulator(acc, hist_dto)
-        ds_info = ret.get_all_data()[0][0]
+        all_data = ret.get_all_data()
+        self.assertEqual(1, len(all_data))
+        ds_info = all_data[0][0]
         self.assertIsNone(ds_info)
 
     def test_get_data_from_accumulator(self):
@@ -81,7 +83,9 @@ class TestHistogramExtractor(TestCase):
         json_data = json.dumps(data)
 
         extracted_data = self.extractor.get_data_from_accumulator(acc, hist_dto)
-        ret = extracted_data.get_all_data()[0][1]
+        all_data = extracted_data.get_all_data()
+        self.assertEqual(1, len(all_data))
+        ret = all_data[0][1]
 
         self.assertEqual(hist_dto.x_label, ret.x_label)
         self.assertEqual(hist_dto.y_label, ret.y_label)
