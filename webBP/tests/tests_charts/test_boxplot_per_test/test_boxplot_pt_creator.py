@@ -54,9 +54,9 @@ class TestBoxplotPTCreator(TestCase):
         ret = self.creator.create_boxplots(data)
 
         self.assertEqual(ChartsStorage, type(ret))
-        self.assertEqual(1, len(ret.get_all_infos()))
+        self.assertEqual(1, len(ret.get_all_items()))
 
-        cs_item = ret.get_all_infos()[0]
+        cs_item = ret.get_all_items()[0]
         ch_info = cs_item.ch_info
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[0])
         self.assertEqual(ds_info, ch_info.ds_info)
@@ -74,9 +74,9 @@ class TestBoxplotPTCreator(TestCase):
         ret = self.creator.create_boxplots(data)
 
         self.assertEqual(ChartsStorage, type(ret))
-        self.assertEqual(2, len(ret.get_all_infos()))
+        self.assertEqual(2, len(ret.get_all_items()))
 
-        for i, cs_item in enumerate(ret.get_all_infos()):
+        for i, cs_item in enumerate(ret.get_all_items()):
             ch_info = cs_item.ch_info
             ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[i])
             self.assertEqual(ds_info, ch_info.ds_info)

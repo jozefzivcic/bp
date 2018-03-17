@@ -29,5 +29,5 @@ class ChartsStorage:
         self._ch_info_list.extend(storage._ch_info_list)
         storage._ch_info_list = []
 
-    def get_all_infos(self) -> list:
+    def get_all_items(self) -> list:
         return list(self._ch_info_list)

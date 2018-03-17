@@ -61,7 +61,7 @@ class TestChartsStorage(TestCase):
     def test_add_one_path(self):
         self.charts_storage.add_chart_info(self.chart_info)
         cs_item = ChartsStorageItem(deepcopy(self.chart_info))
-        self.assertEqual([cs_item], self.charts_storage.get_all_infos())
+        self.assertEqual([cs_item], self.charts_storage.get_all_items())
 
     def test_add_more_paths(self):
         expected = []
@@ -74,7 +74,7 @@ class TestChartsStorage(TestCase):
             cs_item = ChartsStorageItem(deepcopy(chart_info))
             expected.append(cs_item)
             self.charts_storage.add_chart_info(chart_info)
-        self.assertEqual(expected, self.charts_storage.get_all_infos())
+        self.assertEqual(expected, self.charts_storage.get_all_items())
 
     def test_extend(self):
         file = join(working_dir, 'file1000.txt')
@@ -94,11 +94,11 @@ class TestChartsStorage(TestCase):
             expected.append(cs_item)
             another_storage.add_chart_info(chart_info)
 
-        self.assertEqual(expected[1:], another_storage.get_all_infos())
+        self.assertEqual(expected[1:], another_storage.get_all_items())
         self.charts_storage.extend(another_storage)
-        self.assertEqual(expected, self.charts_storage.get_all_infos())
-        self.assertEqual([], another_storage.get_all_infos())
+        self.assertEqual(expected, self.charts_storage.get_all_items())
+        self.assertEqual([], another_storage.get_all_items())
 
         another_storage.extend(self.charts_storage)
-        self.assertEqual(expected, another_storage.get_all_infos())
-        self.assertEqual([], self.charts_storage.get_all_infos())
+        self.assertEqual(expected, another_storage.get_all_items())
+        self.assertEqual([], self.charts_storage.get_all_items())

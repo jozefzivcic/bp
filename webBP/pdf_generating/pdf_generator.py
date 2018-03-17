@@ -117,7 +117,7 @@ class PdfGenerator:
 
     def prepare_dict_from_charts_storage(self, storage: ChartsStorage, language: str) -> dict:
         charts_dict = {}
-        for cs_item in storage.get_all_infos():
+        for cs_item in storage.get_all_items():
             chart_info = cs_item.ch_info
             fid = chart_info.file_id
             file_name = self.get_file_name(fid)
