@@ -38,6 +38,16 @@ class TestUnifCheck(TestCase):
         self.assertIsNotNone(ret)
         self.assertEqual(bool, type(ret))
 
+    def test_get_p_value_throws(self):
+        with self.assertRaises(RuntimeError) as ex:
+            self.unif_check.get_p_value()
+        self.assertEqual('p-value must be computed at first', str(ex.exception))
+
+    def test_get_p_value(self):
+        self.unif_check.check_for_uniformity(dict_for_test_13['results'], dict_for_test_14['data2'])
+        p_value = self.unif_check.get_p_value()
+        self.assertIsNotNone(p_value)
+
     def test_verify_condition_true_q_one(self):
         categories = [5, 5, 6, 50, 20, 7, 12]
         ret = self.unif_check.verify_condition(categories, 1)

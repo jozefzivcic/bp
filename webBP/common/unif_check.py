@@ -9,11 +9,17 @@ class UnifCheck:
         self._alpha = alpha
         self._size = size
         self._approx_condition = None
+        self._p_value = None
 
     def is_approx_fulfilled(self) -> bool:
         if self._approx_condition is None:
             raise RuntimeError('Verify, compute or check must be called first')
         return self._approx_condition
+
+    def get_p_value(self):
+        if self._p_value is None:
+            raise RuntimeError('p-value must be computed at first')
+        return self._p_value
 
     def verify_condition(self, categories: list, q: float) -> bool:
         num = 5 * q
@@ -44,7 +50,8 @@ class UnifCheck:
         expected_multiplicity = (1 / (self._size * self._size)) * n
         expected = list(repeat(expected_multiplicity, self._size * self._size))
         chisq, p_value = chisquare(f_obs=flatten_arr, f_exp=expected)
-        return p_value.item()  # return built-in float instead of float64
+        self._p_value = p_value.item()  # return built-in float instead of float64
+        return self._p_value
 
     def check_for_uniformity(self, p_values1: list, p_values2: list) -> bool:
         """
