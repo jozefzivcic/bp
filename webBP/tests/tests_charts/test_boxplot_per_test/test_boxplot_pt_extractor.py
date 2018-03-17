@@ -42,26 +42,27 @@ class TestBoxplotPTExtractor(TestCase):
                  [PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS),
                   PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS)]]
         dto = BoxplotPTDto('Boxplot(s) for tests', seqcs)
-        ret = self.extractor.get_data_from_accumulator(acc, dto)
-        self.assertEqual(2, len(ret))
+        ex_data = self.extractor.get_data_from_accumulator(acc, dto)
+        ex_data_list = ex_data.get_all_data()
+        self.assertEqual(2, len(ex_data_list))
 
         expected_dict = {'Frequency': dict_for_test_13['results'], 'Cumulative Sums data 1': dict_for_test_14['data1'],
                          'Serial data 2': dict_for_test_41['data2']}
         expected_str = json.dumps(expected_dict)
-        extracted_data = ret[0]
+        quadruple = ex_data_list[0]
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, deepcopy(seqcs[0]))
-        self.assertEqual(ds_info, extracted_data.ds_info)
-        drawer_data = extracted_data.data_for_drawer
+        self.assertEqual(ds_info, quadruple[0])
+        drawer_data = quadruple[1]
         self.assertEqual(dto.title, drawer_data.title)
         self.assertEqual(expected_str, drawer_data.json_data_str)
 
         expected_dict = {'Linear Complexity': dict_for_test_42['results'],
                          'Longest Run of Ones': dict_for_test_43['results']}
         expected_str = json.dumps(expected_dict)
-        extracted_data = ret[1]
+        quadruple = ex_data_list[1]
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, deepcopy(seqcs[1]))
-        self.assertEqual(ds_info, extracted_data.ds_info)
-        drawer_data = extracted_data.data_for_drawer
+        self.assertEqual(ds_info, quadruple[0])
+        drawer_data = quadruple[1]
         self.assertEqual(dto.title, drawer_data.title)
         self.assertEqual(expected_str, drawer_data.json_data_str)
 
@@ -70,16 +71,17 @@ class TestBoxplotPTExtractor(TestCase):
         seqcs = [[PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS),
                   PValueSequence(TestsIdData.non_existing_test_id, PValuesFileType.DATA, 1)]]
         dto = BoxplotPTDto('Boxplot(s) for tests', seqcs)
-        ret = self.extractor.get_data_from_accumulator(acc, dto)
-        self.assertEqual(1, len(ret))
+        ex_data = self.extractor.get_data_from_accumulator(acc, dto)
+        ex_data_list = ex_data.get_all_data()
+        self.assertEqual(1, len(ex_data_list))
 
         expected_dict = {'Frequency': dict_for_test_13['results']}
         expected_str = json.dumps(expected_dict)
-        extracted_data = ret[0]
+        quadruple = ex_data_list[0]
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, [PValueSequence(TestsIdData.test1_id,
                                                                               PValuesFileType.RESULTS)])
-        self.assertEqual(ds_info, extracted_data.ds_info)
-        drawer_data = extracted_data.data_for_drawer
+        self.assertEqual(ds_info, quadruple[0])
+        drawer_data = quadruple[1]
         self.assertEqual(dto.title, drawer_data.title)
         self.assertEqual(expected_str, drawer_data.json_data_str)
 
@@ -94,13 +96,11 @@ class TestBoxplotPTExtractor(TestCase):
         expected_str = json.dumps(expected_dict)
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, deepcopy(seqcs))
 
-        ret = self.extractor.create_extracted_data(acc, seqcs, dto)
-        self.assertIsInstance(ret, ExtractedData)
-        self.assertEqual(ds_info, ret.ds_info)
+        ret_ds_info, ret_data_for_drawer = self.extractor.create_extracted_data(acc, seqcs, dto)
+        self.assertEqual(ds_info, ret_ds_info)
 
-        drawer_data = ret.data_for_drawer
-        self.assertEqual(dto.title, drawer_data.title)
-        self.assertEqual(expected_str, drawer_data.json_data_str)
+        self.assertEqual(dto.title, ret_data_for_drawer.title)
+        self.assertEqual(expected_str, ret_data_for_drawer.json_data_str)
 
     def test_create_extracted_data_skip_seq(self):
         acc = func_prepare_acc()
@@ -112,13 +112,11 @@ class TestBoxplotPTExtractor(TestCase):
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS,
                                  [PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)])
 
-        ret = self.extractor.create_extracted_data(acc, seqcs, dto)
-        self.assertIsInstance(ret, ExtractedData)
-        self.assertEqual(ds_info, ret.ds_info)
+        ret_ds_info, ret_data_for_drawer = self.extractor.create_extracted_data(acc, seqcs, dto)
+        self.assertEqual(ds_info, ret_ds_info)
 
-        drawer_data = ret.data_for_drawer
-        self.assertEqual(dto.title, drawer_data.title)
-        self.assertEqual(expected_str, drawer_data.json_data_str)
+        self.assertEqual(dto.title, ret_data_for_drawer.title)
+        self.assertEqual(expected_str, ret_data_for_drawer.json_data_str)
 
     def test_create_extracted_data_returns_none(self):
         acc = func_prepare_acc()

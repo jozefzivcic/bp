@@ -21,17 +21,17 @@ class BoxplotPTExtractor:
         self._nist_dao = NistTestManager(pool)
         self._config_storage = storage
 
-    def get_data_from_accumulator(self, acc: PValuesAccumulator, boxplot_dto: BoxplotPTDto) -> list:
+    def get_data_from_accumulator(self, acc: PValuesAccumulator, boxplot_dto: BoxplotPTDto) -> ExtractedData:
         seqcs_all_charts = boxplot_dto.sequences
-        extracted_data = []
+        extracted_data = ExtractedData()
         for seqcs_for_chart in seqcs_all_charts:
             ret = self.create_extracted_data(acc, seqcs_for_chart, boxplot_dto)
             if ret is None:
                 continue
-            extracted_data.append(ret)
+            extracted_data.add_data(ret[0], ret[1])
         return extracted_data
 
-    def create_extracted_data(self, acc: PValuesAccumulator, seqcs: list, boxplot_dto: BoxplotPTDto) -> ExtractedData:
+    def create_extracted_data(self, acc: PValuesAccumulator, seqcs: list, boxplot_dto: BoxplotPTDto) -> tuple:
         data_dict = {}
         seqcs_not_used = []
         for seq in seqcs:
@@ -47,7 +47,7 @@ class BoxplotPTExtractor:
         res_seqcs = list_difference(seqcs, seqcs_not_used)
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, res_seqcs)
         drawer_data = DataForBoxplotPTDrawer(boxplot_dto.title, json_str)
-        return ExtractedData(ds_info, drawer_data)
+        return ds_info, drawer_data
 
     def get_name_from_seq(self, seq: PValueSequence) -> str:
         test = self._test_dao.get_test_by_id(seq.test_id)

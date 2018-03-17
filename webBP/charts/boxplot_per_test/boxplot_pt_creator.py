@@ -7,7 +7,6 @@ from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
 from charts.data_source_info import DataSourceInfo
-from charts.tests_in_chart import TestsInChart
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 
@@ -19,11 +18,11 @@ class BoxplotPTCreator:
 
     def create_boxplots(self, data: DataForBoxplotPTCreator) -> ChartsStorage:
         storage = ChartsStorage()
-        extracted_data_list = self._extractor.get_data_from_accumulator(data.acc, data.dto)
-        for extracted_data in extracted_data_list:
-            file_name = self.get_filename(data.directory, extracted_data.ds_info)
-            self._drawer.draw_chart(extracted_data.data_for_drawer, file_name)
-            ch_info = ChartInfo(extracted_data.ds_info, file_name, ChartType.BOXPLOT_PT, data.file_id)
+        extracted_data = self._extractor.get_data_from_accumulator(data.acc, data.dto)
+        for ds_info, data_for_drawer, info, err in extracted_data.get_all_data():
+            file_name = self.get_filename(data.directory, ds_info)
+            self._drawer.draw_chart(data_for_drawer, file_name)
+            ch_info = ChartInfo(ds_info, file_name, ChartType.BOXPLOT_PT, data.file_id)
             storage.add_chart_info(ch_info)
         return storage
 
