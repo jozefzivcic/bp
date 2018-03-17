@@ -76,7 +76,49 @@ class TestChartsStorage(TestCase):
             self.charts_storage.add_chart_info(chart_info)
         self.assertEqual(expected, self.charts_storage.get_all_items())
 
-    def test_extend(self):
+    def test_add_infos_raises(self):
+        infos1 = ['info1', 'info2']
+        self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos1)
+        infos2 = ['info3', 'info4']
+        with self.assertRaises(RuntimeError) as ex:
+            self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos2)
+        self.assertEqual('Infos for chart type ChartType.HISTOGRAM already contained', str(ex.exception))
+
+    def test_add_infos_from_chart(self):
+        infos1 = ['info1', 'info2']
+        infos2 = ['info3', 'info4']
+        self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos1)
+        ret = self.charts_storage.get_infos_for_chart_type(ChartType.HISTOGRAM)
+        self.assertEqual(deepcopy(infos1), ret)
+
+        self.charts_storage.add_infos_from_chart(ChartType.P_VALUES_ZOOMED, infos2)
+        ret = self.charts_storage.get_infos_for_chart_type(ChartType.HISTOGRAM)
+        self.assertEqual(deepcopy(infos1), ret)
+        ret = self.charts_storage.get_infos_for_chart_type(ChartType.P_VALUES_ZOOMED)
+        self.assertEqual(deepcopy(infos2), ret)
+
+    def test_add_errors_raises(self):
+        errors1 = ['error1', 'error2']
+        self.charts_storage.add_errors_from_chart(ChartType.HISTOGRAM, errors1)
+        errors2 = ['error3', 'error4']
+        with self.assertRaises(RuntimeError) as ex:
+            self.charts_storage.add_errors_from_chart(ChartType.HISTOGRAM, errors2)
+        self.assertEqual('Errors for chart type ChartType.HISTOGRAM already contained', str(ex.exception))
+
+    def test_add_errors_from_chart(self):
+        errors1 = ['error1', 'error2']
+        errors2 = ['error3', 'error4']
+        self.charts_storage.add_errors_from_chart(ChartType.HISTOGRAM, errors1)
+        ret = self.charts_storage.get_errors_for_chart_type(ChartType.HISTOGRAM)
+        self.assertEqual(deepcopy(errors1), ret)
+
+        self.charts_storage.add_errors_from_chart(ChartType.P_VALUES_ZOOMED, errors2)
+        ret = self.charts_storage.get_errors_for_chart_type(ChartType.HISTOGRAM)
+        self.assertEqual(deepcopy(errors1), ret)
+        ret = self.charts_storage.get_errors_for_chart_type(ChartType.P_VALUES_ZOOMED)
+        self.assertEqual(deepcopy(errors2), ret)
+
+    def test_extend_cs_items(self):
         file = join(working_dir, 'file1000.txt')
         ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, PValueSequence(1000, PValuesFileType.RESULTS))
         chart_info = ChartInfo(ds_info, file, ChartType.P_VALUES_ZOOMED, 1000)
@@ -102,3 +144,63 @@ class TestChartsStorage(TestCase):
         another_storage.extend(self.charts_storage)
         self.assertEqual(expected, another_storage.get_all_items())
         self.assertEqual([], self.charts_storage.get_all_items())
+
+    def test_extend_infos(self):
+        infos1 = ['info1', 'info2']
+        infos2 = ['info3', 'info4']
+        infos3 = ['info5', 'info6']
+        infos4 = ['info7', 'info8']
+        self.charts_storage.add_infos_from_chart(ChartType.P_VALUES, infos1)
+
+        another_storage = ChartsStorage()
+        another_storage.add_infos_from_chart(ChartType.P_VALUES_ZOOMED, infos2)
+        another_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos3)
+        another_storage.add_infos_from_chart(ChartType.TESTS_DEPENDENCY, infos4)
+
+        self.charts_storage.extend(another_storage)
+        self.assertEqual(infos1, self.charts_storage.get_infos_for_chart_type(ChartType.P_VALUES))
+        self.assertEqual(infos2, self.charts_storage.get_infos_for_chart_type(ChartType.P_VALUES_ZOOMED))
+        self.assertEqual(infos3, self.charts_storage.get_infos_for_chart_type(ChartType.HISTOGRAM))
+        self.assertEqual(infos4, self.charts_storage.get_infos_for_chart_type(ChartType.TESTS_DEPENDENCY))
+
+        with self.assertRaises(KeyError) as ex:
+            another_storage.get_infos_for_chart_type(ChartType.P_VALUES)
+
+        with self.assertRaises(KeyError) as ex:
+            another_storage.get_infos_for_chart_type(ChartType.P_VALUES_ZOOMED)
+
+        with self.assertRaises(KeyError) as ex:
+            another_storage.get_infos_for_chart_type(ChartType.HISTOGRAM)
+
+        with self.assertRaises(KeyError) as ex:
+            another_storage.get_infos_for_chart_type(ChartType.TESTS_DEPENDENCY)
+
+    def test_extend_errors(self):
+        errors1 = ['error1', 'error2']
+        errors2 = ['error3', 'error4']
+        errors3 = ['error5', 'error6']
+        errors4 = ['error7', 'error8']
+        self.charts_storage.add_errors_from_chart(ChartType.P_VALUES, errors1)
+
+        another_storage = ChartsStorage()
+        another_storage.add_errors_from_chart(ChartType.P_VALUES_ZOOMED, errors2)
+        another_storage.add_errors_from_chart(ChartType.HISTOGRAM, errors3)
+        another_storage.add_errors_from_chart(ChartType.TESTS_DEPENDENCY, errors4)
+
+        self.charts_storage.extend(another_storage)
+        self.assertEqual(errors1, self.charts_storage.get_errors_for_chart_type(ChartType.P_VALUES))
+        self.assertEqual(errors2, self.charts_storage.get_errors_for_chart_type(ChartType.P_VALUES_ZOOMED))
+        self.assertEqual(errors3, self.charts_storage.get_errors_for_chart_type(ChartType.HISTOGRAM))
+        self.assertEqual(errors4, self.charts_storage.get_errors_for_chart_type(ChartType.TESTS_DEPENDENCY))
+
+        with self.assertRaises(KeyError) as ex:
+            another_storage.get_errors_for_chart_type(ChartType.P_VALUES)
+
+        with self.assertRaises(KeyError) as ex:
+            another_storage.get_errors_for_chart_type(ChartType.P_VALUES_ZOOMED)
+
+        with self.assertRaises(KeyError) as ex:
+            another_storage.get_errors_for_chart_type(ChartType.HISTOGRAM)
+
+        with self.assertRaises(KeyError) as ex:
+            another_storage.get_errors_for_chart_type(ChartType.TESTS_DEPENDENCY)
