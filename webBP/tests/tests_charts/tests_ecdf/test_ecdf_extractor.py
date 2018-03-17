@@ -28,13 +28,14 @@ class TestEcdfExtractor(TestCase):
         seq_copy = deepcopy(seq)
         self.ecdf_dto.sequences = [seq]
         extracted_data = self.ecdf_extractor.get_data_from_accumulator(self.acc, self.ecdf_dto)
+        ex_data_list = extracted_data.get_all_data()
 
-        self.assertEqual(1, len(extracted_data))
-        ret = extracted_data[0].ds_info
+        self.assertEqual(1, len(ex_data_list))
+        ret = ex_data_list[0][0]
         expected = DataSourceInfo(TestsInChart.SINGLE_TEST, seq_copy)
         self.assertEqual(expected, ret)
 
-        ret = extracted_data[0].data_for_drawer
+        ret = ex_data_list[0][1]
         self.assertEqual(self.ecdf_dto.alpha, ret.alpha)
         self.assertEqual(self.ecdf_dto.title, ret.title)
         self.assertEqual(self.ecdf_dto.x_label, ret.x_label)
@@ -48,14 +49,15 @@ class TestEcdfExtractor(TestCase):
         seq_copy = deepcopy(seq)
         self.ecdf_dto.sequences = [seq]
         extracted_data = self.ecdf_extractor.get_data_from_accumulator(self.acc, self.ecdf_dto)
+        ex_data_list = extracted_data.get_all_data()
 
-        self.assertEqual(1, len(extracted_data))
+        self.assertEqual(1, len(ex_data_list))
 
-        ret = extracted_data[0].ds_info
+        ret = ex_data_list[0][0]
         expected = DataSourceInfo(TestsInChart.SINGLE_TEST, seq_copy)
         self.assertEqual(expected, ret)
 
-        ret = extracted_data[0].data_for_drawer
+        ret = ex_data_list[0][1]
         self.assertEqual(self.ecdf_dto.alpha, ret.alpha)
         self.assertEqual(self.ecdf_dto.title, ret.title)
         self.assertEqual(self.ecdf_dto.x_label, ret.x_label)
@@ -72,18 +74,19 @@ class TestEcdfExtractor(TestCase):
 
         self.ecdf_dto.sequences = [seq1, seq2]
         extracted_data = self.ecdf_extractor.get_data_from_accumulator(self.acc, self.ecdf_dto)
+        ex_data_list = extracted_data.get_all_data()
 
-        self.assertEqual(2, len(extracted_data))
+        self.assertEqual(2, len(ex_data_list))
 
-        ret = extracted_data[0].ds_info
+        ret = ex_data_list[0][0]
         expected = DataSourceInfo(TestsInChart.SINGLE_TEST, seq1_copy)
         self.assertEqual(expected, ret)
 
-        ret = extracted_data[1].ds_info
+        ret = ex_data_list[1][0]
         expected = DataSourceInfo(TestsInChart.SINGLE_TEST, seq2_copy)
         self.assertEqual(expected, ret)
 
-        ret = extracted_data[0].data_for_drawer
+        ret = ex_data_list[0][1]
 
         self.assertEqual(self.ecdf_dto.alpha, ret.alpha)
         self.assertEqual(self.ecdf_dto.title, ret.title)
@@ -93,7 +96,7 @@ class TestEcdfExtractor(TestCase):
         self.assertEqual(self.ecdf_dto.theoretical_label, ret.theoretical_label)
         self.assertEqual(dict_for_test_13['results'], ret.p_values)
 
-        ret = extracted_data[1].data_for_drawer
+        ret = ex_data_list[1][1]
 
         self.assertEqual(self.ecdf_dto.alpha, ret.alpha)
         self.assertEqual(self.ecdf_dto.title, ret.title)
@@ -112,18 +115,19 @@ class TestEcdfExtractor(TestCase):
 
         self.ecdf_dto.sequences = [seq1, seq2, seq3]
         extracted_data = self.ecdf_extractor.get_data_from_accumulator(self.acc, self.ecdf_dto)
+        ex_data_list = extracted_data.get_all_data()
 
-        self.assertEqual(2, len(extracted_data))
+        self.assertEqual(2, len(ex_data_list))
 
-        ret = extracted_data[0].ds_info
+        quadruple = ex_data_list[0]
         expected = DataSourceInfo(TestsInChart.SINGLE_TEST, seq1_copy)
-        self.assertEqual(expected, ret)
+        self.assertEqual(expected, quadruple[0])
 
-        ret = extracted_data[1].ds_info
+        quadruple = ex_data_list[1]
         expected = DataSourceInfo(TestsInChart.SINGLE_TEST, seq2_copy)
-        self.assertEqual(expected, ret)
+        self.assertEqual(expected, quadruple[0])
 
-        ret = extracted_data[0].data_for_drawer
+        ret = ex_data_list[0][1]  # data for drawer
 
         self.assertEqual(self.ecdf_dto.alpha, ret.alpha)
         self.assertEqual(self.ecdf_dto.title, ret.title)
@@ -133,7 +137,7 @@ class TestEcdfExtractor(TestCase):
         self.assertEqual(self.ecdf_dto.theoretical_label, ret.theoretical_label)
         self.assertEqual(dict_for_test_13['results'], ret.p_values)
 
-        ret = extracted_data[1].data_for_drawer
+        ret = ex_data_list[1][1]  # data for drawer
 
         self.assertEqual(self.ecdf_dto.alpha, ret.alpha)
         self.assertEqual(self.ecdf_dto.title, ret.title)
@@ -151,7 +155,8 @@ class TestEcdfExtractor(TestCase):
 
         acc = PValuesAccumulator()
         ret = self.ecdf_extractor.get_data_from_accumulator(acc, self.ecdf_dto)
-        self.assertEqual(0, len(ret))
+        data_list = ret.get_all_data()
+        self.assertEqual(0, len(data_list))
 
     def test_get_data_from_accumulator_wrong_file_type(self):
         self.ecdf_dto.sequences = [PValueSequence(TestsIdData.test2_id, 3)]

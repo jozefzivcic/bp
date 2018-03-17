@@ -18,11 +18,12 @@ class EcdfCreator:
 
     def create_ecdf_charts(self, data_for_creator: DataForEcdfCreator) -> ChartsStorage:
         storage = ChartsStorage()
-        data_list = self._extractor.get_data_from_accumulator(data_for_creator.acc, data_for_creator.ecdf_dto)
-        for data in data_list:
-            file_name = self.get_file_name(data.ds_info, data_for_creator.directory)
-            self._drawer.draw_chart(data.data_for_drawer, file_name)
-            chart_info = ChartInfo(data.ds_info, file_name, ChartType.ECDF, data_for_creator.file_id)
+        ex_data = self._extractor.get_data_from_accumulator(data_for_creator.acc, data_for_creator.ecdf_dto)
+        ex_data_list = ex_data.get_all_data()
+        for ds_info, data_for_drawer, info, err in ex_data_list:
+            file_name = self.get_file_name(ds_info, data_for_creator.directory)
+            self._drawer.draw_chart(data_for_drawer, file_name)
+            chart_info = ChartInfo(ds_info, file_name, ChartType.ECDF, data_for_creator.file_id)
             storage.add_chart_info(chart_info)
         return storage
 

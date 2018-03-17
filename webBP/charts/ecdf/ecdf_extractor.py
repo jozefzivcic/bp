@@ -10,8 +10,8 @@ from p_value_processing.p_values_file_type import PValuesFileType
 
 
 class EcdfExtractor:
-    def get_data_from_accumulator(self, acc: PValuesAccumulator, ecdf_dto: EcdfDto) -> list:
-        data_list = []
+    def get_data_from_accumulator(self, acc: PValuesAccumulator, ecdf_dto: EcdfDto) -> ExtractedData:
+        ex_data = ExtractedData()
         for seq in ecdf_dto.sequences:
             p_values_dto = acc.get_dto_for_test_safe(seq.test_id)
             if p_values_dto is None:
@@ -20,9 +20,8 @@ class EcdfExtractor:
             data = DataForEcdfDrawer(ecdf_dto.alpha, ecdf_dto.title, ecdf_dto.x_label, ecdf_dto.y_label,
                                      ecdf_dto.empirical_label, ecdf_dto.theoretical_label, p_values)
             ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
-            ex_data = ExtractedData(ds_info, data)
-            data_list.append(ex_data)
-        return data_list
+            ex_data.add_data(ds_info, data)
+        return ex_data
 
     def get_p_values(self, p_values_dto: PValuesDto, seq: PValueSequence) -> list:
         if seq.p_values_file == PValuesFileType.RESULTS:
