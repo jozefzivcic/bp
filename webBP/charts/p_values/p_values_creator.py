@@ -28,10 +28,11 @@ class PValuesCreator:
 
         file = self.get_file_name_for_p_values_chart(data)
         extracted_data = self._extractor.get_data_from_accumulator(data.acc, data.chart_options)
-        self._p_values_drawer.draw_chart(extracted_data.data_for_drawer, file)
+        quadruple = extracted_data.get_all_data()[0]
+        self._p_values_drawer.draw_chart(quadruple[1], file)
 
         chart_type = ChartType.P_VALUES_ZOOMED if data.chart_options.zoomed else ChartType.P_VALUES
-        return ChartInfo(extracted_data.ds_info, file, chart_type, data.file_id)
+        return ChartInfo(quadruple[0], file, chart_type, data.file_id)
 
     def get_file_name_for_p_values_chart(self, data: DataForPValuesCreator):
         zoomed_str = '_zoomed' if data.chart_options.zoomed else ''

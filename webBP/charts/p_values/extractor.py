@@ -46,7 +46,9 @@ class Extractor:
                     self.add_data(chart_dto, p_values_dto, data, test_id, index)
             else:
                 self.add_data(chart_dto, p_values_dto, data, test_id)
-        return ExtractedData(None, data)
+        ex_data = ExtractedData()
+        ex_data.add_data(None, data)
+        return ex_data
 
     def add_data(self, chart_dto: PValuesChartDto, dto: PValuesDto, data: DataForPValuesDrawer, test_id: int,
                  index=None):

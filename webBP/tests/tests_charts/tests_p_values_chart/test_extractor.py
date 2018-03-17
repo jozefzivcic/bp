@@ -157,8 +157,10 @@ class TestExtractor(TestCase):
         acc.add(self.test2_id, dto_14)
 
         extracted_data = self.extractor.get_data_from_accumulator(acc, self.p_values_chart_dto)
+        ex_data_list = extracted_data.get_all_data()
+        self.assertEqual(1, len(ex_data_list))
 
-        self.assertIsNone(extracted_data.ds_info)
+        self.assertIsNone(ex_data_list[0][0])
 
     def test_get_data_from_acc(self):
         dto_13 = PValuesDto(dict_for_test_13)
@@ -168,7 +170,9 @@ class TestExtractor(TestCase):
         acc.add(self.test2_id, dto_14)
 
         extracted_data = self.extractor.get_data_from_accumulator(acc, self.p_values_chart_dto)
-        drawer_data = extracted_data.data_for_drawer
+        ex_data_list = extracted_data.get_all_data()
+        self.assertEqual(1, len(ex_data_list))
+        drawer_data = ex_data_list[0][1]
 
         expected = 0.01
         self.assertAlmostEqual(expected, drawer_data.alpha, places=1E-6)
