@@ -24,7 +24,9 @@ class HistogramExtractor:
         for i in range(10):
             ret.append([HistogramExtractor.intervals[i], quantities[i]])
         data.json_data_string = json.dumps(ret)
-        return ExtractedData(None, data)
+        ex_data = ExtractedData()
+        ex_data.add_data(None, data)
+        return ex_data
 
     def add_p_values_to_interval(self, quantities: list, p_values: list):
         for p_value in p_values:

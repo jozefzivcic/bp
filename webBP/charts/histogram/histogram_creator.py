@@ -16,8 +16,10 @@ class HistogramCreator:
         self.check_input(data)
         file = self.get_file_name_for_chart(data.directory, data.file_id)
         extracted_data = self._extractor.get_data_from_accumulator(data.acc, data.histogram_dto)
-        self.drawer.draw_chart(extracted_data.data_for_drawer, file)
-        return ChartInfo(extracted_data.ds_info, file, ChartType.HISTOGRAM, data.file_id)
+        ex_data_list = extracted_data.get_all_data()
+        first_elem = ex_data_list[0]
+        self.drawer.draw_chart(first_elem[1], file)
+        return ChartInfo(first_elem[0], file, ChartType.HISTOGRAM, data.file_id)
 
     def get_file_name_for_chart(self, directory, file_id):
         file_name = 'histogram_for_file_' + str(file_id) + '.png'
