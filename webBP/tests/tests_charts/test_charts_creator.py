@@ -223,7 +223,7 @@ class TestChartsCreator(TestCase):
 
         self.assertTrue(exists(file))
         self.assertEqual(1, len(storage.get_all_infos()))
-        self.assertEqual(expected_chart_info, storage.get_all_infos()[0])
+        self.assertEqual(expected_chart_info, storage.get_all_infos()[0].ch_info)
 
     def test_generate_zoomed_p_values_chart(self):
         self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test3_id]
@@ -243,10 +243,10 @@ class TestChartsCreator(TestCase):
 
         all_infos = storage.get_all_infos()
 
-        info = list(filter(lambda x: x.chart_type == ChartType.P_VALUES, all_infos))[0]
+        info = list(filter(lambda cs_item: cs_item.ch_info.chart_type == ChartType.P_VALUES, all_infos))[0].ch_info
         self.assertEqual(chart_info1, info)
 
-        info = list(filter(lambda x: x.chart_type == ChartType.P_VALUES_ZOOMED, all_infos))[0]
+        info = list(filter(lambda cs_item: cs_item.ch_info.chart_type == ChartType.P_VALUES_ZOOMED, all_infos))[0].ch_info
         self.assertEqual(chart_info2, info)
 
     def test_create_p_values_chart_for_tests_two_files(self):
@@ -260,8 +260,8 @@ class TestChartsCreator(TestCase):
         self.assertTrue(exists(file1))
         self.assertTrue(exists(file2))
         self.assertEqual(2, len(storage.get_all_infos()))
-        self.assertEqual(expected_info_1, storage.get_all_infos()[0])
-        self.assertEqual(expected_info_2, storage.get_all_infos()[1])
+        self.assertEqual(expected_info_1, storage.get_all_infos()[0].ch_info)
+        self.assertEqual(expected_info_2, storage.get_all_infos()[1].ch_info)
 
     def test_create_histogram_for_two_files(self):
         file1 = join(working_dir, 'histogram_for_file_' + str(self.file1_id) + '.png')
@@ -277,8 +277,8 @@ class TestChartsCreator(TestCase):
         self.assertTrue(exists(file1))
         self.assertTrue(exists(file2))
         self.assertEqual(2, len(storage.get_all_infos()))
-        self.assertEqual(expected_info_1, storage.get_all_infos()[0])
-        self.assertEqual(expected_info_2, storage.get_all_infos()[1])
+        self.assertEqual(expected_info_1, storage.get_all_infos()[0].ch_info)
+        self.assertEqual(expected_info_2, storage.get_all_infos()[1].ch_info)
 
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
@@ -294,7 +294,7 @@ class TestChartsCreator(TestCase):
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
 
         infos = storage.get_all_infos()
-        info = infos[0]
+        info = infos[0].ch_info
         self.assertEqual(1, len(infos))
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
@@ -318,7 +318,7 @@ class TestChartsCreator(TestCase):
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
 
         infos = storage.get_all_infos()
-        info = infos[0]
+        info = infos[0].ch_info
         self.assertEqual(1, len(infos))
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
@@ -340,19 +340,19 @@ class TestChartsCreator(TestCase):
         infos = storage.get_all_infos()
         self.assertEqual(3, len(infos))
 
-        info = infos[0]
+        info = infos[0].ch_info
         file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
-        info = infos[1]
+        info = infos[1].ch_info
         file = join(working_dir, 'dependency_of_Frequency_and_Serial_data_2.png')
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
-        info = infos[2]
+        info = infos[2].ch_info
         file = join(working_dir, 'dependency_of_Cumulative_Sums_data_1_and_Serial_data_2.png')
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
@@ -375,13 +375,13 @@ class TestChartsCreator(TestCase):
         infos = storage.get_all_infos()
         self.assertEqual(2, len(infos))
 
-        info = infos[0]
+        info = infos[0].ch_info
         file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
-        info = infos[1]
+        info = infos[1].ch_info
         file = join(working_dir, 'dependency_of_Linear_Complexity_and_Longest_Run_of_Ones.png')
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
@@ -405,8 +405,8 @@ class TestChartsCreator(TestCase):
         self.assertTrue(exists(file1))
         self.assertTrue(exists(file2))
         self.assertEqual(2, len(storage.get_all_infos()))
-        self.assertEqual(expected_info_1, storage.get_all_infos()[0])
-        self.assertEqual(expected_info_2, storage.get_all_infos()[1])
+        self.assertEqual(expected_info_1, storage.get_all_infos()[0].ch_info)
+        self.assertEqual(expected_info_2, storage.get_all_infos()[1].ch_info)
 
     def test_create_ecdf_for_five_files(self):
         file1 = join(working_dir, 'ecdf_for_test_{}_results.png'.format(self.test1_id))
@@ -441,11 +441,11 @@ class TestChartsCreator(TestCase):
         self.assertTrue(exists(file1))
         self.assertTrue(exists(file2))
         self.assertEqual(5, len(storage.get_all_infos()))
-        self.assertEqual(expected_info_1, storage.get_all_infos()[0])
-        self.assertEqual(expected_info_2, storage.get_all_infos()[1])
-        self.assertEqual(expected_info_3, storage.get_all_infos()[2])
-        self.assertEqual(expected_info_4, storage.get_all_infos()[3])
-        self.assertEqual(expected_info_5, storage.get_all_infos()[4])
+        self.assertEqual(expected_info_1, storage.get_all_infos()[0].ch_info)
+        self.assertEqual(expected_info_2, storage.get_all_infos()[1].ch_info)
+        self.assertEqual(expected_info_3, storage.get_all_infos()[2].ch_info)
+        self.assertEqual(expected_info_4, storage.get_all_infos()[3].ch_info)
+        self.assertEqual(expected_info_5, storage.get_all_infos()[4].ch_info)
 
     def test_generate_boxplots_one_file(self):
         file = join(working_dir, 'boxplot_pt_{}.png'.format(self.test1_id))
@@ -460,7 +460,7 @@ class TestChartsCreator(TestCase):
         self.assertTrue(exists(file))
         self.assertEqual(1, len(storage.get_all_infos()))
 
-        ch_info = storage.get_all_infos()[0]
+        ch_info = storage.get_all_infos()[0].ch_info
         expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[0]), file, ChartType.BOXPLOT_PT,
                              FileIdData.file1_id)
         self.assertEqual(expected, ch_info)
@@ -486,17 +486,17 @@ class TestChartsCreator(TestCase):
         self.assertTrue(exists(file3))
         self.assertEqual(3, len(storage.get_all_infos()))
 
-        ch_info = storage.get_all_infos()[0]
+        ch_info = storage.get_all_infos()[0].ch_info
         expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[0]), file1, ChartType.BOXPLOT_PT,
                              FileIdData.file1_id)
         self.assertEqual(expected, ch_info)
 
-        ch_info = storage.get_all_infos()[1]
+        ch_info = storage.get_all_infos()[1].ch_info
         expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[1]), file2, ChartType.BOXPLOT_PT,
                              FileIdData.file1_id)
         self.assertEqual(expected, ch_info)
 
-        ch_info = storage.get_all_infos()[2]
+        ch_info = storage.get_all_infos()[2].ch_info
         expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[2]), file3, ChartType.BOXPLOT_PT,
                              FileIdData.file2_id)
         self.assertEqual(expected, ch_info)

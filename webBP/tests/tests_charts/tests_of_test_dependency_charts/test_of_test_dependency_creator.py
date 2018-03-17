@@ -92,9 +92,9 @@ class TestOfTestDependencyCreator(TestCase):
         data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
         storage = self.creator.create_test_dependency_charts(data_for_creator)
 
-        info_list = storage.get_all_infos()
-        chart_info = info_list[0]
-        self.assertEqual(1, len(info_list))
+        cs_item_list = storage.get_all_infos()
+        chart_info = cs_item_list[0].ch_info
+        self.assertEqual(1, len(cs_item_list))
         self.assertTrue(exists(chart_info.path_to_chart))
         self.assertEqual(ChartType.TESTS_DEPENDENCY, chart_info.chart_type)
         self.assertEqual(FileIdData.file1_id, chart_info.file_id)
@@ -129,9 +129,10 @@ class TestOfTestDependencyCreator(TestCase):
         data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
         storage = self.creator.create_test_dependency_charts(data_for_creator)
 
-        info_list = storage.get_all_infos()
-        self.assertEqual(10, len(info_list))
-        for chart_info in info_list:
+        cs_item_list = storage.get_all_infos()
+        self.assertEqual(10, len(cs_item_list))
+        for cs_item in cs_item_list:
+            chart_info = cs_item.ch_info
             self.assertTrue(exists(chart_info.path_to_chart))
             self.assertEqual(ChartType.TESTS_DEPENDENCY, chart_info.chart_type)
             self.assertEqual(FileIdData.file1_id, chart_info.file_id)

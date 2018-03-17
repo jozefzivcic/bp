@@ -9,6 +9,7 @@ from copy import deepcopy
 from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
+from charts.charts_storage_item import ChartsStorageItem
 from charts.data_source_info import DataSourceInfo
 from charts.tests_in_chart import TestsInChart
 from p_value_processing.p_value_sequence import PValueSequence
@@ -19,7 +20,7 @@ this_dir = dirname(abspath(__file__))
 working_dir = abspath(join(this_dir, 'working_dir_charts_storage'))
 
 
-class TestPathStorage(TestCase):
+class TestChartsStorage(TestCase):
     def setUp(self):
         if not exists(working_dir):
             makedirs(working_dir)
@@ -59,7 +60,8 @@ class TestPathStorage(TestCase):
 
     def test_add_one_path(self):
         self.charts_storage.add_chart_info(self.chart_info)
-        self.assertEqual([deepcopy(self.chart_info)], self.charts_storage.get_all_infos())
+        cs_item = ChartsStorageItem(deepcopy(self.chart_info))
+        self.assertEqual([cs_item], self.charts_storage.get_all_infos())
 
     def test_add_more_paths(self):
         expected = []
@@ -69,7 +71,8 @@ class TestPathStorage(TestCase):
             chart_info.path_to_chart = file
             chart_info.chart_type = ChartType.P_VALUES
             chart_info.file_id = i
-            expected.append(deepcopy(chart_info))
+            cs_item = ChartsStorageItem(deepcopy(chart_info))
+            expected.append(cs_item)
             self.charts_storage.add_chart_info(chart_info)
         self.assertEqual(expected, self.charts_storage.get_all_infos())
 
@@ -79,18 +82,16 @@ class TestPathStorage(TestCase):
         chart_info = ChartInfo(ds_info, file, ChartType.P_VALUES_ZOOMED, 1000)
         self.charts_storage.add_chart_info(chart_info)
 
-        expected = [chart_info]
+        cs_item = ChartsStorageItem(deepcopy(chart_info))
+        expected = [cs_item]
         another_storage = ChartsStorage()
 
         for i in range(0, 10):
             file = join(working_dir, 'file' + str(i) + '.txt')
-            chart_info = ChartInfo()
             ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, PValueSequence(i, PValuesFileType.RESULTS))
-            chart_info.ds_info = ds_info
-            chart_info.path_to_chart = file
-            chart_info.chart_type = ChartType.HISTOGRAM
-            chart_info.file_id = i
-            expected.append(deepcopy(chart_info))
+            chart_info = ChartInfo(ds_info, file, ChartType.HISTOGRAM, i)
+            cs_item = ChartsStorageItem(deepcopy(chart_info))
+            expected.append(cs_item)
             another_storage.add_chart_info(chart_info)
 
         self.assertEqual(expected[1:], another_storage.get_all_infos())
@@ -101,26 +102,3 @@ class TestPathStorage(TestCase):
         another_storage.extend(self.charts_storage)
         self.assertEqual(expected, another_storage.get_all_infos())
         self.assertEqual([], self.charts_storage.get_all_infos())
-
-    def test_delete_files_on_paths(self):
-        expected = []
-        for i in range(0, 10):
-            file = join(working_dir, 'file' + str(i) + '.txt')
-            chart_info = ChartInfo()
-            chart_info.path_to_chart = file
-            chart_info.chart_type = ChartType.P_VALUES
-            chart_info.file_id = i
-            expected.append(deepcopy(chart_info))
-            self.charts_storage.add_chart_info(chart_info)
-            open(file, 'a').close()
-            self.assertTrue(exists(file))
-        remove(join(working_dir, 'file5.txt'))
-
-        self.charts_storage.delete_files_on_paths()
-
-        for i in range(0, 5):
-            file = join(working_dir, 'file' + str(i) + '.txt')
-            self.assertFalse(exists(file))
-        for i in range(6, 10):
-            file = join(working_dir, 'file' + str(i) + '.txt')
-            self.assertFalse(exists(file))
