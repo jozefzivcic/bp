@@ -9,6 +9,14 @@ from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict
     dict_for_test_42, dict_for_test_43
 
 
+def get_unif_check_mock(check_for_unif: bool, p_value: float, is_approx_fulfilled: bool) -> MagicMock:
+    unif_check = MagicMock()
+    unif_check.check_for_uniformity = MagicMock(return_value=check_for_unif)
+    unif_check.get_p_value = MagicMock(return_value=p_value)
+    unif_check.is_approx_fulfilled = MagicMock(return_value=is_approx_fulfilled)
+    return unif_check
+
+
 class TestSequencePairs(TestCase):
     def add_all_pairs(self):
         self.seq_pairs.add_pair(self.seq1, self.p_values1, self.seq2, self.p_values2)
@@ -182,89 +190,132 @@ class TestSequencePairs(TestCase):
         self.assertEqual(0, len(seq_pairs_list))
 
     def test_should_remove_non_unif_hypothesis_rejected(self):
-        unif_check = MagicMock()
-        unif_check.check_for_uniformity = MagicMock(return_value=True)
-        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        unif_check = get_unif_check_mock(True, 0.5, True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
-                                                                 FilterUniformity.REMOVE_NON_UNIFORM)
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.REMOVE_NON_UNIFORM)
         unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
-        self.assertTrue(hyp_rej)
-        self.assertTrue(is_cond)
+        self.assertTrue(remove)
 
     def test_should_remove_non_unif_hypothesis_not_rejected(self):
-        unif_check = MagicMock()
-        unif_check.check_for_uniformity = MagicMock(return_value=False)
-        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        unif_check = get_unif_check_mock(False, 0.5, True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
-                                                                 FilterUniformity.REMOVE_NON_UNIFORM)
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.REMOVE_NON_UNIFORM)
         unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
-        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
-        self.assertFalse(hyp_rej)
-        self.assertTrue(is_cond)
+        self.assertFalse(remove)
 
     def test_should_remove_unif_hypothesis_rejected(self):
-        unif_check = MagicMock()
-        unif_check.check_for_uniformity = MagicMock(return_value=True)
-        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        unif_check = get_unif_check_mock(True, 0.5, True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
-                                                                 FilterUniformity.REMOVE_UNIFORM)
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.REMOVE_UNIFORM)
         unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
-        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
-        self.assertFalse(hyp_rej)
-        self.assertTrue(is_cond)
+        self.assertFalse(remove)
 
     def test_should_remove_unif_hypothesis_not_rejected(self):
-        unif_check = MagicMock()
-        unif_check.check_for_uniformity = MagicMock(return_value=False)
-        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+        unif_check = get_unif_check_mock(False, 0.5, True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
-                                                                 FilterUniformity.REMOVE_UNIFORM)
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.REMOVE_UNIFORM)
         unif_check.check_for_uniformity.assert_called_once_with(p_values1, p_values2)
-        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
-        self.assertTrue(hyp_rej)
-        self.assertTrue(is_cond)
+        self.assertTrue(remove)
 
     def test_should_remove_do_not_filter(self):
-        unif_check = MagicMock()
-        unif_check.check_for_uniformity = MagicMock(return_value=True)
-        unif_check.is_approx_fulfilled = MagicMock(return_value=False)
+        unif_check = get_unif_check_mock(True, 0.5, False)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
-                                                                 FilterUniformity.DO_NOT_FILTER)
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.DO_NOT_FILTER)
         self.assertEqual(1, unif_check.check_for_uniformity.call_count)
-        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
-        self.assertFalse(hyp_rej)
-        self.assertIsNone(is_cond)
+        self.assertFalse(remove)
 
-    def test_is_approx_propagated_true(self):
-        unif_check = MagicMock()
-        unif_check.check_for_uniformity = MagicMock(return_value=True)
-        unif_check.is_approx_fulfilled = MagicMock(return_value=True)
+    def test_is_p_value_propagated_rem_unif(self):
+        p_value = 0.921423
+        unif_check = get_unif_check_mock(True, p_value, True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
-                                                                 FilterUniformity.REMOVE_UNIFORM)
+        remove, ret_p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                    FilterUniformity.REMOVE_UNIFORM)
+        self.assertEqual(1, unif_check.get_p_value.call_count)
+        self.assertEqual(p_value, ret_p_value)
+
+    def test_is_p_value_propagated_rem_non_unif(self):
+        p_value = 0.921423
+        unif_check = get_unif_check_mock(True, p_value, True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        remove, ret_p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                    FilterUniformity.REMOVE_NON_UNIFORM)
+        self.assertEqual(1, unif_check.get_p_value.call_count)
+        self.assertEqual(p_value, ret_p_value)
+
+    def test_is_p_value_propagated_do_not_filter(self):
+        p_value = 0.921423
+        unif_check = get_unif_check_mock(True, p_value, True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        remove, ret_p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                    FilterUniformity.DO_NOT_FILTER)
+        self.assertEqual(1, unif_check.get_p_value.call_count)
+        self.assertEqual(p_value, ret_p_value)
+
+    def test_is_approx_propagated_true_rem_unif(self):
+        unif_check = get_unif_check_mock(True, 0.5, True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.REMOVE_UNIFORM)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
         self.assertTrue(is_cond)
 
-    def test_is_approx_propagated_false(self):
-        unif_check = MagicMock()
-        unif_check.check_for_uniformity = MagicMock(return_value=True)
-        unif_check.is_approx_fulfilled = MagicMock(return_value=False)
+    def test_is_approx_propagated_true_rem_non_unif(self):
+        unif_check = get_unif_check_mock(True, 0.5, True)
         p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
         p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
-        hyp_rej, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
-                                                                 FilterUniformity.REMOVE_UNIFORM)
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.REMOVE_NON_UNIFORM)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertTrue(is_cond)
+
+    def test_is_approx_propagated_true_do_not_filter(self):
+        unif_check = get_unif_check_mock(True, 0.5, True)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.DO_NOT_FILTER)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertTrue(is_cond)
+
+    def test_is_approx_propagated_false_rem_unif(self):
+        unif_check = get_unif_check_mock(True, 0.5, False)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.REMOVE_UNIFORM)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertFalse(is_cond)
+
+    def test_is_approx_propagated_false_rem_non_unif(self):
+        unif_check = get_unif_check_mock(True, 0.5, False)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.REMOVE_NON_UNIFORM)
+        self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
+        self.assertFalse(is_cond)
+
+    def test_is_approx_propagated_false_do_not_filter(self):
+        unif_check = get_unif_check_mock(True, 0.5, False)
+        p_values1 = [0.123456, 0.654321, 0.789456, 0.852741]
+        p_values2 = [0.124567, 0.963258, 0.753159, 0.875698]
+        remove, p_value, is_cond = self.seq_pairs.should_remove(unif_check, p_values1, p_values2,
+                                                                FilterUniformity.DO_NOT_FILTER)
         self.assertEqual(1, unif_check.is_approx_fulfilled.call_count)
         self.assertFalse(is_cond)
 
