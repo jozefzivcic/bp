@@ -11,6 +11,10 @@ from p_value_processing.p_values_file_type import PValuesFileType
 from tests.data_for_tests.common_data import TestsIdData
 
 
+def sort_by_item_dto(dto: FilteredItemDto):
+    return dto.ds_info.p_value_sequence[0].test_id and dto.ds_info.p_value_sequence[1].test_id
+
+
 class TestDataFromFilterPairs(TestCase):
     def setUp(self):
         self.data_from_fp = DataFromFilterPairs()
@@ -37,7 +41,9 @@ class TestDataFromFilterPairs(TestCase):
 
         self.data_from_fp.add_kept(self.item_dto2)
         ret = self.data_from_fp.get_kept()
-        self.assertEqual([deepcopy(self.item_dto1), deepcopy(self.item_dto2)], ret)
+        expected = sorted([deepcopy(self.item_dto1), deepcopy(self.item_dto2)], key=sort_by_item_dto)
+        ret = sorted(ret, key=sort_by_item_dto)
+        self.assertEqual(expected, ret)
         self.assertFalse(self.data_from_fp.get_deleted())
 
     def test_add_deleted(self):
@@ -48,7 +54,9 @@ class TestDataFromFilterPairs(TestCase):
 
         self.data_from_fp.add_deleted(self.item_dto2)
         ret = self.data_from_fp.get_deleted()
-        self.assertEqual([deepcopy(self.item_dto1), deepcopy(self.item_dto2)], ret)
+        expected = sorted([deepcopy(self.item_dto1), deepcopy(self.item_dto2)], key=sort_by_item_dto)
+        ret = sorted(ret, key=sort_by_item_dto)
+        self.assertEqual(expected, ret)
         self.assertFalse(self.data_from_fp.get_kept())
 
     def test_add_kept_and_deleted(self):
@@ -60,6 +68,68 @@ class TestDataFromFilterPairs(TestCase):
 
         ret = self.data_from_fp.get_deleted()
         self.assertEqual([deepcopy(self.item_dto2)], ret)
+
+    def test_get_kept_len(self):
+        ret = self.data_from_fp.get_kept_len()
+        self.assertEqual(0, ret)
+
+        self.data_from_fp.add_kept(self.item_dto1)
+        ret = self.data_from_fp.get_kept_len()
+        self.assertEqual(1, ret)
+
+        self.data_from_fp.add_kept(self.item_dto2)
+        self.data_from_fp.add_kept(self.item_dto3)
+        ret = self.data_from_fp.get_kept_len()
+        self.assertEqual(3, ret)
+
+    def test_get_deleted_len(self):
+        ret = self.data_from_fp.get_deleted_len()
+        self.assertEqual(0, ret)
+
+        self.data_from_fp.add_deleted(self.item_dto1)
+        ret = self.data_from_fp.get_deleted_len()
+        self.assertEqual(1, ret)
+
+        self.data_from_fp.add_deleted(self.item_dto2)
+        self.data_from_fp.add_deleted(self.item_dto3)
+        ret = self.data_from_fp.get_deleted_len()
+        self.assertEqual(3, ret)
+
+    def test_get_kept_by_seqcs(self):
+        self.data_from_fp.add_kept(self.item_dto1)
+
+        seqcs = self.item_dto1.ds_info.p_value_sequence
+        ret = self.data_from_fp.get_kept_by_seqcs(deepcopy(seqcs[0]), deepcopy(seqcs[1]))
+        self.assertEqual(deepcopy(self.item_dto1), ret)
+
+        self.data_from_fp.add_kept(self.item_dto2)
+        self.data_from_fp.add_kept(self.item_dto3)
+
+        seqcs = self.item_dto2.ds_info.p_value_sequence
+        ret = self.data_from_fp.get_kept_by_seqcs(deepcopy(seqcs[0]), deepcopy(seqcs[1]))
+        self.assertEqual(deepcopy(self.item_dto2), ret)
+
+        seqcs = self.item_dto3.ds_info.p_value_sequence
+        ret = self.data_from_fp.get_kept_by_seqcs(deepcopy(seqcs[0]), deepcopy(seqcs[1]))
+        self.assertEqual(deepcopy(self.item_dto3), ret)
+
+    def test_get_deleted_by_seqcs(self):
+        self.data_from_fp.add_deleted(self.item_dto1)
+
+        seqcs = self.item_dto1.ds_info.p_value_sequence
+        ret = self.data_from_fp.get_deleted_by_seqcs(deepcopy(seqcs[0]), deepcopy(seqcs[1]))
+        self.assertEqual(deepcopy(self.item_dto1), ret)
+
+        self.data_from_fp.add_deleted(self.item_dto2)
+        self.data_from_fp.add_deleted(self.item_dto3)
+
+        seqcs = self.item_dto2.ds_info.p_value_sequence
+        ret = self.data_from_fp.get_deleted_by_seqcs(deepcopy(seqcs[0]), deepcopy(seqcs[1]))
+        self.assertEqual(deepcopy(self.item_dto2), ret)
+
+        seqcs = self.item_dto3.ds_info.p_value_sequence
+        ret = self.data_from_fp.get_deleted_by_seqcs(deepcopy(seqcs[0]), deepcopy(seqcs[1]))
+        self.assertEqual(deepcopy(self.item_dto3), ret)
 
     def test_are_not_equal(self):
         self.data_from_fp.add_kept(self.item_dto1)
