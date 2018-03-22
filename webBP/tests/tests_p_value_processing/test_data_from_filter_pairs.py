@@ -24,6 +24,11 @@ class TestDataFromFilterPairs(TestCase):
         ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq2))
         self.item_dto2 = FilteredItemDto(ds_info, 0.654, True)
 
+        seq1 = PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS)
+        ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq2))
+        self.item_dto3 = FilteredItemDto(ds_info, 0.753, False)
+
     def test_add_kept(self):
         self.data_from_fp.add_kept(self.item_dto1)
         ret = self.data_from_fp.get_kept()
@@ -55,3 +60,38 @@ class TestDataFromFilterPairs(TestCase):
 
         ret = self.data_from_fp.get_deleted()
         self.assertEqual([deepcopy(self.item_dto2)], ret)
+
+    def test_are_not_equal(self):
+        self.data_from_fp.add_kept(self.item_dto1)
+
+        another_data = DataFromFilterPairs()
+        self.assertNotEqual(self.data_from_fp, another_data)
+        self.assertTrue(self.data_from_fp != another_data)
+
+        another_data.add_deleted(deepcopy(self.item_dto2))
+        self.assertNotEqual(self.data_from_fp, another_data)
+        self.assertTrue(self.data_from_fp != another_data)
+
+        another_data.add_kept(deepcopy(self.item_dto1))
+        self.assertNotEqual(self.data_from_fp, another_data)
+        self.assertTrue(self.data_from_fp != another_data)
+
+    def test_are_equal(self):
+        another_data = DataFromFilterPairs()
+        self.assertEqual(self.data_from_fp, another_data)
+        self.assertTrue(self.data_from_fp == another_data)
+
+        self.data_from_fp.add_kept(self.item_dto1)
+        another_data.add_kept(deepcopy(self.item_dto1))
+        self.assertEqual(self.data_from_fp, another_data)
+        self.assertTrue(self.data_from_fp == another_data)
+
+        self.data_from_fp.add_kept(self.item_dto2)
+        another_data.add_kept(deepcopy(self.item_dto2))
+        self.assertEqual(self.data_from_fp, another_data)
+        self.assertTrue(self.data_from_fp == another_data)
+
+        self.data_from_fp.add_deleted(self.item_dto3)
+        another_data.add_deleted(deepcopy(self.item_dto3))
+        self.assertEqual(self.data_from_fp, another_data)
+        self.assertTrue(self.data_from_fp == another_data)

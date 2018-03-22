@@ -17,3 +17,8 @@ class DataFromFilterPairs:
 
     def get_deleted(self) -> list:
         return list(self._deleted)
+
+    def __eq__(self, other):
+        if not isinstance(self, other.__class__):
+            return False
+        return self._kept == other._kept and self._deleted == other._deleted

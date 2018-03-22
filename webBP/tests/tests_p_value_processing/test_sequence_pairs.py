@@ -1,7 +1,12 @@
+from copy import deepcopy
 from unittest import TestCase
 from unittest.mock import patch, MagicMock
 
+from charts.data_source_info import DataSourceInfo
+from charts.tests_in_chart import TestsInChart
 from enums.filter_uniformity import FilterUniformity
+from p_value_processing.data_from_filter_pairs import DataFromFilterPairs
+from p_value_processing.filtered_item_dto import FilteredItemDto
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_pairs import SequencePairs
@@ -188,6 +193,52 @@ class TestSequencePairs(TestCase):
         self.seq_pairs.filter_pairs(unif_check, FilterUniformity.REMOVE_UNIFORM)
         seq_pairs_list = self.seq_pairs.get_pairs_in_list()
         self.assertEqual(0, len(seq_pairs_list))
+
+    @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
+    def test_filter_pairs_ret_value(self, func):
+        def func_side_effect(check_obj, seq1, seq2, filter_unif):
+            if seq1[0] == self.p_values1[0]:
+                return True, 0.456, False
+            elif seq1[0] == self.p_values2[0]:
+                return False, 0.159, False
+            elif seq1[0] == self.p_values3[0]:
+                return True, 0.852, True
+            elif seq1[0] == self.p_values4[0]:
+                return False, 0.123, True
+            else:
+                raise RuntimeError('Unsupported')
+        func.side_effect = func_side_effect
+        expected = DataFromFilterPairs()
+
+        ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (deepcopy(self.seq1), deepcopy(self.seq2)))
+        dto = FilteredItemDto(ds_info, 0.456, False)
+        expected.add_deleted(dto)
+
+        ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (deepcopy(self.seq2), deepcopy(self.seq3)))
+        dto = FilteredItemDto(ds_info, 0.159, False)
+        expected.add_kept(dto)
+
+        ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (deepcopy(self.seq3), deepcopy(self.seq4)))
+        dto = FilteredItemDto(ds_info, 0.852, True)
+        expected.add_deleted(dto)
+
+        ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (deepcopy(self.seq4), deepcopy(self.seq5)))
+        dto = FilteredItemDto(ds_info, 0.123, True)
+        expected.add_kept(dto)
+
+        self.seq_pairs.add_pair(self.seq1, self.p_values1, self.seq2, self.p_values2)
+        self.seq_pairs.add_pair(self.seq2, self.p_values2, self.seq3, self.p_values3)
+        self.seq_pairs.add_pair(self.seq3, self.p_values3, self.seq4, self.p_values4)
+        self.seq_pairs.add_pair(self.seq4, self.p_values4, self.seq5, self.p_values5)
+        ret = self.seq_pairs.filter_pairs(MagicMock(), FilterUniformity.DO_NOT_FILTER)
+
+        list1 = sorted(expected.get_kept(), key=lambda x: x.p_value)
+        list2 = sorted(ret.get_kept(), key=lambda x: x.p_value)
+        self.assertEqual(list1, list2)
+
+        list1 = sorted(expected.get_deleted(), key=lambda x: x.p_value)
+        list2 = sorted(ret.get_deleted(), key=lambda x: x.p_value)
+        self.assertEqual(list1, list2)
 
     def test_should_remove_non_unif_hypothesis_rejected(self):
         unif_check = get_unif_check_mock(True, 0.5, True)
