@@ -281,8 +281,9 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected_info_2, storage.get_all_items()[1].ch_info)
 
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_tests_dependency_charts_for_one_file(self, func_check, func_is_approx):
+    def test_create_tests_dependency_charts_for_one_file(self, func_check, func_get, func_is_approx):
         file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
 
         seq_acc = SequenceAccumulator()
@@ -301,8 +302,9 @@ class TestChartsCreator(TestCase):
         self.assertEqual(self.file1_id, info.file_id)
 
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_tests_dependency_charts_more_sequences_than_test_ids(self, func_check, func_is_approx):
+    def test_create_tests_dependency_charts_more_sequences_than_test_ids(self, func_check, func_get, func_is_approx):
         file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
 
         seq_acc = SequenceAccumulator()
@@ -325,8 +327,9 @@ class TestChartsCreator(TestCase):
         self.assertEqual(self.file1_id, info.file_id)
 
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_three_tests_dependency_charts_for_one_file(self, func_check, func_is_approx):
+    def test_create_three_tests_dependency_charts_for_one_file(self, func_check, func_get, func_is_approx):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
@@ -359,8 +362,9 @@ class TestChartsCreator(TestCase):
         self.assertEqual(self.file1_id, info.file_id)
 
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_tests_dependency_charts_for_two_files(self, func_check, func_is_approx):
+    def test_create_tests_dependency_charts_for_two_files(self, func_check, func_get, func_is_approx):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))

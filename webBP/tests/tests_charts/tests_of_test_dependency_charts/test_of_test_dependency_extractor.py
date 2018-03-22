@@ -35,8 +35,9 @@ class TestOfTestDependencyExtractor(TestCase):
         self.p_values_acc = func_prepare_acc()
 
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_get_data_from_accumulator_ds_info(self, func_check_unif, func_is_approx):
+    def test_get_data_from_accumulator_ds_info(self, func_check_unif, func_get, func_is_approx):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -99,8 +100,9 @@ class TestOfTestDependencyExtractor(TestCase):
         self.assertEqual(expected, ret)
 
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_get_data_from_accumulator(self, func_check_unif, func_is_approx):
+    def test_get_data_from_accumulator(self, func_check_unif, func_get, func_is_approx):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))

@@ -47,9 +47,9 @@ class SequencePairs:
             seq1 = value[0]
             seq2 = value[1]
 
-            should_remove, condition = self.should_remove(check_obj, seq1, seq2, filter_unif)
+            should_remove, p_value, condition = self.should_remove(check_obj, seq1, seq2, filter_unif)
             ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, key)
-            item = FilteredItemDto(ds_info, condition)
+            item = FilteredItemDto(ds_info, p_value, condition)
 
             if should_remove:
                 to_delete.append(key)
@@ -69,16 +69,17 @@ class SequencePairs:
         :param filter_unif: If True, pairs whose distribution looks to be non-uniform, will be removed. Only
         pairs, whose distribution looks to be uniform, will not be removed. For False, vice-versa.
         :return: Tuple. First element denotes whether to remove given pair of sequences. It is True, if given sequences
-        should be removed. False otherwise. The second element denotes, whether the condition of good approximation was
-        fulfilled.
+        should be removed. False otherwise. The second element denotes p-value from uniformity check test.
+        The last element denotes, whether the condition of good approximation was fulfilled.
         """
         hypothesis_rejected = check_obj.check_for_uniformity(seq1, seq2)
+        p_value = check_obj.get_p_value()
         is_condition_fulfilled = check_obj.is_approx_fulfilled()
         if filter_unif == FilterUniformity.REMOVE_NON_UNIFORM:
-            return hypothesis_rejected, is_condition_fulfilled
+            return hypothesis_rejected, p_value, is_condition_fulfilled
         elif filter_unif == FilterUniformity.REMOVE_UNIFORM:
-            return not hypothesis_rejected, is_condition_fulfilled
+            return not hypothesis_rejected, p_value, is_condition_fulfilled
         elif filter_unif == FilterUniformity.DO_NOT_FILTER:
-            return False, None
+            return False, 0.0, None
         else:
             raise ValueError('Unknown type of FilterUniformity: {}'.format(filter_unif))

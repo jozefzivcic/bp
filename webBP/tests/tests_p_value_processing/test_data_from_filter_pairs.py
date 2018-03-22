@@ -17,12 +17,12 @@ class TestDataFromFilterPairs(TestCase):
         seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
         seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)
         ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq2))
-        self.item_dto1 = FilteredItemDto(ds_info, True)
+        self.item_dto1 = FilteredItemDto(ds_info, 0.456, True)
 
         seq1 = PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 1)
         seq2 = PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS)
         ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq2))
-        self.item_dto2 = FilteredItemDto(ds_info, True)
+        self.item_dto2 = FilteredItemDto(ds_info, 0.654, True)
 
     def test_add_kept(self):
         self.data_from_fp.add_kept(self.item_dto1)
