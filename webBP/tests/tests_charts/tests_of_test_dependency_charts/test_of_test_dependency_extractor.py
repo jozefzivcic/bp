@@ -6,6 +6,8 @@ from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_extractor import TestDependencyExtractor
 from charts.tests_in_chart import TestsInChart
+from common.info.test_dep_filtered_info import TestDepFilteredInfo
+from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
 from models.test import Test
 from p_value_processing.p_value_sequence import PValueSequence
@@ -217,6 +219,50 @@ class TestOfTestDependencyExtractor(TestCase):
         data_for_drawer = DataForTestDependencyDrawer(dict_for_test_42['results'], dict_for_test_43['results'], title,
                                                       x_label, y_label)
         self.compare_data_for_drawer(data_for_drawer, ret_data)
+
+    @patch('common.unif_check.UnifCheck.check_for_uniformity', return_value=True)
+    @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5456)
+    @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
+    def test_get_data_from_acc_infos_for_each_data(self, f_check, f_p_value, f_is_approx):
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
+
+        title = 'Dependency of two tests'
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title)
+        extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
+        extracted_data_list = extracted_data.get_all_data()
+        for ds_info, drawer_data, info, err in extracted_data_list:
+            expected_info = TestDepUnifInfo(0.5456, True)
+            self.assertEqual(expected_info, info)
+
+    @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
+    def test_get_data_from_acc_filtered_info(self, f_check):
+        def side_eff_mock(check_obj, seq1, seq2, filter_unif):
+            if seq1[0] < 0.5:
+                return True, 0.5, True
+            else:
+                return False, 0.6, True
+
+        f_check.side_effect = side_eff_mock
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
+
+        title = 'Dependency of two tests'
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title)
+        extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
+
+        expected = TestDepFilteredInfo(1, 10, FilterUniformity.REMOVE_UNIFORM)
+        ret = extracted_data.get_all_infos()
+        self.assertEqual(1, len(ret))
+        self.assertEqual(expected, ret[0])
 
     def test_get_test_name_wrong_test_type(self):
         test_table_name = 'another_test_table'
