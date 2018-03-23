@@ -240,14 +240,14 @@ class TestOfTestDependencyExtractor(TestCase):
             self.assertEqual(expected_info, info)
 
     @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
-    def test_get_data_from_acc_filtered_info(self, f_check):
+    def test_get_data_from_acc_filtered_info(self, f_remove):
         def side_eff_mock(check_obj, seq1, seq2, filter_unif):
             if seq1[0] < 0.5:
                 return True, 0.5, True
             else:
                 return False, 0.6, True
 
-        f_check.side_effect = side_eff_mock
+        f_remove.side_effect = side_eff_mock
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))

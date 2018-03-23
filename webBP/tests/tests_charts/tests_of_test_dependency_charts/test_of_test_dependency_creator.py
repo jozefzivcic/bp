@@ -5,11 +5,16 @@ from unittest import TestCase
 from shutil import rmtree
 from unittest.mock import MagicMock, patch
 
+from copy import deepcopy
+
 from charts.chart_type import ChartType
+from charts.extracted_data import ExtractedData
 from charts.test_dependency.data_for_test_dependency_creator import DataForTestDependencyCreator
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_creator import TestDependencyCreator
 from charts.dto.test_dependency_dto import TestDependencyDto
+from common.info.test_dep_filtered_info import TestDepFilteredInfo
+from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
@@ -141,6 +146,65 @@ class TestOfTestDependencyCreator(TestCase):
 
         num_of_files = len(listdir(working_dir))
         self.assertEqual(10, num_of_files)
+
+    @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
+    def test_create_test_dependency_charts_extracted_data(self, f_remove):
+        def side_eff_mock(check_obj, seq1, seq2, filter_unif):
+            if seq1[0] < 0.5:
+                return True, 0.5, True
+            else:
+                return False, 0.6, True
+        f_remove.side_effect = side_eff_mock
+
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
+
+        p_values_dto_for_test1 = PValuesDto(dict_for_test_13)
+        p_values_dto_for_test2 = PValuesDto(dict_for_test_14)
+        p_values_dto_for_test3 = PValuesDto(dict_for_test_41)
+        p_values_dto_for_test4 = PValuesDto(dict_for_test_42)
+        p_values_dto_for_test5 = PValuesDto(dict_for_test_43)
+
+        p_values_acc = PValuesAccumulator()
+        p_values_acc.add(TestsIdData.test1_id, p_values_dto_for_test1)
+        p_values_acc.add(TestsIdData.test2_id, p_values_dto_for_test2)
+        p_values_acc.add(TestsIdData.test3_id, p_values_dto_for_test3)
+        p_values_acc.add(TestsIdData.test4_id, p_values_dto_for_test4)
+        p_values_acc.add(TestsIdData.test5_id, p_values_dto_for_test5)
+
+        dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc,
+                                           'Dependency of two tests')
+        data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
+        storage = self.creator.create_test_dependency_charts(data_for_creator)
+        for cs_item in storage.get_all_items():
+            info = cs_item.info
+            expected = TestDepUnifInfo(0.6, True)
+            self.assertEqual(expected, info)
+        infos = storage.get_infos_for_chart_type(ChartType.TESTS_DEPENDENCY)
+        self.assertEqual(1, len(infos))
+        expected = TestDepFilteredInfo(1, 10, FilterUniformity.REMOVE_UNIFORM)
+        self.assertEqual(expected, infos[0])
+
+    @patch('charts.test_dependency.test_dependency_extractor.TestDependencyExtractor.get_data_from_accumulator')
+    def test_errs_propagated(self, f_get_data):
+        ex_data = ExtractedData()
+        err1 = MagicMock(error='This is first error')
+        err2 = MagicMock(error='This is second error')
+        ex_data.add_err(err1)
+        ex_data.add_err(err2)
+        f_get_data.return_value = ex_data
+        dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, SequenceAccumulator(),
+                                           'Dependency of two tests')
+        data_for_creator = DataForTestDependencyCreator(dependency_dto, PValuesAccumulator(), working_dir,
+                                                        FileIdData.file1_id)
+        storage = self.creator.create_test_dependency_charts(data_for_creator)
+        ret = storage.get_errors_for_chart_type(ChartType.TESTS_DEPENDENCY)
+        expected = [deepcopy(err1), deepcopy(err2)]
+        self.assertEqual(expected, ret)
 
     def test_get_file_name(self):
         data = DataForTestDependencyDrawer([0.4, 0.5, 0.6], [0.6, 0.4, 0.5], 'title', 'x_label', 'y_label')

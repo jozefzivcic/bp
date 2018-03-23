@@ -25,7 +25,9 @@ class TestDependencyCreator:
             file_name = self.get_file_name(data.directory, data_for_drawer)
             self._drawer.draw_chart(data_for_drawer, file_name)
             chart_info = ChartInfo(ds_info, file_name, ChartType.TESTS_DEPENDENCY, data.file_id)
-            storage.add_chart_info(chart_info)
+            storage.add_chart_info(chart_info, info, err)
+        storage.add_infos_from_chart(ChartType.TESTS_DEPENDENCY, extracted_data.get_all_infos())
+        storage.add_errors_from_chart(ChartType.TESTS_DEPENDENCY, extracted_data.get_all_errs())
         return storage
 
     def check_input(self, data: DataForTestDependencyCreator):
