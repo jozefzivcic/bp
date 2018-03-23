@@ -129,6 +129,8 @@ class PdfGenerator:
                 charts_dict[fid]['chart_info'].append(my_dict)
             else:
                 charts_dict[fid] = {'file_name': file_name, 'chart_info': [my_dict]}
+        self.add_infos(language, charts_dict, storage)
+        self.add_errors(language, charts_dict, storage)
         return charts_dict
 
     def get_chart_dict(self, language: str, ch_info: ChartInfo, info: Info = None, err: Err = None):
@@ -201,3 +203,33 @@ class PdfGenerator:
             return title + ' {} {}'.format(self._texts[language]['General']['Data'], seq.data_num)
         else:
             raise RuntimeError('Unknown file type {}'.format(seq.p_values_file))
+
+    def add_infos(self, language: str, charts_dict: dict, storage: ChartsStorage):
+        infos_dict = {}
+        for ch_type in ChartType:
+            infos = storage.get_infos_for_chart_type_safe(ch_type)
+            if infos is None:
+                continue
+            messages = []
+            for info in infos:
+                m = info.get_message(self._texts[language])
+                messages.append(m)
+            if messages:
+                infos_dict[ch_type.name] = messages
+        if infos_dict:
+            charts_dict['infos'] = infos_dict
+
+    def add_errors(self, language: str, charts_dict: dict, storage: ChartsStorage):
+        errors_dict = {}
+        for ch_type in ChartType:
+            errors = storage.get_errors_for_chart_type_safe(ch_type)
+            if errors is None:
+                continue
+            messages = []
+            for err in errors:
+                m = err.get_message(self._texts[language])
+                messages.append(m)
+            if messages:
+                errors_dict[ch_type.name] = messages
+        if errors_dict:
+            charts_dict['errors'] = errors_dict
