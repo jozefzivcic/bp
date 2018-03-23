@@ -19,3 +19,23 @@ class TestOfTestDepUnifInfo(TestCase):
         message = info.get_message(cfg)
         expected = '0.756 not-fulfilled'
         self.assertEqual(expected, message)
+
+    def test_get_message_p_value_precision(self):
+        cfg = ConfigParser()
+        cfg.read_dict({'InfoTemplates': {'TestDepUnifInfoT': '{} fulfilled',
+                                         'TestDepUnifInfoF': '{} not-fulfilled'}})
+
+        info = TestDepUnifInfo(0.756456456, True)
+        message = info.get_message(cfg)
+        expected = '0.756456 fulfilled'
+        self.assertEqual(expected, message)
+
+    def test_get_message_p_value_rounded(self):
+        cfg = ConfigParser()
+        cfg.read_dict({'InfoTemplates': {'TestDepUnifInfoT': '{} fulfilled',
+                                         'TestDepUnifInfoF': '{} not-fulfilled'}})
+
+        info = TestDepUnifInfo(0.4564565789159, True)
+        message = info.get_message(cfg)
+        expected = '0.456457 fulfilled'
+        self.assertEqual(expected, message)
