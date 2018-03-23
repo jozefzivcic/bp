@@ -12,7 +12,9 @@ from charts.data_source_info import DataSourceInfo
 from charts.dto.histogram_dto import HistogramDto
 from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.tests_in_chart import TestsInChart
+from common.error.test_dep_seq_len_err import TestDepSeqLenErr
 from common.helper_functions import load_texts_into_config_parsers
+from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
@@ -278,6 +280,95 @@ class TestPdfGenerator(TestCase):
         charts_storage, expected = self.get_charts_storage_and_dict()
         ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
         self.assertEqual(expected, ret)
+
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name')
+    def test_get_chart_dict_info_and_err_none(self, func):
+        chart_name = 'chart name'
+        func.side_effect = lambda l, ch_info: chart_name
+        language = 'language_str'
+        ch_info = ChartInfo(None, 'some_path', ChartType.P_VALUES, 456)
+        expected = {'path_to_chart': 'some_path',
+                    'chart_type': ChartType.P_VALUES.name,
+                    'chart_name': chart_name
+                    }
+        ret = self.pdf_generator.get_chart_dict(language, ch_info)
+        self.assertDictEqual(expected, ret)
+        func.assert_called_once_with(language, ch_info)
+
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name')
+    @patch('common.info.test_dep_unif_info.TestDepUnifInfo.get_message')
+    def test_get_chart_dict_err_none(self, f_get_msg, f_ch_name):
+        chart_name = 'chart name'
+        info_message = 'info message'
+        language = 'en'
+
+        f_get_msg.side_effect = lambda t: info_message
+        f_ch_name.side_effect = lambda l, c: chart_name
+
+        ch_info = ChartInfo(None, 'some_path', ChartType.P_VALUES, 456)
+        info = TestDepUnifInfo(0.456, True)
+        expected = {'path_to_chart': 'some_path',
+                    'chart_type': ChartType.P_VALUES.name,
+                    'chart_name': chart_name,
+                    'info_msg': info_message
+                    }
+        ret = self.pdf_generator.get_chart_dict(language, ch_info, info)
+
+        self.assertDictEqual(expected, ret)
+        f_ch_name.assert_called_once_with(language, ch_info)
+        self.assertEqual(1, f_get_msg.call_count)
+
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name')
+    @patch('common.error.test_dep_seq_len_err.TestDepSeqLenErr.get_message')
+    def test_get_chart_dict_info_none(self, f_get_msg, f_ch_name):
+        chart_name = 'chart name'
+        err_message = 'error message'
+        language = 'en'
+
+        f_get_msg.side_effect = lambda t: err_message
+        f_ch_name.side_effect = lambda l, c: chart_name
+
+        ch_info = ChartInfo(None, 'some_path', ChartType.P_VALUES, 456)
+        err = TestDepSeqLenErr(456, 457)
+        expected = {'path_to_chart': 'some_path',
+                    'chart_type': ChartType.P_VALUES.name,
+                    'chart_name': chart_name,
+                    'err_msg': err_message
+                    }
+        ret = self.pdf_generator.get_chart_dict(language, ch_info, None, err)
+
+        self.assertDictEqual(expected, ret)
+        f_ch_name.assert_called_once_with(language, ch_info)
+        self.assertEqual(1, f_get_msg.call_count)
+
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name')
+    @patch('common.error.test_dep_seq_len_err.TestDepSeqLenErr.get_message')
+    @patch('common.info.test_dep_unif_info.TestDepUnifInfo.get_message')
+    def test_get_chart_dict(self, info_get_msg, err_get_msg, f_ch_name):
+        chart_name = 'chart name'
+        info_message = 'info message'
+        err_message = 'error message'
+        language = 'en'
+
+        info_get_msg.side_effect = lambda t: info_message
+        err_get_msg.side_effect = lambda t: err_message
+        f_ch_name.side_effect = lambda l, c: chart_name
+
+        ch_info = ChartInfo(None, 'some_path', ChartType.P_VALUES, 456)
+        info = TestDepUnifInfo(0.456, True)
+        err = TestDepSeqLenErr(456, 457)
+        expected = {'path_to_chart': 'some_path',
+                    'chart_type': ChartType.P_VALUES.name,
+                    'chart_name': chart_name,
+                    'info_msg': info_message,
+                    'err_msg': err_message
+                    }
+        ret = self.pdf_generator.get_chart_dict(language, ch_info, info, err)
+
+        self.assertDictEqual(expected, ret)
+        f_ch_name.assert_called_once_with(language, ch_info)
+        self.assertEqual(1, info_get_msg.call_count)
+        self.assertEqual(1, err_get_msg.call_count)
 
     def test_get_file_name(self):
         expected = get_file_by_id(FileIdData.file1_id).name

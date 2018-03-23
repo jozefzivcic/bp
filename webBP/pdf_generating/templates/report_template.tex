@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{float}
+\usepackage{tcolorbox}
 \pagestyle{fancy}
 \fancyhf{}
 \pagenumbering{arabic}
@@ -31,6 +32,11 @@
 		    \caption{\VAR{ch_info['chart_name']}}
 		    \label{fig:file_\VAR{key}_\VAR{ch_info['chart_type']}}
 	    \end{figure}
+		\BLOCK{ if 'info_msg' in ch_info }
+			\begin{tcolorbox}
+				\VAR{ ch_info['info_msg'] }
+			\end{tcolorbox}
+		\BLOCK{ endif }
     \BLOCK{ endfor }
 	\newpage
 

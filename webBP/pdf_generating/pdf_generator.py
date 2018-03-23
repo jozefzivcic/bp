@@ -13,8 +13,10 @@ from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.dto.test_dependency_dto import TestDependencyDto
+from common.error.err import Err
 from common.helper_functions import load_texts_into_config_parsers, escape_latex_special_chars, \
     convert_specs_to_seq_acc, convert_specs_to_p_value_seq, specs_list_to_p_value_seq_list
+from common.info.info import Info
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
@@ -122,20 +124,28 @@ class PdfGenerator:
             fid = chart_info.file_id
             file_name = self.get_file_name(fid)
             file_name = escape_latex_special_chars(file_name)
-            chart_name = self.get_chart_name(language, chart_info)
+            my_dict = self.get_chart_dict(language, chart_info, cs_item.info, cs_item.err)
             if fid in charts_dict:
-                charts_dict[fid]['chart_info'].append({'path_to_chart': chart_info.path_to_chart,
-                                                       'chart_type': chart_info.chart_type.name,
-                                                       'chart_name': chart_name
-                                                       })
+                charts_dict[fid]['chart_info'].append(my_dict)
             else:
-                charts_dict[fid] = {'file_name': file_name,
-                                    'chart_info': [{'path_to_chart': chart_info.path_to_chart,
-                                                    'chart_type': chart_info.chart_type.name,
-                                                    'chart_name': chart_name
-                                                    }]
-                                    }
+                charts_dict[fid] = {'file_name': file_name, 'chart_info': [my_dict]}
         return charts_dict
+
+    def get_chart_dict(self, language: str, ch_info: ChartInfo, info: Info = None, err: Err = None):
+        chart_name = self.get_chart_name(language, ch_info)
+        my_dict = {'path_to_chart': ch_info.path_to_chart,
+                   'chart_type': ch_info.chart_type.name,
+                   'chart_name': chart_name
+                   }
+        if info is not None:
+            info_msg = info.get_message(self._texts[language])
+            info_msg = escape_latex_special_chars(info_msg)
+            my_dict['info_msg'] = info_msg
+        if err is not None:
+            err_msg = err.get_message(self._texts[language])
+            err_msg = escape_latex_special_chars(err_msg)
+            my_dict['err_msg'] = err_msg
+        return my_dict
 
     def get_file_name(self, fid: int):
         return self._file_dao.get_file_by_id(fid).name
