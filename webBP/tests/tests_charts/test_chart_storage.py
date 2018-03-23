@@ -84,7 +84,7 @@ class TestChartsStorage(TestCase):
             self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos2)
         self.assertEqual('Infos for chart type ChartType.HISTOGRAM already contained', str(ex.exception))
 
-    def test_add_infos_from_chart(self):
+    def test_get_infos_from_chart(self):
         infos1 = ['info1', 'info2']
         infos2 = ['info3', 'info4']
         self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos1)
@@ -97,6 +97,31 @@ class TestChartsStorage(TestCase):
         ret = self.charts_storage.get_infos_for_chart_type(ChartType.P_VALUES_ZOOMED)
         self.assertEqual(deepcopy(infos2), ret)
 
+    def test_get_infos_from_chart_safe(self):
+        infos1 = ['info1', 'info2']
+        infos2 = ['info3', 'info4']
+        self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos1)
+        ret = self.charts_storage.get_infos_for_chart_type_safe(ChartType.HISTOGRAM)
+        self.assertEqual(deepcopy(infos1), ret)
+
+        self.charts_storage.add_infos_from_chart(ChartType.P_VALUES_ZOOMED, infos2)
+        ret = self.charts_storage.get_infos_for_chart_type_safe(ChartType.HISTOGRAM)
+        self.assertEqual(deepcopy(infos1), ret)
+        ret = self.charts_storage.get_infos_for_chart_type_safe(ChartType.P_VALUES_ZOOMED)
+        self.assertEqual(deepcopy(infos2), ret)
+
+    def test_get_infos_from_chart_unknown_key(self):
+        infos = ['info1', 'info2']
+        self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos)
+        with self.assertRaises(KeyError) as ex:
+            self.charts_storage.get_infos_for_chart_type(ChartType.P_VALUES)
+
+    def test_get_infos_from_chart_safe_unknown_key(self):
+        infos = ['info1', 'info2']
+        self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, infos)
+        ret = self.charts_storage.get_infos_for_chart_type_safe(ChartType.P_VALUES)
+        self.assertIsNone(ret)
+
     def test_add_errors_raises(self):
         errors1 = ['error1', 'error2']
         self.charts_storage.add_errors_from_chart(ChartType.HISTOGRAM, errors1)
@@ -105,7 +130,7 @@ class TestChartsStorage(TestCase):
             self.charts_storage.add_errors_from_chart(ChartType.HISTOGRAM, errors2)
         self.assertEqual('Errors for chart type ChartType.HISTOGRAM already contained', str(ex.exception))
 
-    def test_add_errors_from_chart(self):
+    def test_get_errors_from_chart(self):
         errors1 = ['error1', 'error2']
         errors2 = ['error3', 'error4']
         self.charts_storage.add_errors_from_chart(ChartType.HISTOGRAM, errors1)
@@ -117,6 +142,31 @@ class TestChartsStorage(TestCase):
         self.assertEqual(deepcopy(errors1), ret)
         ret = self.charts_storage.get_errors_for_chart_type(ChartType.P_VALUES_ZOOMED)
         self.assertEqual(deepcopy(errors2), ret)
+
+    def test_get_errors_from_chart_safe(self):
+        errors1 = ['error1', 'error2']
+        errors2 = ['error3', 'error4']
+        self.charts_storage.add_errors_from_chart(ChartType.HISTOGRAM, errors1)
+        ret = self.charts_storage.get_errors_for_chart_type_safe(ChartType.HISTOGRAM)
+        self.assertEqual(deepcopy(errors1), ret)
+
+        self.charts_storage.add_errors_from_chart(ChartType.P_VALUES_ZOOMED, errors2)
+        ret = self.charts_storage.get_errors_for_chart_type_safe(ChartType.HISTOGRAM)
+        self.assertEqual(deepcopy(errors1), ret)
+        ret = self.charts_storage.get_errors_for_chart_type_safe(ChartType.P_VALUES_ZOOMED)
+        self.assertEqual(deepcopy(errors2), ret)
+
+    def test_get_errors_from_chart_unknown_key(self):
+        errors = ['error1', 'error2']
+        self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, errors)
+        with self.assertRaises(KeyError) as ex:
+            self.charts_storage.get_errors_for_chart_type(ChartType.P_VALUES)
+
+    def test_get_errors_from_chart_safe_unknown_key(self):
+        errors = ['error1', 'error2']
+        self.charts_storage.add_infos_from_chart(ChartType.HISTOGRAM, errors)
+        ret = self.charts_storage.get_errors_for_chart_type_safe(ChartType.P_VALUES)
+        self.assertIsNone(ret)
 
     def test_extend_cs_items(self):
         file = join(working_dir, 'file1000.txt')

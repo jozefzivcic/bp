@@ -48,5 +48,11 @@ class ChartsStorage:
     def get_infos_for_chart_type(self, ch_type: ChartType) -> list:
         return self._infos[ch_type]
 
+    def get_infos_for_chart_type_safe(self, ch_type: ChartType) -> list:
+        return self._infos.get(ch_type)
+
     def get_errors_for_chart_type(self, ch_type: ChartType) -> list:
         return self._errs[ch_type]
+
+    def get_errors_for_chart_type_safe(self, ch_type: ChartType) -> list:
+        return self._errs.get(ch_type)
