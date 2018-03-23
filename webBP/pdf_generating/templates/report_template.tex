@@ -10,6 +10,14 @@
 \usepackage{amsmath}
 \usepackage{float}
 \usepackage{tcolorbox}
+\newtcolorbox{mybox}[3][]
+{
+  colframe = #2!25,
+  colback  = #2!10,
+  coltitle = #2!20!black,
+  title    = #3,
+  #1,
+}
 \pagestyle{fancy}
 \fancyhf{}
 \pagenumbering{arabic}
@@ -21,6 +29,7 @@
 
 \begin{document}
 \maketitle
+
 \BLOCK{for key, value in vars['charts'].items()}
     \VAR{texts['General']['ChartsForFile']} \textbf{\VAR{value['file_name']}}
 
@@ -41,4 +50,20 @@
 	\newpage
 
 \BLOCK{ endfor }
+
+\BLOCK{ if 'infos' in vars['charts'] }
+{\huge \textbf{\VAR{ texts['General']['InfoFromCharts'] }}}
+\newline
+
+	\BLOCK{ for key, val in vars['charts']['infos'].items() }
+		\begin{mybox}{green}{\VAR{ key }}
+			\BLOCK{ for msg in val }
+				\VAR{msg}
+
+
+			\BLOCK{ endfor }
+		\end{mybox}
+	\BLOCK{ endfor }
+\BLOCK{ endif }
+
 \end{document}

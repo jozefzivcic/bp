@@ -215,7 +215,8 @@ class PdfGenerator:
                 m = info.get_message(self._texts[language])
                 messages.append(m)
             if messages:
-                infos_dict[ch_type.name] = messages
+                escaped = escape_latex_special_chars(ch_type.name)
+                infos_dict[escaped] = messages
         if infos_dict:
             charts_dict['infos'] = infos_dict
 
@@ -230,6 +231,7 @@ class PdfGenerator:
                 m = err.get_message(self._texts[language])
                 messages.append(m)
             if messages:
-                errors_dict[ch_type.name] = messages
+                escaped = escape_latex_special_chars(ch_type.name)
+                errors_dict[escaped] = messages
         if errors_dict:
             charts_dict['errors'] = errors_dict

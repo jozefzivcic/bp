@@ -307,7 +307,7 @@ class TestPdfGenerator(TestCase):
                                                           'chart_name': chart_name
                                                           }]
                                           },
-                    'infos': {'TESTS_DEPENDENCY': ['0.456 True', '0.951 False']},
+                    'infos': {'TESTS\\_DEPENDENCY': ['0.456 True', '0.951 False']},
                     'errors': {'HISTOGRAM': ['45 456']}
 
                     }
@@ -515,8 +515,8 @@ class TestPdfGenerator(TestCase):
         storage.add_infos_from_chart(ChartType.TESTS_DEPENDENCY, [TestDepUnifInfo(0.456, True),
                                                                   TestDepUnifInfo(0.654, False)])
         storage.add_infos_from_chart(ChartType.P_VALUES, [TestDepUnifInfo(0.123, False)])
-        expected = {'infos': {'TESTS_DEPENDENCY': ['0.456 True', '0.654 False'],
-                              'P_VALUES': ['0.123 False']}}
+        expected = {'infos': {'TESTS\\_DEPENDENCY': ['0.456 True', '0.654 False'],
+                              'P\\_VALUES': ['0.123 False']}}
         self.pdf_generator.add_infos('en', charts_dict, storage)
         self.assertDictEqual(expected, charts_dict)
 
@@ -530,8 +530,8 @@ class TestPdfGenerator(TestCase):
         storage.add_errors_from_chart(ChartType.TESTS_DEPENDENCY, [TestDepSeqLenErr(123, 124),
                                                                    TestDepSeqLenErr(125, 126)])
         storage.add_errors_from_chart(ChartType.P_VALUES, [TestDepSeqLenErr(125, 127)])
-        expected = {'errors': {'TESTS_DEPENDENCY': ['123 124', '125 126'],
-                               'P_VALUES': ['125 127']}}
+        expected = {'errors': {'TESTS\\_DEPENDENCY': ['123 124', '125 126'],
+                               'P\\_VALUES': ['125 127']}}
         self.pdf_generator.add_errors('en', charts_dict, storage)
         self.assertDictEqual(expected, charts_dict)
 
