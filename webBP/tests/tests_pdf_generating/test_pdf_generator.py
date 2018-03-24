@@ -297,7 +297,16 @@ class TestPdfGenerator(TestCase):
         ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
         self.assertEqual(expected, ret)
 
-    def test_prepare_dict_from_charts_storage_infos_and_errors(self):
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name_base')
+    def test_prepare_dict_from_charts_storage_infos_and_errors(self, func):
+        def f(l, t):
+            if t == ChartType.P_VALUES:
+                return txt_dict['PValuesChart']['PValuesChart']
+            elif t == ChartType.TESTS_DEPENDENCY:
+                return 'test dependency'
+            elif t == ChartType.HISTOGRAM:
+                return 'histogram_chart'
+        func.side_effect = f
         txt_dict = {'General': {'Results': 'results', 'Data': 'data', 'TestId': 'test_id'},
                     'PValuesChart': {'PValuesChart': 'p-values chart'},
                     'InfoTemplates': {'TestDepUnifInfoT': '{} True',
@@ -330,13 +339,14 @@ class TestPdfGenerator(TestCase):
                                                                     'chart_name': chart_name
                                                                     }]
                                                     }},
-                    'infos': {'TESTS\\_DEPENDENCY': ['0.456 True', '0.951 False']},
-                    'errors': {'HISTOGRAM': ['test_id: {} results test_id: {} data 2 45 456'
+                    'infos': {'test dependency': ['0.456 True', '0.951 False']},
+                    'errors': {'histogram\\_chart': ['test_id: {} results test_id: {} data 2 45 456'
                                                  .format(TestsIdData.test1_id, TestsIdData.test2_id)]}
 
                     }
         ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
         self.assertEqual(expected, ret)
+        self.assertEqual(3, func.call_count)
 
     def test_prepare_dict_from_charts_storage_advanced(self):
         charts_storage, expected = self.get_charts_storage_and_dict()
@@ -528,7 +538,9 @@ class TestPdfGenerator(TestCase):
             self.pdf_generator.get_ecdf_chart_name('en', chart_info)
         self.assertEqual('Unknown file type -5', str(ex.exception))
 
-    def test_add_infos(self):
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name_base',
+           side_effect=lambda l, ctype: 'test dependency' if ctype == ChartType.TESTS_DEPENDENCY else 'p_values')
+    def test_add_infos(self, func):
         cfg = ConfigParser()
         language_dict = {'InfoTemplates': {'TestDepUnifInfoT': '{} True',
                                            'TestDepUnifInfoF': '{} False'}}
@@ -539,12 +551,15 @@ class TestPdfGenerator(TestCase):
         storage.add_infos_from_chart(ChartType.TESTS_DEPENDENCY, [TestDepUnifInfo(0.456, True),
                                                                   TestDepUnifInfo(0.654, False)])
         storage.add_infos_from_chart(ChartType.P_VALUES, [TestDepUnifInfo(0.123, False)])
-        expected = {'infos': {'TESTS\\_DEPENDENCY': ['0.456 True', '0.654 False'],
-                              'P\\_VALUES': ['0.123 False']}}
+        expected = {'infos': {'test dependency': ['0.456 True', '0.654 False'],
+                              'p\\_values': ['0.123 False']}}
         self.pdf_generator.add_infos('en', charts_dict, storage)
         self.assertDictEqual(expected, charts_dict)
+        self.assertEqual(2, func.call_count)
 
-    def test_add_errors(self):
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name_base',
+           side_effect=lambda l, ctype: 'test dependency' if ctype == ChartType.TESTS_DEPENDENCY else 'p_values')
+    def test_add_errors(self, func):
         cfg = ConfigParser()
         language_dict = {'General': {'Results': 'results', 'Data': 'data', 'TestId': 'test_id'},
                          'ErrTemplates': {'TestDepDifferentLen': '{} {} {} {}'}}
@@ -558,10 +573,11 @@ class TestPdfGenerator(TestCase):
                                                                    TestDepSeqLenErr(seq1, 125, seq2, 126)])
         storage.add_errors_from_chart(ChartType.P_VALUES, [TestDepSeqLenErr(seq1, 125, seq2, 127)])
         seq_str = 'test_id: {} results test_id: {} data 2 '.format(TestsIdData.test1_id, TestsIdData.test2_id)
-        expected = {'errors': {'TESTS\\_DEPENDENCY': [seq_str + '123 124', seq_str + '125 126'],
-                               'P\\_VALUES': [seq_str + '125 127']}}
+        expected = {'errors': {'test dependency': [seq_str + '123 124', seq_str + '125 126'],
+                               'p\\_values': [seq_str + '125 127']}}
         self.pdf_generator.add_errors('en', charts_dict, storage)
         self.assertDictEqual(expected, charts_dict)
+        self.assertEqual(2, func.call_count)
 
     def get_charts_storage_and_dict(self):
         charts_storage = ChartsStorage()

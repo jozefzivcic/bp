@@ -175,8 +175,7 @@ class PdfGenerator:
             if not dto.boxplot_pt_options:
                 raise PdfGeneratingError('No tests for boxplot selected')
 
-    def get_chart_name(self, language: str, info: ChartInfo) -> str:
-        ch_type = info.chart_type
+    def get_chart_name_base(self, language, ch_type: ChartType) -> str:
         if ch_type == ChartType.P_VALUES:
             return self._texts[language]['PValuesChart']['PValuesChart']
         elif ch_type == ChartType.P_VALUES_ZOOMED:
@@ -186,10 +185,17 @@ class PdfGenerator:
         elif ch_type == ChartType.TESTS_DEPENDENCY:
             return self._texts[language]['TestDependency']['Title']
         elif ch_type == ChartType.ECDF:
-            return self.get_ecdf_chart_name(language, info)
+            return self._texts[language]['ECDF']['Title']
         elif ch_type == ChartType.BOXPLOT_PT:
             return self._texts[language]['BoxplotPT']['Title']
         raise PdfGeneratingError('Undefined chart type: ' + str(ch_type))
+
+    def get_chart_name(self, language: str, info: ChartInfo) -> str:
+        ch_type = info.chart_type
+        if ch_type == ChartType.ECDF:
+            return self.get_ecdf_chart_name(language, info)
+        else:
+            return self.get_chart_name_base(language, ch_type)
 
     def get_ecdf_chart_name(self, language: str, info: ChartInfo):
         title = '{} {}'.format(self._texts[language]['ECDF']['Title'], self._texts[language]['General']['From'])
@@ -216,7 +222,8 @@ class PdfGenerator:
                 m = info.get_message(self._texts[language])
                 messages.append(m)
             if messages:
-                escaped = escape_latex_special_chars(ch_type.name)
+                base_name = self.get_chart_name_base(language, ch_type)
+                escaped = escape_latex_special_chars(base_name)
                 infos_dict[escaped] = messages
         if infos_dict:
             charts_dict['infos'] = infos_dict
@@ -232,7 +239,8 @@ class PdfGenerator:
                 m = err.get_message(self._texts[language])
                 messages.append(m)
             if messages:
-                escaped = escape_latex_special_chars(ch_type.name)
+                base_name = self.get_chart_name_base(language, ch_type)
+                escaped = escape_latex_special_chars(base_name)
                 errors_dict[escaped] = messages
         if errors_dict:
             charts_dict['errors'] = errors_dict
