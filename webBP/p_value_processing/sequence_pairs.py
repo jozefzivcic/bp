@@ -3,6 +3,7 @@ from charts.tests_in_chart import TestsInChart
 from common.unif_check import UnifCheck
 from enums.filter_uniformity import FilterUniformity
 from p_value_processing.data_from_filter_pairs import DataFromFilterPairs
+from p_value_processing.different_lists_size_error import DifferentListsSizeError
 from p_value_processing.filtered_item_dto import FilteredItemDto
 from p_value_processing.p_value_sequence import PValueSequence
 
@@ -47,7 +48,10 @@ class SequencePairs:
             seq1 = value[0]
             seq2 = value[1]
 
-            should_remove, p_value, condition = self.should_remove(check_obj, seq1, seq2, filter_unif)
+            try:
+                should_remove, p_value, condition = self.should_remove(check_obj, seq1, seq2, filter_unif)
+            except RuntimeError as ex:
+                raise DifferentListsSizeError(str(ex), key[0], len(seq1), key[1], len(seq2))
             ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, key)
             item = FilteredItemDto(ds_info, p_value, condition)
 

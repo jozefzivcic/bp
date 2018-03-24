@@ -3,6 +3,8 @@ from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.extracted_data import ExtractedData
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.tests_in_chart import TestsInChart
+from p_value_processing.different_lists_size_error import DifferentListsSizeError
+from common.error.test_dep_seq_len_err import TestDepSeqLenErr
 from common.info.test_dep_filtered_info import TestDepFilteredInfo
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from common.unif_check import UnifCheck
@@ -26,7 +28,13 @@ class TestDependencyExtractor:
         extracted_data = ExtractedData()
         seq_pairs = dto.seq_accumulator.generate_sequence_pairs(acc)
         unif_check = UnifCheck(dto.alpha, 5)
-        data = seq_pairs.filter_pairs(unif_check, dto.filter_unif)
+        try:
+            data = seq_pairs.filter_pairs(unif_check, dto.filter_unif)
+        except DifferentListsSizeError as ex:
+            error = TestDepSeqLenErr(ex.seq1, ex.len1, ex.seq2, ex.len2)
+            extracted_data.add_err(error)
+            return extracted_data
+
         tuples = seq_pairs.get_pairs_in_list()
         for seq1, seq2, p_values1, p_values2 in tuples:
             name1 = self.get_test_name(seq1)

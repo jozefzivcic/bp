@@ -6,6 +6,8 @@ from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_extractor import TestDependencyExtractor
 from charts.tests_in_chart import TestsInChart
+from p_value_processing.different_lists_size_error import DifferentListsSizeError
+from common.error.test_dep_seq_len_err import TestDepSeqLenErr
 from common.info.test_dep_filtered_info import TestDepFilteredInfo
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
@@ -16,7 +18,7 @@ from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41, \
     dict_for_test_42, dict_for_test_43
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, \
-    func_return_false, func_prepare_acc, func_return_true
+    func_prepare_acc, func_return_true
 
 
 class TestOfTestDependencyExtractor(TestCase):
@@ -117,7 +119,7 @@ class TestOfTestDependencyExtractor(TestCase):
         extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         extracted_data_list = extracted_data.get_all_data()
 
-        self.assertEqual(10, len(extracted_data_list ))
+        self.assertEqual(10, len(extracted_data_list))
         self.assertEqual(10, func_check_unif.call_count)
 
         # dependency chart for test1 and test2_data1
@@ -256,6 +258,23 @@ class TestOfTestDependencyExtractor(TestCase):
         self.assertEqual([], infos)
         errors = extracted_data.get_all_errs()
         self.assertEqual([], errors)
+
+    @patch('p_value_processing.sequence_pairs.SequencePairs.filter_pairs',
+           side_effect=DifferentListsSizeError('message', PValueSequence(1, PValuesFileType.RESULTS), 45,
+                                               PValueSequence(1, PValuesFileType.DATA, 2), 54))
+    def test_get_data_from_acc_filter_pairs_throws_exception(self, func):
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
+
+        title = 'Dependency of two tests'
+        dto = TestDependencyDto(0.01, FilterUniformity.DO_NOT_FILTER, seq_acc, title)
+        extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
+        errors = extracted_data.get_all_errs()
+        self.assertEqual(1, len(errors))
+        expected = TestDepSeqLenErr(45, 54)
+        ret = errors[0]
+        self.assertEqual(expected, ret)
 
     @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
     def test_get_data_from_acc_filtered_info(self, f_remove):
