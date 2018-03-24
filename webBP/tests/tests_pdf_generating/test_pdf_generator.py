@@ -275,7 +275,7 @@ class TestPdfGenerator(TestCase):
 
         file_name = 'Third\_file'
         ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
-        ret_file_name = ret[FileIdData.file3_id]['file_name']
+        ret_file_name = ret['files'][FileIdData.file3_id]['file_name']
         self.assertEqual(file_name, ret_file_name)
 
     def test_prepare_dict_from_charts_storage_basic(self):
@@ -286,13 +286,14 @@ class TestPdfGenerator(TestCase):
         file_1_name = get_file_by_id(FileIdData.file1_id).name
         ch_type = ChartType.P_VALUES.name
         chart_name = self.texts['en']['PValuesChart']['PValuesChart']
-        expected = {FileIdData.file1_id: {'file_name': file_1_name,
-                                          'chart_info': [{'path_to_chart': path,
-                                                          'chart_type': ch_type,
-                                                          'chart_name': chart_name
-                                                          }]
-                                          }
-                    }
+        files = {FileIdData.file1_id: {'file_name': file_1_name,
+                                       'chart_info': [{'path_to_chart': path,
+                                                       'chart_type': ch_type,
+                                                       'chart_name': chart_name
+                                                       }]
+                                       }
+                 }
+        expected = {'files': files}
         ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
         self.assertEqual(expected, ret)
 
@@ -323,12 +324,12 @@ class TestPdfGenerator(TestCase):
         file_1_name = get_file_by_id(FileIdData.file1_id).name
         ch_type = ChartType.P_VALUES.name
         chart_name = txt_dict['PValuesChart']['PValuesChart']
-        expected = {FileIdData.file1_id: {'file_name': file_1_name,
-                                          'chart_info': [{'path_to_chart': path,
-                                                          'chart_type': ch_type,
-                                                          'chart_name': chart_name
-                                                          }]
-                                          },
+        expected = {'files': {FileIdData.file1_id: {'file_name': file_1_name,
+                                                    'chart_info': [{'path_to_chart': path,
+                                                                    'chart_type': ch_type,
+                                                                    'chart_name': chart_name
+                                                                    }]
+                                                    }},
                     'infos': {'TESTS\\_DEPENDENCY': ['0.456 True', '0.951 False']},
                     'errors': {'HISTOGRAM': ['test_id: {} results test_id: {} data 2 45 456'
                                                  .format(TestsIdData.test1_id, TestsIdData.test2_id)]}
@@ -592,20 +593,21 @@ class TestPdfGenerator(TestCase):
 
         ch_type = ChartType.P_VALUES.name
         chart_name = self.texts['en']['PValuesChart']['PValuesChart']
-        expected = {FileIdData.file1_id: {'file_name': file_1_name,
-                                          'chart_info': [{'path_to_chart': path_1, 'chart_type': ch_type,
-                                                          'chart_name': chart_name},
-                                                         {'path_to_chart': path_2, 'chart_type': ch_type,
-                                                          'chart_name': chart_name}]
-                                          },
-                    FileIdData.file2_id: {'file_name': file_2_name,
-                                          'chart_info': [{'path_to_chart': path_3, 'chart_type': ch_type,
-                                                          'chart_name': chart_name},
-                                                         {'path_to_chart': path_4, 'chart_type': ch_type,
-                                                          'chart_name': chart_name},
-                                                         {'path_to_chart': path_5, 'chart_type': ChartType
-                                                             .TESTS_DEPENDENCY.name,
-                                                          'chart_name': 'Dependency of two tests'}]
-                                          }
-                    }
+        files = {FileIdData.file1_id: {'file_name': file_1_name,
+                                       'chart_info': [{'path_to_chart': path_1, 'chart_type': ch_type,
+                                                       'chart_name': chart_name},
+                                                      {'path_to_chart': path_2, 'chart_type': ch_type,
+                                                       'chart_name': chart_name}]
+                                       },
+                 FileIdData.file2_id: {'file_name': file_2_name,
+                                       'chart_info': [{'path_to_chart': path_3, 'chart_type': ch_type,
+                                                       'chart_name': chart_name},
+                                                      {'path_to_chart': path_4, 'chart_type': ch_type,
+                                                       'chart_name': chart_name},
+                                                      {'path_to_chart': path_5, 'chart_type': ChartType
+                                                          .TESTS_DEPENDENCY.name,
+                                                       'chart_name': 'Dependency of two tests'}]
+                                       }
+                 }
+        expected = {'files': files}
         return charts_storage, expected

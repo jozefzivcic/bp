@@ -118,17 +118,18 @@ class PdfGenerator:
         return dto
 
     def prepare_dict_from_charts_storage(self, storage: ChartsStorage, language: str) -> dict:
-        charts_dict = {}
+        files_dict = {}
         for cs_item in storage.get_all_items():
             chart_info = cs_item.ch_info
             fid = chart_info.file_id
             file_name = self.get_file_name(fid)
             file_name = escape_latex_special_chars(file_name)
             my_dict = self.get_chart_dict(language, chart_info, cs_item.info, cs_item.err)
-            if fid in charts_dict:
-                charts_dict[fid]['chart_info'].append(my_dict)
+            if fid in files_dict:
+                files_dict[fid]['chart_info'].append(my_dict)
             else:
-                charts_dict[fid] = {'file_name': file_name, 'chart_info': [my_dict]}
+                files_dict[fid] = {'file_name': file_name, 'chart_info': [my_dict]}
+        charts_dict = {'files': files_dict}
         self.add_infos(language, charts_dict, storage)
         self.add_errors(language, charts_dict, storage)
         return charts_dict
