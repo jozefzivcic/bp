@@ -239,6 +239,24 @@ class TestOfTestDependencyExtractor(TestCase):
             expected_info = TestDepUnifInfo(0.5456, True)
             self.assertEqual(expected_info, info)
 
+    @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove',
+           side_effect=lambda a, b, c, d: (False, 0.5, True))
+    def test_get_data_from_acc_do_not_filter(self, sh_remove):
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test4_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
+
+        title = 'Dependency of two tests'
+        dto = TestDependencyDto(0.01, FilterUniformity.DO_NOT_FILTER, seq_acc, title)
+        extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
+        infos = extracted_data.get_all_infos()
+        self.assertEqual([], infos)
+        errors = extracted_data.get_all_errs()
+        self.assertEqual([], errors)
+
     @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
     def test_get_data_from_acc_filtered_info(self, f_remove):
         def side_eff_mock(check_obj, seq1, seq2, filter_unif):

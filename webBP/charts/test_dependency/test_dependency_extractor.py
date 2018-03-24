@@ -7,6 +7,7 @@ from common.info.test_dep_filtered_info import TestDepFilteredInfo
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from common.unif_check import UnifCheck
 from configstorage import ConfigStorage
+from enums.filter_uniformity import FilterUniformity
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
 from managers.nisttestmanager import NistTestManager
@@ -37,8 +38,9 @@ class TestDependencyExtractor:
             extracted_data.add_data(ds_info, data_for_drawer, info)
         len_kept = data.get_kept_len()
         len_deleted = data.get_deleted_len()
-        info = TestDepFilteredInfo(len_deleted, len_kept + len_deleted, dto.filter_unif)
-        extracted_data.add_info(info)
+        if dto.filter_unif != FilterUniformity.DO_NOT_FILTER:
+            info = TestDepFilteredInfo(len_deleted, len_kept + len_deleted, dto.filter_unif)
+            extracted_data.add_info(info)
         return extracted_data
 
     def get_test_name(self, seq: PValueSequence):
