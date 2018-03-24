@@ -9,7 +9,7 @@ class TestDepUnifInfo(Info):
         self._condition_fulfillment = condition_fulfillment
 
     def get_message(self, texts: ConfigParser):
-        formated_p_value = '{0:.6}'.format(self._p_value)
+        formated_p_value = '{0:.6f}'.format(self._p_value).rstrip('0').rstrip('.')
         if self._condition_fulfillment:
             return texts.get('InfoTemplates', 'TestDepUnifInfoT').format(formated_p_value)
         else:

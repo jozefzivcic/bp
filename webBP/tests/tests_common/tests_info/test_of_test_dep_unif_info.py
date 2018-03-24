@@ -39,3 +39,23 @@ class TestOfTestDepUnifInfo(TestCase):
         message = info.get_message(cfg)
         expected = '0.456457 fulfilled'
         self.assertEqual(expected, message)
+
+    def test_get_message_small_p_value_round_down(self):
+        cfg = ConfigParser()
+        cfg.read_dict({'InfoTemplates': {'TestDepUnifInfoT': '{} fulfilled',
+                                         'TestDepUnifInfoF': '{} not-fulfilled'}})
+
+        info = TestDepUnifInfo(0.000000456, True)
+        message = info.get_message(cfg)
+        expected = '0 fulfilled'
+        self.assertEqual(expected, message)
+
+    def test_get_message_small_p_value_round_up(self):
+        cfg = ConfigParser()
+        cfg.read_dict({'InfoTemplates': {'TestDepUnifInfoT': '{} fulfilled',
+                                         'TestDepUnifInfoF': '{} not-fulfilled'}})
+
+        info = TestDepUnifInfo(0.000000556, True)
+        message = info.get_message(cfg)
+        expected = '0.000001 fulfilled'
+        self.assertEqual(expected, message)
