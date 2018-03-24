@@ -201,6 +201,23 @@ class TestPdfGenerator(TestCase):
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
+    @patch('charts.charts_creator.ChartsCreator.generate_charts')
+    def test_create_pdf_with_infos_and_errors(self, generate_charts):
+        storage = ChartsStorage()
+        infos = [TestDepUnifInfo(0.456, True), TestDepUnifInfo(0.654, False)]
+        storage.add_infos_from_chart(ChartType.TESTS_DEPENDENCY, infos)
+        errors = [TestDepSeqLenErr(123, 124), TestDepSeqLenErr(50, 51)]
+        storage.add_errors_from_chart(ChartType.TESTS_DEPENDENCY, errors)
+        generate_charts.return_value = storage
+        output_file = join(working_dir, 'output.pdf')
+        spec1 = TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE)
+        spec2 = TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1)
+        test_dep_options = TestDependencyOptions([spec1, spec2], FilterUniformity.DO_NOT_FILTER)
+        pdf_dto = PdfGeneratingDto(0.01, [TestsIdData.test1_id], [ChartType.TESTS_DEPENDENCY], 'en', output_file,
+                                   test_dep_options)
+        self.pdf_generator.generate_pdf(pdf_dto)
+        self.assertTrue(exists(output_file))
+
     def test_create_dto_for_concrete_chart_unsupported_chart(self):
         pdf_generating_dto = PdfGeneratingDto()
         pdf_generating_dto.language = 'en'

@@ -52,11 +52,27 @@
 \BLOCK{ endfor }
 
 \BLOCK{ if 'infos' in vars['charts'] }
-{\huge \textbf{\VAR{ texts['General']['InfoFromCharts'] }}}
+{\large \textbf{\VAR{ texts['General']['InfoFromCharts'] }}}
 \newline
 
 	\BLOCK{ for key, val in vars['charts']['infos'].items() }
 		\begin{mybox}{green}{\VAR{ key }}
+			\BLOCK{ for msg in val }
+				\VAR{msg}
+
+
+			\BLOCK{ endfor }
+		\end{mybox}
+	\BLOCK{ endfor }
+\BLOCK{ endif }
+
+
+\BLOCK{ if 'errors' in vars['charts'] }
+{\large \textbf{\VAR{ texts['General']['ErrorsFromCharts'] }}}
+\newline
+
+	\BLOCK{ for key, val in vars['charts']['errors'].items() }
+		\begin{mybox}{red}{\VAR{ key }}
 			\BLOCK{ for msg in val }
 				\VAR{msg}
 
