@@ -272,7 +272,8 @@ class TestOfTestDependencyExtractor(TestCase):
         extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         errors = extracted_data.get_all_errs()
         self.assertEqual(1, len(errors))
-        expected = TestDepSeqLenErr(45, 54)
+        expected = TestDepSeqLenErr(PValueSequence(1, PValuesFileType.RESULTS), 45,
+                                    PValueSequence(1, PValuesFileType.DATA, 2), 54)
         ret = errors[0]
         self.assertEqual(expected, ret)
 

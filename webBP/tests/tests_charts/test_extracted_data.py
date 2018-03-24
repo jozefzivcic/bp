@@ -28,7 +28,7 @@ class TestExtractedData(TestCase):
         seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)
         ds_info2 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq2)
         data_for_drawer2 = MagicMock(key3='value3', key4='value4')
-        err2 = TestDepSeqLenErr(4, 5)
+        err2 = TestDepSeqLenErr(None, 4, None, 5)
 
         ex_data.add_data(ds_info2, data_for_drawer2, None, err2)
 
@@ -64,7 +64,7 @@ class TestExtractedData(TestCase):
         self.assertEqual(deepcopy(info2), ret[1])
 
     def test_add_err(self):
-        err1 = TestDepSeqLenErr(4, 5)
+        err1 = TestDepSeqLenErr(None, 4, None, 5)
         ex_data = ExtractedData()
         ex_data.add_err(err1)
 
@@ -72,7 +72,7 @@ class TestExtractedData(TestCase):
         self.assertEqual(1, len(ret))
         self.assertEqual(deepcopy(err1), ret[0])
 
-        err2 = TestDepSeqLenErr(2, 10)
+        err2 = TestDepSeqLenErr(None, 2, None, 10)
         ex_data.add_err(err2)
 
         ret = ex_data.get_all_errs()
@@ -86,7 +86,7 @@ class TestExtractedData(TestCase):
         ds_info1 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq1)
         data_for_drawer1 = MagicMock(key1='value1', key2='value2')
         info1 = TestDepUnifInfo(0.5, False)
-        err1 = TestDepSeqLenErr(4, 5)
+        err1 = TestDepSeqLenErr(None, 4, None, 5)
 
         seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)
         ds_info2 = DataSourceInfo(TestsInChart.SINGLE_TEST, seq2)
@@ -96,7 +96,7 @@ class TestExtractedData(TestCase):
         ex_data.add_data(ds_info2, data_for_drawer2)
 
         separate_info = TestDepUnifInfo(0.456, True)
-        separate_err = TestDepSeqLenErr(456, 4567)
+        separate_err = TestDepSeqLenErr(None, 456, None, 4567)
 
         ex_data.add_info(separate_info)
         ex_data.add_err(separate_err)
