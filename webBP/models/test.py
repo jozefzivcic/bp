@@ -1,13 +1,14 @@
 class Test:
-    def __init__(self):
+    def __init__(self, test_id: int=0, file_id: int=0, user_id: int=0, time_of_add: int=0, test_table: str='',
+                 loaded: int=0, ended: int=0, return_value: int=0):
         """
         Initializes object Test().
         """
-        self.id = 0
-        self.file_id = 0
-        self.user_id = 0
-        self.time_of_add = 0
-        self.test_table = 0
-        self.loaded = 0
-        self.ended = 0
-        self.return_value = 0
+        self.id = test_id
+        self.file_id = file_id
+        self.user_id = user_id
+        self.time_of_add = time_of_add
+        self.test_table = test_table
+        self.loaded = loaded
+        self.ended = ended
+        self.return_value = return_value
