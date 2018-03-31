@@ -85,7 +85,7 @@ class StatisticsCreator:
         self.general_sample_size = nist_param.streams
 
     def append_end(self, file_name):
-        to_write = '\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n'
+        to_write = '\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n'
         case1 = False
         case2 = False
         if self.contains_test(NistTestType.TEST_RND_EXCURSION) \
