@@ -9,6 +9,7 @@ from copy import deepcopy
 
 from shutil import rmtree
 
+from enums.nist_test_type import NistTestType
 from nist_statistics.statistics_creator import StatisticsCreator
 from models.file import File
 from models.nistparam import NistParam
@@ -185,3 +186,44 @@ class StatCreatorTest(unittest.TestCase):
 
         self.assertEqual(content, file_content, 'Generated file content does not match the expected one')
 
+    def test_add_test_for_file(self):
+        nist_param = MagicMock(test_number=1)
+        self.stat_creator.add_test_for_file(nist_param)
+        expected = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.assertEqual(expected, self.stat_creator.tests_in_file)
+
+        nist_param = MagicMock(test_number=15)
+        self.stat_creator.add_test_for_file(nist_param)
+        expected = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+        self.assertEqual(expected, self.stat_creator.tests_in_file)
+
+        nist_param = MagicMock(test_number=12)
+        self.stat_creator.add_test_for_file(nist_param)
+        expected = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1]
+        self.assertEqual(expected, self.stat_creator.tests_in_file)
+
+        nist_param = MagicMock(test_number=12)
+        self.stat_creator.add_test_for_file(nist_param)
+        expected = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1]
+        self.assertEqual(expected, self.stat_creator.tests_in_file)
+
+    def test_reset(self):
+        self.stat_creator.tests_in_file = [1, 2, 3]
+        self.stat_creator.general_sample_size = 456
+        self.stat_creator.random_excursion_sample_size = 654
+
+        self.stat_creator.reset()
+        self.assertEqual([0 for _ in range(15)], self.stat_creator.tests_in_file)
+        self.assertEqual(0, self.stat_creator.general_sample_size)
+        self.assertEqual(0, self.stat_creator.random_excursion_sample_size)
+
+    def test_contains_test(self):
+        for t_type in NistTestType:
+            self.assertFalse(self.stat_creator.contains_test(t_type))
+
+        self.stat_creator.tests_in_file[0] = 1
+        self.assertTrue(self.stat_creator.contains_test(NistTestType.TEST_FREQUENCY))
+
+        self.stat_creator.tests_in_file[0] = 2
+        self.assertTrue(self.stat_creator.contains_test(NistTestType.TEST_FREQUENCY))
+        self.assertFalse(self.stat_creator.contains_test(NistTestType.TEST_BLOCK_FREQUENCY))
