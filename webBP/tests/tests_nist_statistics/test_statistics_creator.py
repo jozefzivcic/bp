@@ -35,6 +35,7 @@ class StatCreatorTest(unittest.TestCase):
 
     def nist_dao_side_effect(self, test):
         nist_param = NistParam()
+        nist_param.streams = 10
         if test.id == self.test1_id:
             nist_param.test_number = 1
         else:
@@ -130,7 +131,16 @@ class StatCreatorTest(unittest.TestCase):
         expected_line = '  0   2   1   0   0   2   1   0   3   1  0.350485    0.329340   1.0000    Cumulative Sums'
         content += expected_line + os.linesep
         expected_line = '  0   1   1   0   4   1   0   2   1   0  0.122325    0.400829   1.0000    Cumulative Sums'
-        content += expected_line + os.linesep
+        content += expected_line
+
+        end = '\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n' \
+              'The minimum pass rate for each statistical test with the exception of the\n' \
+              'random excursion (variant) test is approximately = 0.895607 for a\n' \
+              'sample size = 10 binary sequences.\n\n' \
+              'For further guidelines construct a probability table using the MAPLE program\n' \
+              'provided in the addendum section of the documentation.\n' \
+              '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -'
+        content += end
 
         with open(self.summary_file1, 'r') as f:
             file_content = f.read()
@@ -169,7 +179,14 @@ class StatCreatorTest(unittest.TestCase):
             header += f.read()
 
         expected_line = '  1   0   2   1   1   1   1   0   2   1  0.911413    0.934601   1.0000    Frequency'
-        content = header + expected_line + os.linesep
+        end = '\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n' \
+              'The minimum pass rate for each statistical test with the exception of the\n' \
+              'random excursion (variant) test is approximately = 0.895607 for a\n' \
+              'sample size = 10 binary sequences.\n\n' \
+              'For further guidelines construct a probability table using the MAPLE program\n' \
+              'provided in the addendum section of the documentation.\n' \
+              '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -'
+        content = header + expected_line + end
 
         with open(self.summary_file1, 'r') as f:
             file_content = f.read()
@@ -179,7 +196,7 @@ class StatCreatorTest(unittest.TestCase):
         expected_line = '  0   2   1   0   0   2   1   0   3   1  0.350485    0.329340   1.0000    Cumulative Sums'
         content = header + expected_line + os.linesep
         expected_line = '  0   1   1   0   4   1   0   2   1   0  0.122325    0.400829   1.0000    Cumulative Sums'
-        content += expected_line + os.linesep
+        content += expected_line + end
 
         with open(self.summary_file2, 'r') as f:
             file_content = f.read()
