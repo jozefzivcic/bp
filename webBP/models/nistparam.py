@@ -1,3 +1,6 @@
+from enums.nist_test_type import NistTestType
+
+
 class NistParam:
     def __init__(self):
         """
@@ -149,3 +152,6 @@ class NistParam:
             return 0
         else:
             raise ValueError('Wrong test number ' + str(self.test_number))
+
+    def is_test_type(self, test_type: NistTestType):
+        return self.test_number == test_type.value
