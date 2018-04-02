@@ -1,3 +1,4 @@
+import re
 import unittest
 from filecmp import cmp
 from os.path import abspath, dirname, join, exists
@@ -360,4 +361,35 @@ class TestComputeStatisticsMoreData(unittest.TestCase):
         self.stat_creator.compute_statistics(self.group_id, self.user_id)
         with open(self.summary_file, 'r') as f:
             file_content = f.read()
-        self.assertEqual(exp, file_content)
+        self.assert_content_equal(exp, file_content)
+
+    def assert_content_equal(self, exp: str, ret: str):
+        exp_split = exp.splitlines()
+        ret_split = ret.splitlines()
+        self.assertEqual(len(exp_split), len(ret_split))
+        for i in range(7):  # compare header of report
+            self.assertEqual(exp_split[i], ret_split[i])
+        i = 7
+        while i < len(exp_split) and exp_split[i] != '':  # compare content of report
+            g1 = self.parse_line(exp_split[i])
+            g2 = self.parse_line(ret_split[i])
+            self.compare_groups(g1, g2)
+            i += 1
+
+        while i < len(exp_split):  # compare end of report
+            self.assertEqual(exp_split[i], ret_split[i])
+            i += 1
+
+    def parse_line(self, line: str) -> tuple:
+        pattern = '^\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)' \
+                  '\s+(\d*[.,]?\d*)\s+(\d*[.,]?\d*)\s+(\d*[.,]?\d*)\s+(\w+\s?\w+\s?\w+?)$'
+        m = re.match(pattern, line)
+        return tuple(m.groups())
+
+    def compare_groups(self, expected: tuple, ret: tuple):
+        for i in range(10):
+            self.assertEqual(expected[i], ret[i])
+        self.assertAlmostEqual(float(expected[10]), float(ret[10]), places=6)  # p-value
+        self.assertAlmostEqual(float(expected[11]), float(ret[11]), places=5)  # p-value (KS)
+        self.assertAlmostEqual(float(expected[12]), float(ret[12]), places=6)  # proportions
+        self.assertEqual(expected[13], ret[13])  # name of the test
