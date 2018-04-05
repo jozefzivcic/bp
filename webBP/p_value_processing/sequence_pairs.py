@@ -31,7 +31,7 @@ class SequencePairs:
         ret = []
         for key, value in self._pairs.items():
             ret.append(key + value)
-        ret.sort(key=lambda pair: (pair[0].test_id, pair[1].test_id))
+        ret.sort(key=lambda pair: (pair[0], pair[1]))
         return ret
 
     def filter_pairs(self, check_obj: UnifCheck, filter_unif: FilterUniformity) -> DataFromFilterPairs:
