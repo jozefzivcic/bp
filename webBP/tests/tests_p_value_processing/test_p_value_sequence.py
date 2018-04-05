@@ -72,3 +72,62 @@ class TestPValueSequence(TestCase):
         h1 = hash(seq1)
         h2 = hash(seq2)
         self.assertEqual(h1, h2)
+
+    def test_seq_comparisons_different_test_ids(self):
+        seq1 = PValueSequence(3, PValuesFileType.DATA, 1)
+        seq2 = PValueSequence(4, PValuesFileType.RESULTS)
+
+        self.assertTrue(seq1 < seq2)
+        self.assertTrue(seq1 <= seq2)
+        self.assertFalse(seq1 > seq2)
+        self.assertFalse(seq1 >= seq2)
+
+        self.assertFalse(seq2 < seq1)
+        self.assertFalse(seq2 <= seq1)
+        self.assertTrue(seq2 > seq1)
+        self.assertTrue(seq2 >= seq1)
+
+    def test_seq_comparisons_same_data(self):
+        seq1 = PValueSequence(3, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(3, PValuesFileType.RESULTS)
+
+        self.assertFalse(seq1 < seq2)
+        self.assertTrue(seq1 <= seq2)
+        self.assertFalse(seq1 > seq2)
+        self.assertTrue(seq1 >= seq2)
+
+        seq1 = PValueSequence(3, PValuesFileType.DATA, 45)
+        seq2 = PValueSequence(3, PValuesFileType.DATA, 45)
+
+        self.assertFalse(seq1 < seq2)
+        self.assertTrue(seq1 <= seq2)
+        self.assertFalse(seq1 > seq2)
+        self.assertTrue(seq1 >= seq2)
+
+    def test_seq_comparisons_same_tests_different_file_types(self):
+        seq1 = PValueSequence(3, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(3, PValuesFileType.DATA, 1)
+
+        self.assertTrue(seq1 < seq2)
+        self.assertTrue(seq1 <= seq2)
+        self.assertFalse(seq1 > seq2)
+        self.assertFalse(seq1 >= seq2)
+
+        self.assertFalse(seq2 < seq1)
+        self.assertFalse(seq2 <= seq1)
+        self.assertTrue(seq2 > seq1)
+        self.assertTrue(seq2 >= seq1)
+
+    def test_seq_comparisons_same_tests_different_data_num(self):
+        seq1 = PValueSequence(3, PValuesFileType.DATA, 2)
+        seq2 = PValueSequence(3, PValuesFileType.DATA, 1)
+
+        self.assertFalse(seq1 < seq2)
+        self.assertFalse(seq1 <= seq2)
+        self.assertTrue(seq1 > seq2)
+        self.assertTrue(seq1 >= seq2)
+
+        self.assertTrue(seq2 < seq1)
+        self.assertTrue(seq2 <= seq1)
+        self.assertFalse(seq2 > seq1)
+        self.assertFalse(seq2 >= seq1)

@@ -21,6 +21,32 @@ class PValueSequence:
                    self.data_num == other.data_num
         return False
 
+    def __lt__(self, other):
+        if not isinstance(self, other.__class__):
+            return False
+        if self.test_id < other.test_id:
+            return True
+        if self.test_id > other.test_id:
+            return False
+        if self.p_values_file == PValuesFileType.RESULTS:
+            return other.p_values_file == PValuesFileType.DATA
+        if self.p_values_file == PValuesFileType.DATA:
+            return other.p_values_file == PValuesFileType.DATA and self.data_num < other.data_num
+        raise RuntimeError('Cannot compare such objects: {} and {}', str(self), str(other))
+
+    def __le__(self, other):
+        if not isinstance(self, other.__class__):
+            return False
+        if self.test_id < other.test_id:
+            return True
+        if self.test_id > other.test_id:
+            return False
+        if self.p_values_file == PValuesFileType.RESULTS:
+            return True
+        if self.p_values_file == PValuesFileType.DATA:
+            return other.p_values_file == PValuesFileType.DATA and self.data_num <= other.data_num
+        raise RuntimeError('Cannot compare such objects: {} and {}', str(self), str(other))
+
     def __hash__(self):
         return hash((self.test_id, self.p_values_file, self.data_num))
 
