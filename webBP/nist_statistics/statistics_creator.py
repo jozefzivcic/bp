@@ -11,6 +11,7 @@ from managers.filemanager import FileManager
 from managers.groupmanager import GroupManager
 from managers.nisttestmanager import NistTestManager
 from managers.resultsmanager import ResultsManager
+from models.file import File
 from models.nistparam import NistParam
 from nist_statistics.line_generator import LineGenerator
 from nist_statistics.p_vals_processor import PValsProcessor
@@ -43,24 +44,26 @@ class StatisticsCreator:
         self.general_sample_size = 0
         self.random_excursion_sample_size = 0
 
-    def compute_statistics(self, group_id, user_id):
+    def compute_statistics(self, group_id: int, directory: str) -> dict:
         tests = self.group_dao.get_tests_for_group(group_id)
         my_dict = self.test_converter.get_tests_for_files(tests)
+        file_paths = {}
         for file_id, tests_arr in my_dict.items():
             self.reset()
             file = self.file_dao.get_file_by_id(file_id)
-            file_name = self.prepare_file(group_id, user_id, file)
+            file_name = self.prepare_file(directory, tests_arr[0].id, file)
             for test in tests_arr:
                 self.append_lines_for_test(file_name, test)
             self.append_end(file_name)
+            file_paths[file_id] = file_name
         self.group_dao.set_statistics_computed(group_id)
+        return file_paths
 
-    def prepare_file(self, group_id, user_id, file):
-        dir_name = join(self.config_storage.path_to_users_dir, str(user_id), self.config_storage.groups, str(group_id))
-        if not exists(dir_name):
-            makedirs(dir_name)
-        file_name = 'grp_' + str(group_id) + '_f_' + str(file.id)
-        file_loc = join(dir_name, file_name)
+    def prepare_file(self, directory: str, test_id: int, file: File) -> str:
+        if not exists(directory):
+            raise RuntimeError('Given directory {} does not exists'.format(directory))
+        file_name = 'report_for_file_id_{}_and_first_test_id_{}.txt'.format(file.id, test_id)
+        file_loc = join(directory, file_name)
         to_write = self.template1 + self.template2 + ' <' + file.name + '>\n' + self.template3
         with open(file_loc, 'w') as f:
             f.write(to_write)

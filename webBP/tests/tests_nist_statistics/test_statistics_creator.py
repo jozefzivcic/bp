@@ -18,6 +18,7 @@ from models.test import Test
 
 this_dir = dirname(abspath(__file__))
 sample_files_dir = join(this_dir, '..', 'sample_files_for_tests')
+working_dir = join(this_dir, 'working_dir_stat_creator')
 
 
 class StatCreatorTest(unittest.TestCase):
@@ -55,25 +56,24 @@ class StatCreatorTest(unittest.TestCase):
         self.test1_id = 13
         self.test2_id = 14
         self.file_name = 'TestFile.txt'
-        self.group_dir = join(sample_files_dir, 'users', str(self.user_id), 'groups', str(self.group_id))
-        self.summary_file1 = join(self.group_dir, 'grp_' + str(self.group_id) + '_f_' + str(self.file1_id))
-        self.summary_file2 = join(self.group_dir, 'grp_' + str(self.group_id) + '_f_' + str(self.file2_id))
-        if not exists(self.group_dir):
-            os.mkdir(self.group_dir)
+        if not exists(working_dir):
+            os.mkdir(working_dir)
 
     def tearDown(self):
-        if os.path.exists(self.group_dir):
-            rmtree(self.group_dir)
+        if os.path.exists(working_dir):
+            rmtree(working_dir)
 
     def test_prepare_file(self):
         file = File()
         file.id = self.file1_id
         file.name = self.file_name
 
-        self.stat_creator.prepare_file(self.group_id, self.user_id, file)
+        test_id = 456
+        self.stat_creator.prepare_file(working_dir, test_id, file)
         another_file = join(sample_files_dir, 'header_test_file.txt')
 
-        self.assertTrue(cmp(self.summary_file1, another_file), 'Files are not the same')
+        expected = join(working_dir, 'report_for_file_id_{}_and_first_test_id_{}.txt'.format(self.file1_id, test_id))
+        self.assertTrue(cmp(expected, another_file), 'Files are not the same')
 
     def test_append_lines_frequency(self):
         test = Test()
@@ -91,11 +91,12 @@ class StatCreatorTest(unittest.TestCase):
                                                                          '13'))
         self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(return_value=nist_param)
 
-        self.stat_creator.append_lines_for_test(self.summary_file1, test)
+        file_path = join(working_dir, 'some_file.txt')
+        self.stat_creator.append_lines_for_test(file_path, test)
         expected_line = '  1   0   2   1   1   1   1   0   2   1 ' + ' 0.911413   ' + ' 0.934601   ' + \
                         '1.0000    Frequency'
         expected_line += os.linesep
-        with open(self.summary_file1, 'r') as f:
+        with open(file_path, 'r') as f:
             read_line = f.read()
         self.assertEqual(read_line, expected_line, 'File does not contain a line as expected')
 
@@ -113,8 +114,12 @@ class StatCreatorTest(unittest.TestCase):
         self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(side_effect=self.nist_dao_side_effect)
         self.stat_creator.group_dao.set_statistics_computed = MagicMock(return_value=True)
 
-        self.stat_creator.compute_statistics(self.group_id, self.user_id)
-        self.assertTrue(exists(self.summary_file1))
+        ret = self.stat_creator.compute_statistics(self.group_id, working_dir)
+        expected_file = join(working_dir, 'report_for_file_id_{}_and_first_test_id_{}.txt'
+                             .format(self.file1_id, self.test1_id))
+        self.assertEqual(1, len(ret))
+        self.assertEqual(expected_file, ret[self.file1_id])
+        self.assertTrue(exists(expected_file))
 
         header_dir = join(sample_files_dir, '..', '..', 'nist_statistics', 'templates')
         with open(join(header_dir, 'template1.txt'), 'r') as f:
@@ -144,7 +149,7 @@ class StatCreatorTest(unittest.TestCase):
               '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -'
         content += end
 
-        with open(self.summary_file1, 'r') as f:
+        with open(expected_file, 'r') as f:
             file_content = f.read()
 
         self.assertEqual(content, file_content, 'Generated file content does not match the expected one')
@@ -164,9 +169,16 @@ class StatCreatorTest(unittest.TestCase):
         self.stat_creator.nist_dao.get_nist_param_for_test = MagicMock(side_effect=self.nist_dao_side_effect)
         self.stat_creator.group_dao.set_statistics_computed = MagicMock(return_value=True)
 
-        self.stat_creator.compute_statistics(self.group_id, self.user_id)
-        self.assertTrue(exists(self.summary_file1))
-        self.assertTrue(exists(self.summary_file2))
+        ret = self.stat_creator.compute_statistics(self.group_id, working_dir)
+        expected_file1 = join(working_dir, 'report_for_file_id_{}_and_first_test_id_{}.txt'
+                              .format(self.file1_id, self.test1_id))
+        expected_file2 = join(working_dir, 'report_for_file_id_{}_and_first_test_id_{}.txt'
+                              .format(self.file2_id, self.test2_id))
+        self.assertEqual(2, len(ret))
+        self.assertEqual(expected_file1, ret[self.file1_id])
+        self.assertEqual(expected_file2, ret[self.file2_id])
+        self.assertTrue(exists(expected_file1))
+        self.assertTrue(exists(expected_file2))
 
         header_dir = join(sample_files_dir, '..', '..', 'nist_statistics', 'templates')
         with open(join(header_dir, 'template1.txt'), 'r') as f:
@@ -190,7 +202,7 @@ class StatCreatorTest(unittest.TestCase):
               '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -'
         content = header + expected_line + os.linesep + end
 
-        with open(self.summary_file1, 'r') as f:
+        with open(expected_file1, 'r') as f:
             file_content = f.read()
 
         self.assertEqual(content, file_content, 'Generated file content does not match the expected one')
@@ -200,7 +212,7 @@ class StatCreatorTest(unittest.TestCase):
         expected_line = '  0   1   1   0   4   1   0   2   1   0  0.122325    0.400829   1.0000    Cumulative Sums'
         content += expected_line + os.linesep + end
 
-        with open(self.summary_file2, 'r') as f:
+        with open(expected_file2, 'r') as f:
             file_content = f.read()
 
         self.assertEqual(content, file_content, 'Generated file content does not match the expected one')
@@ -303,15 +315,12 @@ class TestComputeStatisticsMoreData(unittest.TestCase):
         self.test2 = Test(103, self.file.id, self.user_id, 0, 'nist')
         self.test3 = Test(104, self.file.id, self.user_id, 0, 'nist')
 
-        self.group_dir = join(sample_files_dir, 'users', str(self.user_id), 'groups', str(self.group_id))
-        self.summary_file = join(self.group_dir, 'grp_' + str(self.group_id) + '_f_' + str(self.file.id))
-        self.group_dir = join(sample_files_dir, 'users', str(self.user_id), 'groups', str(self.group_id))
-        if not exists(self.group_dir):
-            os.mkdir(self.group_dir)
+        if not exists(working_dir):
+            os.mkdir(working_dir)
 
     def tearDown(self):
-        if os.path.exists(self.group_dir):
-            rmtree(self.group_dir)
+        if os.path.exists(working_dir):
+            rmtree(working_dir)
 
     def test_compute_statistics_complex(self):
         exp = '------------------------------------------------------------------------------\n' \
@@ -358,8 +367,13 @@ class TestComputeStatisticsMoreData(unittest.TestCase):
               'provided in the addendum section of the documentation.\n' \
               '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' \
             .format(self.file.name)
-        self.stat_creator.compute_statistics(self.group_id, self.user_id)
-        with open(self.summary_file, 'r') as f:
+        ret = self.stat_creator.compute_statistics(self.group_id, working_dir)
+        expected_file = join(working_dir, 'report_for_file_id_{}_and_first_test_id_{}.txt'
+                             .format(self.file.id, self.test1.id))
+        self.assertEqual(1, len(ret))
+        self.assertEqual(expected_file, ret[self.file.id])
+        self.assertTrue(exists(expected_file))
+        with open(ret[self.file.id], 'r') as f:
             file_content = f.read()
         self.assert_content_equal(exp, file_content)
 
