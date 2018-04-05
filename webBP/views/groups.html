@@ -3,25 +3,11 @@
 <head>
     {% include 'include_head.html' %}
     <title>{{ groups_of_tests }}</title>
-
-    <script type="text/javascript">
-        function RedirectAndLoadComputeStats(grp_id) {
-            var button = document.getElementById('placeLoading');
-            var btnChild = document.createElement('div');
-            btnChild.setAttribute('class', 'loader my-center');
-            button.appendChild(btnChild);
-            location.href='/compute_stats?id='.concat(grp_id);
-        }
-    </script>
-
 </head>
 <body>
     {% include 'header.html' %}
     <div class="my-center">
         <h2>{{ select_tests_to_download }}</h2>
-    </div>
-
-    <div id="placeLoading">
     </div>
 
     <form name="download" action="/download" method="post" accept-charset="utf-8">
@@ -53,10 +39,10 @@
                                 title="{{ cannot_view_until_finish }}"
                                {% elif group.stats is equalto 0 %}
                                 class="btn btn-default" value="{{ compute_statistics }}"
-                                onclick="RedirectAndLoadComputeStats({{ group.id }})"
+                                onclick="location.href='/compute_stats?id={{ group.id }}'"
                                {% else %}
                                 class="btn btn-success" value="{{ download_report }}"
-                                onclick="location.href='grp_results?id={{ group.id }}';"
+                                onclick="location.href='/grp_results?id={{ group.id }}'"
                                {% endif %}>
                     </td>
                     <td>

@@ -8,8 +8,9 @@ from os import listdir
 from os.path import isfile, join, isdir
 from urllib.parse import urlparse, parse_qs
 
+from controllers.common_controller import not_found
 from models.group import Group
-from helpers import zip_folders, get_param_for_test
+from helpers import zip_folders, get_param_for_test, set_response_redirect
 from models.test import Test
 
 
@@ -104,10 +105,7 @@ def get_download_report(handler):
     queries = parse_qs(parsed_path.query)
 
     if len(queries) != 1:
-        handler.send_response(303)
-        handler.send_header('Content-type', 'text/html')
-        handler.send_header('Location', '/not_found')
-        handler.end_headers()
+        not_found(handler)
         return
 
     group_id = queries.get('id')[0]
@@ -118,10 +116,7 @@ def get_download_report(handler):
                    handler.config_storage.groups, str(group_id))
 
     if group is None or (group.total_tests != group.finished_tests) or (not isdir(res_dir)):
-        handler.send_response(303)
-        handler.send_header('Content-type', 'text/html')
-        handler.send_header('Location', '/groups')
-        handler.end_headers()
+        set_response_redirect(handler, '/groups')
         if not isdir(res_dir):
             handler.group_manager.set_statistics_not_computed(group_id)
         return
@@ -129,13 +124,13 @@ def get_download_report(handler):
     ok = False
     files = listdir(res_dir)
     try:
-        regex = re.compile(r'^(grp_)(\d+)(_f_)(\d+)$')
+        regex = re.compile(r'^report_for_file_id_(\d+)_and_first_test_id_(\d+).txt$')
         file_object = io.BytesIO()
         zip = zipfile.ZipFile(file_object, 'w', zipfile.ZIP_DEFLATED)
         for file in files:
             file_name = os.path.join(res_dir, file)
-            file_id = regex.search(file).groups()[3]
-            output_file_name = handler.file_manager.get_file_by_id(file_id).name + '.txt'
+            file_id = regex.search(file).groups()[0]
+            output_file_name = '{}_f_id_{}.txt'.format(handler.file_manager.get_file_by_id(file_id).name, file_id)
             zip.write(file_name, join('/', output_file_name))
         ok = True
         lang = handler.get_user_language(user_id)
