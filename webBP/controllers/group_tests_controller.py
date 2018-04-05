@@ -10,6 +10,7 @@ from os.path import join
 from charts.chart_type import ChartType
 from controllers.common_controller import not_found, error_occurred
 from enums.filter_uniformity import FilterUniformity
+from enums.test_dep_pairs import TestDepPairs
 from helpers import get_params_for_tests, set_response_ok, get_ids_of_elements_starting_with
 from myrequesthandler import MyRequestHandler
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
@@ -144,14 +145,20 @@ def create_dep_options(test_ids, form) -> TestDependencyOptions:
     value = form.getvalue('optuniformity')
     if value is None:
         return None
-    if value == 'do_not_filter_unif':
-        return TestDependencyOptions(arr, FilterUniformity.DO_NOT_FILTER)
-    elif value == 'filter_unif':
-        return TestDependencyOptions(arr, FilterUniformity.REMOVE_UNIFORM)
-    elif value == 'filter_non_unif':
-        return TestDependencyOptions(arr, FilterUniformity.REMOVE_NON_UNIFORM)
-    else:
+    filter_unif_dict = {'do_not_filter_unif': FilterUniformity.DO_NOT_FILTER,
+                        'filter_unif': FilterUniformity.REMOVE_UNIFORM,
+                        'filter_non_unif': FilterUniformity.REMOVE_NON_UNIFORM}
+    filter_unif = filter_unif_dict.get(value)
+    if filter_unif is None:
         return None
+    value = form.getvalue('optsubtest')
+    if value is None:
+        return None
+    subtests_dict = {'all_pairs': TestDepPairs.ALL_PAIRS, 'skip_pairs': TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS}
+    subtests = subtests_dict.get(value)
+    if subtests is None:
+        return None
+    return TestDependencyOptions(arr, filter_unif, subtests)
 
 
 def create_ecdf_options(test_ids: list, form: cgi.FieldStorage) -> EcdfOptions:

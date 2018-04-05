@@ -93,8 +93,10 @@
                             <!-- space -->
                         </div>
                         <div class="col-md-10">
+                            <label>{{ uniformity_filtering }}</label>
                             <div class="radio">
-                                <input type="radio" name="optuniformity" id="optuniformity1" value="do_not_filter_unif" />
+                                <input type="radio" name="optuniformity" id="optuniformity1" value="do_not_filter_unif"
+                                checked/>
                                 <label for="optuniformity1">{{ do_not_filter }}</label>
                             </div>
                             <div class="radio">
@@ -104,6 +106,15 @@
                             <div class="radio">
                                 <input type="radio" name="optuniformity" id="optuniformity3" value="filter_non_unif">
                                 <label for="optuniformity3">{{ filter_non_uniform }}</label>
+                            </div>
+                            <label>{{ subtest_filtering }}</label>
+                            <div class="radio">
+                                <input type="radio" name="optsubtest" id="optsubtest1" value="all_pairs" checked/>
+                                <label for="optsubtest1">{{ keep_pairs_between_subtest }}</label>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" name="optsubtest" id="optsubtest2" value="skip_pairs" />
+                                <label for="optsubtest2">{{ remove_pairs_betwee_subtest }}</label>
                             </div>
                         </div>
                     </div>
@@ -129,6 +140,7 @@
     <input type="hidden" name="no_test_checked" value="{{ no_test_checked }}">
     <input type="hidden" name="no_chart_checked" value="{{ no_chart_checked }}">
     <input type="hidden" id="no_unif_filter_selected" value="{{ no_unif_filter_selected }}">
+    <input type="hidden" id="no_subtest_filter_selected" value="{{ no_subtest_filter_selected }}">
 
 <script language="JavaScript">
 function toggle(source) {
@@ -181,6 +193,12 @@ function checkForm() {
         var checked3 = document.getElementById("optuniformity3").checked;
         if (!checked1 && !checked2 && !checked3) {
             alert(document.getElementById("no_unif_filter_selected").value);
+            return false;
+        }
+        checked1 = document.getElementById("optsubtest1").checked;
+        checked2 = document.getElementById("optsubtest2").checked;
+        if (!checked1 && !checked2) {
+            alert(document.getElementById("no_subtest_filter_selected").value);
             return false;
         }
     }
