@@ -1,5 +1,5 @@
 import math
-from os import makedirs, linesep
+from os import linesep
 
 from os.path import join, dirname, abspath, exists
 
@@ -18,11 +18,10 @@ from nist_statistics.p_vals_processor import PValsProcessor
 
 
 class StatisticsCreator:
-    def __init__(self, pool, config_storage, alpha=0.01):
+    def __init__(self, pool, config_storage):
         self.pool = pool
         self.logger = Logger()
         self.config_storage = config_storage
-        self.alpha = alpha
 
         this_dir = dirname(abspath(__file__))
         with open(join(this_dir, 'templates', 'template1.txt'), 'r') as f:
@@ -44,8 +43,13 @@ class StatisticsCreator:
         self.general_sample_size = 0
         self.random_excursion_sample_size = 0
 
-    def compute_statistics(self, group_id: int, directory: str) -> dict:
+    def compute_statistics(self, group_id: int, directory: str, alpha: float=0.01) -> dict:
         tests = self.group_dao.get_tests_for_group(group_id)
+        ret = self.create_stats_for_tests(tests, directory, alpha)
+        self.group_dao.set_statistics_computed(group_id)
+        return ret
+
+    def create_stats_for_tests(self, tests: list, directory: str, alpha: float=0.01) -> dict:
         my_dict = self.test_converter.get_tests_for_files(tests)
         file_paths = {}
         for file_id, tests_arr in my_dict.items():
@@ -54,9 +58,8 @@ class StatisticsCreator:
             file_name = self.prepare_file(directory, tests_arr[0].id, file)
             for test in tests_arr:
                 self.append_lines_for_test(file_name, test)
-            self.append_end(file_name)
+            self.append_end(file_name, alpha)
             file_paths[file_id] = file_name
-        self.group_dao.set_statistics_computed(group_id)
         return file_paths
 
     def prepare_file(self, directory: str, test_id: int, file: File) -> str:
@@ -87,7 +90,7 @@ class StatisticsCreator:
                 f.write(linesep)  # write a new line
         self.general_sample_size = nist_param.streams
 
-    def append_end(self, file_name):
+    def append_end(self, file_name: str, alpha: float):
         to_write = '\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n'
         case1 = False
         case2 = False
@@ -104,7 +107,7 @@ class StatisticsCreator:
                 to_write += 'The minimum pass rate for each statistical test with the exception of the\n'
                 to_write += 'random excursion (variant) test is undefined.\n\n'
             else:
-                pass_rate = 0.99 - 3.0 * math.sqrt(0.01 * (1.0 - self.alpha) / float(self.general_sample_size))
+                pass_rate = 0.99 - 3.0 * math.sqrt(0.01 * (1.0 - alpha) / float(self.general_sample_size))
                 to_write += 'The minimum pass rate for each statistical test with the exception of the\n'
                 to_write += 'random excursion (variant) test is approximately = {0:.6f} for a\n' \
                     .format(pass_rate if self.general_sample_size else 0.0)
@@ -113,7 +116,7 @@ class StatisticsCreator:
             if self.random_excursion_sample_size == 0:
                 to_write += 'The minimum pass rate for the random excursion (variant) test is undefined.\n\n'
             else:
-                pass_rate = 0.99 - 3.0 * math.sqrt(0.01 * (1.0 - self.alpha) / float(self.random_excursion_sample_size))
+                pass_rate = 0.99 - 3.0 * math.sqrt(0.01 * (1.0 - alpha) / float(self.random_excursion_sample_size))
                 to_write += 'The minimum pass rate for the random excursion (variant) test\n'
                 to_write += 'is approximately {0:.6f} for a sample size = {1:d} binary sequences.\n\n' \
                     .format(pass_rate, self.random_excursion_sample_size)
