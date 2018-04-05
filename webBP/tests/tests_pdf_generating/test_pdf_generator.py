@@ -17,6 +17,7 @@ from common.error.test_dep_seq_len_err import TestDepSeqLenErr
 from common.helper_functions import load_texts_into_config_parsers
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
+from enums.test_dep_pairs import TestDepPairs
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
@@ -115,7 +116,7 @@ class TestPdfGenerator(TestCase):
         language = 'en'
         specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
                  TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1)]
-        test_dep_options = TestDependencyOptions(specs, FilterUniformity.REMOVE_NON_UNIFORM)
+        test_dep_options = TestDependencyOptions(specs, FilterUniformity.REMOVE_NON_UNIFORM, TestDepPairs.ALL_PAIRS)
         pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
@@ -132,7 +133,25 @@ class TestPdfGenerator(TestCase):
                  TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 2),
                  TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
                  TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
-        test_dep_options = TestDependencyOptions(specs, FilterUniformity.REMOVE_NON_UNIFORM)
+        test_dep_options = TestDependencyOptions(specs, FilterUniformity.REMOVE_NON_UNIFORM, TestDepPairs.ALL_PAIRS)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
+        self.pdf_generator.generate_pdf(pdf_gen_dto)
+        self.assertTrue(exists(output_filename))
+
+    def test_generate_dependency_charts_filter_out_sub_tests(self):
+        alpha = 0.01
+        output_filename = join(working_dir, 'output.pdf')
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
+                 TestsIdData.test5_id]
+        chart_types = [ChartType.TESTS_DEPENDENCY]
+        language = 'en'
+        specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
+                 TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1),
+                 TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 2),
+                 TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 1),
+                 TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 2)]
+        test_dep_options = TestDependencyOptions(specs, FilterUniformity.DO_NOT_FILTER,
+                                                 TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS)
         pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
@@ -214,7 +233,7 @@ class TestPdfGenerator(TestCase):
         output_file = join(working_dir, 'output.pdf')
         spec1 = TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE)
         spec2 = TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1)
-        test_dep_options = TestDependencyOptions([spec1, spec2], FilterUniformity.DO_NOT_FILTER)
+        test_dep_options = TestDependencyOptions([spec1, spec2], FilterUniformity.DO_NOT_FILTER, TestDepPairs.ALL_PAIRS)
         pdf_dto = PdfGeneratingDto(0.01, [TestsIdData.test1_id], [ChartType.TESTS_DEPENDENCY], 'en', output_file,
                                    test_dep_options)
         self.pdf_generator.generate_pdf(pdf_dto)

@@ -16,6 +16,7 @@ from charts.dto.test_dependency_dto import TestDependencyDto
 from common.info.test_dep_filtered_info import TestDepFilteredInfo
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
+from enums.test_dep_pairs import TestDepPairs
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
@@ -146,6 +147,46 @@ class TestOfTestDependencyCreator(TestCase):
 
         num_of_files = len(listdir(working_dir))
         self.assertEqual(10, num_of_files)
+
+    @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
+    @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
+    @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
+    def test_create_test_dependency_charts_filter_out_sub_tests(self, func_is_approx, func_get, func_check):
+        seq_acc = SequenceAccumulator()
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 1))
+        seq_acc.add_sequence(PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2))
+
+        p_values_dto_for_test1 = PValuesDto(dict_for_test_13)
+        p_values_dto_for_test2 = PValuesDto(dict_for_test_14)
+        p_values_dto_for_test3 = PValuesDto(dict_for_test_41)
+        p_values_dto_for_test4 = PValuesDto(dict_for_test_42)
+        p_values_dto_for_test5 = PValuesDto(dict_for_test_43)
+
+        p_values_acc = PValuesAccumulator()
+        p_values_acc.add(TestsIdData.test1_id, p_values_dto_for_test1)
+        p_values_acc.add(TestsIdData.test2_id, p_values_dto_for_test2)
+        p_values_acc.add(TestsIdData.test3_id, p_values_dto_for_test3)
+        p_values_acc.add(TestsIdData.test4_id, p_values_dto_for_test4)
+        p_values_acc.add(TestsIdData.test5_id, p_values_dto_for_test5)
+
+        dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc,
+                                           'Dependency of two tests', TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS)
+        data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
+        storage = self.creator.create_test_dependency_charts(data_for_creator)
+
+        cs_item_list = storage.get_all_items()
+        self.assertEqual(8, len(cs_item_list))
+        for cs_item in cs_item_list:
+            chart_info = cs_item.ch_info
+            self.assertTrue(exists(chart_info.path_to_chart))
+            self.assertEqual(ChartType.TESTS_DEPENDENCY, chart_info.chart_type)
+            self.assertEqual(FileIdData.file1_id, chart_info.file_id)
+
+        num_of_files = len(listdir(working_dir))
+        self.assertEqual(8, num_of_files)
 
     @patch('p_value_processing.sequence_pairs.SequencePairs.should_remove')
     def test_create_test_dependency_charts_extracted_data(self, f_remove):
