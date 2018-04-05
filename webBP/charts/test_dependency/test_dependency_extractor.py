@@ -26,7 +26,7 @@ class TestDependencyExtractor:
 
     def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: TestDependencyDto) -> ExtractedData:
         extracted_data = ExtractedData()
-        seq_pairs = dto.seq_accumulator.generate_sequence_pairs(acc)
+        seq_pairs = dto.seq_accumulator.generate_sequence_pairs(acc, dto.pairs)
         unif_check = UnifCheck(dto.alpha, 5)
         try:
             data = seq_pairs.filter_pairs(unif_check, dto.filter_unif)

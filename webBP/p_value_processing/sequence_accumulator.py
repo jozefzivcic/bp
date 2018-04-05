@@ -1,5 +1,6 @@
 import itertools
 
+from enums.test_dep_pairs import TestDepPairs
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_file_type import PValuesFileType
@@ -22,11 +23,14 @@ class SequenceAccumulator:
             ret.extend(value)
         return ret
 
-    def generate_sequence_pairs(self, acc: PValuesAccumulator) -> SequencePairs:
+    def generate_sequence_pairs(self, acc: PValuesAccumulator, pairs: TestDepPairs=TestDepPairs.ALL_PAIRS) \
+            -> SequencePairs:
         seq_pairs = SequencePairs()
         sequences = self.filter_sequences(acc.get_all_test_ids())
         combinations = itertools.combinations(sequences, 2)
         for seq1, seq2 in combinations:
+            if pairs == TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS and self.is_sub_test(seq1, seq2):
+                continue
             p_values1 = self.get_p_values_for_sequence(seq1, acc)
             p_values2 = self.get_p_values_for_sequence(seq2, acc)
             seq_pairs.add_pair(seq1, p_values1, seq2, p_values2)
@@ -47,3 +51,7 @@ class SequenceAccumulator:
                 continue
             sequences.extend(temp_seq)
         return sequences
+
+    def is_sub_test(self, seq1: PValueSequence, seq2: PValueSequence) -> bool:
+        return seq1.test_id == seq2.test_id
+

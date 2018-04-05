@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from enums.test_dep_pairs import TestDepPairs
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
@@ -164,6 +165,41 @@ class TestSequenceAccumulator(TestCase):
         self.assertEqual(dict_for_test_42['results'], values1)
         self.assertEqual(dict_for_test_43['results'], values2)
 
+    def test_generate_sequence_pairs_filter_out_sub_tests(self):
+        seq1 = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)
+        seq3 = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)
+        seq4 = PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2)
+
+        self.seq_acc.add_sequence(seq1)
+        self.seq_acc.add_sequence(seq2)
+        self.seq_acc.add_sequence(seq3)
+        self.seq_acc.add_sequence(seq4)
+
+        seq_pairs = self.seq_acc.generate_sequence_pairs(self.p_values_acc, TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS)
+
+        self.assertEqual(5, len(seq_pairs._pairs))
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq2)
+        self.assertEqual(dict_for_test_13['results'], values1)
+        self.assertEqual(dict_for_test_14['data1'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq3)
+        self.assertEqual(dict_for_test_13['results'], values1)
+        self.assertEqual(dict_for_test_14['data2'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq1, seq4)
+        self.assertEqual(dict_for_test_13['results'], values1)
+        self.assertEqual(dict_for_test_41['data2'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq2, seq4)
+        self.assertEqual(dict_for_test_14['data1'], values1)
+        self.assertEqual(dict_for_test_41['data2'], values2)
+
+        values1, values2 = seq_pairs.get_p_values_for_sequences(seq3, seq4)
+        self.assertEqual(dict_for_test_14['data2'], values1)
+        self.assertEqual(dict_for_test_41['data2'], values2)
+
     def test_get_p_values_for_sequence_from_results_file(self):
         seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
         expected = dict_for_test_13['results']
@@ -191,3 +227,21 @@ class TestSequenceAccumulator(TestCase):
         seq = PValueSequence(TestsIdData.non_existing_test_id, PValuesFileType.RESULTS)
         with self.assertRaises(ValueError) as context:
             self.seq_acc.get_p_values_for_sequence(seq, self.p_values_acc)
+
+    def test_is_subset_true(self):
+        seq1 = PValueSequence(1, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(1, PValuesFileType.RESULTS)
+        self.assertTrue(self.seq_acc.is_sub_test(seq1, seq2))
+
+        seq1 = PValueSequence(1, PValuesFileType.DATA, 54)
+        seq2 = PValueSequence(1, PValuesFileType.DATA, 45)
+        self.assertTrue(self.seq_acc.is_sub_test(seq1, seq2))
+
+    def test_is_subset_false(self):
+        seq1 = PValueSequence(1, PValuesFileType.RESULTS)
+        seq2 = PValueSequence(2, PValuesFileType.RESULTS)
+        self.assertFalse(self.seq_acc.is_sub_test(seq1, seq2))
+
+        seq1 = PValueSequence(1, PValuesFileType.DATA, 54)
+        seq2 = PValueSequence(2, PValuesFileType.DATA, 54)
+        self.assertFalse(self.seq_acc.is_sub_test(seq1, seq2))
