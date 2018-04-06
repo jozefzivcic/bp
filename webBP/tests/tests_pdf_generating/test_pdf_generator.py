@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+from copy import deepcopy
 from os import makedirs
 from os.path import dirname, abspath, join, exists
 from shutil import rmtree
@@ -32,7 +33,8 @@ from pdf_generating.pdf_generating_error import PdfGeneratingError
 from pdf_generating.pdf_generator import PdfGenerator
 from tests.data_for_tests.common_data import FileIdData, TestsIdData
 from tests.data_for_tests.common_functions import get_file_by_id, results_dao_get_paths_for_test_ids, \
-    db_test_dao_get_tests_by_id_list, db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
+    db_test_dao_get_tests_by_id_list, db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, \
+    result_dao_get_path_for_test
 
 this_dir = dirname(abspath(__file__))
 working_dir = abspath(join(this_dir, 'working_dir_pdf_generator'))
@@ -55,6 +57,7 @@ class TestPdfGenerator(TestCase):
         self.mock_func('managers.filemanager.FileManager.get_file_by_id', get_file_by_id)
         self.mock_func('managers.resultsmanager.ResultsManager.get_paths_for_test_ids',
                        results_dao_get_paths_for_test_ids)
+        self.mock_func('managers.resultsmanager.ResultsManager.get_path_for_test', result_dao_get_path_for_test)
 
     def setUp(self):
         if not exists(working_dir):
@@ -220,6 +223,11 @@ class TestPdfGenerator(TestCase):
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
+    def test_generate_pdf_nist_reports(self):
+        self.dto_for_two_files.create_nist_report = True
+        self.pdf_generator.generate_pdf(self.dto_for_two_files)
+        self.assertTrue(exists(self.dto_for_one_file.output_filename))
+
     @patch('charts.charts_creator.ChartsCreator.generate_charts')
     def test_create_pdf_with_infos_and_errors(self, generate_charts):
         storage = ChartsStorage()
@@ -270,22 +278,35 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(self.texts['en']['Histogram']['NumOfPValues'], ret[0].y_label)
         self.assertEqual(self.texts['en']['Histogram']['Histogram'], ret[0].title)
 
-    def test_prepare_pdf_creating_dto(self):
+    def test_prepare_pdf_creating_dto_no_nist_report(self):
         language = 'en'
         package_language = 'english'
         charts_storage, charts_dict = self.get_charts_storage_and_dict()
         template = join(templates_dir, 'report_template.tex')
         keys_for_template = {'texts': self.texts[language], 'vars': {'package_language': package_language,
-                                                                     'charts': charts_dict}}
+                                                                     'charts': charts_dict,
+                                                                     'nist_report_dict': None}}
         output_filename = 'something.pdf'
 
         generating_dto = PdfGeneratingDto(0.01, [1, 2, 3], [ChartType.P_VALUES], language, output_filename)
-        pdf_creating_dto = self.pdf_generator.prepare_pdf_creating_dto(generating_dto, charts_storage)
+        pdf_creating_dto = self.pdf_generator.prepare_pdf_creating_dto(generating_dto, charts_storage, None)
 
         self.assertEqual(PdfCreatingDto, type(pdf_creating_dto))
         self.assertEqual(template, pdf_creating_dto.template)
         self.assertEqual(output_filename, pdf_creating_dto.output_file)
         self.assertEqual(keys_for_template, pdf_creating_dto.keys_for_template)
+
+    @patch('pdf_generating.pdf_generator.PdfGenerator.prepare_nist_report_dict', return_value='something')
+    def test_prepare_pdf_creating_dto_nist_report(self, f_prepare_nist):
+        charts_storage, charts_dict = self.get_charts_storage_and_dict()
+
+        generating_dto = PdfGeneratingDto(language='en')
+        stats_dict = {'key1': 'value1', 'key2': 'value2'}
+        pdf_creating_dto = self.pdf_generator.prepare_pdf_creating_dto(generating_dto, charts_storage, stats_dict)
+
+        self.assertEqual(PdfCreatingDto, type(pdf_creating_dto))
+        self.assertEqual('something', pdf_creating_dto.keys_for_template['vars']['nist_report_dict'])
+        f_prepare_nist.assert_called_once_with(deepcopy(stats_dict))
 
     def test_prepare_dict_from_charts_storage_escape_chars(self):
         chart_info = ChartInfo(None, 'something', ChartType.P_VALUES, FileIdData.file3_id)
@@ -597,6 +618,50 @@ class TestPdfGenerator(TestCase):
         self.pdf_generator.add_errors('en', charts_dict, storage)
         self.assertDictEqual(expected, charts_dict)
         self.assertEqual(2, func.call_count)
+
+    def test_do_not_create_nist_report(self):
+        pdf_dto = PdfGeneratingDto()
+        pdf_dto.create_nist_report = False
+        ret = self.pdf_generator.create_nist_report(pdf_dto, working_dir)
+        self.assertIsNone(ret)
+
+    @patch('nist_statistics.statistics_creator.StatisticsCreator.create_stats_for_tests', return_value={'key': 'value', 'a': 'b'})
+    def test_create_nist_report(self, f_create_stats):
+        pdf_dto = PdfGeneratingDto()
+        alpha = 456
+        test_ids = [4, 5, 789, 987]
+        pdf_dto.alpha = alpha
+        pdf_dto.test_ids = test_ids
+        pdf_dto.create_nist_report = True
+        ret = self.pdf_generator.create_nist_report(pdf_dto, working_dir)
+        f_create_stats.assert_called_once_with(deepcopy(test_ids), working_dir, alpha)
+        exp_dict = {'key': 'value', 'a': 'b'}
+        self.assertEqual(exp_dict, ret)
+
+    def test_prepare_nist_report_dict_none_input(self):
+        ret = self.pdf_generator.prepare_nist_report_dict(None)
+        self.assertIsNone(ret)
+
+    @patch('pdf_generating.pdf_generator.escape_latex_special_chars', side_effect=lambda x: x)
+    def test_prepare_nist_report(self, f_escape):
+        file1_id = 45
+        file1_path = join(working_dir, 'file1')
+        file1_content = 'file 1 content'
+
+        file2_id = 56
+        file2_path = join(working_dir, 'file2')
+        file2_content = 'file 2 content'
+
+        with open(file1_path, 'w') as f:
+            f.write(file1_content)
+        with open(file2_path, 'w') as f:
+            f.write(file2_content)
+
+        in_dict = {file1_id: file1_path, file2_id: file2_path}
+        expected = {file1_id: file1_content, file2_id: file2_content}
+        ret = self.pdf_generator.prepare_nist_report_dict(in_dict)
+        self.assertEqual(expected, ret)
+        self.assertEqual(2, f_escape.call_count)
 
     def get_charts_storage_and_dict(self):
         charts_storage = ChartsStorage()

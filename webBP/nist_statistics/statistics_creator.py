@@ -7,6 +7,7 @@ from common.my_fs_manager import MyFSManager
 from common.test_converter import TestConverter
 from enums.nist_test_type import NistTestType
 from logger import Logger
+from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
 from managers.groupmanager import GroupManager
 from managers.nisttestmanager import NistTestManager
@@ -31,6 +32,7 @@ class StatisticsCreator:
         self.template2 = self.template2[:-1]
         with open(join(this_dir, 'templates', 'template3.txt'), 'r') as f:
             self.template3 = f.read()
+        self.test_dao = DBTestManager(self.pool)
         self.group_dao = GroupManager(self.pool)
         self.file_dao = FileManager(self.pool)
         self.results_dao = ResultsManager(self.pool)
@@ -48,6 +50,10 @@ class StatisticsCreator:
         ret = self.create_stats_for_tests(tests, directory, alpha)
         self.group_dao.set_statistics_computed(group_id)
         return ret
+
+    def create_stats_for_tests_ids(self, test_ids: list, directory: str, alpha: float=0.01) -> dict:
+        tests = self.test_dao.get_tests_by_id_list(test_ids)
+        return self.create_stats_for_tests(tests, directory, alpha)
 
     def create_stats_for_tests(self, tests: list, directory: str, alpha: float=0.01) -> dict:
         my_dict = self.test_converter.get_tests_for_files(tests)

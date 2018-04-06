@@ -46,6 +46,11 @@ def results_dao_get_paths_for_test_ids(test_ids: list) -> list:
     return ret
 
 
+def result_dao_get_path_for_test(test: Test) -> list:
+    ret = results_dao_get_paths_for_test_ids([test.id])
+    return ret[0][1]
+
+
 def db_test_dao_get_tests_by_id_list(test_ids: list) -> list:
     ret = []
     if TestsIdData.test1_id in test_ids:

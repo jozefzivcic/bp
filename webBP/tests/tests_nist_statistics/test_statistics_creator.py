@@ -217,6 +217,16 @@ class StatCreatorTest(unittest.TestCase):
 
         self.assertEqual(content, file_content, 'Generated file content does not match the expected one')
 
+    @patch('managers.dbtestmanager.DBTestManager.get_tests_by_id_list', return_value='return value')
+    @patch('nist_statistics.statistics_creator.StatisticsCreator.create_stats_for_tests', return_value='value 2')
+    def test_create_stats_for_test_ids(self, f_create_stats, f_get_tests):
+        test_ids = [1, 2, 3]
+        alpha = 0.456
+        ret = self.stat_creator.create_stats_for_tests_ids(test_ids, working_dir, alpha)
+        self.assertEqual('value 2', ret)
+        f_get_tests.assert_called_once_with(test_ids)
+        f_create_stats.assert_called_once_with('return value', working_dir, alpha)
+
     def test_add_test_for_file(self):
         nist_param = MagicMock(test_number=1)
         self.stat_creator.add_test_for_file(nist_param)

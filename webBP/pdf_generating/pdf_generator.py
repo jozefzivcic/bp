@@ -22,6 +22,7 @@ from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
 from managers.nisttestmanager import NistTestManager
+from nist_statistics.statistics_creator import StatisticsCreator
 from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
@@ -39,6 +40,7 @@ class PdfGenerator:
         self._nist_dao = NistTestManager(pool)
         self._file_dao = FileManager(pool)
         self._charts_creator = ChartsCreator(pool, storage)
+        self._stats_creator = StatisticsCreator(pool, storage)
         self._pdf_creator = PdfCreator()
         path_to_texts = abspath(join(this_dir, storage.path_to_pdf_texts))
         self._texts = load_texts_into_config_parsers(path_to_texts)
@@ -50,7 +52,8 @@ class PdfGenerator:
         try:
             generate_dto = self.prepare_generate_charts_dto(pdf_generating_dto, directory)
             storage = self._charts_creator.generate_charts(generate_dto)
-            pdf_creating_dto = self.prepare_pdf_creating_dto(pdf_generating_dto, storage)
+            stats_dict = self.create_nist_report(pdf_generating_dto, directory)
+            pdf_creating_dto = self.prepare_pdf_creating_dto(pdf_generating_dto, storage, stats_dict)
             self._pdf_creator.create_pdf(pdf_creating_dto)
         except (ChartsError, PdfCreatingError) as e:
             raise PdfGeneratingError(e)
@@ -108,13 +111,16 @@ class PdfGenerator:
             return [dto]
         raise PdfGeneratingError('Unsupported chart type')
 
-    def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage) -> PdfCreatingDto:
+    def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage, stats_dict: dict) \
+            -> PdfCreatingDto:
         template_path = abspath(join(this_dir, self.config_storage.path_to_tex_templates, 'report_template.tex'))
         vars_dict = self.prepare_dict_from_charts_storage(storage, pdf_generating_dto.language)
         config_parser = self._texts[pdf_generating_dto.language]
+        nist_dict = self.prepare_nist_report_dict(stats_dict)
         keys_for_template = {'texts': config_parser, 'vars': {'package_language':
                                                                   self.supported_languages[pdf_generating_dto.language],
-                                                              'charts': vars_dict}}
+                                                              'charts': vars_dict,
+                                                              'nist_report_dict': nist_dict}}
         dto = PdfCreatingDto(template_path, pdf_generating_dto.output_filename, keys_for_template)
         return dto
 
@@ -245,3 +251,19 @@ class PdfGenerator:
                 errors_dict[escaped] = messages
         if errors_dict:
             charts_dict['errors'] = errors_dict
+
+    def create_nist_report(self, dto: PdfGeneratingDto, directory: str) -> dict:
+        if not dto.create_nist_report:
+            return None
+        return self._stats_creator.create_stats_for_tests_ids(dto.test_ids, directory, dto.alpha)
+
+    def prepare_nist_report_dict(self, stats_dict: dict):
+        if stats_dict is None:
+            return None
+        ret = {}
+        for key, value in stats_dict.items():
+            with open(value, 'r') as f:
+                content = f.read()
+            content = escape_latex_special_chars(content)
+            ret[key] = content
+        return ret
