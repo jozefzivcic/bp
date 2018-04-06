@@ -625,7 +625,7 @@ class TestPdfGenerator(TestCase):
         ret = self.pdf_generator.create_nist_report(pdf_dto, working_dir)
         self.assertIsNone(ret)
 
-    @patch('nist_statistics.statistics_creator.StatisticsCreator.create_stats_for_tests', return_value={'key': 'value', 'a': 'b'})
+    @patch('nist_statistics.statistics_creator.StatisticsCreator.create_stats_for_tests_ids', return_value={'key': 'value', 'a': 'b'})
     def test_create_nist_report(self, f_create_stats):
         pdf_dto = PdfGeneratingDto()
         alpha = 456
