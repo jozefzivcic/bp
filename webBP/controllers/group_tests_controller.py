@@ -193,6 +193,11 @@ def create_boxplot_pt_options(test_ids: list, form: cgi.FieldStorage) -> Boxplot
     return BoxplotPTOptions([arr])
 
 
+def create_nist_report(form: cgi.FieldStorage):
+    value = form['ch_nist_report'].value
+    return value == 'on'
+
+
 def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str, file_name):
     """
     Creates PdfGeneratingDto
@@ -206,8 +211,10 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
     if alpha is None:
         return None
     chart_types = get_chart_types(form)
-    if not chart_types:
+    create_report = create_nist_report(form)
+    if not chart_types and not create_report:
         return None
+
     test_dep_options = None
     ecdf_options = None
     boxplot_pt_options = None
@@ -224,4 +231,4 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
         if boxplot_pt_options is None:
             return None
     return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name, test_dep_options, ecdf_options,
-                            boxplot_pt_options)
+                            boxplot_pt_options, create_report)

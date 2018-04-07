@@ -127,6 +127,10 @@
                         <label class="form-check-label" for="ch_chart_type_6">{{ boxplot_pt }}</label>
                     </div>
                     <div class="row">
+                        <input type="checkbox" name="ch_nist_report" id="ch_nist_report">
+                        <label class="form-check-label" for="ch_nist_report">{{ nist_report }}</label>
+                    </div>
+                    <div class="row">
                         <input class="btn btn-success" type="submit" value="{{ show_pdf }}">
                     </div>
                 </div>
@@ -176,6 +180,10 @@ function checkForm() {
         if(inputs[i].name.indexOf('ch_chart_type_') === 0 && inputs[i].checked)
             chart_checked = true;
     }
+    if (!chart_checked && document.getElementById("ch_nist_report").checked) {
+        chart_checked = true;
+    }
+
     if (!test_checked) {
         alert(document.getElementsByName("no_test_checked")[0].value);
         return false;
