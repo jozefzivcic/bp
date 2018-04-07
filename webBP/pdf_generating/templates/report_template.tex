@@ -30,6 +30,10 @@
 \begin{document}
 \maketitle
 
+\BLOCK{ if vars['charts']['files'] }
+    \section{\VAR{ texts['General']['Charts'] }}
+\BLOCK{ endif }
+
 \BLOCK{for key, value in vars['charts']['files'].items()}
     \VAR{texts['General']['ChartsForFile']} \textbf{\VAR{value['file_name']}}
 
@@ -50,6 +54,14 @@
 	\newpage
 
 \BLOCK{ endfor }
+
+\BLOCK{if vars['nist_report_dict'] is not none}
+    \section{ \VAR{ texts['NistReport']['NistReport'] } }
+	\BLOCK{for key, value in vars['nist_report_dict'].items()}
+		\subsection{\VAR{ texts['NistReport']['ReportForFile'] } \VAR{ value['file_name']}}
+		\VAR{ value['content'] }
+	\BLOCK{ endfor }
+\BLOCK{endif}
 
 \BLOCK{ if 'infos' in vars['charts'] }
 {\large \textbf{\VAR{ texts['General']['InfoFromCharts'] }}}

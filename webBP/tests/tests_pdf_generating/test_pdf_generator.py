@@ -643,12 +643,13 @@ class TestPdfGenerator(TestCase):
         self.assertIsNone(ret)
 
     @patch('pdf_generating.pdf_generator.escape_latex_special_chars', side_effect=lambda x: x)
-    def test_prepare_nist_report(self, f_escape):
-        file1_id = 45
+    @patch('managers.filemanager.FileManager.get_file_by_id', side_effect=get_file_by_id)
+    def test_prepare_nist_report(self, f_get_file, f_escape):
+        file1_id = FileIdData.file1_id
         file1_path = join(working_dir, 'file1')
         file1_content = 'file 1 content'
 
-        file2_id = 56
+        file2_id = FileIdData.file2_id
         file2_path = join(working_dir, 'file2')
         file2_content = 'file 2 content'
 
@@ -658,10 +659,12 @@ class TestPdfGenerator(TestCase):
             f.write(file2_content)
 
         in_dict = {file1_id: file1_path, file2_id: file2_path}
-        expected = {file1_id: file1_content, file2_id: file2_content}
+        expected = {file1_id: {'file_name': 'First file', 'content': file1_content},
+                    file2_id: {'file_name': 'Second file', 'content': file2_content}}
         ret = self.pdf_generator.prepare_nist_report_dict(in_dict)
         self.assertEqual(expected, ret)
         self.assertEqual(2, f_escape.call_count)
+        self.assertEqual(2, f_get_file.call_count)
 
     def get_charts_storage_and_dict(self):
         charts_storage = ChartsStorage()

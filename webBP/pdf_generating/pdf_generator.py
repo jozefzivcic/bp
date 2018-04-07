@@ -265,5 +265,9 @@ class PdfGenerator:
             with open(value, 'r') as f:
                 content = f.read()
             content = escape_latex_special_chars(content)
-            ret[key] = content
+            content = content.replace('\n', r'\\')
+            # content = content.replace('   ', r'\ \ \ \ ')
+            file_name = self._file_dao.get_file_by_id(key).name
+            report_data = {'content': content, 'file_name': file_name}
+            ret[key] = report_data
         return ret
