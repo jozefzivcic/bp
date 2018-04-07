@@ -61,6 +61,8 @@ class PdfGenerator:
             rmtree(directory)
 
     def prepare_generate_charts_dto(self, pdf_generating_dto: PdfGeneratingDto, directory: str) -> GenerateChartsDto:
+        if not pdf_generating_dto.chart_types:
+            return None
         dict_for_dto = {}
         for chart_type in pdf_generating_dto.chart_types:
             dict_for_dto[chart_type] = self.create_dto_for_concrete_chart(chart_type, pdf_generating_dto)
@@ -125,6 +127,8 @@ class PdfGenerator:
         return dto
 
     def prepare_dict_from_charts_storage(self, storage: ChartsStorage, language: str) -> dict:
+        if storage is None:
+            return None
         files_dict = {}
         for cs_item in storage.get_all_items():
             chart_info = cs_item.ch_info

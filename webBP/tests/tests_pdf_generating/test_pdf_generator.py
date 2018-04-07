@@ -225,6 +225,7 @@ class TestPdfGenerator(TestCase):
 
     def test_generate_pdf_nist_reports(self):
         self.dto_for_two_files.create_nist_report = True
+        self.dto_for_two_files.chart_types = []
         self.pdf_generator.generate_pdf(self.dto_for_two_files)
         self.assertTrue(exists(self.dto_for_one_file.output_filename))
 
@@ -246,6 +247,28 @@ class TestPdfGenerator(TestCase):
                                    test_dep_options)
         self.pdf_generator.generate_pdf(pdf_dto)
         self.assertTrue(exists(output_file))
+
+    def test_prepare_generate_charts_dto_none_chart_types(self):
+        self.dto_for_one_file.chart_types = None
+        ret = self.pdf_generator.prepare_generate_charts_dto(self.dto_for_one_file, working_dir)
+        self.assertIsNone(ret)
+
+    def test_prepare_generate_charts_dto_empty_chart_types(self):
+        self.dto_for_one_file.chart_types = []
+        ret = self.pdf_generator.prepare_generate_charts_dto(self.dto_for_one_file, working_dir)
+        self.assertIsNone(ret)
+
+    @patch('pdf_generating.pdf_generator.PdfGenerator.create_dto_for_concrete_chart', side_effect=lambda x, y: x)
+    def test_prepare_generate_charts_dto(self, f_create):
+        test_ids = [1, 2, 3]
+        chart_types = ['first', 'second']
+        pdf_dto = PdfGeneratingDto(test_ids=test_ids, chart_types=chart_types)
+        ret = self.pdf_generator.prepare_generate_charts_dto(pdf_dto, working_dir)
+        self.assertEqual(test_ids, ret.test_ids)
+        dict_for_dto = {'first': 'first', 'second': 'second'}
+        self.assertEqual(dict_for_dto, ret.chart_types)
+        self.assertEqual(working_dir, ret.directory)
+        self.assertEqual(2, f_create.call_count)
 
     def test_create_dto_for_concrete_chart_unsupported_chart(self):
         pdf_generating_dto = PdfGeneratingDto()
@@ -278,6 +301,13 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(self.texts['en']['Histogram']['NumOfPValues'], ret[0].y_label)
         self.assertEqual(self.texts['en']['Histogram']['Histogram'], ret[0].title)
 
+    def test_prepare_pdf_creating_dto_none_storage(self):
+        generating_dto = PdfGeneratingDto(language='en')
+        pdf_creating_dto = self.pdf_generator.prepare_pdf_creating_dto(generating_dto, None, None)
+
+        self.assertEqual(PdfCreatingDto, type(pdf_creating_dto))
+        self.assertIsNone(pdf_creating_dto.keys_for_template['vars']['charts'])
+
     def test_prepare_pdf_creating_dto_no_nist_report(self):
         language = 'en'
         package_language = 'english'
@@ -307,6 +337,10 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(PdfCreatingDto, type(pdf_creating_dto))
         self.assertEqual('something', pdf_creating_dto.keys_for_template['vars']['nist_report_dict'])
         f_prepare_nist.assert_called_once_with(deepcopy(stats_dict))
+
+    def test_prepare_dict_from_charts_storage_none_storage(self):
+        ret = self.pdf_generator.prepare_dict_from_charts_storage(None, 'en')
+        self.assertIsNone(ret)
 
     def test_prepare_dict_from_charts_storage_escape_chars(self):
         chart_info = ChartInfo(None, 'something', ChartType.P_VALUES, FileIdData.file3_id)

@@ -174,9 +174,8 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected, ret)
 
     def test_generate_charts_none_dto(self):
-        with self.assertRaises(TypeError) as context:
-            self.charts_creator.generate_charts(None)
-        self.assertEqual('Charts DTO is None', str(context.exception))
+        ret = self.charts_creator.generate_charts(None)
+        self.assertIsNone(ret)
 
     def test_generate_charts_none_tests(self):
         self.generate_charts_dto.test_ids = None

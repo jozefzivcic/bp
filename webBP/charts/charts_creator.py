@@ -46,6 +46,8 @@ class ChartsCreator:
                                  ChartType.TESTS_DEPENDENCY, ChartType.ECDF, ChartType.BOXPLOT_PT]
 
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
+        if generate_charts_dto is None:
+            return None
         self.check_input(generate_charts_dto)
         self.load_p_values(generate_charts_dto.test_ids)
         for chart_type, chart_dto_list in generate_charts_dto.chart_types.items():
