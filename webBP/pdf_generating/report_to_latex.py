@@ -2,6 +2,8 @@ import re
 
 from os.path import exists
 
+from common.helper_functions import escape_latex_special_chars
+
 
 def parse_line(line: str) -> tuple:
     pattern = '^\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)' \
@@ -14,16 +16,18 @@ def parse_line(line: str) -> tuple:
 
 def get_header(content_lines: list) -> str:
     res = ''
+    end_line = r'\\' + '\n'
     for i in range(5):
         line = content_lines[i]
-        res.join(line).join(r'\\').join('\n')
+        res += escape_latex_special_chars(line)
+        res += end_line
     return res
 
 
 def get_begin_of_table() -> str:
-    begin = r'\hskip-0.7cm\begin{tabular}{llllllllllllll}'
-    header = r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline'
-    return begin.join('\n').join(header)
+    begin = r'\hskip-0.7cm\begin{tabular}{llllllllllllll}' + '\n'\
+            + r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline'
+    return begin
 
 
 def get_end_of_table() -> str:

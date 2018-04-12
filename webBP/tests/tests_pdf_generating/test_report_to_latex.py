@@ -1,6 +1,7 @@
 from unittest import TestCase
+from unittest.mock import patch, call
 
-from pdf_generating.report_to_latex import parse_line
+from pdf_generating.report_to_latex import parse_line, get_header, get_begin_of_table
 
 
 class TestReportToLatex(TestCase):
@@ -31,5 +32,21 @@ class TestReportToLatex(TestCase):
         groups = parse_line(line)
         self.assertIsNone(groups)
 
-    def test_get_header(self):
+    @patch('pdf_generating.report_to_latex.escape_latex_special_chars', side_effect=lambda x: x)
+    def test_get_header(self, f_escape):
         content = ['line 1', 'line 2', 'line 3', 'line 4', 'line 5', 'line 6', 'line 7', 'line 8']
+        end_line = r'\\' + '\n'
+        expected = ''
+        for l in content[:5]:
+            expected += l
+            expected += end_line
+        ret = get_header(content)
+        self.assertEqual(expected, ret)
+        calls = [call('line 1'), call('line 2'), call('line 3'), call('line 4'), call('line 5')]
+        f_escape.assert_has_calls(calls)
+
+    def test_get_begin_of_table(self):
+        expected = r'\hskip-0.7cm\begin{tabular}{llllllllllllll}' + '\n'\
+                   + r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline'
+        ret = get_begin_of_table()
+        self.assertEqual(expected, ret)
