@@ -79,7 +79,7 @@ def get_shorten_test_name(t_type: NistTestType, texts: ConfigParser) -> str:
 
 def parse_line(line: str) -> tuple:
     pattern = '^\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)' \
-              '\s+(\d*[.,]?\d*)\s+(\d*[.,]?\d*)\s+(\d*[.,]?\d*)\s+(\w+\s?\w+\s?\w+?)$'
+              '\s+(\d*[.,]?\d*)\s+(\d*[.,]?\d*)\s+(\d*[.,]?\d*)\s+(\w+\s?\w+\s?\w+\s?\w+?)$'
     m = re.match(pattern, line)
     if m is None:
         return None

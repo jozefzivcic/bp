@@ -101,6 +101,67 @@ class TestReportToLatex(TestCase):
         self.assertAlmostEqual(0.785465, float(groups[12]), 1e-6)
         self.assertEqual('Block Fr equency', groups[13])
 
+    def test_parse_line_tests(self):
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274    0.675978   0.785465 Frequency'
+        groups = parse_line(line)
+        self.assertEqual('Frequency', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274    0.675978   0.785465 Block Frequency'
+        groups = parse_line(line)
+        self.assertEqual('Block Frequency', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274    0.675978   0.785465 Cumulative Sums'
+        groups = parse_line(line)
+        self.assertEqual('Cumulative Sums', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274    0.675978   0.785465 Runs'
+        groups = parse_line(line)
+        self.assertEqual('Runs', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456  87456  0.437274    0.675978   0.785465 Longest Run of Ones'
+        groups = parse_line(line)
+        self.assertEqual('Longest Run of Ones', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274    0.675978   0.785465 Rank'
+        groups = parse_line(line)
+        self.assertEqual('Rank', groups[13])
+
+        line = '  1   9   12  125 467 505 11 6 456 87456  0.437274 0.675978   0.785465 Discrete Fourier Transform'
+        groups = parse_line(line)
+        self.assertEqual('Discrete Fourier Transform', groups[13])
+
+        line = '  1   9   12   125 467   505 11 6 456 87456 0.437274 0.675978 0.785465 Nonperiodic Template Matchings'
+        groups = parse_line(line)
+        self.assertEqual('Nonperiodic Template Matchings', groups[13])
+
+        line = '  1   9   12   125 467 505 11 6 456 87456 0.437274 0.675978 0.785465 Overlapping Template Matchings'
+        groups = parse_line(line)
+        self.assertEqual('Overlapping Template Matchings', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274  0.675978 0.785465 Universal Statistical'
+        groups = parse_line(line)
+        self.assertEqual('Universal Statistical', groups[13])
+
+        line = '  1   9   12   125 467 505 11 6 456 87456 0.437274  0.675978 0.785465 Approximate Entropy'
+        groups = parse_line(line)
+        self.assertEqual('Approximate Entropy', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274    0.675978   0.785465 Random Excursions'
+        groups = parse_line(line)
+        self.assertEqual('Random Excursions', groups[13])
+
+        line = '  1   9   12   125 467  505 11 6 456 87456 0.437274  0.675978 0.785465 Random Excursions Variant'
+        groups = parse_line(line)
+        self.assertEqual('Random Excursions Variant', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274    0.675978   0.785465 Serial'
+        groups = parse_line(line)
+        self.assertEqual('Serial', groups[13])
+
+        line = '  1   9   12   125 467   505   11   6   456   87456  0.437274    0.675978   0.785465 Linear Complexity'
+        groups = parse_line(line)
+        self.assertEqual('Linear Complexity', groups[13])
+
     def test_parse_lines_ret_none(self):
         line = '  1   9   12   125 45a   505   11   6   456   87456  0.437274    0.675978   0.785465    BlockFrequency'
         groups = parse_line(line)
