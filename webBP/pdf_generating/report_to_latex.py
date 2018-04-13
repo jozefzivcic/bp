@@ -79,7 +79,8 @@ def get_shorten_test_name(t_type: NistTestType, texts: ConfigParser) -> str:
 
 def parse_line(line: str) -> tuple:
     pattern = '^\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)' \
-              '\s+(\d*[.,]?\d*)\s+(\d*[.,]?\d*)\s+(\d*[.,]?\d*)\s+(\w+\s?\w+\s?\w+\s?\w+?)$'
+              '\s+(\d*[.,]?\d*(?:\s+\*)?)\s+(\d*[.,]?\d*(?:\s+\*)?)\s+(\d*[.,]?\d*(?:\s+\*)?)\s+' \
+              '(\w+\s?\w+\s?\w+\s?\w+?)$'
     m = re.match(pattern, line)
     if m is None:
         return None
@@ -98,7 +99,7 @@ def get_header(content_lines: list) -> str:
 
 def get_begin_of_table() -> str:
     begin = r'\hskip-0.7cm\begin{tabular}{llllllllllllll}' + '\n' \
-            + r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline'
+            + r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline' + '\n'
     return begin
 
 
@@ -119,23 +120,28 @@ def get_latex_line(line: str, texts: ConfigParser) -> str:
         i += 1
     t_type = get_test_type_from_name(parsed_line[-1])
     shorten_name = get_shorten_test_name(t_type, texts)
-    res_line += r'& {}\\'.format(shorten_name)
+    res_line += r' & {}\\'.format(shorten_name)
     return res_line
 
 
 def convert_report_to_latex(report_path: str, texts: ConfigParser) -> str:
     if not exists(report_path):
         raise RuntimeError('Given path does not exist: "{}"'.format(report_path))
+    if texts is None:
+        raise RuntimeError('Texts cannot be None')
     with open(report_path, 'r') as f:
         content = f.read()
     content_split = content.splitlines()
     ret = get_header(content_split)
+    ret += get_begin_of_table()
     i = 7
     while i < len(content_split) and content_split[i] != '':  # content of report. Lines with intervals.
         line = get_latex_line(content_split[i], texts)
-        ret.join(line).join('\n')
+        ret += line
+        ret += '\n'
         i += 1
     while i < len(content_split):
-        ret.join(content_split[i]).join('\n')
+        ret += content_split[i]
+        ret += '\n'
         i += 1
     return ret
