@@ -4,7 +4,7 @@ from os import makedirs
 from os.path import dirname, abspath, join, exists
 from shutil import rmtree
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
@@ -336,7 +336,7 @@ class TestPdfGenerator(TestCase):
 
         self.assertEqual(PdfCreatingDto, type(pdf_creating_dto))
         self.assertEqual('something', pdf_creating_dto.keys_for_template['vars']['nist_report_dict'])
-        f_prepare_nist.assert_called_once_with(deepcopy(stats_dict))
+        f_prepare_nist.assert_called_once_with(deepcopy(stats_dict), 'en')
 
     def test_prepare_dict_from_charts_storage_none_storage(self):
         ret = self.pdf_generator.prepare_dict_from_charts_storage(None, 'en')
@@ -673,12 +673,12 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(exp_dict, ret)
 
     def test_prepare_nist_report_dict_none_input(self):
-        ret = self.pdf_generator.prepare_nist_report_dict(None)
+        ret = self.pdf_generator.prepare_nist_report_dict(None, 'en')
         self.assertIsNone(ret)
 
-    @patch('pdf_generating.pdf_generator.escape_latex_special_chars', side_effect=lambda x: x)
+    @patch('pdf_generating.pdf_generator.convert_report_to_latex', side_effect=['file 1 content', 'file 2 content'])
     @patch('managers.filemanager.FileManager.get_file_by_id', side_effect=get_file_by_id)
-    def test_prepare_nist_report(self, f_get_file, f_escape):
+    def test_prepare_nist_report(self, f_get_file, f_convert):
         file1_id = FileIdData.file1_id
         file1_path = join(working_dir, 'file1')
         file1_content = 'file 1 content'
@@ -687,18 +687,15 @@ class TestPdfGenerator(TestCase):
         file2_path = join(working_dir, 'file2')
         file2_content = 'file 2 content'
 
-        with open(file1_path, 'w') as f:
-            f.write(file1_content)
-        with open(file2_path, 'w') as f:
-            f.write(file2_content)
-
         in_dict = {file1_id: file1_path, file2_id: file2_path}
         expected = {file1_id: {'file_name': 'First file', 'content': file1_content},
                     file2_id: {'file_name': 'Second file', 'content': file2_content}}
-        ret = self.pdf_generator.prepare_nist_report_dict(in_dict)
+        ret = self.pdf_generator.prepare_nist_report_dict(in_dict, 'en')
         self.assertEqual(expected, ret)
-        self.assertEqual(2, f_escape.call_count)
-        self.assertEqual(2, f_get_file.call_count)
+        calls = [call(file1_id), call(file2_id)]
+        f_get_file.assert_has_calls(calls)
+        calls = [call(file1_path, self.texts['en']), call(file2_path, self.texts['en'])]
+        f_convert.assert_has_calls(calls)
 
     def get_charts_storage_and_dict(self):
         charts_storage = ChartsStorage()

@@ -29,6 +29,7 @@ from pdf_generating.pdf_creating_error import PdfCreatingError
 from pdf_generating.pdf_creator import PdfCreator
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
 from pdf_generating.pdf_generating_error import PdfGeneratingError
+from pdf_generating.report_to_latex import convert_report_to_latex
 
 this_dir = dirname(abspath(__file__))
 
@@ -118,7 +119,7 @@ class PdfGenerator:
         template_path = abspath(join(this_dir, self.config_storage.path_to_tex_templates, 'report_template.tex'))
         vars_dict = self.prepare_dict_from_charts_storage(storage, pdf_generating_dto.language)
         config_parser = self._texts[pdf_generating_dto.language]
-        nist_dict = self.prepare_nist_report_dict(stats_dict)
+        nist_dict = self.prepare_nist_report_dict(stats_dict, pdf_generating_dto.language)
         keys_for_template = {'texts': config_parser, 'vars': {'package_language':
                                                                   self.supported_languages[pdf_generating_dto.language],
                                                               'charts': vars_dict,
@@ -261,16 +262,12 @@ class PdfGenerator:
             return None
         return self._stats_creator.create_stats_for_tests_ids(dto.test_ids, directory, dto.alpha)
 
-    def prepare_nist_report_dict(self, stats_dict: dict):
+    def prepare_nist_report_dict(self, stats_dict: dict, language: str):
         if stats_dict is None:
             return None
         ret = {}
         for key, value in stats_dict.items():
-            with open(value, 'r') as f:
-                content = f.read()
-            content = escape_latex_special_chars(content)
-            content = content.replace('\n', r'\\')
-            # content = content.replace('   ', r'\ \ \ \ ')
+            content = convert_report_to_latex(value, self._texts[language])
             file_name = self._file_dao.get_file_by_id(key).name
             report_data = {'content': content, 'file_name': file_name}
             ret[key] = report_data

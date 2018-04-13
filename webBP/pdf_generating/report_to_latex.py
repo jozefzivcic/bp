@@ -140,8 +140,11 @@ def convert_report_to_latex(report_path: str, texts: ConfigParser) -> str:
         ret += line
         ret += '\n'
         i += 1
+    ret += get_end_of_table()
     while i < len(content_split):
         ret += content_split[i]
+        if content_split[i] != '':
+            ret += r'\\'
         ret += '\n'
         i += 1
     return ret

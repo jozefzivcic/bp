@@ -299,12 +299,13 @@ class TestReportToLatex(TestCase):
               r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline' + '\n' \
               r'98 & 94 & 88 & 111 & 108 & 70 & 93 & 87 & 150 & 77 & 0.000001 * & 0.206107 & 0.9826 & FrequencyT\\' + '\n' \
               r'95 & 82 & 100 & 116 & 83 & 93 & 75 & 135 & 78 & 119 & 0.000027 * & 0.028351 & 0.9857 & Cumulative SumsT\\' + '\n' \
-              r'99 & 91 & 101 & 87 & 100 & 97 & 97 & 127 & 84 & 93 & 0.167805 & 0.129834 & 0.9836 & Cumulative SumsT\\' + '\n\n\n' \
-              r'- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' + '\n' \
-              r'The minimum pass rate for each statistical test with the exception of the' + '\n' \
-              r'random excursion (variant) test is approximately = 0.980561 for a' + '\n' \
-              r'sample size = 1000 binary sequences.' + '\n\n' \
-              r'For further guidelines construct a probability table using the MAPLE program' + '\n' \
-              r'provided in the addendum section of the documentation.' + '\n' \
-              r'- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -' + '\n'
+              r'99 & 91 & 101 & 87 & 100 & 97 & 97 & 127 & 84 & 93 & 0.167805 & 0.129834 & 0.9836 & Cumulative SumsT\\' + '\n' \
+              r'\end{tabular}' + '\n\n\n'  \
+              r'- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\\' + '\n' \
+              r'The minimum pass rate for each statistical test with the exception of the\\' + '\n' \
+              r'random excursion (variant) test is approximately = 0.980561 for a\\' + '\n' \
+              r'sample size = 1000 binary sequences.\\' + '\n\n' \
+              r'For further guidelines construct a probability table using the MAPLE program\\' + '\n' \
+              r'provided in the addendum section of the documentation.\\' + '\n' \
+              r'- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\\' + '\n'
         self.assertEqual(exp, ret)
