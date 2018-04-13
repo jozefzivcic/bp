@@ -1,10 +1,88 @@
+from configparser import ConfigParser
 from unittest import TestCase
 from unittest.mock import patch, call
 
-from pdf_generating.report_to_latex import parse_line, get_header, get_begin_of_table, get_end_of_table, get_latex_line
+from enums.nist_test_type import NistTestType
+from pdf_generating.report_to_latex import parse_line, get_header, get_begin_of_table, get_end_of_table, get_latex_line, \
+    get_test_type_from_name, get_shorten_test_name
 
 
 class TestReportToLatex(TestCase):
+    def test_get_type_from_name_raises(self):
+        with self.assertRaises(RuntimeError) as ex:
+            get_test_type_from_name('asdf')
+        self.assertEqual('Undefined name of test: "asdf"', str(ex.exception))
+
+    def test_get_type_from_name(self):
+        names = ['Frequency', 'Block Frequency', 'Cumulative Sums', 'Runs', 'Longest Run of Ones', 'Rank',
+                 'Discrete Fourier Transform', 'Nonperiodic Template Matchings', 'Overlapping Template Matchings',
+                 'Universal Statistical', 'Approximate Entropy', 'Random Excursions', 'Random Excursions Variant',
+                 'Serial', 'Linear Complexity']
+        for i, t_type in enumerate(NistTestType):
+            name = names[i]
+            ret = get_test_type_from_name(name)
+            self.assertEqual(t_type, ret)
+
+    def test_get_shorten_test_name_raises(self):
+        with self.assertRaises(RuntimeError) as ex:
+            get_shorten_test_name(16, None)
+        self.assertEqual('Undefined type of test: "16"', str(ex.exception))
+
+    def test_get_shorten_test_name(self):
+        in_dict = {'Freq': 'Frequency', 'BFreq': 'Block Frequency', 'CuSums': 'Cummulative Sums', 'Runs': 'Runs',
+                   'LongRun': 'Longest Run', 'Rank': 'Rank', 'FFT': 'FFT', 'Nonperiodic': 'Nonperiodic Template Match',
+                   'Overlapping': 'Overlapping Template Matchings', 'Universal': 'Universal Statistical',
+                   'Approx': 'Approximate Entropy', 'RandExcs': 'Random Excursions',
+                   'RandExcsVar': 'Random Excursions Variant', 'Serial': 'Serial', 'Linear': 'Linear'}
+        data = {'ShortNames': in_dict}
+        cfg = ConfigParser()
+        cfg.read_dict(data)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_FREQUENCY, cfg)
+        self.assertEqual(in_dict['Freq'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_BLOCK_FREQUENCY, cfg)
+        self.assertEqual(in_dict['BFreq'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_CUSUM, cfg)
+        self.assertEqual(in_dict['CuSums'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_RUNS, cfg)
+        self.assertEqual(in_dict['Runs'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_LONGEST_RUN, cfg)
+        self.assertEqual(in_dict['LongRun'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_RANK, cfg)
+        self.assertEqual(in_dict['Rank'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_FFT, cfg)
+        self.assertEqual(in_dict['FFT'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_NONPERIODIC, cfg)
+        self.assertEqual(in_dict['Nonperiodic'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_OVERLAPPING, cfg)
+        self.assertEqual(in_dict['Overlapping'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_UNIVERSAL, cfg)
+        self.assertEqual(in_dict['Universal'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_APEN, cfg)
+        self.assertEqual(in_dict['Approx'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_RND_EXCURSION, cfg)
+        self.assertEqual(in_dict['RandExcs'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_RND_EXCURSION_VAR, cfg)
+        self.assertEqual(in_dict['RandExcsVar'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_SERIAL, cfg)
+        self.assertEqual(in_dict['Serial'], test_name)
+
+        test_name = get_shorten_test_name(NistTestType.TEST_LINEARCOMPLEXITY, cfg)
+        self.assertEqual(in_dict['Linear'], test_name)
+
     def test_parse_line(self):
         line = '  1   9   12   125 4567   505   11   6   456   87456  0.437274    0.675978   0.785465 Block Fr equency'
         groups = parse_line(line)
@@ -46,7 +124,7 @@ class TestReportToLatex(TestCase):
         f_escape.assert_has_calls(calls)
 
     def test_get_begin_of_table(self):
-        expected = r'\hskip-0.7cm\begin{tabular}{llllllllllllll}' + '\n'\
+        expected = r'\hskip-0.7cm\begin{tabular}{llllllllllllll}' + '\n' \
                    + r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline'
         ret = get_begin_of_table()
         self.assertEqual(expected, ret)
@@ -67,6 +145,3 @@ class TestReportToLatex(TestCase):
     @patch('pdf_generating.report_to_latex.parse_line', return_value=['0', '45', '0.0456', 'Text'])
     def test_get_latex_line(self, f_parse):
         expected = '0 & 45 & 0.0456 & Replaced text'
-
-
-

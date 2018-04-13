@@ -39,11 +39,42 @@ def get_test_type_from_name(name: str) -> NistTestType:
     elif name == 'Linear Complexity':
         return NistTestType.TEST_LINEARCOMPLEXITY
     else:
-        raise RuntimeError('Undifined name of test: "{}"'.format(name))
+        raise RuntimeError('Undefined name of test: "{}"'.format(name))
 
 
 def get_shorten_test_name(t_type: NistTestType, texts: ConfigParser) -> str:
-    pass
+    if t_type == NistTestType.TEST_FREQUENCY:
+        return texts.get('ShortNames', 'Freq')
+    elif t_type == NistTestType.TEST_BLOCK_FREQUENCY:
+        return texts.get('ShortNames', 'BFreq')
+    elif t_type == NistTestType.TEST_CUSUM:
+        return texts.get('ShortNames', 'CuSums')
+    elif t_type == NistTestType.TEST_RUNS:
+        return texts.get('ShortNames', 'Runs')
+    elif t_type == NistTestType.TEST_LONGEST_RUN:
+        return texts.get('ShortNames', 'LongRun')
+    elif t_type == NistTestType.TEST_RANK:
+        return texts.get('ShortNames', 'Rank')
+    elif t_type == NistTestType.TEST_FFT:
+        return texts.get('ShortNames', 'FFT')
+    elif t_type == NistTestType.TEST_NONPERIODIC:
+        return texts.get('ShortNames', 'Nonperiodic')
+    elif t_type == NistTestType.TEST_OVERLAPPING:
+        return texts.get('ShortNames', 'Overlapping')
+    elif t_type == NistTestType.TEST_UNIVERSAL:
+        return texts.get('ShortNames', 'Universal')
+    elif t_type == NistTestType.TEST_APEN:
+        return texts.get('ShortNames', 'Approx')
+    elif t_type == NistTestType.TEST_RND_EXCURSION:
+        return texts.get('ShortNames', 'RandExcs')
+    elif t_type == NistTestType.TEST_RND_EXCURSION_VAR:
+        return texts.get('ShortNames', 'RandExcsVar')
+    elif t_type == NistTestType.TEST_SERIAL:
+        return texts.get('ShortNames', 'Serial')
+    elif t_type == NistTestType.TEST_LINEARCOMPLEXITY:
+        return texts.get('ShortNames', 'Linear')
+    else:
+        raise RuntimeError('Undefined type of test: "{}"'.format(t_type))
 
 
 def parse_line(line: str) -> tuple:
