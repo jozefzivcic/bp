@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch, call
 
-from pdf_generating.report_to_latex import parse_line, get_header, get_begin_of_table
+from pdf_generating.report_to_latex import parse_line, get_header, get_begin_of_table, get_end_of_table, get_latex_line
 
 
 class TestReportToLatex(TestCase):
@@ -50,3 +50,23 @@ class TestReportToLatex(TestCase):
                    + r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline'
         ret = get_begin_of_table()
         self.assertEqual(expected, ret)
+
+    def test_get_end_of_table(self):
+        expected = r'\end{tabular}' + '\n'
+        ret = get_end_of_table()
+        self.assertEqual(expected, ret)
+
+    @patch('pdf_generating.report_to_latex.parse_line', return_value=None)
+    def test_get_latex_line_raises(self, f_parse):
+        with self.assertRaises(RuntimeError) as ex:
+            get_latex_line('some line', None)
+        self.assertEqual('Wrong format of line: "some line"', str(ex.exception))
+        calls = [call('some line')]
+        f_parse.assert_has_calls(calls)
+
+    @patch('pdf_generating.report_to_latex.parse_line', return_value=['0', '45', '0.0456', 'Text'])
+    def test_get_latex_line(self, f_parse):
+        expected = '0 & 45 & 0.0456 & Replaced text'
+
+
+
