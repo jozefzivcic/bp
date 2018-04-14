@@ -1,6 +1,7 @@
 class DataForProportionsDrawer(object):
     def __init__(self, title: str, x_label: str, y_label: str, y_lim_low: float, y_lim_high: float, x_ticks_pos: list,
-                 x_ticks_lab: list, x_values: list, y_values: list, y_interval_low: float, y_interval_high: float):
+                 x_ticks_lab: list, x_values: list, y_values: list, y_interval_low: float, y_interval_high: float,
+                 y_interval_mid: float):
         self.title = title
         self.x_label = x_label
         self.y_label = y_label
@@ -12,3 +13,4 @@ class DataForProportionsDrawer(object):
         self.y_values = y_values
         self.y_interval_low = y_interval_low
         self.y_interval_high = y_interval_high
+        self.y_interval_mid = y_interval_mid

@@ -16,6 +16,7 @@ class ProportionsDrawer(object):
         ax.plot(data.x_values, data.y_values, marker='.', linestyle='None')
         ax.axhline(y=data.y_interval_low, color='r', linestyle='--', linewidth=0.5)
         ax.axhline(y=data.y_interval_high, color='r', linestyle='--', linewidth=0.5)
+        ax.axhline(y=data.y_interval_mid, color='k', linestyle='-', linewidth=0.5)
 
         fig.autofmt_xdate()
         fig.savefig(file_name, dpi=300)
