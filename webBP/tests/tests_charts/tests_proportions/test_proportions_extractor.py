@@ -1,10 +1,13 @@
 from unittest import TestCase
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 
+from charts.dto.proportions_dto import ProportionsDto
 from charts.proportions.proportions_extractor import ProportionsExtractor
 from enums.prop_formula import PropFormula
 from models.test import Test
-from tests.data_for_tests.common_data import TestsIdData
+from p_value_processing.p_values_accumulator import PValuesAccumulator
+from p_value_processing.p_values_dto import PValuesDto
+from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
 
 
@@ -23,6 +26,72 @@ class TestProportionsExtractor(TestCase):
         self.mock()
         self.config_storage = MagicMock(nist='nist')
         self.extractor = ProportionsExtractor(None, self.config_storage)
+
+    @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_test_name',
+           side_effect=lambda tid, data_num=None: 'tid: {} data: {}'.format(tid, data_num))
+    @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_proportions',
+           side_effect=lambda p, a, num: p[0])
+    def test_process_pvals(self, f_get_prop, f_get_name):
+        dto_13 = PValuesDto(dict_for_test_13)
+        dto_14 = PValuesDto(dict_for_test_14)
+        dto_41 = PValuesDto(dict_for_test_41)
+        acc = PValuesAccumulator()
+        acc.add(TestsIdData.test1_id, dto_13)
+        acc.add(TestsIdData.test2_id, dto_14)
+        acc.add(TestsIdData.test3_id, dto_41)
+        prop_dto = ProportionsDto(0.07, 'title', 'x_label', 'y_label', PropFormula.ORIGINAL)
+        num_of_seqcs = 10
+        ret_ticks, ret_y_values = self.extractor.process_p_vals(acc, prop_dto, num_of_seqcs)
+        exp_x_ticks = ['tid: {} data: None'.format(TestsIdData.test1_id),
+                       'tid: {} data: 1'.format(TestsIdData.test2_id),
+                       'tid: {} data: 2'.format(TestsIdData.test2_id),
+                       'tid: {} data: 1'.format(TestsIdData.test3_id),
+                       'tid: {} data: 2'.format(TestsIdData.test3_id)]
+        exp_y_values = [0.857153, 0.593063, 0.759852, 0.980129, 0.759325]
+        self.assertEqual(exp_x_ticks, ret_ticks)
+        for i, p in enumerate(exp_y_values):
+            self.assertAlmostEqual(p, ret_y_values[i], 6, msg='Differ at index {}'.format(i))
+        calls = [call(dict_for_test_13['results'], 0.07, 10),
+                 call(dict_for_test_14['data1'], 0.07, 10),
+                 call(dict_for_test_14['data2'], 0.07, 10),
+                 call(dict_for_test_41['data1'], 0.07, 10),
+                 call(dict_for_test_41['data2'], 0.07, 10)]
+        f_get_prop.assert_has_calls(calls)
+        calls = [call(TestsIdData.test1_id), call(TestsIdData.test2_id, 1), call(TestsIdData.test2_id, 2),
+                 call(TestsIdData.test3_id, 1), call(TestsIdData.test3_id, 2)]
+        f_get_name.assert_has_calls(calls)
+
+    def test_get_proportions_raises(self):
+        with self.assertRaises(RuntimeError) as ex:
+            self.extractor.get_proportions([0.456, 0.654], 0.01, 3)
+        self.assertEqual('Number of p_values in file is different than given as a parameter streams. (2, 3)',
+                         str(ex.exception))
+
+    def test_get_proportions_all_zeros(self):
+        p_values = [0.0] * 100
+        ret = self.extractor.get_proportions(p_values, 0.01, 100)
+        self.assertEqual(0.0, ret)
+
+    def test_get_proportions(self):
+        p_values = [0.0, 0.456, 0.05, 0.01, 0.1, 0.0, 0.98, 1.0, 0.654, 0.04999999]
+        ret = self.extractor.get_proportions(p_values, 0.05, 10)
+        self.assertAlmostEqual(0.75, ret, 6)
+
+    def test_get_proportions_more_data(self):
+        p_values = [
+            0.846090, 0.095798, 0.085431, 0.359100, 0.114683, 0.953329, 0.242417, 0.951216, 0.027401, 0.002575,
+            0.441195, 0.351895, 0.223889, 0.595314, 0.335057, 0.951216, 0.714655, 0.935908, 0.529885, 0.382954,
+            0.564179, 0.380169, 0.342984, 0.371863, 0.454927, 0.579273, 0.874404, 0.166459, 0.132430, 0.035965,
+            0.154302, 0.792141, 0.233750, 0.786588, 0.353690, 0.185948, 0.681264, 0.690668, 0.543000, 0.612262,
+            0.438268, 0.178090, 0.390421, 0.335934, 0.695335, 0.191527, 0.642806, 0.735254, 0.707350, 0.164762,
+            0.983074, 0.125835, 0.659302, 0.855273, 0.010035, 0.631047, 0.130045, 0.932474, 0.789770, 0.801486,
+            0.271153, 0.076920, 0.182898, 0.869626, 0.054023, 0.404572, 0.716470, 0.963136, 0.410284, 0.000486,
+            0.885304, 0.642806, 0.540982, 0.363636, 0.660266, 0.567201, 0.359100, 0.730829, 0.812851, 0.512759,
+            0.892400, 0.502709, 0.230197, 0.907661, 0.488682, 0.058378, 0.842052, 0.228786, 0.367282, 0.094681,
+            0.296823, 0.020780, 0.019006, 0.558131, 0.962384, 0.683152, 0.300951, 0.254280, 0.707350, 0.076607
+        ]
+        ret = self.extractor.get_proportions(p_values, 0.01, 100)
+        self.assertAlmostEqual(0.98, ret, 6)
 
     def test_get_interval_raises(self):
         with self.assertRaises(RuntimeError) as ex:

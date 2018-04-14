@@ -25,7 +25,20 @@ class ProportionsExtractor(object):
         num_of_seqcs = self._nist_dao.get_nist_param_for_test(test).streams
         low, mid, high = self.get_interval(prop_dto.formula, prop_dto.alpha, num_of_seqcs)
         limit_low, limit_high = low - 0.2, high + 0.2
-        index = 0
+
+        x_ticks, y_values = self.process_p_vals(acc, prop_dto, num_of_seqcs)
+
+        x_ticks_pos = list(range(0, len(x_ticks)))
+        x_values = list(x_ticks_pos)
+        x_ticks_pos, x_ticks = self.filter_x_ticks(x_ticks_pos, x_ticks)
+        data_drawer = DataForProportionsDrawer(prop_dto.title, prop_dto.x_label, prop_dto.y_label, limit_low,
+                                               limit_high, x_ticks_pos, x_ticks, x_values, y_values, low, high, mid)
+        ex_data = ExtractedData()
+        ex_data.add_data(None, data_drawer)
+        return ex_data
+
+    def process_p_vals(self, acc: PValuesAccumulator, prop_dto: ProportionsDto, num_of_seqcs: int):
+        test_ids = acc.get_all_test_ids()
         x_ticks = []
         y_values = []
         for test_id in test_ids:
@@ -37,22 +50,13 @@ class ProportionsExtractor(object):
                     test_name = self.get_test_name(test_id, data_num)
                     x_ticks.append(test_name)
                     y_values.append(proportions)
-                    index += 1
             else:
                 p_values = dto.get_results_p_values()
                 proportions = self.get_proportions(p_values, prop_dto.alpha, num_of_seqcs)
                 test_name = self.get_test_name(test_id)
                 x_ticks.append(test_name)
                 y_values.append(proportions)
-                index += 1
-        x_ticks_pos = list(range(0, index))
-        x_values = list(x_ticks_pos)
-        x_ticks_pos, x_ticks = self.filter_x_ticks(x_ticks_pos, x_ticks)
-        data_drawer = DataForProportionsDrawer(prop_dto.title, prop_dto.x_label, prop_dto.y_label, limit_low,
-                                               limit_high, x_ticks_pos, x_ticks, x_values, y_values, low, high, mid)
-        ex_data = ExtractedData()
-        ex_data.add_data(None, data_drawer)
-        return ex_data
+        return x_ticks, y_values
 
     def get_proportions(self, p_values: list, alpha: float, exp_len: int) -> float:
         if exp_len != len(p_values):
@@ -95,4 +99,3 @@ class ProportionsExtractor(object):
 
     def filter_x_ticks(self, x_ticks_pos: list, x_ticks: list) -> tuple:
         return x_ticks_pos, x_ticks
-
