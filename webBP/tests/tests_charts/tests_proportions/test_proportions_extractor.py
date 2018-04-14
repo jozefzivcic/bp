@@ -2,13 +2,22 @@ from unittest import TestCase
 from unittest.mock import patch, MagicMock, call
 
 from charts.dto.proportions_dto import ProportionsDto
+from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
 from charts.proportions.proportions_extractor import ProportionsExtractor
 from enums.prop_formula import PropFormula
 from models.test import Test
+from models.nistparam import NistParam
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
+
+
+def mock_get_nist_param(test: Test) -> NistParam:
+    nist_param = NistParam()
+    nist_param.test_id = test.id
+    nist_param.streams = 1101
+    return nist_param
 
 
 class TestProportionsExtractor(TestCase):
@@ -26,6 +35,46 @@ class TestProportionsExtractor(TestCase):
         self.mock()
         self.config_storage = MagicMock(nist='nist')
         self.extractor = ProportionsExtractor(None, self.config_storage)
+
+    @patch('charts.proportions.proportions_extractor.ProportionsExtractor.filter_x_ticks',
+           side_effect=lambda p, t: (p, t))
+    @patch('charts.proportions.proportions_extractor.ProportionsExtractor.process_p_vals',
+           side_effect=lambda a, p, n: (['t1', 't2'], ['value1', 'value2']))
+    @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_interval',
+           side_effect=lambda f, a, n: (0.85, 0.9, 0.95))
+    @patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test', side_effect=mock_get_nist_param)
+    def test_get_data_from_acc(self, f_get_param, f_get_interval, f_process, f_filter):
+        dto_13 = PValuesDto(dict_for_test_13)
+        dto_14 = PValuesDto(dict_for_test_14)
+        dto_41 = PValuesDto(dict_for_test_41)
+        acc = PValuesAccumulator()
+        acc.add(TestsIdData.test1_id, dto_13)
+        acc.add(TestsIdData.test2_id, dto_14)
+        acc.add(TestsIdData.test3_id, dto_41)
+        prop_dto = ProportionsDto(0.07, 'title', 'x_label', 'y_label', PropFormula.ORIGINAL)
+        ex_data = self.extractor.get_data_from_accumulator(acc, prop_dto)
+
+        self.assertEqual(1, len(ex_data.get_all_data()))
+        self.assertEqual(1, f_get_param.call_count)
+        calls = [call(PropFormula.ORIGINAL, 0.07, 1101)]
+        f_get_interval.assert_has_calls(calls)
+        self.assertEqual(1, f_process.call_count)
+        calls = [call([0, 1], ['t1', 't2'])]
+        f_filter.assert_has_calls(calls)
+
+        data = ex_data.get_all_data()[0][1]  # type: DataForProportionsDrawer
+        self.assertEqual(prop_dto.title, data.title)
+        self.assertEqual(prop_dto.x_label, data.x_label)
+        self.assertEqual(prop_dto.y_label, data.y_label)
+        self.assertAlmostEqual(0.65, data.y_lim_low, 6)
+        self.assertAlmostEqual(1.0, data.y_lim_high, 6)
+        self.assertEqual([0, 1], data.x_ticks_pos)
+        self.assertEqual(['t1', 't2'], data.x_ticks_lab)
+        self.assertEqual([0, 1], data.x_values)
+        self.assertEqual(['value1', 'value2'], data.y_values)
+        self.assertAlmostEqual(0.85, data.y_interval_low, 6)
+        self.assertAlmostEqual(0.95, data.y_interval_high, 6)
+        self.assertAlmostEqual(0.9, data.y_interval_mid, 6)
 
     @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_test_name',
            side_effect=lambda tid, data_num=None: 'tid: {} data: {}'.format(tid, data_num))

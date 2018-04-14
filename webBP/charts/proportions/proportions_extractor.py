@@ -24,7 +24,8 @@ class ProportionsExtractor(object):
         test = self._test_dao.get_test_by_id(test_ids[0])
         num_of_seqcs = self._nist_dao.get_nist_param_for_test(test).streams
         low, mid, high = self.get_interval(prop_dto.formula, prop_dto.alpha, num_of_seqcs)
-        limit_low, limit_high = low - 0.2, high + 0.2
+        limit_low = max(low - 0.2, 0.0)
+        limit_high = min(high + 0.2, 1.0)
 
         x_ticks, y_values = self.process_p_vals(acc, prop_dto, num_of_seqcs)
 
