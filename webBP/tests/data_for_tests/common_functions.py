@@ -94,6 +94,8 @@ def db_test_dao_get_test_by_id(test_id: int) -> Test:
 
 def nist_dao_get_nist_param_for_test(test: Test) -> NistParam:
     param = NistParam()
+    param.test_id = test.id
+    param.streams = 10
     if TestsIdData.test1_id == test.id:
         param.test_number = 1
         return param

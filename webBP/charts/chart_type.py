@@ -11,3 +11,4 @@ class ChartType(Enum):
     TESTS_DEPENDENCY = 4
     ECDF = 5
     BOXPLOT_PT = 6
+    PROPORTIONS = 7
