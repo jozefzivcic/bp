@@ -83,6 +83,9 @@ class ProportionsExtractor(object):
 
     def get_test_name(self, test_id: int, data_num: int=None) -> str:
         test = self._test_dao.get_test_by_id(test_id)
+        if test.test_table != self._config_storage.nist:
+            raise RuntimeError('Undefined table "{}" for test_id: {}. Expected "nist" as test table'
+                               .format(test.test_table, test_id))
         nist_param = self._nist_dao.get_nist_param_for_test(test)
         test_name = nist_param.get_test_name()
         ret = '{} ({})'.format(test_name, test_id)
