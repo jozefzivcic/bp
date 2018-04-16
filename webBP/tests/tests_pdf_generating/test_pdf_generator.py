@@ -18,6 +18,7 @@ from common.error.test_dep_seq_len_err import TestDepSeqLenErr
 from common.helper_functions import load_texts_into_config_parsers
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
+from enums.nist_test_type import NistTestType
 from enums.prop_formula import PropFormula
 from enums.test_dep_pairs import TestDepPairs
 from p_value_processing.p_value_sequence import PValueSequence
@@ -394,6 +395,7 @@ class TestPdfGenerator(TestCase):
                 return 'test dependency'
             elif t == ChartType.HISTOGRAM:
                 return 'histogram_chart'
+
         func.side_effect = f
         txt_dict = {'General': {'Results': 'results', 'Data': 'data', 'TestId': 'test_id'},
                     'PValuesChart': {'PValuesChart': 'p-values chart'},
@@ -429,7 +431,7 @@ class TestPdfGenerator(TestCase):
                                                     }},
                     'infos': {'test dependency': ['0.456 True', '0.951 False']},
                     'errors': {'histogram\\_chart': ['test_id: {} results test_id: {} data 2 45 456'
-                                                 .format(TestsIdData.test1_id, TestsIdData.test2_id)]}
+                                                         .format(TestsIdData.test1_id, TestsIdData.test2_id)]}
 
                     }
         ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
@@ -673,7 +675,8 @@ class TestPdfGenerator(TestCase):
         ret = self.pdf_generator.create_nist_report(pdf_dto, working_dir)
         self.assertIsNone(ret)
 
-    @patch('nist_statistics.statistics_creator.StatisticsCreator.create_stats_for_tests_ids', return_value={'key': 'value', 'a': 'b'})
+    @patch('nist_statistics.statistics_creator.StatisticsCreator.create_stats_for_tests_ids',
+           return_value={'key': 'value', 'a': 'b'})
     def test_create_nist_report(self, f_create_stats):
         pdf_dto = PdfGeneratingDto()
         alpha = 456
@@ -710,6 +713,59 @@ class TestPdfGenerator(TestCase):
         f_get_file.assert_has_calls(calls)
         calls = [call(file1_path, self.texts['en']), call(file2_path, self.texts['en'])]
         f_convert.assert_has_calls(calls)
+
+    def test_get_short_tests_names(self):
+        en_dict_in = {'Freq': 'Frequency', 'BFreq': 'Block Frequency', 'CuSums': 'Cumulative Sums', 'Runs': 'Runs',
+                      'LongRun': 'Longest run of ones', 'Rank': 'Rank', 'FFT': 'FFT',
+                      'Nonperiodic': 'Nonoverlapping template matchings', 'Overlapping': 'Overlapping TM',
+                      'Universal': 'Universal', 'Approx': 'Approximate entropy', 'RandExcs': 'Random excursions',
+                      'RandExcsVar': 'Random excursions variant', 'Serial': 'Serial', 'Linear': 'Linear'}
+        en_dict = {'ShortNames': en_dict_in}
+        en_cfg = ConfigParser()
+        en_cfg.read_dict(en_dict)
+        an_dict_in = {'Freq': 'FrequencyA', 'BFreq': 'Block FrequencyA', 'CuSums': 'Cumulative SumsA', 'Runs': 'RunsA',
+                      'LongRun': 'Longest run of onesA', 'Rank': 'RankA', 'FFT': 'FFTA',
+                      'Nonperiodic': 'Nonoverlapping template matchingsA', 'Overlapping': 'Overlapping TMA',
+                      'Universal': 'UniversalA', 'Approx': 'Approximate entropyA', 'RandExcs': 'Random excursionsA',
+                      'RandExcsVar': 'Random excursions variantA', 'Serial': 'SerialA', 'Linear': 'LinearA'}
+        an_dict = {'ShortNames': an_dict_in}
+        an_cfg = ConfigParser()
+        an_cfg.read_dict(an_dict)
+        texts = {'en': en_cfg, 'an': an_cfg}
+        ret = self.pdf_generator.get_short_tests_names(texts)
+        ret_en = ret.get('en')
+        ret_an = ret.get('an')
+        self.assertEqual(en_dict_in['Freq'], ret_en.get(NistTestType.TEST_FREQUENCY))
+        self.assertEqual(en_dict_in['BFreq'], ret_en.get(NistTestType.TEST_BLOCK_FREQUENCY))
+        self.assertEqual(en_dict_in['CuSums'], ret_en.get(NistTestType.TEST_CUSUM))
+        self.assertEqual(en_dict_in['Runs'], ret_en.get(NistTestType.TEST_RUNS))
+        self.assertEqual(en_dict_in['LongRun'], ret_en.get(NistTestType.TEST_LONGEST_RUN))
+        self.assertEqual(en_dict_in['Rank'], ret_en.get(NistTestType.TEST_RANK))
+        self.assertEqual(en_dict_in['FFT'], ret_en.get(NistTestType.TEST_FFT))
+        self.assertEqual(en_dict_in['Nonperiodic'], ret_en.get(NistTestType.TEST_NONPERIODIC))
+        self.assertEqual(en_dict_in['Overlapping'], ret_en.get(NistTestType.TEST_OVERLAPPING))
+        self.assertEqual(en_dict_in['Universal'], ret_en.get(NistTestType.TEST_UNIVERSAL))
+        self.assertEqual(en_dict_in['Approx'], ret_en.get(NistTestType.TEST_APEN))
+        self.assertEqual(en_dict_in['RandExcs'], ret_en.get(NistTestType.TEST_RND_EXCURSION))
+        self.assertEqual(en_dict_in['RandExcsVar'], ret_en.get(NistTestType.TEST_RND_EXCURSION_VAR))
+        self.assertEqual(en_dict_in['Serial'], ret_en.get(NistTestType.TEST_SERIAL))
+        self.assertEqual(en_dict_in['Linear'], ret_en.get(NistTestType.TEST_LINEARCOMPLEXITY))
+
+        self.assertEqual(an_dict_in['Freq'], ret_an.get(NistTestType.TEST_FREQUENCY))
+        self.assertEqual(an_dict_in['BFreq'], ret_an.get(NistTestType.TEST_BLOCK_FREQUENCY))
+        self.assertEqual(an_dict_in['CuSums'], ret_an.get(NistTestType.TEST_CUSUM))
+        self.assertEqual(an_dict_in['Runs'], ret_an.get(NistTestType.TEST_RUNS))
+        self.assertEqual(an_dict_in['LongRun'], ret_an.get(NistTestType.TEST_LONGEST_RUN))
+        self.assertEqual(an_dict_in['Rank'], ret_an.get(NistTestType.TEST_RANK))
+        self.assertEqual(an_dict_in['FFT'], ret_an.get(NistTestType.TEST_FFT))
+        self.assertEqual(an_dict_in['Nonperiodic'], ret_an.get(NistTestType.TEST_NONPERIODIC))
+        self.assertEqual(an_dict_in['Overlapping'], ret_an.get(NistTestType.TEST_OVERLAPPING))
+        self.assertEqual(an_dict_in['Universal'], ret_an.get(NistTestType.TEST_UNIVERSAL))
+        self.assertEqual(an_dict_in['Approx'], ret_an.get(NistTestType.TEST_APEN))
+        self.assertEqual(an_dict_in['RandExcs'], ret_an.get(NistTestType.TEST_RND_EXCURSION))
+        self.assertEqual(an_dict_in['RandExcsVar'], ret_an.get(NistTestType.TEST_RND_EXCURSION_VAR))
+        self.assertEqual(an_dict_in['Serial'], ret_an.get(NistTestType.TEST_SERIAL))
+        self.assertEqual(an_dict_in['Linear'], ret_an.get(NistTestType.TEST_LINEARCOMPLEXITY))
 
     def get_charts_storage_and_dict(self):
         charts_storage = ChartsStorage()

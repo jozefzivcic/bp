@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 from os.path import dirname, abspath, join
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -19,6 +20,7 @@ from common.helper_functions import load_texts_into_config_parsers, escape_latex
     convert_specs_to_seq_acc, convert_specs_to_p_value_seq, specs_list_to_p_value_seq_list
 from common.info.info import Info
 from configstorage import ConfigStorage
+from enums.nist_test_type import NistTestType
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
@@ -46,6 +48,7 @@ class PdfGenerator:
         self._pdf_creator = PdfCreator()
         path_to_texts = abspath(join(this_dir, storage.path_to_pdf_texts))
         self._texts = load_texts_into_config_parsers(path_to_texts)
+        self._short_test_names_dict = self.get_short_tests_names(self._texts)
         self.supported_languages = {'en': 'english'}
 
     def generate_pdf(self, pdf_generating_dto: PdfGeneratingDto):
@@ -281,4 +284,26 @@ class PdfGenerator:
             file_name = self._file_dao.get_file_by_id(key).name
             report_data = {'content': content, 'file_name': file_name}
             ret[key] = report_data
+        return ret
+
+    def get_short_tests_names(self, texts: dict):
+        ret = {}
+        for key, cfg in texts.items():  # type: (str, ConfigParser)
+            temp_dict = {}
+            temp_dict[NistTestType.TEST_FREQUENCY] = cfg.get('ShortNames', 'Freq')
+            temp_dict[NistTestType.TEST_BLOCK_FREQUENCY] = cfg.get('ShortNames', 'BFreq')
+            temp_dict[NistTestType.TEST_CUSUM] = cfg.get('ShortNames', 'CuSums')
+            temp_dict[NistTestType.TEST_RUNS] = cfg.get('ShortNames', 'Runs')
+            temp_dict[NistTestType.TEST_LONGEST_RUN] = cfg.get('ShortNames', 'LongRun')
+            temp_dict[NistTestType.TEST_RANK] = cfg.get('ShortNames', 'Rank')
+            temp_dict[NistTestType.TEST_FFT] = cfg.get('ShortNames', 'FFT')
+            temp_dict[NistTestType.TEST_NONPERIODIC] = cfg.get('ShortNames', 'Nonperiodic')
+            temp_dict[NistTestType.TEST_OVERLAPPING] = cfg.get('ShortNames', 'Overlapping')
+            temp_dict[NistTestType.TEST_UNIVERSAL] = cfg.get('ShortNames', 'Universal')
+            temp_dict[NistTestType.TEST_APEN] = cfg.get('ShortNames', 'Approx')
+            temp_dict[NistTestType.TEST_RND_EXCURSION] = cfg.get('ShortNames', 'RandExcs')
+            temp_dict[NistTestType.TEST_RND_EXCURSION_VAR] = cfg.get('ShortNames', 'RandExcsVar')
+            temp_dict[NistTestType.TEST_SERIAL] = cfg.get('ShortNames', 'Serial')
+            temp_dict[NistTestType.TEST_LINEARCOMPLEXITY] = cfg.get('ShortNames', 'Linear')
+            ret[key] = temp_dict
         return ret
