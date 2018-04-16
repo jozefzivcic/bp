@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock, call
 
 from charts.dto.proportions_dto import ProportionsDto
 from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
-from charts.proportions.different_num_of_pvals_error import DifferentNumOfPValsError
+from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.proportions.proportions_extractor import ProportionsExtractor
 from common.error.prop_diff_len_err import PropDiffLenErr
 from enums.nist_test_type import NistTestType

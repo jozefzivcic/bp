@@ -17,7 +17,7 @@ from charts.generate_charts_dto import GenerateChartsDto
 from charts.dto.histogram_dto import HistogramDto
 from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.dto.test_dependency_dto import TestDependencyDto
-from charts.proportions.different_num_of_pvals_error import DifferentNumOfPValsError
+from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.tests_in_chart import TestsInChart
 from common.error.prop_diff_len_err import PropDiffLenErr
 from enums.filter_uniformity import FilterUniformity

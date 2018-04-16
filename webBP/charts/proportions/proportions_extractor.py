@@ -3,7 +3,7 @@ import math
 from charts.dto.proportions_dto import ProportionsDto
 from charts.extracted_data import ExtractedData
 from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
-from charts.proportions.different_num_of_pvals_error import DifferentNumOfPValsError
+from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from common.error.prop_diff_len_err import PropDiffLenErr
 from configstorage import ConfigStorage
 from enums.prop_formula import PropFormula
