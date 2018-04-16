@@ -8,15 +8,20 @@ from charts.chart_info import ChartInfo
 from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
+from charts.charts_storage_item import ChartsStorageItem
 from charts.data_source_info import DataSourceInfo
 from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.dto.ecdf_dto import EcdfDto
+from charts.dto.proportions_dto import ProportionsDto
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.dto.histogram_dto import HistogramDto
 from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.dto.test_dependency_dto import TestDependencyDto
+from charts.proportions.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.tests_in_chart import TestsInChart
+from common.error.prop_diff_len_err import PropDiffLenErr
 from enums.filter_uniformity import FilterUniformity
+from enums.prop_formula import PropFormula
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
@@ -83,7 +88,7 @@ class TestChartsCreator(TestCase):
 
     def test_supported_charts(self):
         expected = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM,
-                    ChartType.TESTS_DEPENDENCY, ChartType.ECDF, ChartType.BOXPLOT_PT]
+                    ChartType.TESTS_DEPENDENCY, ChartType.ECDF, ChartType.BOXPLOT_PT, ChartType.PROPORTIONS]
         self.assertEqual(expected, self.charts_creator.supported_charts)
 
     def test_reset(self):
@@ -503,6 +508,51 @@ class TestChartsCreator(TestCase):
         expected = ChartInfo(DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs[2]), file3, ChartType.BOXPLOT_PT,
                              FileIdData.file2_id)
         self.assertEqual(expected, ch_info)
+
+    def test_generate_proportions_chart(self):
+        dto = ProportionsDto(0.01, 'Proportions of passing sequences', 'tests', 'proportion', PropFormula.ORIGINAL)
+        self.generate_charts_dto.chart_types = {ChartType.PROPORTIONS: [dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+        items = storage.get_all_items()
+        self.assertEqual(2, len(items))
+        item = items[0]  # type: ChartsStorageItem
+        file_name = join(working_dir, 'prop_first_test_id_{}.png'.format(TestsIdData.test1_id))
+        expected_ch_info = ChartInfo(None, file_name, ChartType.PROPORTIONS, FileIdData.file1_id)
+        self.assertEqual(expected_ch_info, item.ch_info)
+        self.assertIsNone(item.info)
+        self.assertIsNone(item.err)
+        self.assertTrue(exists(file_name))
+
+        item = items[1]  # type: ChartsStorageItem
+        file_name = join(working_dir, 'prop_first_test_id_{}.png'.format(TestsIdData.test4_id))
+        expected_ch_info = ChartInfo(None, file_name, ChartType.PROPORTIONS, FileIdData.file2_id)
+        self.assertEqual(expected_ch_info, item.ch_info)
+        self.assertIsNone(item.info)
+        self.assertIsNone(item.err)
+        self.assertTrue(exists(file_name))
+
+        infos = storage.get_infos_for_chart_type(ChartType.PROPORTIONS)
+        self.assertEqual([], infos)
+        errs = storage.get_errors_for_chart_type(ChartType.PROPORTIONS)
+        self.assertEqual([], errs)
+
+    @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_proportions',
+           side_effect=DifferentNumOfPValsError('message', 456, 400))
+    def test_generate_prop_charts_err_propagation(self, f_get_proportions):
+        dto = ProportionsDto(0.01, 'Proportions of passing sequences', 'tests', 'proportion', PropFormula.ORIGINAL)
+        self.generate_charts_dto.chart_types = {ChartType.PROPORTIONS: [dto]}
+        storage = self.charts_creator.generate_charts(self.generate_charts_dto)
+
+        self.assertEqual([], storage.get_all_items())
+
+        infos = storage.get_infos_for_chart_type(ChartType.PROPORTIONS)
+        self.assertEqual([], infos)
+
+        errs = storage.get_errors_for_chart_type(ChartType.PROPORTIONS)
+        self.assertEqual(1, len(errs))
+        expected = PropDiffLenErr(456, 400)
+        self.assertEqual(expected, errs[0])
+
 
     def test_draw_concrete_charts_for_non_existing_chart_type(self):
         chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')

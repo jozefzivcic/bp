@@ -4,6 +4,7 @@ from charts.boxplot_per_test.boxplot_pt_creator import BoxplotPTCreator
 from charts.boxplot_per_test.data_for_boxplot_pt_creator import DataForBoxplotPTCreator
 from charts.charts_error import ChartsError
 from charts.dto.boxplot_pt_dto import BoxplotPTDto
+from charts.dto.proportions_dto import ProportionsDto
 from charts.ecdf.data_for_ecdf_creator import DataForEcdfCreator
 from charts.ecdf.ecdf_creator import EcdfCreator
 from charts.dto.ecdf_dto import EcdfDto
@@ -16,6 +17,8 @@ from charts.charts_storage import ChartsStorage
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.p_values.data_for_p_values_creator import DataForPValuesCreator
 from charts.p_values.p_values_creator import PValuesCreator
+from charts.proportions.data_for_proportions_creator import DatForProportionsCreator
+from charts.proportions.proportions_creator import ProportionsCreator
 from charts.test_dependency.data_for_test_dependency_creator import DataForTestDependencyCreator
 from charts.test_dependency.test_dependency_creator import TestDependencyCreator
 from charts.dto.test_dependency_dto import TestDependencyDto
@@ -42,8 +45,10 @@ class ChartsCreator:
         self._test_dependency_creator = TestDependencyCreator(pool, storage)
         self._ecdf_creator = EcdfCreator()
         self._boxplot_pt_creator = BoxplotPTCreator(pool, storage)
+        self._prop_creator = ProportionsCreator(pool, storage)
         self.supported_charts = [ChartType.P_VALUES, ChartType.P_VALUES_ZOOMED, ChartType.HISTOGRAM,
-                                 ChartType.TESTS_DEPENDENCY, ChartType.ECDF, ChartType.BOXPLOT_PT]
+                                 ChartType.TESTS_DEPENDENCY, ChartType.ECDF, ChartType.BOXPLOT_PT,
+                                 ChartType.PROPORTIONS]
 
     def generate_charts(self, generate_charts_dto: GenerateChartsDto) -> ChartsStorage:
         if generate_charts_dto is None:
@@ -83,6 +88,12 @@ class ChartsCreator:
         for file_id, acc in self._p_values_accumulators.items():
             data_for_creator = DataForBoxplotPTCreator(dto, acc, directory, file_id)
             storage = self._boxplot_pt_creator.create_boxplots(data_for_creator)
+            self._charts_storage.extend(storage)
+
+    def create_proportions(self, dto: ProportionsDto, directory: str):
+        for file_id, acc in self._p_values_accumulators.items():
+            data_for_creator = DatForProportionsCreator(dto, acc, directory, file_id)
+            storage = self._prop_creator.create_prop_chart(data_for_creator)
             self._charts_storage.extend(storage)
 
     def load_p_values(self, test_ids):
@@ -137,5 +148,7 @@ class ChartsCreator:
             self.create_ecdf_charts(dto, directory)
         elif chart_type == ChartType.BOXPLOT_PT:
             self.create_boxplots_pt(dto, directory)
+        elif chart_type == ChartType.PROPORTIONS:
+            self.create_proportions(dto, directory)
         else:
             raise ChartsError('Unsupported chart type')
