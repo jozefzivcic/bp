@@ -1,10 +1,10 @@
 from configparser import ConfigParser
 from unittest import TestCase
 
-from common.error.prop_diff_len_err import DiffPValuesLenErr
+from common.error.diff_pvalues_len_err import DiffPValuesLenErr
 
 
-class TestPropDiffLenErr(TestCase):
+class TestDiffPValuesLenErr(TestCase):
     def test_init_raises(self):
         with self.assertRaises(ValueError) as ex:
             DiffPValuesLenErr(10, 10)

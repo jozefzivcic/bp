@@ -5,7 +5,7 @@ from charts.dto.proportions_dto import ProportionsDto
 from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
 from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.proportions.proportions_extractor import ProportionsExtractor
-from common.error.prop_diff_len_err import DiffPValuesLenErr
+from common.error.diff_pvalues_len_err import DiffPValuesLenErr
 from enums.nist_test_type import NistTestType
 from enums.prop_formula import PropFormula
 from models.test import Test

@@ -19,7 +19,7 @@ from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.tests_in_chart import TestsInChart
-from common.error.prop_diff_len_err import DiffPValuesLenErr
+from common.error.diff_pvalues_len_err import DiffPValuesLenErr
 from enums.filter_uniformity import FilterUniformity
 from enums.prop_formula import PropFormula
 from p_value_processing.p_value_sequence import PValueSequence
