@@ -3,7 +3,7 @@ from configparser import ConfigParser
 from common.error.err import Err
 
 
-class PropDiffLenErr(Err):
+class DiffPValuesLenErr(Err):
     def __init__(self, expected_len, actual_len):
         if expected_len == actual_len:
             raise ValueError('Expected and actual lengths are the same: {}'.format(expected_len))

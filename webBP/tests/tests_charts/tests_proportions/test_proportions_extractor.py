@@ -5,7 +5,7 @@ from charts.dto.proportions_dto import ProportionsDto
 from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
 from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.proportions.proportions_extractor import ProportionsExtractor
-from common.error.prop_diff_len_err import PropDiffLenErr
+from common.error.prop_diff_len_err import DiffPValuesLenErr
 from enums.nist_test_type import NistTestType
 from enums.prop_formula import PropFormula
 from models.test import Test
@@ -99,7 +99,7 @@ class TestProportionsExtractor(TestCase):
         self.assertEqual(0, len(ex_data.get_all_data()))
         errs = ex_data.get_all_errs()
         self.assertEqual(1, len(errs))
-        expected = PropDiffLenErr(10, 9)
+        expected = DiffPValuesLenErr(10, 9)
         err = errs[0]
         self.assertEqual(expected, err)
 

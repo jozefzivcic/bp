@@ -4,7 +4,7 @@ from charts.dto.proportions_dto import ProportionsDto
 from charts.extracted_data import ExtractedData
 from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
 from charts.different_num_of_pvals_error import DifferentNumOfPValsError
-from common.error.prop_diff_len_err import PropDiffLenErr
+from common.error.prop_diff_len_err import DiffPValuesLenErr
 from configstorage import ConfigStorage
 from enums.prop_formula import PropFormula
 from managers.connectionpool import ConnectionPool
@@ -33,7 +33,7 @@ class ProportionsExtractor(object):
         try:
             x_ticks, y_values = self.process_p_vals(acc, prop_dto, num_of_seqcs)
         except DifferentNumOfPValsError as ex:
-            err = PropDiffLenErr(ex.expected_len, ex.actual_len)
+            err = DiffPValuesLenErr(ex.expected_len, ex.actual_len)
             ex_data.add_err(err)
             return ex_data
 
