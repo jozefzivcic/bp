@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from os.path import join
 
 from charts.chart_info import ChartInfo
@@ -26,7 +28,7 @@ class ProportionsCreator(object):
             chart_info = ChartInfo(ds_info, file_name, ChartType.PROPORTIONS, data.file_id)
             storage.add_chart_info(chart_info, info, err)
         storage.add_infos_from_chart(ChartType.PROPORTIONS, ex_data.get_all_infos())
-        storage.add_errors_from_chart(ChartType.TESTS_DEPENDENCY, ex_data.get_all_errs())
+        storage.add_errors_from_chart(ChartType.PROPORTIONS, ex_data.get_all_errs())
         return storage
 
     def get_file_name(self, directory: str, acc: PValuesAccumulator):

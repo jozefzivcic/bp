@@ -43,7 +43,9 @@ class TestProportionsCreator(TestCase):
         if exists(working_dir):
             rmtree(working_dir)
 
-    def test_create_prop_charts(self):
+    @patch('charts.charts_storage.ChartsStorage.add_errors_from_chart')
+    @patch('charts.charts_storage.ChartsStorage.add_infos_from_chart')
+    def test_create_prop_charts(self, f_infos, f_errs):
         dto_13 = PValuesDto(dict_for_test_13)
         dto_14 = PValuesDto(dict_for_test_14)
         dto_41 = PValuesDto(dict_for_test_41)
@@ -60,6 +62,8 @@ class TestProportionsCreator(TestCase):
         self.assertTrue(exists(ch_storage_item.ch_info.path_to_chart))
         self.assertEqual(ChartType.PROPORTIONS, ch_storage_item.ch_info.chart_type)
         self.assertEqual(FileIdData.file1_id, ch_storage_item.ch_info.file_id)
+        f_infos.assert_called_once_with(ChartType.PROPORTIONS, [])
+        f_errs.assert_called_once_with(ChartType.PROPORTIONS, [])
 
     def test_get_file_name(self):
         dto_13 = PValuesDto(dict_for_test_13)
