@@ -3,7 +3,9 @@ from unittest.mock import patch, MagicMock, call
 
 from charts.dto.proportions_dto import ProportionsDto
 from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
+from charts.proportions.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.proportions.proportions_extractor import ProportionsExtractor
+from common.error.prop_diff_len_err import PropDiffLenErr
 from enums.prop_formula import PropFormula
 from models.test import Test
 from models.nistparam import NistParam
@@ -76,6 +78,29 @@ class TestProportionsExtractor(TestCase):
         self.assertAlmostEqual(0.95, data.y_interval_high, 6)
         self.assertAlmostEqual(0.9, data.y_interval_mid, 6)
 
+    @patch('charts.proportions.proportions_extractor.ProportionsExtractor.process_p_vals',
+           side_effect=DifferentNumOfPValsError('Number of p_values in file is different than given as'
+                                                ' a parameter streams. (9, 10)', 10, 9))
+    @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_interval',
+           side_effect=lambda f, a, n: (0.85, 0.9, 0.95))
+    @patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test', side_effect=mock_get_nist_param)
+    def test_get_data_from_acc_catch_expection(self, f_get_param, f_get_interval, f_process):
+        dto_13 = PValuesDto(dict_for_test_13)
+        dto_14 = PValuesDto(dict_for_test_14)
+        dto_41 = PValuesDto(dict_for_test_41)
+        acc = PValuesAccumulator()
+        acc.add(TestsIdData.test1_id, dto_13)
+        acc.add(TestsIdData.test2_id, dto_14)
+        acc.add(TestsIdData.test3_id, dto_41)
+        prop_dto = ProportionsDto(0.07, 'title', 'x_label', 'y_label', PropFormula.ORIGINAL)
+        ex_data = self.extractor.get_data_from_accumulator(acc, prop_dto)
+        self.assertEqual(0, len(ex_data.get_all_data()))
+        errs = ex_data.get_all_errs()
+        self.assertEqual(1, len(errs))
+        expected = PropDiffLenErr(10, 9)
+        err = errs[0]
+        self.assertEqual(expected, err)
+
     @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_test_name',
            side_effect=lambda tid, data_num=None: 'tid: {} data: {}'.format(tid, data_num))
     @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_proportions',
@@ -111,10 +136,12 @@ class TestProportionsExtractor(TestCase):
         f_get_name.assert_has_calls(calls)
 
     def test_get_proportions_raises(self):
-        with self.assertRaises(RuntimeError) as ex:
+        with self.assertRaises(DifferentNumOfPValsError) as ex:
             self.extractor.get_proportions([0.456, 0.654], 0.01, 3)
         self.assertEqual('Number of p_values in file is different than given as a parameter streams. (2, 3)',
                          str(ex.exception))
+        self.assertEqual(3, ex.exception.expected_len)
+        self.assertEqual(2, ex.exception.actual_len)
 
     def test_get_proportions_all_zeros(self):
         p_values = [0.0] * 100

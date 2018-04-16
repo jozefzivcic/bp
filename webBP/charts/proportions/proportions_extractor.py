@@ -3,6 +3,8 @@ import math
 from charts.dto.proportions_dto import ProportionsDto
 from charts.extracted_data import ExtractedData
 from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
+from charts.proportions.different_num_of_pvals_error import DifferentNumOfPValsError
+from common.error.prop_diff_len_err import PropDiffLenErr
 from configstorage import ConfigStorage
 from enums.prop_formula import PropFormula
 from managers.connectionpool import ConnectionPool
@@ -20,6 +22,7 @@ class ProportionsExtractor(object):
         self._config_storage = storage
 
     def get_data_from_accumulator(self, acc: PValuesAccumulator, prop_dto: ProportionsDto) -> ExtractedData:
+        ex_data = ExtractedData()
         test_ids = acc.get_all_test_ids()
         test = self._test_dao.get_test_by_id(test_ids[0])
         num_of_seqcs = self._nist_dao.get_nist_param_for_test(test).streams
@@ -27,14 +30,18 @@ class ProportionsExtractor(object):
         limit_low = max(low - 0.2, 0.0)
         limit_high = min(high + 0.2, 1.0)
 
-        x_ticks, y_values = self.process_p_vals(acc, prop_dto, num_of_seqcs)
+        try:
+            x_ticks, y_values = self.process_p_vals(acc, prop_dto, num_of_seqcs)
+        except DifferentNumOfPValsError as ex:
+            err = PropDiffLenErr(ex.expected_len, ex.actual_len)
+            ex_data.add_err(err)
+            return ex_data
 
         x_ticks_pos = list(range(0, len(x_ticks)))
         x_values = list(x_ticks_pos)
         x_ticks_pos, x_ticks = self.filter_x_ticks(x_ticks_pos, x_ticks)
         data_drawer = DataForProportionsDrawer(prop_dto.title, prop_dto.x_label, prop_dto.y_label, limit_low,
                                                limit_high, x_ticks_pos, x_ticks, x_values, y_values, low, high, mid)
-        ex_data = ExtractedData()
         ex_data.add_data(None, data_drawer)
         return ex_data
 
@@ -61,8 +68,8 @@ class ProportionsExtractor(object):
 
     def get_proportions(self, p_values: list, alpha: float, exp_len: int) -> float:
         if exp_len != len(p_values):
-            raise RuntimeError('Number of p_values in file is different than given as a parameter streams. ({}, {})'
-                               .format(len(p_values), exp_len))
+            raise DifferentNumOfPValsError('Number of p_values in file is different than given as a parameter streams.'
+                                           ' ({}, {})'.format(len(p_values), exp_len), exp_len, len(p_values))
         sample_size = 0
         count = 0
         for p in p_values:
