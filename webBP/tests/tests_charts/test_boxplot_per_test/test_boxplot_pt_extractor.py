@@ -5,12 +5,16 @@ from unittest.mock import MagicMock, patch
 from copy import deepcopy
 
 from charts.boxplot_per_test.boxplot_pt_extractor import BoxplotPTExtractor
+from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.data_source_info import DataSourceInfo
 from charts.extracted_data import ExtractedData
 from charts.tests_in_chart import TestsInChart
+from common.error.diff_pvalues_len_err import DiffPValuesLenErr
 from models.test import Test
 from p_value_processing.p_value_sequence import PValueSequence
+from p_value_processing.p_values_accumulator import PValuesAccumulator
+from p_value_processing.p_values_dto import PValuesDto
 from p_value_processing.p_values_file_type import PValuesFileType
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_41, dict_for_test_14, \
     dict_for_test_42, dict_for_test_43
@@ -85,6 +89,29 @@ class TestBoxplotPTExtractor(TestCase):
         self.assertEqual(dto.title, drawer_data.title)
         self.assertEqual(expected_str, drawer_data.json_data_str)
 
+    @patch('charts.boxplot_per_test.boxplot_pt_extractor.BoxplotPTExtractor.create_extracted_data',
+           side_effect=DifferentNumOfPValsError('message', 15, 4))
+    def test_get_data_from_accumulator_create_raises(self, f_create):
+        mock = MagicMock(name='PValuesAccumulator')
+        dto = BoxplotPTDto('title', ['seq1', 'seq2'])
+        ret = self.extractor.get_data_from_accumulator(mock, dto)
+        self.assertEqual([], ret.get_all_data())
+        self.assertEqual([], ret.get_all_infos())
+        err = DiffPValuesLenErr(15, 4)
+        self.assertEqual([err], ret.get_all_errs())
+        f_create.assert_called_once_with(mock, 'seq1', dto)
+
+    @patch('charts.boxplot_per_test.boxplot_pt_extractor.BoxplotPTExtractor.get_p_values', return_value=[1, 2, 3])
+    def test_create_extracted_data_raises(self, f_get_p_values):
+        mock = MagicMock(some_id='some id')
+        seqcs = [MagicMock(test_id=TestsIdData.test1_id), MagicMock(test_id=TestsIdData.test2_id)]
+        with self.assertRaises(DifferentNumOfPValsError) as ex:
+            self.extractor.create_extracted_data(mock, seqcs, None)
+        self.assertEqual('Expected 10 p-values, found only 3.', str(ex.exception))
+        self.assertEqual(10, ex.exception.expected_len)
+        self.assertEqual(3, ex.exception.actual_len)
+        f_get_p_values.assert_called_once_with(mock, seqcs[0])
+
     def test_create_extracted_data(self):
         acc = func_prepare_acc()
         seqcs = [PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS),
@@ -119,8 +146,17 @@ class TestBoxplotPTExtractor(TestCase):
         self.assertEqual(expected_str, ret_data_for_drawer.json_data_str)
 
     def test_create_extracted_data_returns_none(self):
-        acc = func_prepare_acc()
-        seqcs = [PValueSequence(TestsIdData.non_existing_test_id, PValuesFileType.DATA, 1)]
+        dto1 = PValuesDto(dict_for_test_13)
+        dto2 = PValuesDto(dict_for_test_14)
+        dto3 = PValuesDto(dict_for_test_41)
+        dto4 = PValuesDto(dict_for_test_42)
+
+        acc = PValuesAccumulator()
+        acc.add(TestsIdData.test1_id, dto1)
+        acc.add(TestsIdData.test2_id, dto2)
+        acc.add(TestsIdData.test3_id, dto3)
+        acc.add(TestsIdData.test4_id, dto4)
+        seqcs = [PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS)]
         dto = BoxplotPTDto('Boxplot(s) for tests', [seqcs])
 
         ret = self.extractor.create_extracted_data(acc, seqcs, dto)
