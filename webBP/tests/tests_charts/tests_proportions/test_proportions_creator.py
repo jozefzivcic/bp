@@ -14,7 +14,7 @@ from enums.prop_formula import PropFormula
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, dict_for_test_41, TestsIdData, \
-    FileIdData
+    FileIdData, short_names_dict
 from tests.data_for_tests.common_functions import nist_dao_get_nist_param_for_test, db_test_dao_get_test_by_id
 
 this_dir = dirname(abspath(__file__))
@@ -53,7 +53,8 @@ class TestProportionsCreator(TestCase):
         acc.add(TestsIdData.test1_id, dto_13)
         acc.add(TestsIdData.test2_id, dto_14)
         acc.add(TestsIdData.test3_id, dto_41)
-        prop_dto = ProportionsDto(0.01, 'Proportions chart', 'tests', 'proportions', PropFormula.ORIGINAL)
+        prop_dto = ProportionsDto(0.01, 'Proportions chart', 'tests', 'proportions', PropFormula.ORIGINAL,
+                                  short_names_dict)
         data = DatForProportionsCreator(prop_dto, acc, working_dir, FileIdData.file1_id)
         ret = self.creator.create_prop_chart(data)
         self.assertEqual(1, len(ret.get_all_items()))

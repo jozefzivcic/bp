@@ -1,3 +1,6 @@
+from enums.nist_test_type import NistTestType
+
+
 dict_for_test_13 = {'results': [0.857153, 0.298340, 0.674485, 0.078408, 0.200545, 0.888660, 0.471525, 0.920344,
                                 0.357573, 0.509254]}
 
@@ -40,3 +43,13 @@ class FileIdData:
 
 class UserIdData:
     user1_id = 456789
+
+
+short_names_dict = {NistTestType.TEST_FREQUENCY: 'Frequency', NistTestType.TEST_BLOCK_FREQUENCY: 'Block Frequency',
+                    NistTestType.TEST_CUSUM: 'Cumulative Sums', NistTestType.TEST_RUNS: 'Runs',
+                    NistTestType.TEST_LONGEST_RUN: 'Longest run of ones', NistTestType.TEST_RANK: 'Rank',
+                    NistTestType.TEST_FFT: 'FFT', NistTestType.TEST_NONPERIODIC: 'Nonoverlapping template matchings',
+                    NistTestType.TEST_OVERLAPPING: 'Overlapping TM', NistTestType.TEST_UNIVERSAL: 'Universal',
+                    NistTestType.TEST_APEN: 'Approximate entropy', NistTestType.TEST_RND_EXCURSION: 'Random excursions',
+                    NistTestType.TEST_RND_EXCURSION_VAR: 'Random excursions variant',
+                    NistTestType.TEST_SERIAL: 'Serial', NistTestType.TEST_LINEARCOMPLEXITY: 'Linear'}

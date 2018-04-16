@@ -28,7 +28,7 @@ from p_value_processing.p_values_dto import PValuesDto
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, dict_for_test_41, dict_for_test_42, \
-    dict_for_test_43, TestsIdData, FileIdData
+    dict_for_test_43, TestsIdData, FileIdData, short_names_dict
 from tests.data_for_tests.common_functions import results_dao_get_paths_for_test_ids, db_test_dao_get_tests_by_id_list, \
     db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, func_return_false, func_return_true
 
@@ -510,7 +510,8 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected, ch_info)
 
     def test_generate_proportions_chart(self):
-        dto = ProportionsDto(0.01, 'Proportions of passing sequences', 'tests', 'proportion', PropFormula.ORIGINAL)
+        dto = ProportionsDto(0.01, 'Proportions of passing sequences', 'tests', 'proportion', PropFormula.ORIGINAL,
+                             short_names_dict)
         self.generate_charts_dto.chart_types = {ChartType.PROPORTIONS: [dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
         items = storage.get_all_items()

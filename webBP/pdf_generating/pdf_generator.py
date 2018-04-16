@@ -118,7 +118,8 @@ class PdfGenerator:
             return [dto]
         elif chart_type == ChartType.PROPORTIONS:
             dto = ProportionsDto(pdf_generating_dto.alpha, texts['Proportions']['Title'], texts['General']['Tests'],
-                                 texts['Proportions']['Proportion'], pdf_generating_dto.prop_options.formula)
+                                 texts['Proportions']['Proportion'], pdf_generating_dto.prop_options.formula,
+                                 self._short_test_names_dict[pdf_generating_dto.language])
             return [dto]
         raise PdfGeneratingError('Unsupported chart type')
 

@@ -155,3 +155,41 @@ class NistParam:
 
     def is_test_type(self, test_type: NistTestType):
         return self.test_number == test_type.value
+
+    def get_test_type(self) -> NistTestType:
+        """
+        Returns type of NIST test.
+        :return: NistTestType
+        """
+        if self.test_number == 1:
+            return NistTestType.TEST_FREQUENCY
+        elif self.test_number == 2:
+            return NistTestType.TEST_BLOCK_FREQUENCY
+        elif self.test_number == 3:
+            return NistTestType.TEST_CUSUM
+        elif self.test_number == 4:
+            return NistTestType.TEST_RUNS
+        elif self.test_number == 5:
+            return NistTestType.TEST_LONGEST_RUN
+        elif self.test_number == 6:
+            return NistTestType.TEST_RANK
+        elif self.test_number == 7:
+            return NistTestType.TEST_FFT
+        elif self.test_number == 8:
+            return NistTestType.TEST_NONPERIODIC
+        elif self.test_number == 9:
+            return NistTestType.TEST_OVERLAPPING
+        elif self.test_number == 10:
+            return NistTestType.TEST_UNIVERSAL
+        elif self.test_number == 11:
+            return NistTestType.TEST_APEN
+        elif self.test_number == 12:
+            return NistTestType.TEST_RND_EXCURSION
+        elif self.test_number == 13:
+            return NistTestType.TEST_RND_EXCURSION_VAR
+        elif self.test_number == 14:
+            return NistTestType.TEST_SERIAL
+        elif self.test_number == 15:
+            return NistTestType.TEST_LINEARCOMPLEXITY
+        else:
+            raise RuntimeError('Undefined NIST test: {}'.format(self.test_number))

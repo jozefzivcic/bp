@@ -6,12 +6,14 @@ from charts.proportions.data_for_proportions_drawer import DataForProportionsDra
 from charts.proportions.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.proportions.proportions_extractor import ProportionsExtractor
 from common.error.prop_diff_len_err import PropDiffLenErr
+from enums.nist_test_type import NistTestType
 from enums.prop_formula import PropFormula
 from models.test import Test
 from models.nistparam import NistParam
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
-from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41
+from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41, \
+    short_names_dict
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
 
 
@@ -102,7 +104,7 @@ class TestProportionsExtractor(TestCase):
         self.assertEqual(expected, err)
 
     @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_test_name',
-           side_effect=lambda tid, data_num=None: 'tid: {} data: {}'.format(tid, data_num))
+           side_effect=lambda names, tid, data_num=None: 'tid: {} data: {}'.format(tid, data_num))
     @patch('charts.proportions.proportions_extractor.ProportionsExtractor.get_proportions',
            side_effect=lambda p, a, num: p[0])
     def test_process_pvals(self, f_get_prop, f_get_name):
@@ -113,7 +115,7 @@ class TestProportionsExtractor(TestCase):
         acc.add(TestsIdData.test1_id, dto_13)
         acc.add(TestsIdData.test2_id, dto_14)
         acc.add(TestsIdData.test3_id, dto_41)
-        prop_dto = ProportionsDto(0.07, 'title', 'x_label', 'y_label', PropFormula.ORIGINAL)
+        prop_dto = ProportionsDto(0.07, 'title', 'x_label', 'y_label', PropFormula.ORIGINAL, short_names_dict)
         num_of_seqcs = 10
         ret_ticks, ret_y_values = self.extractor.process_p_vals(acc, prop_dto, num_of_seqcs)
         exp_x_ticks = ['tid: {} data: None'.format(TestsIdData.test1_id),
@@ -131,8 +133,9 @@ class TestProportionsExtractor(TestCase):
                  call(dict_for_test_41['data1'], 0.07, 10),
                  call(dict_for_test_41['data2'], 0.07, 10)]
         f_get_prop.assert_has_calls(calls)
-        calls = [call(TestsIdData.test1_id), call(TestsIdData.test2_id, 1), call(TestsIdData.test2_id, 2),
-                 call(TestsIdData.test3_id, 1), call(TestsIdData.test3_id, 2)]
+        calls = [call(short_names_dict, TestsIdData.test1_id), call(short_names_dict, TestsIdData.test2_id, 1),
+                 call(short_names_dict, TestsIdData.test2_id, 2), call(short_names_dict, TestsIdData.test3_id, 1),
+                 call(short_names_dict, TestsIdData.test3_id, 2)]
         f_get_name.assert_has_calls(calls)
 
     def test_get_proportions_raises(self):
@@ -214,21 +217,21 @@ class TestProportionsExtractor(TestCase):
         test.test_table = 'test_table'
         f_get.return_value = test
         with self.assertRaises(RuntimeError) as ex:
-            self.extractor.get_test_name(456)
+            self.extractor.get_test_name(short_names_dict, 456)
         self.assertEqual('Undefined table "test_table" for test_id: 456. Expected "nist" as test table',
                          str(ex.exception))
 
-    @patch('models.nistparam.NistParam.get_test_name', return_value='Test name')
+    @patch('models.nistparam.NistParam.get_test_type', return_value=NistTestType.TEST_FREQUENCY)
     def test_get_test_name_data_none(self, f_get_nistparam):
-        expected = 'Test name ({})'.format(TestsIdData.test1_id)
-        ret = self.extractor.get_test_name(TestsIdData.test1_id)
+        expected = 'Frequency ({})'.format(TestsIdData.test1_id)
+        ret = self.extractor.get_test_name(short_names_dict, TestsIdData.test1_id)
         self.assertEqual(expected, ret)
         self.assertEqual(1, f_get_nistparam.call_count)
 
-    @patch('models.nistparam.NistParam.get_test_name', return_value='Test name')
+    @patch('models.nistparam.NistParam.get_test_type', return_value=NistTestType.TEST_FREQUENCY)
     def test_get_test_name_data_(self, f_get_nistparam):
-        expected = 'Test name ({}) data 5'.format(TestsIdData.test1_id)
-        ret = self.extractor.get_test_name(TestsIdData.test1_id, 5)
+        expected = 'Frequency ({}) data 5'.format(TestsIdData.test1_id)
+        ret = self.extractor.get_test_name(short_names_dict, TestsIdData.test1_id, 5)
         self.assertEqual(expected, ret)
         self.assertEqual(1, f_get_nistparam.call_count)
 

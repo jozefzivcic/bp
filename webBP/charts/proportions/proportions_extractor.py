@@ -55,13 +55,13 @@ class ProportionsExtractor(object):
                 for data_num in dto.get_data_files_indices():
                     p_values = dto.get_data_p_values(data_num)
                     proportions = self.get_proportions(p_values, prop_dto.alpha, num_of_seqcs)
-                    test_name = self.get_test_name(test_id, data_num)
+                    test_name = self.get_test_name(prop_dto.test_names, test_id, data_num)
                     x_ticks.append(test_name)
                     y_values.append(proportions)
             else:
                 p_values = dto.get_results_p_values()
                 proportions = self.get_proportions(p_values, prop_dto.alpha, num_of_seqcs)
-                test_name = self.get_test_name(test_id)
+                test_name = self.get_test_name(prop_dto.test_names, test_id)
                 x_ticks.append(test_name)
                 y_values.append(proportions)
         return x_ticks, y_values
@@ -93,13 +93,14 @@ class ProportionsExtractor(object):
         else:
             raise RuntimeError('Unsupported type of formula: "{}"'.format(formula))
 
-    def get_test_name(self, test_id: int, data_num: int=None) -> str:
+    def get_test_name(self, test_names: dict, test_id: int, data_num: int=None) -> str:
         test = self._test_dao.get_test_by_id(test_id)
         if test.test_table != self._config_storage.nist:
             raise RuntimeError('Undefined table "{}" for test_id: {}. Expected "nist" as test table'
                                .format(test.test_table, test_id))
         nist_param = self._nist_dao.get_nist_param_for_test(test)
-        test_name = nist_param.get_test_name()
+        test_type = nist_param.get_test_type()
+        test_name = test_names.get(test_type)
         ret = '{} ({})'.format(test_name, test_id)
         if data_num is not None:
             ret += ' data {}'.format(data_num)
