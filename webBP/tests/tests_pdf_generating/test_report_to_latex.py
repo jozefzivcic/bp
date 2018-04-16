@@ -212,6 +212,24 @@ class TestReportToLatex(TestCase):
         self.assertEqual('0.785465 *', groups[12])
         self.assertEqual('Frequency', groups[13])
 
+    def test_parse_line_real_data(self):
+        line = '946 997 996 960 1122 895 948 928 1484 724  0.000000 *  0.000000 * 0.9890    Frequency'
+        groups = parse_line(line)
+        self.assertEqual(946, int(groups[0]))
+        self.assertEqual(997, int(groups[1]))
+        self.assertEqual(996, int(groups[2]))
+        self.assertEqual(960, int(groups[3]))
+        self.assertEqual(1122, int(groups[4]))
+        self.assertEqual(895, int(groups[5]))
+        self.assertEqual(948, int(groups[6]))
+        self.assertEqual(928, int(groups[7]))
+        self.assertEqual(1484, int(groups[8]))
+        self.assertEqual(724, int(groups[9]))
+        self.assertEqual('0.000000 *', groups[10])
+        self.assertEqual('0.000000 *', groups[11])
+        self.assertEqual('0.9890', groups[12])
+        self.assertEqual('Frequency', groups[13])
+
     def test_parse_lines_ret_none(self):
         line = '  1   9   12   125 45a   505   11   6   456   87456  0.437274    0.675978   0.785465    BlockFrequency'
         groups = parse_line(line)
