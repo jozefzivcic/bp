@@ -283,6 +283,7 @@ class PdfGenerator:
         for key, value in stats_dict.items():
             content = convert_report_to_latex(value, self._texts[language])
             file_name = self._file_dao.get_file_by_id(key).name
+            file_name = escape_latex_special_chars(file_name)
             report_data = {'content': content, 'file_name': file_name}
             ret[key] = report_data
         return ret

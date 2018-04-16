@@ -693,9 +693,10 @@ class TestPdfGenerator(TestCase):
         ret = self.pdf_generator.prepare_nist_report_dict(None, 'en')
         self.assertIsNone(ret)
 
+    @patch('pdf_generating.pdf_generator.escape_latex_special_chars', side_effect=lambda x: x)
     @patch('pdf_generating.pdf_generator.convert_report_to_latex', side_effect=['file 1 content', 'file 2 content'])
     @patch('managers.filemanager.FileManager.get_file_by_id', side_effect=get_file_by_id)
-    def test_prepare_nist_report(self, f_get_file, f_convert):
+    def test_prepare_nist_report(self, f_get_file, f_convert, f_escape):
         file1_id = FileIdData.file1_id
         file1_path = join(working_dir, 'file1')
         file1_content = 'file 1 content'
@@ -713,6 +714,8 @@ class TestPdfGenerator(TestCase):
         f_get_file.assert_has_calls(calls)
         calls = [call(file1_path, self.texts['en']), call(file2_path, self.texts['en'])]
         f_convert.assert_has_calls(calls)
+        calls = [call('First file'), call('Second file')]
+        f_escape.assert_has_calls(calls)
 
     def test_get_short_tests_names(self):
         en_dict_in = {'Freq': 'Frequency', 'BFreq': 'Block Frequency', 'CuSums': 'Cumulative Sums', 'Runs': 'Runs',
