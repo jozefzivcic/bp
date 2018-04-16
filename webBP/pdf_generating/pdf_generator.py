@@ -11,6 +11,7 @@ from charts.chart_type import ChartType
 from charts.charts_creator import ChartsCreator
 from charts.charts_error import ChartsError
 from charts.charts_storage import ChartsStorage
+from charts.dto.proportions_dto import ProportionsDto
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.dto.test_dependency_dto import TestDependencyDto
 from common.error.err import Err
@@ -112,6 +113,10 @@ class PdfGenerator:
                 raise PdfGeneratingError(e)
             dto = BoxplotPTDto(texts['BoxplotPT']['Title'], converted)
             return [dto]
+        elif chart_type == ChartType.PROPORTIONS:
+            dto = ProportionsDto(pdf_generating_dto.alpha, texts['Proportions']['Title'], texts['General']['Tests'],
+                                 texts['Proportions']['Proportion'], pdf_generating_dto.prop_options.formula)
+            return [dto]
         raise PdfGeneratingError('Unsupported chart type')
 
     def prepare_pdf_creating_dto(self, pdf_generating_dto: PdfGeneratingDto, storage: ChartsStorage, stats_dict: dict) \
@@ -186,6 +191,9 @@ class PdfGenerator:
                 raise PdfGeneratingError('No default options for Boxplot')
             if not dto.boxplot_pt_options:
                 raise PdfGeneratingError('No tests for boxplot selected')
+        if ChartType.PROPORTIONS in dto.chart_types:
+            if dto.prop_options is None:
+                raise PdfGeneratingError('No default options for proportions')
 
     def get_chart_name_base(self, language, ch_type: ChartType) -> str:
         if ch_type == ChartType.P_VALUES:
@@ -200,6 +208,8 @@ class PdfGenerator:
             return self._texts[language]['ECDF']['Title']
         elif ch_type == ChartType.BOXPLOT_PT:
             return self._texts[language]['BoxplotPT']['Title']
+        elif ch_type == ChartType.PROPORTIONS:
+            return self._texts[language]['Proportions']['Title']
         raise PdfGeneratingError('Undefined chart type: ' + str(ch_type))
 
     def get_chart_name(self, language: str, info: ChartInfo) -> str:

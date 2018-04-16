@@ -18,12 +18,14 @@ from common.error.test_dep_seq_len_err import TestDepSeqLenErr
 from common.helper_functions import load_texts_into_config_parsers
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
+from enums.prop_formula import PropFormula
 from enums.test_dep_pairs import TestDepPairs
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
 from pdf_generating.options.ecdf_options import EcdfOptions
 from pdf_generating.options.file_specification import FileSpecification
+from pdf_generating.options.prop_options import PropOptions
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
 from pdf_generating.options.test_file_specification import TestFileSpecification
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
@@ -220,6 +222,18 @@ class TestPdfGenerator(TestCase):
                   TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]]
         options = BoxplotPTOptions(specs)
         pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, None, options)
+        self.pdf_generator.generate_pdf(pdf_gen_dto)
+        self.assertTrue(exists(output_filename))
+
+    def test_generate_pdf_two_proportions_charts(self):
+        alpha = 0.05
+        output_filename = join(working_dir, 'output.pdf')
+        tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
+                 TestsIdData.test5_id]
+        chart_types = [ChartType.PROPORTIONS]
+        language = 'en'
+        options = PropOptions(PropFormula.ORIGINAL)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, None, None, options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
