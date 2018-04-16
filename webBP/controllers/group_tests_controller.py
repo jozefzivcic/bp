@@ -10,12 +10,14 @@ from os.path import join
 from charts.chart_type import ChartType
 from controllers.common_controller import not_found, error_occurred
 from enums.filter_uniformity import FilterUniformity
+from enums.prop_formula import PropFormula
 from enums.test_dep_pairs import TestDepPairs
 from helpers import get_params_for_tests, set_response_ok, get_ids_of_elements_starting_with
 from myrequesthandler import MyRequestHandler
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
 from pdf_generating.options.ecdf_options import EcdfOptions
 from pdf_generating.options.file_specification import FileSpecification
+from pdf_generating.options.prop_options import PropOptions
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
 from pdf_generating.options.test_file_specification import TestFileSpecification
 from pdf_generating.pdf_generating_dto import PdfGeneratingDto
@@ -112,6 +114,8 @@ def get_chart_types(form):
         types.append(ChartType.ECDF)
     if 6 in ids:
         types.append(ChartType.BOXPLOT_PT)
+    if 7 in ids:
+        types.append(ChartType.PROPORTIONS)
     return types
 
 
@@ -194,8 +198,22 @@ def create_boxplot_pt_options(test_ids: list, form: cgi.FieldStorage) -> Boxplot
 
 
 def create_nist_report(form: cgi.FieldStorage):
+    if not 'ch_nist_report' in form:
+        return False
     value = form['ch_nist_report'].value
     return value == 'on'
+
+
+def create_prop_options(form: cgi.FieldStorage) -> PropOptions:
+    value = form.getvalue('opt_prop_formula')
+    if value is None:
+        return None
+    formula = {'original': PropFormula.ORIGINAL,
+               'improved': PropFormula.IMPROVED}.get(value)
+    if formula is None:
+        return None
+    options = PropOptions(formula)
+    return options
 
 
 def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str, file_name):
@@ -218,6 +236,7 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
     test_dep_options = None
     ecdf_options = None
     boxplot_pt_options = None
+    prop_options = None
     if ChartType.TESTS_DEPENDENCY in chart_types:
         test_dep_options = create_dep_options(test_ids, form)
         if test_dep_options is None:
@@ -230,5 +249,9 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
         boxplot_pt_options = create_boxplot_pt_options(test_ids, form)
         if boxplot_pt_options is None:
             return None
+    if ChartType.PROPORTIONS in chart_types:
+        prop_options = create_prop_options(form)
+        if prop_options is None:
+            return None
     return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name, test_dep_options, ecdf_options,
-                            boxplot_pt_options, create_report)
+                            boxplot_pt_options, prop_options, create_report)

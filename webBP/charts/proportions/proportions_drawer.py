@@ -5,7 +5,7 @@ from charts.proportions.data_for_proportions_drawer import DataForProportionsDra
 
 class ProportionsDrawer(object):
     def draw_chart(self, data: DataForProportionsDrawer, file_name: str):
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(8, 6))
         ax.set_title(data.title)
         ax.set_xlabel(data.x_label)
         ax.set_ylabel(data.y_label)

@@ -136,3 +136,6 @@ keep_pairs_between_subtest=Keep pairs between subtests
 remove_pairs_betwee_subtest=Remove pairs between subtests
 no_subtest_filter_selected=No filter selected for subtests
 nist_report=NIST report
+proportions=Proportions
+formula=Formula
+no_prop_formula_selected=No formula selected for proportion of sequences passing test

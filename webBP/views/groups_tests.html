@@ -127,6 +127,36 @@
                         <label class="form-check-label" for="ch_chart_type_6">{{ boxplot_pt }}</label>
                     </div>
                     <div class="row">
+                        <input type="checkbox" name="ch_chart_type_7" id="ch_chart_type_7">
+                        <label class="form-check-label" for="ch_chart_type_7">{{ proportions }}</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <!-- space -->
+                        </div>
+                        <div class="col-md-10">
+                            <label>{{ formula }}</label>
+                            <div class="radio">
+                                <input type="radio" name="opt_prop_formula" id="opt_prop_formula1" value="original"
+                                checked/>
+                                <label for="opt_prop_formula1">
+                                    <span style="white-space: nowrap; font-size:larger">
+                                        (1-&alpha;)&nbsp;&plusmn;&nbsp;3&nbsp;((&alpha;(1-&alpha;)) / k)<sup>0.5</sup>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" name="opt_prop_formula" id="opt_prop_formula2" value="improved" />
+                                <label for="opt_prop_formula2">
+                                    <span style="white-space: nowrap; font-size:larger">
+                                        (1-&alpha;)&nbsp;&plusmn;&nbsp;2.6&nbsp;((&alpha;(1-&alpha;)) / k)<sup>0.5</sup>
+
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <input type="checkbox" name="ch_nist_report" id="ch_nist_report">
                         <label class="form-check-label" for="ch_nist_report">{{ nist_report }}</label>
                     </div>
@@ -145,6 +175,7 @@
     <input type="hidden" name="no_chart_checked" value="{{ no_chart_checked }}">
     <input type="hidden" id="no_unif_filter_selected" value="{{ no_unif_filter_selected }}">
     <input type="hidden" id="no_subtest_filter_selected" value="{{ no_subtest_filter_selected }}">
+    <input type="hidden" id="no_prop_formula_selected" value="{{ no_prop_formula_selected }}">
 
 <script language="JavaScript">
 function toggle(source) {
@@ -207,6 +238,15 @@ function checkForm() {
         checked2 = document.getElementById("optsubtest2").checked;
         if (!checked1 && !checked2) {
             alert(document.getElementById("no_subtest_filter_selected").value);
+            return false;
+        }
+    }
+    var prop_checked = document.getElementById("ch_chart_type_7").checked;
+    if (prop_checked) {
+        checked1 = document.getElementById("opt_prop_formula1").checked;
+        checked2 = document.getElementById("opt_prop_formula2").checked;
+        if (!checked1 && !checked2) {
+            alert(document.getElementById("no_prop_formula_selected").value);
             return false;
         }
     }
