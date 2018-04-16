@@ -180,15 +180,17 @@
 <script language="JavaScript">
 function toggle(source) {
     var inputs = document.getElementsByTagName("input");
-    var prefix = '';
+    var prefixes = [];
     if (source.name === 'select_all_tests')
-        prefix = 'ch_test_';
+        prefixes = ['ch_test_'];
     else if (source.name === 'select_all_charts')
-        prefix = 'ch_chart_type_';
+        prefixes = ['ch_chart_type_', 'ch_nist_report'];
     for(var i = 0; i < inputs.length; i++) {
-        if(inputs[i].name.indexOf(prefix) === 0) {
-            inputs[i].checked = source.checked;
-        }
+        prefixes.forEach(function (pref) {
+           if (inputs[i].name.indexOf(pref) === 0) {
+               inputs[i].checked = source.checked;
+           }
+        });
     }
 }
 
