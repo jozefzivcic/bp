@@ -60,7 +60,7 @@ class TestOfTestDependencyCreator(TestCase):
 
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_test_dependency_charts_no_chart(self, func_check_unif, func_is_approx):
+    def test_create_test_dependency_charts_no_chart(self, func_is_approx, func_check_unif):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
 
@@ -82,7 +82,7 @@ class TestOfTestDependencyCreator(TestCase):
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_test_dependency_charts_one_chart(self, func_check_unif, func_get, func_is_approx):
+    def test_create_test_dependency_charts_one_chart(self, func_is_approx, func_get, func_check_unif):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -111,7 +111,7 @@ class TestOfTestDependencyCreator(TestCase):
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_test_dependency_charts_ten_charts(self, func_check, func_get, func_is_approx):
+    def test_create_test_dependency_charts_ten_charts(self, func_is_approx, func_get, func_check):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))

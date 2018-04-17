@@ -42,7 +42,7 @@ class TestOfTestDependencyExtractor(TestCase):
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_get_data_from_accumulator_ds_info(self, func_check_unif, func_get, func_is_approx):
+    def test_get_data_from_accumulator_ds_info(self, func_is_approx, func_get, func_check_unif):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -107,7 +107,7 @@ class TestOfTestDependencyExtractor(TestCase):
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_get_data_from_accumulator(self, func_check_unif, func_get, func_is_approx):
+    def test_get_data_from_accumulator(self, func_is_approx, func_get, func_check_unif):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -326,7 +326,7 @@ class TestOfTestDependencyExtractor(TestCase):
     @patch('common.unif_check.UnifCheck.check_for_uniformity', return_value=True)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5456)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_get_data_from_acc_infos_for_each_data(self, f_check, f_p_value, f_is_approx):
+    def test_get_data_from_acc_infos_for_each_data(self, f_is_approx, f_p_value, f_check):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
