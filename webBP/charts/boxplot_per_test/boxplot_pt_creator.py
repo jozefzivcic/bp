@@ -24,6 +24,8 @@ class BoxplotPTCreator:
             self._drawer.draw_chart(data_for_drawer, file_name)
             ch_info = ChartInfo(ds_info, file_name, ChartType.BOXPLOT_PT, data.file_id)
             storage.add_chart_info(ch_info)
+        storage.add_infos_from_chart(ChartType.BOXPLOT_PT, extracted_data.get_all_infos())
+        storage.add_errors_from_chart(ChartType.BOXPLOT_PT, extracted_data.get_all_errs())
         return storage
 
     def get_filename(self, directory: str, info: DataSourceInfo) -> str:

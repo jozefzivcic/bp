@@ -12,6 +12,7 @@ from charts.dto.boxplot_pt_dto import BoxplotPTDto
 from charts.chart_type import ChartType
 from charts.charts_storage import ChartsStorage
 from charts.data_source_info import DataSourceInfo
+from charts.extracted_data import ExtractedData
 from charts.tests_in_chart import TestsInChart
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
@@ -83,6 +84,21 @@ class TestBoxplotPTCreator(TestCase):
             self.assertTrue(exists(ch_info.path_to_chart))
             self.assertEqual(ChartType.BOXPLOT_PT, ch_info.chart_type)
             self.assertEqual(FileIdData.file1_id, ch_info.file_id)
+
+    @patch('charts.boxplot_per_test.boxplot_pt_extractor.BoxplotPTExtractor.get_data_from_accumulator')
+    def test_create_boxplots_errs_and_infos_propagation(self, f_get_data):
+        ex_data = ExtractedData()
+        ex_data.add_info('some info')
+        ex_data.add_err('some err')
+        ex_data.add_err('some err 2')
+        f_get_data.return_value = ex_data
+        acc = func_prepare_acc()
+        seqcs = [[PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)]]
+        dto = BoxplotPTDto('Boxplot(s) per test', seqcs)
+        data = DataForBoxplotPTCreator(dto, acc, working_dir, FileIdData.file1_id)
+        ret = self.creator.create_boxplots(data)
+        self.assertEqual(['some info'], ret.get_infos_for_chart_type(ChartType.BOXPLOT_PT))
+        self.assertEqual(['some err', 'some err 2'], ret.get_errors_for_chart_type(ChartType.BOXPLOT_PT))
 
     def test_get_filename(self):
         seq = [PValueSequence(5, PValuesFileType.RESULTS)]
