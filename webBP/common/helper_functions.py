@@ -112,3 +112,21 @@ def list_difference(a: list, b: list) -> list:
     s = set(b)
     ret = [x for x in a if x not in s]
     return ret
+
+
+def filter_arr_for_chart_x_axis(arr: list) -> list:
+    l = len(arr)
+    if l <= 20:
+        return arr
+    n_th = int(l // 20) + 1
+    return arr[0::n_th]
+
+
+def filter_chart_x_ticks(x_ticks_pos: list, x_ticks: list) -> tuple:
+    l1 = len(x_ticks_pos)
+    l2 = len(x_ticks)
+    if l1 != l2:
+        raise RuntimeError('Lists do not have the same length: ({}, {})'.format(l1, l2))
+    x_ticks_pos_f = filter_arr_for_chart_x_axis(x_ticks_pos)
+    x_ticks_f = filter_arr_for_chart_x_axis(x_ticks)
+    return x_ticks_pos_f, x_ticks_f

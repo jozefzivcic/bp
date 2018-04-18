@@ -27,6 +27,7 @@ from managers.filemanager import FileManager
 from managers.nisttestmanager import NistTestManager
 from nist_statistics.statistics_creator import StatisticsCreator
 from p_value_processing.p_values_file_type import PValuesFileType
+from p_value_processing.p_values_processing_error import PValuesProcessingError
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
 from pdf_generating.pdf_creating_error import PdfCreatingError
 from pdf_generating.pdf_creator import PdfCreator
@@ -60,7 +61,7 @@ class PdfGenerator:
             stats_dict = self.create_nist_report(pdf_generating_dto, directory)
             pdf_creating_dto = self.prepare_pdf_creating_dto(pdf_generating_dto, storage, stats_dict)
             self._pdf_creator.create_pdf(pdf_creating_dto)
-        except (ChartsError, PdfCreatingError) as e:
+        except (ChartsError, PdfCreatingError, PValuesProcessingError) as e:
             raise PdfGeneratingError(e)
         finally:
             rmtree(directory)

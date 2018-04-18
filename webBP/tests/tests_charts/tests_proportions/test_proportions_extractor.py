@@ -235,9 +235,12 @@ class TestProportionsExtractor(TestCase):
         self.assertEqual(expected, ret)
         self.assertEqual(1, f_get_nistparam.call_count)
 
-    def test_filter_x_ticks(self):
+    @patch('charts.proportions.proportions_extractor.filter_chart_x_ticks',
+           return_value=('filtered out 1', 'filtered out 2'))
+    def test_filter_x_ticks(self, f_filter):
         ticks_pos = [0, 1, 2, 3]
         ticks = ['t1', 't2', 't3', 't4']
         ret_pos, ret_ticks = self.extractor.filter_x_ticks(ticks_pos, ticks)
-        self.assertEqual(ticks_pos, ret_pos)
-        self.assertEqual(ticks, ret_ticks)
+        self.assertEqual('filtered out 1', ret_pos)
+        self.assertEqual('filtered out 2', ret_ticks)
+        f_filter.assert_called_once_with(ticks_pos, ticks)

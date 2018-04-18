@@ -1,10 +1,12 @@
 from configparser import ConfigParser
+from unittest.mock import patch, call
+
 from os.path import dirname, abspath, join
 from unittest import TestCase
 
 from common.helper_functions import config_parser_to_dict, load_texts_into_dict, load_texts_into_config_parsers, \
     escape_latex_special_chars, convert_specs_to_seq_acc, convert_specs_to_p_value_seq, list_difference, \
-    specs_list_to_p_value_seq_list
+    specs_list_to_p_value_seq_list, filter_chart_x_ticks, filter_arr_for_chart_x_axis
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.options.file_specification import FileSpecification
@@ -179,3 +181,61 @@ class TestHelperFunctions(TestCase):
                      PValueSequence(TestsIdData.test5_id, PValuesFileType.DATA, 123)]]
         ret = specs_list_to_p_value_seq_list(specs)
         self.assertEqual(expected, ret)
+
+    def test_filter_arr_for_chart_x_axis_small_arr(self):
+        arr = list(range(5))
+        ret = filter_arr_for_chart_x_axis(arr)
+        self.assertEqual(arr, ret)
+
+        arr = list(range(20))
+        ret = filter_arr_for_chart_x_axis(arr)
+        self.assertEqual(arr, ret)
+
+    def test_filter_arr_for_chart_x_axis_medium_arr(self):
+        arr = list(range(21))
+        expected = list(range(0, 21, 2))
+        ret = filter_arr_for_chart_x_axis(arr)
+        self.assertEqual(expected, ret)
+
+        arr = list(range(39))
+        expected = list(range(0, 39, 2))
+        ret = filter_arr_for_chart_x_axis(arr)
+        self.assertEqual(expected, ret)
+
+        arr = list(range(100))
+        expected = list(range(0, 100, 6))
+        ret = filter_arr_for_chart_x_axis(arr)
+        self.assertEqual(expected, ret)
+
+    def test_filter_arr_for_chart_x_axis_large_arr(self):
+        arr = list(range(999))
+        expected = list(range(0, 999, 50))
+        ret = filter_arr_for_chart_x_axis(arr)
+        self.assertEqual(expected, ret)
+
+        arr = list(range(1000))
+        expected = list(range(0, 1000, 51))
+        ret = filter_arr_for_chart_x_axis(arr)
+        self.assertEqual(expected, ret)
+
+        arr = list(range(10000))
+        expected = list(range(0, 10000, 501))
+        ret = filter_arr_for_chart_x_axis(arr)
+        self.assertEqual(expected, ret)
+
+    def test_filter_chart_x_ticks_raises(self):
+        arr1 = [1]
+        arr2 = [1, 2]
+        with self.assertRaises(RuntimeError) as ex:
+            filter_chart_x_ticks(arr1, arr2)
+        self.assertEqual('Lists do not have the same length: (1, 2)', str(ex.exception))
+
+    @patch('common.helper_functions.filter_arr_for_chart_x_axis', side_effect=['first', 'second'])
+    def test_filter_chart_x_ticks(self, f_filter):
+        arr1 = [1, 2, 3]
+        arr2 = [3, 4, 5]
+        ret1, ret2 = filter_chart_x_ticks(arr1, arr2)
+        self.assertEqual('first', ret1)
+        self.assertEqual('second', ret2)
+        calls = [call(arr1), call(arr2)]
+        f_filter.assert_has_calls(calls)

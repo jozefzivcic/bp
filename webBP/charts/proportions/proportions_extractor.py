@@ -5,6 +5,7 @@ from charts.extracted_data import ExtractedData
 from charts.proportions.data_for_proportions_drawer import DataForProportionsDrawer
 from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from common.error.diff_pvalues_len_err import DiffPValuesLenErr
+from common.helper_functions import filter_chart_x_ticks
 from configstorage import ConfigStorage
 from enums.prop_formula import PropFormula
 from managers.connectionpool import ConnectionPool
@@ -107,4 +108,4 @@ class ProportionsExtractor(object):
         return ret
 
     def filter_x_ticks(self, x_ticks_pos: list, x_ticks: list) -> tuple:
-        return x_ticks_pos, x_ticks
+        return filter_chart_x_ticks(x_ticks_pos, x_ticks)
