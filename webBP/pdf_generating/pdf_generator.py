@@ -159,7 +159,7 @@ class PdfGenerator:
     def get_chart_dict(self, language: str, ch_info: ChartInfo, info: Info = None, err: Err = None):
         chart_name = self.get_chart_name(language, ch_info)
         my_dict = {'path_to_chart': ch_info.path_to_chart,
-                   'chart_type': ch_info.chart_type.name,
+                   'chart_type': ch_info.chart_type,
                    'chart_name': chart_name
                    }
         if info is not None:

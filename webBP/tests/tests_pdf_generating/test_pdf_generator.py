@@ -373,7 +373,7 @@ class TestPdfGenerator(TestCase):
         charts_storage = ChartsStorage()
         charts_storage.add_chart_info(chart_info)
         file_1_name = get_file_by_id(FileIdData.file1_id).name
-        ch_type = ChartType.P_VALUES.name
+        ch_type = ChartType.P_VALUES
         chart_name = self.texts['en']['PValuesChart']['PValuesChart']
         files = {FileIdData.file1_id: {'file_name': file_1_name,
                                        'chart_info': [{'path_to_chart': path,
@@ -421,7 +421,7 @@ class TestPdfGenerator(TestCase):
         charts_storage.add_errors_from_chart(ChartType.HISTOGRAM, [err])
 
         file_1_name = get_file_by_id(FileIdData.file1_id).name
-        ch_type = ChartType.P_VALUES.name
+        ch_type = ChartType.P_VALUES
         chart_name = txt_dict['PValuesChart']['PValuesChart']
         expected = {'files': {FileIdData.file1_id: {'file_name': file_1_name,
                                                     'chart_info': [{'path_to_chart': path,
@@ -450,7 +450,7 @@ class TestPdfGenerator(TestCase):
         language = 'language_str'
         ch_info = ChartInfo(None, 'some_path', ChartType.P_VALUES, 456)
         expected = {'path_to_chart': 'some_path',
-                    'chart_type': ChartType.P_VALUES.name,
+                    'chart_type': ChartType.P_VALUES,
                     'chart_name': chart_name
                     }
         ret = self.pdf_generator.get_chart_dict(language, ch_info)
@@ -470,7 +470,7 @@ class TestPdfGenerator(TestCase):
         ch_info = ChartInfo(None, 'some_path', ChartType.P_VALUES, 456)
         info = TestDepUnifInfo(0.456, True)
         expected = {'path_to_chart': 'some_path',
-                    'chart_type': ChartType.P_VALUES.name,
+                    'chart_type': ChartType.P_VALUES,
                     'chart_name': chart_name,
                     'info_msg': info_message
                     }
@@ -493,7 +493,7 @@ class TestPdfGenerator(TestCase):
         ch_info = ChartInfo(None, 'some_path', ChartType.P_VALUES, 456)
         err = TestDepSeqLenErr(None, 456, None, 457)
         expected = {'path_to_chart': 'some_path',
-                    'chart_type': ChartType.P_VALUES.name,
+                    'chart_type': ChartType.P_VALUES,
                     'chart_name': chart_name,
                     'err_msg': err_message
                     }
@@ -520,7 +520,7 @@ class TestPdfGenerator(TestCase):
         info = TestDepUnifInfo(0.456, True)
         err = TestDepSeqLenErr(None, 456, None, 457)
         expected = {'path_to_chart': 'some_path',
-                    'chart_type': ChartType.P_VALUES.name,
+                    'chart_type': ChartType.P_VALUES,
                     'chart_name': chart_name,
                     'info_msg': info_message,
                     'err_msg': err_message
@@ -798,7 +798,7 @@ class TestPdfGenerator(TestCase):
         file_1_name = get_file_by_id(FileIdData.file1_id).name
         file_2_name = get_file_by_id(FileIdData.file2_id).name
 
-        ch_type = ChartType.P_VALUES.name
+        ch_type = ChartType.P_VALUES
         chart_name = self.texts['en']['PValuesChart']['PValuesChart']
         files = {FileIdData.file1_id: {'file_name': file_1_name,
                                        'chart_info': [{'path_to_chart': path_1, 'chart_type': ch_type,
@@ -812,7 +812,7 @@ class TestPdfGenerator(TestCase):
                                                       {'path_to_chart': path_4, 'chart_type': ch_type,
                                                        'chart_name': chart_name},
                                                       {'path_to_chart': path_5, 'chart_type': ChartType
-                                                          .TESTS_DEPENDENCY.name,
+                                                          .TESTS_DEPENDENCY,
                                                        'chart_name': 'Dependency of two tests'}]
                                        }
                  }
