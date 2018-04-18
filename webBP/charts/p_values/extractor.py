@@ -1,6 +1,7 @@
 from charts.extracted_data import ExtractedData
 from charts.dto.p_values_chart_dto import PValuesChartDto
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
+from common.helper_functions import filter_chart_x_ticks
 from configstorage import ConfigStorage
 from managers.connectionpool import ConnectionPool
 from managers.dbtestmanager import DBTestManager
@@ -46,6 +47,7 @@ class Extractor:
                     self.add_data(chart_dto, p_values_dto, data, test_id, index)
             else:
                 self.add_data(chart_dto, p_values_dto, data, test_id)
+        self.filter_x_labels(data)
         ex_data = ExtractedData()
         ex_data.add_data(None, data)
         return ex_data
@@ -99,3 +101,10 @@ class Extractor:
         temp_labels.append(('%.6f' % alpha).rstrip('0').rstrip('.'))
         data.y_axis_ticks = temp_ticks
         data.y_axis_labels = temp_labels
+
+    def filter_x_labels(self, data: DataForPValuesDrawer):
+        x_ticks_pos = data.x_ticks_positions
+        x_ticks_labels = data.x_ticks_labels
+        x_ticks_pos_f, x_ticks_labels_f = filter_chart_x_ticks(x_ticks_pos, x_ticks_labels)
+        data.x_ticks_positions = x_ticks_pos_f
+        data.x_ticks_labels = x_ticks_labels_f

@@ -1,6 +1,6 @@
 from itertools import repeat
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.extractor import Extractor
@@ -202,6 +202,17 @@ class TestExtractor(TestCase):
         expected = 'p-values from selected tests'
         self.assertEqual(expected, drawer_data.title)
 
+    @patch('charts.p_values.extractor.Extractor.filter_x_labels')
+    def test_get_data_from_acc_filter_x_called(self, f_filter):
+        dto_13 = PValuesDto(dict_for_test_13)
+        dto_14 = PValuesDto(dict_for_test_14)
+        acc = PValuesAccumulator()
+        acc.add(self.test1_id, dto_13)
+        acc.add(self.test2_id, dto_14)
+
+        self.extractor.get_data_from_accumulator(acc, self.p_values_chart_dto)
+        self.assertEqual(1, f_filter.call_count)
+
     def test_set_y_axis_small_alpha(self):
         alpha = 0.000001
         data = DataForPValuesDrawer()
@@ -277,3 +288,13 @@ class TestExtractor(TestCase):
         self.assertEqual(expected, data.y_axis_ticks)
         expected = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.05']
         self.assertEqual(expected, data.y_axis_labels)
+
+    @patch('charts.p_values.extractor.filter_chart_x_ticks', return_value=('first', 'second'))
+    def test_filter_x_labels(self, f_filter):
+        data = DataForPValuesDrawer()
+        data.x_ticks_positions = ['pos1', 'pos2']
+        data.x_ticks_labels = ['label1', 'label2']
+        self.extractor.filter_x_labels(data)
+        f_filter.assert_called_once_with(['pos1', 'pos2'], ['label1', 'label2'])
+        self.assertEqual('first', data.x_ticks_positions)
+        self.assertEqual('second', data.x_ticks_labels)
