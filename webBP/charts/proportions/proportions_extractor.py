@@ -102,10 +102,11 @@ class ProportionsExtractor(object):
         nist_param = self._nist_dao.get_nist_param_for_test(test)
         test_type = nist_param.get_test_type()
         test_name = test_names.get(test_type)
-        ret = '{} ({})'.format(test_name, test_id)
         if data_num is not None:
-            ret += ' data {}'.format(data_num)
-        return ret
+            test_name += ' data {}'.format(data_num)
+        if nist_param.has_special_parameter():
+            test_name += ' ({})'.format(nist_param.special_parameter)
+        return test_name
 
     def filter_x_ticks(self, x_ticks_pos: list, x_ticks: list) -> tuple:
         return filter_chart_x_ticks(x_ticks_pos, x_ticks)

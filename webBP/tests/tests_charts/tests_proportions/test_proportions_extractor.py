@@ -222,18 +222,28 @@ class TestProportionsExtractor(TestCase):
                          str(ex.exception))
 
     @patch('models.nistparam.NistParam.get_test_type', return_value=NistTestType.TEST_FREQUENCY)
-    def test_get_test_name_data_none(self, f_get_nistparam):
-        expected = 'Frequency ({})'.format(TestsIdData.test1_id)
+    def test_get_test_name_data_none(self, f_get_test_type):
+        expected = short_names_dict.get(NistTestType.TEST_FREQUENCY)
         ret = self.extractor.get_test_name(short_names_dict, TestsIdData.test1_id)
         self.assertEqual(expected, ret)
-        self.assertEqual(1, f_get_nistparam.call_count)
+        self.assertEqual(1, f_get_test_type.call_count)
 
     @patch('models.nistparam.NistParam.get_test_type', return_value=NistTestType.TEST_FREQUENCY)
-    def test_get_test_name_data_(self, f_get_nistparam):
-        expected = 'Frequency ({}) data 5'.format(TestsIdData.test1_id)
+    def test_get_test_name_data(self, f_get_test_type):
+        expected = '{} data 5'.format(short_names_dict.get(NistTestType.TEST_FREQUENCY))
         ret = self.extractor.get_test_name(short_names_dict, TestsIdData.test1_id, 5)
         self.assertEqual(expected, ret)
-        self.assertEqual(1, f_get_nistparam.call_count)
+        self.assertEqual(1, f_get_test_type.call_count)
+
+    @patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test')
+    def test_get_test_name_special_param(self, f_get_param):
+        nist_param = NistParam()
+        nist_param.test_number = 2
+        nist_param.special_parameter = 123
+        f_get_param.return_value = nist_param
+        expected = '{} data 2 (123)'.format(short_names_dict.get(NistTestType.TEST_BLOCK_FREQUENCY))
+        ret = self.extractor.get_test_name(short_names_dict, TestsIdData.test1_id, 2)
+        self.assertEqual(expected, ret)
 
     @patch('charts.proportions.proportions_extractor.filter_chart_x_ticks',
            return_value=('filtered out 1', 'filtered out 2'))

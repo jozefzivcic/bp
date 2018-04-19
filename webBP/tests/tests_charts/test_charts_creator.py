@@ -88,7 +88,7 @@ class TestChartsCreator(TestCase):
         self.charts_creator = ChartsCreator(None, config_storage)
 
         tests_arr = [self.test1_id, self.test2_id, self.test3_id, self.test4_id, self.test5_id]
-        chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
+        chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart', False, short_names_dict)
         self.generate_charts_dto = GenerateChartsDto(tests_arr, {ChartType.P_VALUES: [chart_dto]}, working_dir)
 
     def tearDown(self):
@@ -240,7 +240,7 @@ class TestChartsCreator(TestCase):
 
     def test_generate_zoomed_p_values_chart(self):
         self.generate_charts_dto.test_ids = [self.test1_id, self.test2_id, self.test3_id]
-        chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart', True)
+        chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart', True, short_names_dict)
         self.generate_charts_dto.chart_types[ChartType.P_VALUES_ZOOMED] = [chart_dto]
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
 
