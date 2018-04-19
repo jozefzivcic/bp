@@ -3,7 +3,7 @@ from os.path import dirname, abspath, join, exists
 from unittest import TestCase
 
 from shutil import rmtree
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 from copy import deepcopy
 
@@ -247,14 +247,30 @@ class TestOfTestDependencyCreator(TestCase):
         expected = [deepcopy(err1), deepcopy(err2)]
         self.assertEqual(expected, ret)
 
-    def test_get_file_name(self):
-        data = DataForTestDependencyDrawer([0.4, 0.5, 0.6], [0.6, 0.4, 0.5], 'title', 'x_label', 'y_label')
-        expected = join(working_dir, 'dependency_of_' + data.x_label + '_and_' + data.y_label + '.png')
-        ret = self.creator.get_file_name(working_dir, data)
+    @patch('charts.test_dependency.test_dependency_creator.TestDependencyCreator.get_seq_str',
+           side_effect=['seq1_str', 'seq2_str'])
+    def test_get_file_name(self, f_get_seq):
+        ds_info = MagicMock(p_value_sequence=('seq1', 'seq2'))
+        ret = self.creator.get_file_name(working_dir, ds_info)
+        expected = join(working_dir, 'dependency_of_seq1_str_and_seq2_str.png')
+        self.assertEqual(expected, ret)
+        calls = [call('seq1'), call('seq2')]
+        f_get_seq.assert_has_calls(calls)
+
+    def test_get_seq_str_raises(self):
+        seq = MagicMock(p_values_file=3)
+        with self.assertRaises(RuntimeError) as ex:
+            self.creator.get_seq_str(seq)
+        self.assertEqual('Unsupported file type 3', str(ex.exception))
+
+    def test_get_seq_str_results(self):
+        seq = MagicMock(test_id=752, p_values_file=PValuesFileType.RESULTS)
+        ret = self.creator.get_seq_str(seq)
+        expected = '752_res'
         self.assertEqual(expected, ret)
 
-    def test_get_file_name_replace_spaces(self):
-        data = DataForTestDependencyDrawer([0.4, 0.5, 0.6], [0.6, 0.4, 0.5], 'title', 'x_label and', 'y label')
-        expected = join(working_dir, 'dependency_of_x_label_and_and_y_label.png')
-        ret = self.creator.get_file_name(working_dir, data)
+    def test_get_seq_str_data(self):
+        seq = MagicMock(test_id=752, p_values_file=PValuesFileType.DATA, data_num=15)
+        ret = self.creator.get_seq_str(seq)
+        expected = '752_data15'
         self.assertEqual(expected, ret)

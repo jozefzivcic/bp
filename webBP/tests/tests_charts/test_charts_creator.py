@@ -38,6 +38,15 @@ path_to_tests_results = join(sample_files_dir, 'users', '4', 'tests_results')
 working_dir = join(this_dir, 'working_dir_charts_creator')
 
 
+def get_file_name(directory: str, ds_info: DataSourceInfo) -> str:
+    seq1 = ds_info.p_value_sequence[0]  # type: PValueSequence
+    seq2 = ds_info.p_value_sequence[1]  # type: PValueSequence
+    seq1_str = '{}{}'.format(seq1.test_id, seq1.data_num)
+    seq2_str = '{}{}'.format(seq2.test_id, seq2.data_num)
+    file_name = '{}{}.png'.format(seq1_str, seq2_str)
+    return join(directory, file_name)
+
+
 class TestChartsCreator(TestCase):
     def cmp_accumulators(self, acc1: PValuesAccumulator, acc2: PValuesAccumulator):
         self.assertEqual(acc1.get_all_test_ids(), acc2.get_all_test_ids())
@@ -284,11 +293,13 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected_info_1, storage.get_all_items()[0].ch_info)
         self.assertEqual(expected_info_2, storage.get_all_items()[1].ch_info)
 
+    @patch('charts.test_dependency.test_dependency_creator.TestDependencyCreator.get_file_name',
+           side_effect=get_file_name)
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_tests_dependency_charts_for_one_file(self, func_is_approx, func_get, func_check):
-        file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
+    def test_create_tests_dependency_charts_for_one_file(self, func_is_approx, func_get, func_check, f_get_filename):
+        file = join(working_dir, '{}None{}1.png'.format(self.test1_id, self.test2_id))
 
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
@@ -305,11 +316,14 @@ class TestChartsCreator(TestCase):
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
+    @patch('charts.test_dependency.test_dependency_creator.TestDependencyCreator.get_file_name',
+           side_effect=get_file_name)
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_tests_dependency_charts_more_sequences_than_test_ids(self, func_is_approx, func_get, func_check):
-        file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
+    def test_create_tests_dependency_charts_more_sequences_than_test_ids(self, func_is_approx, func_get, func_check,
+                                                                         f_get_filename):
+        file = join(working_dir, '{}None{}1.png'.format(self.test1_id, self.test2_id))
 
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
@@ -330,10 +344,13 @@ class TestChartsCreator(TestCase):
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
+    @patch('charts.test_dependency.test_dependency_creator.TestDependencyCreator.get_file_name',
+           side_effect=get_file_name)
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_three_tests_dependency_charts_for_one_file(self, func_is_approx, func_get, func_check):
+    def test_create_three_tests_dependency_charts_for_one_file(self, func_is_approx, func_get, func_check,
+                                                               func_get_filename):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
@@ -348,27 +365,29 @@ class TestChartsCreator(TestCase):
         self.assertEqual(3, len(items))
 
         info = items[0].ch_info
-        file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
+        file = join(working_dir, '{}None{}1.png'.format(self.test1_id, self.test2_id))
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
         info = items[1].ch_info
-        file = join(working_dir, 'dependency_of_Frequency_and_Serial_data_2.png')
+        file = join(working_dir, '{}None{}2.png'.format(self.test1_id, self.test3_id))
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
         info = items[2].ch_info
-        file = join(working_dir, 'dependency_of_Cumulative_Sums_data_1_and_Serial_data_2.png')
+        file = join(working_dir, '{}1{}2.png'.format(self.test2_id, self.test3_id))
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
+    @patch('charts.test_dependency.test_dependency_creator.TestDependencyCreator.get_file_name',
+           side_effect=get_file_name)
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_create_tests_dependency_charts_for_two_files(self, func_is_approx, func_get, func_check):
+    def test_create_tests_dependency_charts_for_two_files(self, func_is_approx, func_get, func_check, f_get_filename):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(self.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(self.test2_id, PValuesFileType.DATA, 1))
@@ -384,13 +403,13 @@ class TestChartsCreator(TestCase):
         self.assertEqual(2, len(items))
 
         info = items[0].ch_info
-        file = join(working_dir, 'dependency_of_Frequency_and_Cumulative_Sums_data_1.png')
+        file = join(working_dir, '{}None{}1.png'.format(self.test1_id, self.test2_id))
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file1_id, info.file_id)
 
         info = items[1].ch_info
-        file = join(working_dir, 'dependency_of_Linear_Complexity_and_Longest_Run_of_Ones.png')
+        file = join(working_dir, '{}None{}None.png'.format(self.test4_id, self.test5_id))
         self.assertEqual(file, info.path_to_chart)
         self.assertEqual(ChartType.TESTS_DEPENDENCY, info.chart_type)
         self.assertEqual(self.file2_id, info.file_id)
