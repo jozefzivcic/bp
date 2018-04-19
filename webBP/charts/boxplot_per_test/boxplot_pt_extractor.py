@@ -52,7 +52,7 @@ class BoxplotPTExtractor:
                 raise DifferentNumOfPValsError('Expected {} p-values, found only {}.'
                                                .format(expected_streams, len(p_values)), expected_streams,
                                                len(p_values))
-            test_name = self.get_name_from_seq(seq)
+            test_name = self.get_name_from_seq(seq, boxplot_dto.test_names)
             data_dict[test_name] = p_values
         if not data_dict:
             return None
@@ -62,14 +62,17 @@ class BoxplotPTExtractor:
         drawer_data = DataForBoxplotPTDrawer(boxplot_dto.title, json_str)
         return ds_info, drawer_data
 
-    def get_name_from_seq(self, seq: PValueSequence) -> str:
+    def get_name_from_seq(self, seq: PValueSequence, test_names) -> str:
         test = self._test_dao.get_test_by_id(seq.test_id)
-        if test.test_table == self._config_storage.nist:
-            test_name = self._nist_dao.get_nist_param_for_test(test).get_test_name()
-        else:
+        if test.test_table != self._config_storage.nist:
             raise RuntimeError('Unknown test type {}'.format(test.test_table))
+        nist_param = self._nist_dao.get_nist_param_for_test(test)
+        test_type = nist_param.get_test_type()
+        test_name = test_names.get(test_type)
         if seq.p_values_file == PValuesFileType.DATA:
             test_name += ' data {}'.format(seq.data_num)
+        if nist_param.has_special_parameter():
+            test_name += ' ({})'.format(nist_param.special_parameter)
         return test_name
 
     def get_p_values(self, acc: PValuesAccumulator, seq: PValueSequence) -> list:

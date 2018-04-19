@@ -16,7 +16,7 @@ from charts.extracted_data import ExtractedData
 from charts.tests_in_chart import TestsInChart
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
-from tests.data_for_tests.common_data import TestsIdData, FileIdData
+from tests.data_for_tests.common_data import TestsIdData, FileIdData, short_names_dict
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, \
     func_prepare_acc
 
@@ -50,7 +50,7 @@ class TestBoxplotPTCreator(TestCase):
         acc = func_prepare_acc()
         seqcs = [[PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1),
                   PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)]]
-        dto = BoxplotPTDto('Boxplot(s) per test', seqcs)
+        dto = BoxplotPTDto('Boxplot(s) per test', seqcs, short_names_dict)
         data = DataForBoxplotPTCreator(dto, acc, working_dir, FileIdData.file1_id)
         ret = self.creator.create_boxplots(data)
 
@@ -70,7 +70,7 @@ class TestBoxplotPTCreator(TestCase):
         seqcs = [[PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)],
                  [PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1),
                   PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2)]]
-        dto = BoxplotPTDto('Boxplot(s) per test', seqcs)
+        dto = BoxplotPTDto('Boxplot(s) per test', seqcs, short_names_dict)
         data = DataForBoxplotPTCreator(dto, acc, working_dir, FileIdData.file1_id)
         ret = self.creator.create_boxplots(data)
 

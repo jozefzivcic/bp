@@ -481,7 +481,7 @@ class TestChartsCreator(TestCase):
         seq2 = PValueSequence(self.test2_id, PValuesFileType.DATA, 1)
 
         seqcs = [[seq1, seq2]]
-        boxplot_dto = BoxplotPTDto('Boxplot(s) per tests', seqcs)
+        boxplot_dto = BoxplotPTDto('Boxplot(s) per tests', seqcs, short_names_dict)
         self.generate_charts_dto.chart_types = {ChartType.BOXPLOT_PT: [boxplot_dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
         self.assertTrue(exists(file))
@@ -505,7 +505,7 @@ class TestChartsCreator(TestCase):
         seq6 = PValueSequence(self.test5_id, PValuesFileType.RESULTS)
 
         seqcs = [[seq1], [seq2, seq3, seq4], [seq5, seq6]]
-        boxplot_dto = BoxplotPTDto('Boxplot(s) per tests', seqcs)
+        boxplot_dto = BoxplotPTDto('Boxplot(s) per tests', seqcs, short_names_dict)
         self.generate_charts_dto.chart_types = {ChartType.BOXPLOT_PT: [boxplot_dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
         self.assertTrue(exists(file1))
