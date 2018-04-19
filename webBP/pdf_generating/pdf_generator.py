@@ -151,6 +151,7 @@ class PdfGenerator:
                 files_dict[fid]['chart_info'].append(my_dict)
             else:
                 files_dict[fid] = {'file_name': file_name, 'chart_info': [my_dict]}
+        self.sort_files_dict(files_dict)
         charts_dict = {'files': files_dict}
         self.add_infos(language, charts_dict, storage)
         self.add_errors(language, charts_dict, storage)
@@ -310,3 +311,9 @@ class PdfGenerator:
             temp_dict[NistTestType.TEST_LINEARCOMPLEXITY] = cfg.get('ShortNames', 'Linear')
             ret[key] = temp_dict
         return ret
+
+    def sort_files_dict(self, files_dict: dict):
+        for fid, value_dict in files_dict.items():
+            arr = value_dict['chart_info']
+            sorted_arr = sorted(arr, key=lambda x: (x['chart_type'], x['path_to_chart']))
+            value_dict['chart_info'] = sorted_arr

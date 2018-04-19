@@ -443,6 +443,12 @@ class TestPdfGenerator(TestCase):
         ret = self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
         self.assertEqual(expected, ret)
 
+    @patch('pdf_generating.pdf_generator.PdfGenerator.sort_files_dict')
+    def test_prepare_dict_from_charts_storage_calls_sort_charts(self, f_sort):
+        charts_storage, expected = self.get_charts_storage_and_dict()
+        self.pdf_generator.prepare_dict_from_charts_storage(charts_storage, 'en')
+        self.assertEqual(1, f_sort.call_count)
+
     @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name')
     def test_get_chart_dict_info_and_err_none(self, func):
         chart_name = 'chart name'
@@ -769,6 +775,73 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(an_dict_in['RandExcsVar'], ret_an.get(NistTestType.TEST_RND_EXCURSION_VAR))
         self.assertEqual(an_dict_in['Serial'], ret_an.get(NistTestType.TEST_SERIAL))
         self.assertEqual(an_dict_in['Linear'], ret_an.get(NistTestType.TEST_LINEARCOMPLEXITY))
+
+    def test_sort_files_dict(self):
+        in_arr = [
+            {'chart_type': ChartType.HISTOGRAM, 'path_to_chart': '/tmp/tmpbz_dst8n/histogram_for_file_13.png',
+             'chart_name': 'Histogram'},
+            {'chart_type': ChartType.ECDF, 'path_to_chart': '/tmp/tmpbz_dst8n/ecdf_for_test_95_results.png',
+             'chart_name': 'ECDF from Longest Run of Ones results'},
+            {'chart_type': ChartType.ECDF, 'path_to_chart': '/tmp/tmpbz_dst8n/ecdf_for_test_94_results.png',
+             'chart_name': 'ECDF from Runs results'},
+            {'chart_type': ChartType.ECDF, 'path_to_chart': '/tmp/tmpbz_dst8n/ecdf_for_test_96_results.png',
+             'chart_name': 'ECDF from Rank results'},
+            {'chart_type': ChartType.P_VALUES, 'path_to_chart': '/tmp/tmpbz_dst8n/p_values_for_file_13.png',
+             'chart_name': 'p-values chart'},
+            {'chart_type': ChartType.PROPORTIONS, 'path_to_chart': '/tmp/tmpbz_dst8n/prop_first_test_id_94.png',
+             'chart_name': 'Proportions of sequences passing tests.'},
+            {'chart_type': ChartType.TESTS_DEPENDENCY, 'path_to_chart': '/tmp/tmpbz_dst8n/dependency_of_Runs_and_'
+                                                                        'Longest_Run_of_Ones.png',
+             'info_msg': 'p-value for chi-squared: 0.239517, condition of good approximation was not fulfilled',
+             'chart_name': 'Dependency of two tests'},
+            {'chart_type': ChartType.TESTS_DEPENDENCY,
+             'path_to_chart': '/tmp/tmpbz_dst8n/dependency_of_Runs_and_Rank.png',
+             'info_msg': 'p-value for chi-squared: 0.405761, condition of good approximation was not fulfilled',
+             'chart_name': 'Dependency of two tests'},
+            {'chart_type': ChartType.TESTS_DEPENDENCY, 'path_to_chart': '/tmp/tmpbz_dst8n/dependency_of_Longest_Run_of_'
+                                                                        'Ones_and_Rank.png',
+             'info_msg': 'p-value for chi-squared: 0.003853, condition of good approximation was not fulfilled',
+             'chart_name': 'Dependency of two tests'},
+            {'chart_type': ChartType.BOXPLOT_PT, 'path_to_chart': '/tmp/tmpbz_dst8n/boxplot_pt_95.png',
+             'chart_name': 'Boxplot(s) per test'}, {'chart_type': ChartType.P_VALUES_ZOOMED,
+                                                    'path_to_chart': '/tmp/tmpbz_dst8n/p_values_for_file_13_zoomed.png',
+                                                    'chart_name': 'p-values chart zoomed'}
+        ]
+        in_arr_exp = [
+            {'chart_type': ChartType.P_VALUES, 'path_to_chart': '/tmp/tmpbz_dst8n/p_values_for_file_13.png',
+             'chart_name': 'p-values chart'},
+            {'chart_type': ChartType.P_VALUES_ZOOMED,
+             'path_to_chart': '/tmp/tmpbz_dst8n/p_values_for_file_13_zoomed.png',
+             'chart_name': 'p-values chart zoomed'},
+            {'chart_type': ChartType.HISTOGRAM, 'path_to_chart': '/tmp/tmpbz_dst8n/histogram_for_file_13.png',
+             'chart_name': 'Histogram'},
+            {'chart_type': ChartType.TESTS_DEPENDENCY, 'path_to_chart': '/tmp/tmpbz_dst8n/dependency_of_Longest_Run_of_'
+                                                                        'Ones_and_Rank.png',
+             'info_msg': 'p-value for chi-squared: 0.003853, condition of good approximation was not fulfilled',
+             'chart_name': 'Dependency of two tests'},
+            {'chart_type': ChartType.TESTS_DEPENDENCY, 'path_to_chart': '/tmp/tmpbz_dst8n/dependency_of_Runs_and_'
+                                                                        'Longest_Run_of_Ones.png',
+             'info_msg': 'p-value for chi-squared: 0.239517, condition of good approximation was not fulfilled',
+             'chart_name': 'Dependency of two tests'},
+            {'chart_type': ChartType.TESTS_DEPENDENCY,
+             'path_to_chart': '/tmp/tmpbz_dst8n/dependency_of_Runs_and_Rank.png',
+             'info_msg': 'p-value for chi-squared: 0.405761, condition of good approximation was not fulfilled',
+             'chart_name': 'Dependency of two tests'},
+            {'chart_type': ChartType.ECDF, 'path_to_chart': '/tmp/tmpbz_dst8n/ecdf_for_test_94_results.png',
+             'chart_name': 'ECDF from Runs results'},
+            {'chart_type': ChartType.ECDF, 'path_to_chart': '/tmp/tmpbz_dst8n/ecdf_for_test_95_results.png',
+             'chart_name': 'ECDF from Longest Run of Ones results'},
+            {'chart_type': ChartType.ECDF, 'path_to_chart': '/tmp/tmpbz_dst8n/ecdf_for_test_96_results.png',
+             'chart_name': 'ECDF from Rank results'},
+            {'chart_type': ChartType.BOXPLOT_PT, 'path_to_chart': '/tmp/tmpbz_dst8n/boxplot_pt_95.png',
+             'chart_name': 'Boxplot(s) per test'},
+            {'chart_type': ChartType.PROPORTIONS, 'path_to_chart': '/tmp/tmpbz_dst8n/prop_first_test_id_94.png',
+             'chart_name': 'Proportions of sequences passing tests.'}
+        ]
+        input_dict = {13: {'file_name': 'BBS.dat', 'chart_info': in_arr}}
+        expected_dict = {13: {'file_name': 'BBS.dat', 'chart_info': in_arr_exp}}
+        self.pdf_generator.sort_files_dict(input_dict)
+        self.assertEqual(expected_dict, input_dict)
 
     def get_charts_storage_and_dict(self):
         charts_storage = ChartsStorage()
