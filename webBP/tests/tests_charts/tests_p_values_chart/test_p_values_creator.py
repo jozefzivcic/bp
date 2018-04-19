@@ -11,7 +11,7 @@ from charts.dto.p_values_chart_dto import PValuesChartDto
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
 from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, dict_for_test_41, TestsIdData, \
-    FileIdData
+    FileIdData, short_names_dict
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
 
 this_dir = dirname(abspath(__file__))
@@ -41,7 +41,7 @@ class TestPValuesCreator(TestCase):
         config_storage = MagicMock(nist='nist')
         self.p_values_creator = PValuesCreator(None, config_storage)
 
-        self.p_values_chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart')
+        self.p_values_chart_dto = PValuesChartDto(0.01, 'tests', 'p-value', 'p-values chart', False, short_names_dict)
         acc = PValuesAccumulator()
         dto = PValuesDto(dict_for_test_13)
         acc.add(self.test1_id, dto)

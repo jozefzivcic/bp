@@ -79,11 +79,13 @@ class PdfGenerator:
         texts = self._texts[pdf_generating_dto.language]
         if chart_type == ChartType.P_VALUES:
             dto = PValuesChartDto(pdf_generating_dto.alpha, texts['General']['Tests'],
-                                  texts['General']['PValue'], texts['PValuesChart']['PValuesChart'])
+                                  texts['General']['PValue'], texts['PValuesChart']['PValuesChart'], False,
+                                  self._short_test_names_dict[pdf_generating_dto.language])
             return [dto]
         elif chart_type == ChartType.P_VALUES_ZOOMED:
             dto = PValuesChartDto(pdf_generating_dto.alpha, texts['General']['Tests'],
-                                  texts['General']['PValue'], texts['PValuesChart']['PValuesChart'], True)
+                                  texts['General']['PValue'], texts['PValuesChart']['PValuesChart'], True,
+                                  self._short_test_names_dict[pdf_generating_dto.language])
             return [dto]
         elif chart_type == ChartType.HISTOGRAM:
             dto = HistogramDto(texts['Histogram']['Intervals'], texts['Histogram']['NumOfPValues'],

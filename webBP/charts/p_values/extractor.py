@@ -55,10 +55,10 @@ class Extractor:
     def add_data(self, chart_dto: PValuesChartDto, dto: PValuesDto, data: DataForPValuesDrawer, test_id: int,
                  index=None):
         if index is None:
-            data.x_ticks_labels.append(self.get_test_name(test_id))
+            data.x_ticks_labels.append(self.get_test_name(test_id, index, chart_dto.test_names))
             p_values = dto.get_results_p_values()
         else:
-            data.x_ticks_labels.append(self.get_test_name(test_id) + '_' + str(index))
+            data.x_ticks_labels.append(self.get_test_name(test_id, index, chart_dto.test_names))
             p_values = dto.get_data_p_values(index)
 
         data.x_ticks_positions.append(self._i)
@@ -70,12 +70,18 @@ class Extractor:
             data.y_values.append(p_value)
         self._i += 1
 
-    def get_test_name(self, test_id: int):
+    def get_test_name(self, test_id: int, index: int, test_names: dict) -> str:
         test = self._test_dao.get_test_by_id(test_id)
-        if test.test_table == self._config_storage.nist:
-            param = self._nist_dao.get_nist_param_for_test(test)
-            return param.get_test_name()
-        return 'Undefined'
+        if test.test_table != self._config_storage.nist:
+            raise RuntimeError('Unsupported test table "{}"'.format(test.test_table))
+        param = self._nist_dao.get_nist_param_for_test(test)
+        test_type = param.get_test_type()
+        test_name = test_names.get(test_type)
+        if index is not None:
+            test_name += ' data {}'.format(index)
+        if param.has_special_parameter():
+            test_name += ' ({})'.format(param.special_parameter)
+        return test_name
 
     def replace_zero_p_values(self, p_values: list):
         return [Extractor.threshold_is_zero if x < Extractor.threshold_is_zero else x for x in p_values]

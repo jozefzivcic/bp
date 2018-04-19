@@ -5,9 +5,11 @@ from unittest.mock import MagicMock, patch, call
 from charts.p_values.data_for_p_values_drawer import DataForPValuesDrawer
 from charts.p_values.extractor import Extractor
 from charts.dto.p_values_chart_dto import PValuesChartDto
+from enums.nist_test_type import NistTestType
+from models.nistparam import NistParam
 from p_value_processing.p_values_accumulator import PValuesAccumulator
 from p_value_processing.p_values_dto import PValuesDto
-from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, TestsIdData
+from tests.data_for_tests.common_data import dict_for_test_13, dict_for_test_14, TestsIdData, short_names_dict
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test
 
 
@@ -28,32 +30,48 @@ class TestExtractor(TestCase):
         self.p_values_chart_dto.title = 'p-values from selected tests'
         self.p_values_chart_dto.x_label = 'test'
         self.p_values_chart_dto.y_label = 'p-value'
+        self.p_values_chart_dto.test_names = short_names_dict
 
         storage_mock = MagicMock(nist='nist')
         self.extractor = Extractor(None, storage_mock)
 
         self.test1_id = TestsIdData.test1_id
-        self.test1_name = 'Frequency'
+        self.test1_name = short_names_dict.get(NistTestType.TEST_FREQUENCY)
         self.test2_id = TestsIdData.test2_id
-        self.test2_name = 'Cumulative Sums'
+        self.test2_name = short_names_dict.get(NistTestType.TEST_CUSUM)
 
         self.non_existing_test_id = TestsIdData.non_existing_test_id
 
         self.y_axis_ticks = [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]
         self.y_axis_labels = ['0.0', '0.00001', '0.0001', '0.001', '0.01', '0.1', '1.0']
 
-    def test_get_test_name(self):
+    @patch('managers.dbtestmanager.DBTestManager.get_test_by_id')
+    def test_get_test_name_raises(self, f_get):
+        mock = MagicMock(test_table='some_table')
+        f_get.return_value = mock
+        with self.assertRaises(RuntimeError) as ex:
+            self.extractor.get_test_name(self.non_existing_test_id, 1, short_names_dict)
+        self.assertEqual('Unsupported test table "some_table"', str(ex.exception))
+
+    def test_get_test_name_results(self):
         expected = self.test1_name
-        name = self.extractor.get_test_name(self.test1_id)
+        name = self.extractor.get_test_name(self.test1_id, None, short_names_dict)
         self.assertEqual(expected, name)
 
-        expected = self.test2_name
-        name = self.extractor.get_test_name(self.test2_id)
+    def test_get_test_name_data(self):
+        expected = self.test2_name + ' data 25'
+        name = self.extractor.get_test_name(self.test2_id, 25, short_names_dict)
         self.assertEqual(expected, name)
 
-        expected = 'Undefined'
-        name = self.extractor.get_test_name(self.non_existing_test_id)
-        self.assertEqual(expected, name)
+    @patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test')
+    def test_get_test_name_special_param(self, f_get):
+        nist_param = NistParam()
+        nist_param.test_number = 2
+        nist_param.special_parameter = 123
+        f_get.return_value = nist_param
+        expected = short_names_dict.get(NistTestType.TEST_BLOCK_FREQUENCY) + ' data 54 (123)'
+        ret = self.extractor.get_test_name(self.test1_id, 54, short_names_dict)
+        self.assertEqual(expected, ret)
 
     def test_replace_p_values(self):
         input = [0.857153, 0.0000009, 0.000000, 0.000001, 0.0000009999999999, 0.888660, 0.471525, 0.920344, 0.357573, 0.509254]
@@ -85,7 +103,7 @@ class TestExtractor(TestCase):
         data = DataForPValuesDrawer()
         self.extractor.add_data(self.p_values_chart_dto, p_values_dto, data, self.test2_id, 1)
 
-        expected = [self.test2_name + '_1']
+        expected = [self.test2_name + ' data 1']
         self.assertEqual(expected, data.x_ticks_labels)
 
         expected = [1]
@@ -133,7 +151,7 @@ class TestExtractor(TestCase):
         data = DataForPValuesDrawer()
         self.extractor.add_data(self.p_values_chart_dto, p_values_dto, data, self.test2_id, 1)
 
-        expected = [self.test2_name + '_1']
+        expected = [self.test2_name + ' data 1']
         self.assertEqual(expected, data.x_ticks_labels)
 
         expected = [1]
@@ -190,7 +208,7 @@ class TestExtractor(TestCase):
         expected = [1, 2, 3]
         self.assertEqual(expected, drawer_data.x_ticks_positions)
 
-        expected = [self.test1_name, self.test2_name + '_1', self.test2_name + '_2']
+        expected = [self.test1_name, self.test2_name + ' data 1', self.test2_name + ' data 2']
         self.assertEqual(expected, drawer_data.x_ticks_labels)
 
         expected = 'test'
