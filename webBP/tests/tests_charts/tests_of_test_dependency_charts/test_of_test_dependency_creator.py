@@ -23,7 +23,7 @@ from p_value_processing.p_values_dto import PValuesDto
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_43, dict_for_test_13, dict_for_test_14, \
-    dict_for_test_41, dict_for_test_42, FileIdData
+    dict_for_test_41, dict_for_test_42, FileIdData, short_names_dict
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, \
     func_return_false, func_return_true
 
@@ -95,7 +95,7 @@ class TestOfTestDependencyCreator(TestCase):
         p_values_acc.add(TestsIdData.test2_id, p_values_dto_for_test2)
 
         dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc,
-                                           'Dependency of two tests')
+                                           'Dependency of two tests', TestDepPairs.ALL_PAIRS, short_names_dict)
         data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
         storage = self.creator.create_test_dependency_charts(data_for_creator)
 
@@ -133,7 +133,7 @@ class TestOfTestDependencyCreator(TestCase):
         p_values_acc.add(TestsIdData.test5_id, p_values_dto_for_test5)
 
         dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc,
-                                           'Dependency of two tests')
+                                           'Dependency of two tests', TestDepPairs.ALL_PAIRS, short_names_dict)
         data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
         storage = self.creator.create_test_dependency_charts(data_for_creator)
 
@@ -173,7 +173,8 @@ class TestOfTestDependencyCreator(TestCase):
         p_values_acc.add(TestsIdData.test5_id, p_values_dto_for_test5)
 
         dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc,
-                                           'Dependency of two tests', TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS)
+                                           'Dependency of two tests', TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS,
+                                           short_names_dict)
         data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
         storage = self.creator.create_test_dependency_charts(data_for_creator)
 
@@ -218,7 +219,7 @@ class TestOfTestDependencyCreator(TestCase):
         p_values_acc.add(TestsIdData.test5_id, p_values_dto_for_test5)
 
         dependency_dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc,
-                                           'Dependency of two tests')
+                                           'Dependency of two tests', TestDepPairs.ALL_PAIRS, short_names_dict)
         data_for_creator = DataForTestDependencyCreator(dependency_dto, p_values_acc, working_dir, FileIdData.file1_id)
         storage = self.creator.create_test_dependency_charts(data_for_creator)
         for cs_item in storage.get_all_items():

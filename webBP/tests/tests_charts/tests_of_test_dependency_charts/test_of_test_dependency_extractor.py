@@ -6,20 +6,32 @@ from charts.dto.test_dependency_dto import TestDependencyDto
 from charts.test_dependency.data_for_test_dependency_drawer import DataForTestDependencyDrawer
 from charts.test_dependency.test_dependency_extractor import TestDependencyExtractor
 from charts.tests_in_chart import TestsInChart
+from enums.nist_test_type import NistTestType
 from enums.test_dep_pairs import TestDepPairs
 from p_value_processing.different_lists_size_error import DifferentListsSizeError
 from common.error.test_dep_seq_len_err import TestDepSeqLenErr
 from common.info.test_dep_filtered_info import TestDepFilteredInfo
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
+from models.nistparam import NistParam
 from models.test import Test
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.sequence_accumulator import SequenceAccumulator
 from tests.data_for_tests.common_data import TestsIdData, dict_for_test_13, dict_for_test_14, dict_for_test_41, \
-    dict_for_test_42, dict_for_test_43
+    dict_for_test_42, dict_for_test_43, short_names_dict
 from tests.data_for_tests.common_functions import db_test_dao_get_test_by_id, nist_dao_get_nist_param_for_test, \
     func_prepare_acc, func_return_true
+
+
+def mock_get_test_name(seq: PValueSequence, test_names: dict):
+    test = db_test_dao_get_test_by_id(seq.test_id)
+    if test.test_table == 'nist':
+        test_name = nist_dao_get_nist_param_for_test(test).get_test_name()
+        if seq.p_values_file == PValuesFileType.DATA:
+            test_name += '_data_' + str(seq.data_num)
+        return test_name
+    raise RuntimeError('Unsupported test type ' + str(test.test_table))
 
 
 class TestOfTestDependencyExtractor(TestCase):
@@ -39,10 +51,12 @@ class TestOfTestDependencyExtractor(TestCase):
         self.extractor = TestDependencyExtractor(None, self.config_storage)
         self.p_values_acc = func_prepare_acc()
 
+    @patch('charts.test_dependency.test_dependency_extractor.TestDependencyExtractor.get_test_name',
+           side_effect=mock_get_test_name)
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_get_data_from_accumulator_ds_info(self, func_is_approx, func_get, func_check_unif):
+    def test_get_data_from_accumulator_ds_info(self, func_is_approx, func_get, func_check_unif, f_get_test_name):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -51,7 +65,8 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title, TestDepPairs.ALL_PAIRS,
+                                short_names_dict)
         extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         extracted_data_list = extracted_data.get_all_data()
 
@@ -104,10 +119,12 @@ class TestOfTestDependencyExtractor(TestCase):
         expected = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq4, seq5))
         self.assertEqual(expected, ret)
 
+    @patch('charts.test_dependency.test_dependency_extractor.TestDependencyExtractor.get_test_name',
+           side_effect=mock_get_test_name)
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_get_data_from_accumulator(self, func_is_approx, func_get, func_check_unif):
+    def test_get_data_from_accumulator(self, func_is_approx, func_get, func_check_unif, f_get_test_name):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -116,7 +133,8 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title, TestDepPairs.ALL_PAIRS,
+                                short_names_dict)
         extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         extracted_data_list = extracted_data.get_all_data()
 
@@ -223,10 +241,12 @@ class TestOfTestDependencyExtractor(TestCase):
                                                       x_label, y_label)
         self.compare_data_for_drawer(data_for_drawer, ret_data)
 
+    @patch('charts.test_dependency.test_dependency_extractor.TestDependencyExtractor.get_test_name',
+           side_effect=mock_get_test_name)
     @patch('common.unif_check.UnifCheck.check_for_uniformity', side_effect=func_return_true)
     @patch('common.unif_check.UnifCheck.get_p_value', return_value=0.5)
     @patch('common.unif_check.UnifCheck.is_approx_fulfilled', return_value=True)
-    def test_get_data_from_acc_filter_out_subtests(self, f_is_approx, f_get_p_value, f_check):
+    def test_get_data_from_acc_filter_out_subtests(self, f_is_approx, f_get_p_value, f_check, f_get_test_name):
         seq_acc = SequenceAccumulator()
         seq_acc.add_sequence(PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS))
         seq_acc.add_sequence(PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1))
@@ -236,7 +256,7 @@ class TestOfTestDependencyExtractor(TestCase):
 
         title = 'Dependency of two tests'
         dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title,
-                                TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS)
+                                TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS, short_names_dict)
         extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         extracted_data_list = extracted_data.get_all_data()
 
@@ -335,7 +355,8 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title, TestDepPairs.ALL_PAIRS,
+                                short_names_dict)
         extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         extracted_data_list = extracted_data.get_all_data()
         for ds_info, drawer_data, info, err in extracted_data_list:
@@ -353,7 +374,8 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(0.01, FilterUniformity.DO_NOT_FILTER, seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.DO_NOT_FILTER, seq_acc, title, TestDepPairs.ALL_PAIRS,
+                                short_names_dict)
         extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
         infos = extracted_data.get_all_infos()
         self.assertEqual([], infos)
@@ -395,7 +417,8 @@ class TestOfTestDependencyExtractor(TestCase):
         seq_acc.add_sequence(PValueSequence(TestsIdData.test5_id, PValuesFileType.RESULTS))
 
         title = 'Dependency of two tests'
-        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title)
+        dto = TestDependencyDto(0.01, FilterUniformity.REMOVE_UNIFORM, seq_acc, title, TestDepPairs.ALL_PAIRS,
+                                short_names_dict)
         extracted_data = self.extractor.get_data_from_accumulator(self.p_values_acc, dto)
 
         expected = TestDepFilteredInfo(1, 10, FilterUniformity.REMOVE_UNIFORM)
@@ -415,22 +438,33 @@ class TestOfTestDependencyExtractor(TestCase):
         self.extractor._test_dao.get_test_by_id = MagicMock(side_effect=dao_side_effect)
         seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
         with self.assertRaises(RuntimeError) as context:
-            self.extractor.get_test_name(seq)
+            self.extractor.get_test_name(seq, short_names_dict)
         self.assertEqual('Unsupported test type ' + test_table_name, str(context.exception))
 
     def test_get_test_name_results(self):
         seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
-        test = db_test_dao_get_test_by_id(TestsIdData.test1_id)
-        expected = nist_dao_get_nist_param_for_test(test).get_test_name()
-        ret = self.extractor.get_test_name(seq)
+        expected = short_names_dict.get(NistTestType.TEST_FREQUENCY)
+        ret = self.extractor.get_test_name(seq, short_names_dict)
         self.assertEqual(expected, ret)
 
     def test_get_test_name_data_2(self):
         seq = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)
-        test = db_test_dao_get_test_by_id(TestsIdData.test2_id)
-        expected = nist_dao_get_nist_param_for_test(test).get_test_name()
-        expected += '_data_2'
-        ret = self.extractor.get_test_name(seq)
+        expected = short_names_dict.get(NistTestType.TEST_CUSUM)
+        expected += ' data 2'
+        ret = self.extractor.get_test_name(seq, short_names_dict)
+        self.assertEqual(expected, ret)
+
+    @patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test')
+    def test_get_test_name_special_param(self, f_get_param):
+        nist_param = NistParam()
+        nist_param.test_number = 2
+        nist_param.special_parameter = 123
+        f_get_param.return_value = nist_param
+
+        seq = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 245)
+        expected = short_names_dict.get(NistTestType.TEST_BLOCK_FREQUENCY)
+        expected += ' data 245 (123)'
+        ret = self.extractor.get_test_name(seq, short_names_dict)
         self.assertEqual(expected, ret)
 
     def compare_data_for_drawer(self, expected: DataForTestDependencyDrawer, ret: DataForTestDependencyDrawer):

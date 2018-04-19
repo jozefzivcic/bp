@@ -37,8 +37,8 @@ class TestDependencyExtractor:
 
         tuples = seq_pairs.get_pairs_in_list()
         for seq1, seq2, p_values1, p_values2 in tuples:
-            name1 = self.get_test_name(seq1)
-            name2 = self.get_test_name(seq2)
+            name1 = self.get_test_name(seq1, dto.test_names)
+            name2 = self.get_test_name(seq2, dto.test_names)
             item_dto = data.get_kept_by_seqcs(seq1, seq2)
             data_for_drawer = DataForTestDependencyDrawer(p_values1, p_values2, dto.title, name1, name2)
             ds_info = DataSourceInfo(TestsInChart.PAIR_OF_TESTS, (seq1, seq2))
@@ -51,11 +51,15 @@ class TestDependencyExtractor:
             extracted_data.add_info(info)
         return extracted_data
 
-    def get_test_name(self, seq: PValueSequence):
+    def get_test_name(self, seq: PValueSequence, test_names: dict):
         test = self._test_dao.get_test_by_id(seq.test_id)
-        if test.test_table == self._config_storage.nist:
-            test_name = self._nist_dao.get_nist_param_for_test(test).get_test_name()
-            if seq.p_values_file == PValuesFileType.DATA:
-                test_name += '_data_' + str(seq.data_num)
-            return test_name
-        raise RuntimeError('Unsupported test type ' + str(test.test_table))
+        if test.test_table != self._config_storage.nist:
+            raise RuntimeError('Unsupported test type ' + str(test.test_table))
+        param = self._nist_dao.get_nist_param_for_test(test)
+        test_type = param.get_test_type()
+        test_name = test_names.get(test_type)
+        if seq.p_values_file == PValuesFileType.DATA:
+            test_name += ' data {}'.format(seq.data_num)
+        if param.has_special_parameter():
+            test_name += ' ({})'.format(param.special_parameter)
+        return test_name
