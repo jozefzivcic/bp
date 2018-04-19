@@ -21,6 +21,7 @@ from enums.filter_uniformity import FilterUniformity
 from enums.nist_test_type import NistTestType
 from enums.prop_formula import PropFormula
 from enums.test_dep_pairs import TestDepPairs
+from models.nistparam import NistParam
 from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
@@ -618,8 +619,24 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(expected, ret)
 
     def test_get_ecdf_chart_name_data(self):
-        expected = '{} {} Cumulative Sums data 2'.format(self.texts['en']['ECDF']['Title'],
-                                                         self.texts['en']['General']['From'])
+        expected = '{} {} CuSums data 2'.format(self.texts['en']['ECDF']['Title'],
+                                                self.texts['en']['General']['From'])
+        seq = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)
+        ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
+        chart_info = ChartInfo(ds_info, 'something', ChartType.ECDF, FileIdData.file1_id)
+        ret = self.pdf_generator.get_ecdf_chart_name('en', chart_info)
+        self.assertEqual(expected, ret)
+
+    @patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test')
+    def test_get_ecdf_chart_name_special_param(self, f_get):
+        nist_param = NistParam()
+        nist_param.test_number = 2
+        nist_param.special_parameter = 123
+        f_get.return_value = nist_param
+
+        expected = '{} {} Bl Freq data 2 ({})'.format(self.texts['en']['ECDF']['Title'],
+                                                     self.texts['en']['General']['From'], 123)
+
         seq = PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 2)
         ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
         chart_info = ChartInfo(ds_info, 'something', ChartType.ECDF, FileIdData.file1_id)

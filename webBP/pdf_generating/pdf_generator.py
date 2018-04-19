@@ -231,14 +231,19 @@ class PdfGenerator:
         seq = info.ds_info.p_value_sequence
         test_id = seq.test_id
         test = self._test_dao.get_test_by_id(test_id)
-        test_name = self._nist_dao.get_nist_param_for_test(test).get_test_name()
+        nist_param = self._nist_dao.get_nist_param_for_test(test)
+        test_type = nist_param.get_test_type()
+        test_name = self._short_test_names_dict[language].get(test_type)
         title += ' {}'.format(test_name)
         if seq.p_values_file == PValuesFileType.RESULTS:
-            return title + ' {}'.format(self._texts[language]['General']['Results'])
+            title += ' {}'.format(self._texts[language]['General']['Results'])
         elif seq.p_values_file == PValuesFileType.DATA:
-            return title + ' {} {}'.format(self._texts[language]['General']['Data'], seq.data_num)
+            title += ' {} {}'.format(self._texts[language]['General']['Data'], seq.data_num)
         else:
             raise RuntimeError('Unknown file type {}'.format(seq.p_values_file))
+        if nist_param.has_special_parameter():
+            title += ' ({})'.format(nist_param.special_parameter)
+        return title
 
     def add_infos(self, language: str, charts_dict: dict, storage: ChartsStorage):
         infos_dict = {}
