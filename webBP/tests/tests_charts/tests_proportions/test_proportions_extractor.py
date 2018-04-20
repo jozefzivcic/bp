@@ -70,7 +70,7 @@ class TestProportionsExtractor(TestCase):
         self.assertEqual(prop_dto.title, data.title)
         self.assertEqual(prop_dto.x_label, data.x_label)
         self.assertEqual(prop_dto.y_label, data.y_label)
-        self.assertAlmostEqual(0.65, data.y_lim_low, 6)
+        self.assertAlmostEqual(0.8, data.y_lim_low, 6)
         self.assertAlmostEqual(1.0, data.y_lim_high, 6)
         self.assertEqual([0, 1], data.x_ticks_pos)
         self.assertEqual(['t1', 't2'], data.x_ticks_lab)
