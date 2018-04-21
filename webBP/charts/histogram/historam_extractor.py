@@ -68,5 +68,7 @@ class HistogramExtractor:
         return ret
 
     def sum_quantities(self, q1: list, q2: list) -> list:
+        if len(q1) != len(q2):
+            raise RuntimeError('Quantities do not have the same length ({}, {})'.format(len(q1), len(q2)))
         for i, quantity in enumerate(q2):
             q1[i] += quantity
