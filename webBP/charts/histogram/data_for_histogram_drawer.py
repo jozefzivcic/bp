@@ -1,6 +1,6 @@
 class DataForHistogramDrawer:
-    def __init__(self):
-        self.json_data_string = None
-        self.x_label = None
-        self.y_label = None
-        self.title = None
+    def __init__(self, json_data_string: str=None, x_label: str=None, y_label: str=None, title: str=None):
+        self.json_data_string = json_data_string
+        self.x_label = x_label
+        self.y_label = y_label
+        self.title = title
