@@ -19,35 +19,37 @@ class HistogramExtractor:
     def get_data_from_accumulator(self, acc: PValuesAccumulator, dto: HistogramDto) -> ExtractedData:
         ex_data = ExtractedData()
         acc_quantities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        all_seqcs = []
         for test_id in acc.get_all_test_ids():
             p_values_dto = acc.get_dto_for_test(test_id)
             if p_values_dto.has_data_files():
                 for data_num in p_values_dto.get_data_files_indices():
-                    self.add_data(ex_data, acc_quantities, p_values_dto.get_data_p_values(data_num), dto, test_id,
-                                  data_num)
+                    self.add_data(ex_data, acc_quantities, all_seqcs, p_values_dto.get_data_p_values(data_num), dto,
+                                  test_id, data_num)
             else:
-                self.add_data(ex_data, acc_quantities, p_values_dto.get_results_p_values(), dto, test_id)
+                self.add_data(ex_data, acc_quantities, all_seqcs, p_values_dto.get_results_p_values(), dto, test_id)
         if not HistForTests.ALL_TESTS in dto.hist_for_tests:
             return ex_data
-        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, acc.get_all_test_ids())
+        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, all_seqcs)
         intervals_quantities = self.add_intervals_to_quantities(acc_quantities)
         intervals_quantities_str = json.dumps(intervals_quantities)
         data = DataForHistogramDrawer(intervals_quantities_str, dto.x_label, dto.y_label, dto.title)
         ex_data.add_data(ds_info, data)
         return ex_data
 
-    def add_data(self, ex_data: ExtractedData, global_quantities: list, p_values: list, dto: HistogramDto,
-                 test_id: int, data_num: int=None):
+    def add_data(self, ex_data: ExtractedData, global_quantities: list, all_seqcs: list, p_values: list,
+                 dto: HistogramDto, test_id: int, data_num: int=None):
         quantities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.add_p_values_to_interval(quantities, p_values)
-        if HistForTests.ALL_TESTS in dto.hist_for_tests:
-            self.sum_quantities(global_quantities, quantities)
-        if not HistForTests.INDIVIDUAL_TESTS in dto.hist_for_tests:
-            return
         if data_num is None:
             seq = PValueSequence(test_id, PValuesFileType.RESULTS)
         else:
             seq = PValueSequence(test_id, PValuesFileType.DATA, data_num)
+        if HistForTests.ALL_TESTS in dto.hist_for_tests:
+            self.sum_quantities(global_quantities, quantities)
+            all_seqcs.append(seq)
+        if HistForTests.INDIVIDUAL_TESTS not in dto.hist_for_tests:
+            return
         ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
         intervals_quantities = self.add_intervals_to_quantities(quantities)
         intervals_quantities_str = json.dumps(intervals_quantities)
