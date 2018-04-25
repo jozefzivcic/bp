@@ -21,6 +21,7 @@ from charts.different_num_of_pvals_error import DifferentNumOfPValsError
 from charts.tests_in_chart import TestsInChart
 from common.error.diff_pvalues_len_err import DiffPValuesLenErr
 from enums.filter_uniformity import FilterUniformity
+from enums.hist_for_tests import HistForTests
 from enums.prop_formula import PropFormula
 from enums.test_dep_pairs import TestDepPairs
 from p_value_processing.p_value_sequence import PValueSequence
@@ -277,14 +278,25 @@ class TestChartsCreator(TestCase):
         self.assertEqual(expected_info_1, storage.get_all_items()[0].ch_info)
         self.assertEqual(expected_info_2, storage.get_all_items()[1].ch_info)
 
-    def test_create_histogram_for_two_files(self):
-        file1 = join(working_dir, 'histogram_for_file_' + str(self.file1_id) + '.png')
-        file2 = join(working_dir, 'histogram_for_file_' + str(self.file2_id) + '.png')
+    @patch('charts.histogram.histogram_creator.HistogramCreator.get_file_name_for_chart',
+           side_effect=lambda d, ds_info: join(d, 'hist{}.png'.format(ds_info.p_value_sequence[0].test_id)))
+    def test_create_histogram_for_two_files(self, f_get_file_name):
+        file1 = join(working_dir, 'hist{}.png'.format(self.test1_id))
+        file2 = join(working_dir, 'hist{}.png'.format(self.test4_id))
 
-        expected_info_1 = ChartInfo(None, file1, ChartType.HISTOGRAM, self.file1_id)
-        expected_info_2 = ChartInfo(None, file2, ChartType.HISTOGRAM, self.file2_id)
+        seqcs1 = [PValueSequence(self.test1_id, PValuesFileType.RESULTS),
+                  PValueSequence(self.test2_id, PValuesFileType.DATA, 1),
+                  PValueSequence(self.test2_id, PValuesFileType.DATA, 2),
+                  PValueSequence(self.test3_id, PValuesFileType.DATA, 1),
+                  PValueSequence(self.test3_id, PValuesFileType.DATA, 2)]
+        seqcs2 = [PValueSequence(self.test4_id, PValuesFileType.RESULTS),
+                  PValueSequence(self.test5_id, PValuesFileType.RESULTS)]
+        ds_info1 = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs1)
+        ds_info2 = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs2)
+        expected_info_1 = ChartInfo(ds_info1, file1, ChartType.HISTOGRAM, self.file1_id)
+        expected_info_2 = ChartInfo(ds_info2, file2, ChartType.HISTOGRAM, self.file2_id)
 
-        histogram_dto = HistogramDto('intervals', 'number of p-values', 'histogram')
+        histogram_dto = HistogramDto('intervals', 'number of p-values', 'histogram', [HistForTests.ALL_TESTS])
         self.generate_charts_dto.chart_types = {ChartType.HISTOGRAM: [histogram_dto]}
         storage = self.charts_creator.generate_charts(self.generate_charts_dto)
 

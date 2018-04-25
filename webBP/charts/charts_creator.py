@@ -69,8 +69,8 @@ class ChartsCreator:
     def create_histograms_for_tests(self, dto: HistogramDto, directory: str):
         for file_id, acc in self._p_values_accumulators.items():
             data_for_creator = DataForHistogramCreator(dto, acc, directory, file_id)
-            chart_info = self._histogram_creator.create_histogram(data_for_creator)
-            self._charts_storage.add_chart_info(chart_info)
+            ch_storage = self._histogram_creator.create_histogram(data_for_creator)
+            self._charts_storage.extend(ch_storage)
 
     def create_tests_dependency_charts(self, dto: TestDependencyDto, directory: str):
         for file_id, acc in self._p_values_accumulators.items():
