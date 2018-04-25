@@ -127,7 +127,8 @@ class TestPdfGenerator(TestCase):
         specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE),
                  TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1)]
         test_dep_options = TestDependencyOptions(specs, FilterUniformity.REMOVE_NON_UNIFORM, TestDepPairs.ALL_PAIRS)
-        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename,
+                                       test_dependency_options=test_dep_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -144,7 +145,8 @@ class TestPdfGenerator(TestCase):
                  TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
                  TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
         test_dep_options = TestDependencyOptions(specs, FilterUniformity.REMOVE_NON_UNIFORM, TestDepPairs.ALL_PAIRS)
-        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename,
+                                       test_dependency_options=test_dep_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -162,7 +164,8 @@ class TestPdfGenerator(TestCase):
                  TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 2)]
         test_dep_options = TestDependencyOptions(specs, FilterUniformity.DO_NOT_FILTER,
                                                  TestDepPairs.SKIP_PAIRS_FROM_SUBTESTS)
-        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, test_dep_options)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename,
+                                       test_dependency_options=test_dep_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -175,7 +178,8 @@ class TestPdfGenerator(TestCase):
         language = 'en'
         specs = [TestFileSpecification(TestsIdData.test1_id, FileSpecification.RESULTS_FILE)]
         ecdf_options = EcdfOptions(specs)
-        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, ecdf_options)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename,
+                                       ecdf_options=ecdf_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -192,7 +196,8 @@ class TestPdfGenerator(TestCase):
                  TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
                  TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]
         ecdf_options = EcdfOptions(specs)
-        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, ecdf_options)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename,
+                                       ecdf_options=ecdf_options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -207,7 +212,8 @@ class TestPdfGenerator(TestCase):
                   TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 2),
                   TestFileSpecification(TestsIdData.test3_id, FileSpecification.DATA_FILE, 1)]]
         options = BoxplotPTOptions(specs)
-        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, None, options)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename,
+                                       boxplot_pt_options=options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -226,7 +232,7 @@ class TestPdfGenerator(TestCase):
                  [TestFileSpecification(TestsIdData.test4_id, FileSpecification.RESULTS_FILE),
                   TestFileSpecification(TestsIdData.test5_id, FileSpecification.RESULTS_FILE)]]
         options = BoxplotPTOptions(specs)
-        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, None, options)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, boxplot_pt_options=options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -238,7 +244,7 @@ class TestPdfGenerator(TestCase):
         chart_types = [ChartType.PROPORTIONS]
         language = 'en'
         options = PropOptions(PropFormula.ORIGINAL)
-        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, None, None, None, options)
+        pdf_gen_dto = PdfGeneratingDto(alpha, tests, chart_types, language, output_filename, prop_options=options)
         self.pdf_generator.generate_pdf(pdf_gen_dto)
         self.assertTrue(exists(output_filename))
 
@@ -263,7 +269,7 @@ class TestPdfGenerator(TestCase):
         spec2 = TestFileSpecification(TestsIdData.test2_id, FileSpecification.DATA_FILE, 1)
         test_dep_options = TestDependencyOptions([spec1, spec2], FilterUniformity.DO_NOT_FILTER, TestDepPairs.ALL_PAIRS)
         pdf_dto = PdfGeneratingDto(0.01, [TestsIdData.test1_id], [ChartType.TESTS_DEPENDENCY], 'en', output_file,
-                                   test_dep_options)
+                                   test_dependency_options=test_dep_options)
         self.pdf_generator.generate_pdf(pdf_dto)
         self.assertTrue(exists(output_file))
 
@@ -310,8 +316,8 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(self.texts['en']['PValuesChart']['PValuesChart'], ret[0].title)
 
     def test_create_dto_for_concrete_chart_histogram(self):
-        generating_dto = PdfGeneratingDto()
-        generating_dto.language = 'en'
+        mock = MagicMock(hist_for_tests='hist_str')
+        generating_dto = PdfGeneratingDto(language='en', hist_options=mock)
         ret = self.pdf_generator.create_dto_for_concrete_chart(ChartType.HISTOGRAM, generating_dto)
 
         self.assertEqual(list, type(ret))
@@ -319,6 +325,7 @@ class TestPdfGenerator(TestCase):
         self.assertEqual(self.texts['en']['Histogram']['Intervals'], ret[0].x_label)
         self.assertEqual(self.texts['en']['Histogram']['NumOfPValues'], ret[0].y_label)
         self.assertEqual(self.texts['en']['Histogram']['Histogram'], ret[0].title)
+        self.assertEqual('hist_str', ret[0].hist_for_tests)
 
     def test_prepare_pdf_creating_dto_none_storage(self):
         generating_dto = PdfGeneratingDto(language='en')
