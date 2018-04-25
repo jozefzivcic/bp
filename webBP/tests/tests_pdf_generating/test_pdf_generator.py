@@ -18,6 +18,7 @@ from common.error.test_dep_seq_len_err import TestDepSeqLenErr
 from common.helper_functions import load_texts_into_config_parsers
 from common.info.test_dep_unif_info import TestDepUnifInfo
 from enums.filter_uniformity import FilterUniformity
+from enums.hist_for_tests import HistForTests
 from enums.nist_test_type import NistTestType
 from enums.prop_formula import PropFormula
 from enums.test_dep_pairs import TestDepPairs
@@ -27,6 +28,7 @@ from p_value_processing.p_values_file_type import PValuesFileType
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
 from pdf_generating.options.ecdf_options import EcdfOptions
 from pdf_generating.options.file_specification import FileSpecification
+from pdf_generating.options.hist_options import HistOptions
 from pdf_generating.options.prop_options import PropOptions
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
 from pdf_generating.options.test_file_specification import TestFileSpecification
@@ -72,12 +74,13 @@ class TestPdfGenerator(TestCase):
         self.texts = load_texts_into_config_parsers(texts_dir)
         output_filename = join(working_dir, 'output.pdf')
 
+        hist_o = HistOptions([HistForTests.ALL_TESTS])
         tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id]
-        self.dto_for_one_file = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename)
+        self.dto_for_one_file = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename, hist_o)
 
         tests = [TestsIdData.test1_id, TestsIdData.test2_id, TestsIdData.test3_id, TestsIdData.test4_id,
                  TestsIdData.test5_id]
-        self.dto_for_two_files = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename)
+        self.dto_for_two_files = PdfGeneratingDto(0.01, tests, [ChartType.P_VALUES], 'en', output_filename, hist_o)
 
     def tearDown(self):
         if exists(working_dir):

@@ -88,8 +88,9 @@ class PdfGenerator:
                                   self._short_test_names_dict[pdf_generating_dto.language])
             return [dto]
         elif chart_type == ChartType.HISTOGRAM:
+            options = pdf_generating_dto.hist_options
             dto = HistogramDto(texts['Histogram']['Intervals'], texts['Histogram']['NumOfPValues'],
-                               texts['Histogram']['Histogram'])
+                               texts['Histogram']['Histogram'], options.hist_for_tests)
             return [dto]
         elif chart_type == ChartType.TESTS_DEPENDENCY:
             try:
