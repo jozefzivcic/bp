@@ -619,6 +619,13 @@ class TestPdfGenerator(TestCase):
         self.pdf_generator.get_chart_name(language, chart_info)
         func.assert_called_once_with(language, chart_info)
 
+    @patch('pdf_generating.pdf_generator.PdfGenerator.get_hist_name', return_value='return_value_str')
+    def test_get_chart_name_histogram(self, f_get_hist_name):
+        mock = MagicMock(name='MockName')
+        ret = self.pdf_generator.get_hist_name('language', mock)
+        self.assertEqual('return_value_str', ret)
+        f_get_hist_name.assert_called_once_with('language', mock)
+
     def test_get_ecdf_chart_name_results(self):
         expected = '{} {} Frequency results'.format(self.texts['en']['ECDF']['Title'],
                                                     self.texts['en']['General']['From'])
@@ -660,6 +667,43 @@ class TestPdfGenerator(TestCase):
         with self.assertRaises(RuntimeError) as ex:
             self.pdf_generator.get_ecdf_chart_name('en', chart_info)
         self.assertEqual('Unknown file type -5', str(ex.exception))
+
+    def test_get_histogram_name_multiple_test(self):
+        seqcs = [PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS),
+                 PValueSequence(TestsIdData.test1_id, PValuesFileType.DATA, 1),
+                 PValueSequence(TestsIdData.test1_id, PValuesFileType.DATA, 2)]
+        ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, seqcs)
+        info = ChartInfo(ds_info, 'path', ChartType.HISTOGRAM, FileIdData.file1_id)
+        expected = self.texts['en'].get('Histogram', 'HistAll')
+        ret = self.pdf_generator.get_hist_name('en', info)
+        self.assertEqual(expected, ret)
+
+    @patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test')
+    def test_get_histogram_name_single_test_results(self, f_get_param):
+        param = NistParam()
+        param.test_number = 2
+        param.special_parameter = 456
+        f_get_param.return_value = param
+
+        seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS)
+        ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
+        info = ChartInfo(ds_info, 'path', ChartType.HISTOGRAM, FileIdData.file1_id)
+        expected = '{} Bl Freq ({})'.format(self.texts['en'].get('Histogram', 'HistogramUpperH'), 456)
+        ret = self.pdf_generator.get_hist_name('en', info)
+        self.assertEqual(expected, ret)
+
+    @patch('managers.nisttestmanager.NistTestManager.get_nist_param_for_test')
+    def test_get_histogram_name_single_test_data(self, f_get_param):
+        param = NistParam()
+        param.test_number = 3
+        f_get_param.return_value = param
+
+        seq = PValueSequence(TestsIdData.test1_id, PValuesFileType.DATA, 4)
+        ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
+        info = ChartInfo(ds_info, 'path', ChartType.HISTOGRAM, FileIdData.file1_id)
+        expected = '{} CuSums data {}'.format(self.texts['en'].get('Histogram', 'HistogramUpperH'), 4)
+        ret = self.pdf_generator.get_hist_name('en', info)
+        self.assertEqual(expected, ret)
 
     @patch('pdf_generating.pdf_generator.PdfGenerator.get_chart_name_base',
            side_effect=lambda l, ctype: 'test dependency' if ctype == ChartType.TESTS_DEPENDENCY else 'p_values')

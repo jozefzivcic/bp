@@ -15,6 +15,7 @@ from charts.charts_storage import ChartsStorage
 from charts.dto.proportions_dto import ProportionsDto
 from charts.generate_charts_dto import GenerateChartsDto
 from charts.dto.test_dependency_dto import TestDependencyDto
+from charts.tests_in_chart import TestsInChart
 from common.error.err import Err
 from common.helper_functions import load_texts_into_config_parsers, escape_latex_special_chars, \
     convert_specs_to_seq_acc, convert_specs_to_p_value_seq, specs_list_to_p_value_seq_list
@@ -26,6 +27,7 @@ from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
 from managers.nisttestmanager import NistTestManager
 from nist_statistics.statistics_creator import StatisticsCreator
+from p_value_processing.p_value_sequence import PValueSequence
 from p_value_processing.p_values_file_type import PValuesFileType
 from p_value_processing.p_values_processing_error import PValuesProcessingError
 from pdf_generating.pdf_creating_dto import PdfCreatingDto
@@ -227,6 +229,8 @@ class PdfGenerator:
         ch_type = info.chart_type
         if ch_type == ChartType.ECDF:
             return self.get_ecdf_chart_name(language, info)
+        elif ch_type == ChartType.HISTOGRAM:
+            return self.get_hist_name(language, info)
         else:
             return self.get_chart_name_base(language, ch_type)
 
@@ -248,6 +252,23 @@ class PdfGenerator:
         if nist_param.has_special_parameter():
             title += ' ({})'.format(nist_param.special_parameter)
         return title
+
+    def get_hist_name(self, language: str, info: ChartInfo):
+        t_in_chart = info.ds_info.tests_in_chart
+        if t_in_chart == TestsInChart.MULTIPLE_TESTS:
+            return self._texts[language]['Histogram']['HistAll']
+        hist = self._texts[language]['Histogram']['HistogramUpperH']
+        seq = info.ds_info.p_value_sequence  # type: PValueSequence
+        test = self._test_dao.get_test_by_id(seq.test_id)
+        param = self._nist_dao.get_nist_param_for_test(test)
+        t_type = param.get_test_type()
+        test_name = self._short_test_names_dict['en'].get(t_type)
+        ret = '{} {}'.format(hist, test_name)
+        if seq.p_values_file == PValuesFileType.DATA:
+            ret += ' data {}'.format(seq.data_num)
+        if param.has_special_parameter():
+            ret += ' ({})'.format(param.special_parameter)
+        return ret
 
     def add_infos(self, language: str, charts_dict: dict, storage: ChartsStorage):
         infos_dict = {}
