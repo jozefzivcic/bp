@@ -85,6 +85,25 @@
                         <label class="form-check-label" for="ch_chart_type_3"> {{ histogram }} </label>
                     </div>
                     <div class="row">
+                        <div class="col-md-2">
+                            <!-- space -->
+                        </div>
+                        <div class="col-md-10">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="ch_hist_all" id="ch_hist_all">
+                                <label class="form-check-label" for="ch_hist_all">
+                                {{ hist_for_all }}
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="ch_hist_individual" id="ch_hist_individual">
+                                <label class="form-check-label" for="ch_hist_individual">
+                                {{ hist_for_individual }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <input type="checkbox" name="ch_chart_type_4" id="ch_chart_type_4">
                         <label class="form-check-label" for="ch_chart_type_4">{{ two_tests_dep }}</label>
                     </div>
@@ -173,6 +192,7 @@
     <input type="hidden" name="alpha_not_in_range" value="{{ alpha_not_in_range }}">
     <input type="hidden" name="no_test_checked" value="{{ no_test_checked }}">
     <input type="hidden" name="no_chart_checked" value="{{ no_chart_checked }}">
+    <input type="hidden" id="no_hist_type_checked" value="{{ hist_for_test_must_be_selected }}">
     <input type="hidden" id="no_unif_filter_selected" value="{{ no_unif_filter_selected }}">
     <input type="hidden" id="no_subtest_filter_selected" value="{{ no_subtest_filter_selected }}">
     <input type="hidden" id="no_prop_formula_selected" value="{{ no_prop_formula_selected }}">
@@ -225,6 +245,16 @@ function checkForm() {
     if (!chart_checked) {
         alert(document.getElementsByName("no_chart_checked")[0].value);
         return false;
+    }
+
+    var hist_checked = document.getElementById("ch_chart_type_3").checked;
+    if (hist_checked) {
+        var all_checked = document.getElementById("ch_hist_all").checked;
+        var individual_checked = document.getElementById("ch_hist_individual").checked;
+        if (!all_checked && !individual_checked) {
+            alert(document.getElementById("no_hist_type_checked").value);
+            return false;
+        }
     }
 
     var test_dep_checked = document.getElementById("ch_chart_type_4").checked;

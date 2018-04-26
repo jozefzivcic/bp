@@ -10,6 +10,7 @@ from os.path import join
 from charts.chart_type import ChartType
 from controllers.common_controller import not_found, error_occurred
 from enums.filter_uniformity import FilterUniformity
+from enums.hist_for_tests import HistForTests
 from enums.prop_formula import PropFormula
 from enums.test_dep_pairs import TestDepPairs
 from helpers import get_params_for_tests, set_response_ok, get_ids_of_elements_starting_with
@@ -17,6 +18,7 @@ from myrequesthandler import MyRequestHandler
 from pdf_generating.options.boxplot_pt_options import BoxplotPTOptions
 from pdf_generating.options.ecdf_options import EcdfOptions
 from pdf_generating.options.file_specification import FileSpecification
+from pdf_generating.options.hist_options import HistOptions
 from pdf_generating.options.prop_options import PropOptions
 from pdf_generating.options.test_dependency_options import TestDependencyOptions
 from pdf_generating.options.test_file_specification import TestFileSpecification
@@ -133,6 +135,20 @@ def get_alpha(form):
     return alpha
 
 
+def create_hist_options(form: cgi.FieldStorage) -> HistOptions:
+    arr = []
+    value = form.getvalue('ch_hist_all')
+    if value is not None:
+        arr.append(HistForTests.ALL_TESTS)
+    value = form.getvalue('ch_hist_individual')
+    if value is not None:
+        arr.append(HistForTests.INDIVIDUAL_TESTS)
+    if not arr:
+        return None
+    options = HistOptions(arr)
+    return options
+
+
 def create_dep_options(test_ids, form) -> TestDependencyOptions:
     arr = []
     for test_id in test_ids:
@@ -233,10 +249,16 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
     if not chart_types and not create_report:
         return None
 
+    hist_options = None
     test_dep_options = None
     ecdf_options = None
     boxplot_pt_options = None
     prop_options = None
+
+    if ChartType.HISTOGRAM in chart_types:
+        hist_options = create_hist_options(form)
+        if hist_options is None:
+            return None
     if ChartType.TESTS_DEPENDENCY in chart_types:
         test_dep_options = create_dep_options(test_ids, form)
         if test_dep_options is None:
@@ -253,5 +275,5 @@ def get_pdf_generating_dto(form: cgi.FieldStorage, test_ids: list, language: str
         prop_options = create_prop_options(form)
         if prop_options is None:
             return None
-    return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name, test_dep_options, ecdf_options,
-                            boxplot_pt_options, prop_options, create_report)
+    return PdfGeneratingDto(alpha, test_ids, chart_types, language, file_name, hist_options, test_dep_options,
+                            ecdf_options, boxplot_pt_options, prop_options, create_report)
