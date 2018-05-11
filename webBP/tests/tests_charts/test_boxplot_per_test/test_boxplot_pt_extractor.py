@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 from copy import deepcopy
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
@@ -58,9 +59,9 @@ class TestBoxplotPTExtractor(TestCase):
         ex_data_list = ex_data.get_all_data()
         self.assertEqual(2, len(ex_data_list))
 
-        expected_dict = {'({})'.format(TestsIdData.test1_id): dict_for_test_13['results'],
-                         '({}) data 1'.format(TestsIdData.test2_id): dict_for_test_14['data1'],
-                         '({}) data 2'.format(TestsIdData.test3_id): dict_for_test_41['data2']}
+        expected_dict = OrderedDict([('({})'.format(TestsIdData.test1_id), dict_for_test_13['results']),
+                                     ('({}) data 1'.format(TestsIdData.test2_id), dict_for_test_14['data1']),
+                                     ('({}) data 2'.format(TestsIdData.test3_id), dict_for_test_41['data2'])])
         expected_str = json.dumps(expected_dict)
         quadruple = ex_data_list[0]
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, deepcopy(seqcs[0]))
@@ -69,8 +70,8 @@ class TestBoxplotPTExtractor(TestCase):
         self.assertEqual(dto.title, drawer_data.title)
         self.assertEqual(expected_str, drawer_data.json_data_str)
 
-        expected_dict = {'({})'.format(TestsIdData.test4_id): dict_for_test_42['results'],
-                         '({})'.format(TestsIdData.test5_id): dict_for_test_43['results']}
+        expected_dict = OrderedDict([('({})'.format(TestsIdData.test4_id), dict_for_test_42['results']),
+                                     ('({})'.format(TestsIdData.test5_id), dict_for_test_43['results'])])
         expected_str = json.dumps(expected_dict)
         quadruple = ex_data_list[1]
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, deepcopy(seqcs[1]))
@@ -117,7 +118,8 @@ class TestBoxplotPTExtractor(TestCase):
     @patch('charts.boxplot_per_test.boxplot_pt_extractor.BoxplotPTExtractor.get_p_values', return_value=[1, 2, 3])
     def test_create_extracted_data_raises(self, f_get_p_values):
         mock = MagicMock(some_id='some id')
-        seqcs = [MagicMock(test_id=TestsIdData.test1_id), MagicMock(test_id=TestsIdData.test2_id)]
+        seqcs = [PValueSequence(TestsIdData.test1_id, PValuesFileType.RESULTS),
+                 PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1)]
         with self.assertRaises(DifferentNumOfPValsError) as ex:
             self.extractor.create_extracted_data(mock, seqcs, None)
         self.assertEqual('Expected 10 p-values, found only 3.', str(ex.exception))
@@ -133,9 +135,9 @@ class TestBoxplotPTExtractor(TestCase):
                  PValueSequence(TestsIdData.test2_id, PValuesFileType.DATA, 1),
                  PValueSequence(TestsIdData.test3_id, PValuesFileType.DATA, 2)]
         dto = BoxplotPTDto('Boxplot(s) for tests', [seqcs], short_names_dict)
-        expected_dict = {'({})'.format(TestsIdData.test1_id): dict_for_test_13['results'],
-                         '({}) data 1'.format(TestsIdData.test2_id): dict_for_test_14['data1'],
-                         '({}) data 2'.format(TestsIdData.test3_id): dict_for_test_41['data2']}
+        expected_dict = OrderedDict([('({})'.format(TestsIdData.test1_id), dict_for_test_13['results']),
+                                     ('({}) data 1'.format(TestsIdData.test2_id), dict_for_test_14['data1']),
+                                     ('({}) data 2'.format(TestsIdData.test3_id), dict_for_test_41['data2'])])
         expected_str = json.dumps(expected_dict)
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, deepcopy(seqcs))
 

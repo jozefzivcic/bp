@@ -23,9 +23,11 @@ class TestBoxplotPTDrawer(TestCase):
             rmtree(working_dir)
 
     def test_draw_boxplot(self):
-        data_dict = {'First test': [1, 2, 3, 4], 'Second test': [2, 3, 4, 5], 'Third test': [0, 1, 2, 3]}
+        columns = ['Second test', 'First test', 'Third test']
+        data_dict = {'First test': [0.1, 0.2, 0.3, 0.4], 'Second test': [0.2, 0.3, 0.4, 0.5],
+                     'Third test': [0.0, 0.1, 0.2, 0.3]}
         data_str = json.dumps(data_dict)
-        drawer_data = DataForBoxplotPTDrawer('Boxplot per test', data_str)
+        drawer_data = DataForBoxplotPTDrawer('Boxplot per test', data_str, columns)
         file_name = join(working_dir, 'chart.png')
         self.drawer.draw_chart(drawer_data, file_name)
         self.assertTrue(exists(file_name))
@@ -35,12 +37,13 @@ class TestBoxplotPTDrawer(TestCase):
         The reason for this test is, if drawer releases resources correctly.
         If not some warning in output should appear.
         """
+        columns = ['Second test', 'First test', 'Third test']
         iterations = 30
         for i in range(0, iterations):
             data_dict = {'First test': [1 + i, 2 + i, 3 + i, 4 + i], 'Second test': [2 + i, 3 + i, 4 + i, 5 + i],
                          'Third test': [0 + i, 1 + i, 2 + i, 3 + i]}
             data_str = json.dumps(data_dict)
-            drawer_data = DataForBoxplotPTDrawer('Boxplot per test', data_str)
+            drawer_data = DataForBoxplotPTDrawer('Boxplot per test', data_str, columns)
             file_name = join(working_dir, 'chart_{}.png'.format(i))
             self.drawer.draw_chart(drawer_data, file_name)
 

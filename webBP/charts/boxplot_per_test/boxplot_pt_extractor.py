@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 from charts.boxplot_per_test.data_for_boxplot_pt_drawer import DataForBoxplotPTDrawer
 from charts.different_num_of_pvals_error import DifferentNumOfPValsError
@@ -39,7 +40,8 @@ class BoxplotPTExtractor:
         return extracted_data
 
     def create_extracted_data(self, acc: PValuesAccumulator, seqcs: list, boxplot_dto: BoxplotPTDto) -> tuple:
-        data_dict = {}
+        seqcs = sorted(seqcs, key=lambda x: x)
+        data_dict = OrderedDict()
         seqcs_not_used = []
         test = self._test_dao.get_test_by_id(seqcs[0].test_id)
         expected_streams = self._nist_dao.get_nist_param_for_test(test).streams
@@ -57,9 +59,10 @@ class BoxplotPTExtractor:
         if not data_dict:
             return None
         json_str = json.dumps(data_dict)
+        columns = list(data_dict.keys())
         res_seqcs = list_difference(seqcs, seqcs_not_used)
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, res_seqcs)
-        drawer_data = DataForBoxplotPTDrawer(boxplot_dto.title, json_str)
+        drawer_data = DataForBoxplotPTDrawer(boxplot_dto.title, json_str, columns)
         return ds_info, drawer_data
 
     def get_name_from_seq(self, seq: PValueSequence, test_names) -> str:

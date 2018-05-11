@@ -8,6 +8,7 @@ from charts.boxplot_per_test.data_for_boxplot_pt_drawer import DataForBoxplotPTD
 class BoxplotPTDrawer:
     def draw_chart(self, data: DataForBoxplotPTDrawer, file: str):
         df = pd.read_json(data.json_data_str)
+        df = df[data.columns]
         ax = sns.boxplot(orient='v', data=df)
         ax.set_title(data.title)
         ax.set_ylim(0.0, 1.0)
