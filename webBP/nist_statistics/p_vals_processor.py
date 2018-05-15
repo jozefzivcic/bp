@@ -94,9 +94,13 @@ class PValsProcessor:
         return 1 - K(sampleSize, Dmax)
 
     def get_proportion_threshold_min(self):
+        if self.sample_size == 0:
+            return 0
         p_hat = 1.0 - self.alpha
         return p_hat - 3.0 * math.sqrt((p_hat * self.alpha) / self.sample_size)
 
     def get_proportion_threshold_max(self):
+        if self.sample_size == 0:
+            return 0
         p_hat = 1.0 - self.alpha
         return p_hat + 3.0 * math.sqrt((p_hat * self.alpha) / self.sample_size)

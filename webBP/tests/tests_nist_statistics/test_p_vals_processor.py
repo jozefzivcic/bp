@@ -129,6 +129,11 @@ class PValsProcessorTest(unittest.TestCase):
     def test_compute_KS_p_value_runs(self):
         self.helper_KS_p_value(0.265525, runs_pvalues)
 
+    def test_proportions_threshold_min_zero_sample_size(self):
+        self.processor.sample_size = 0
+        result = self.processor.get_proportion_threshold_min()
+        self.assertAlmostEqual(0.0, result, 6)
+
     def test_proportions_threshold_min(self):
         self.processor.sample_size = 10
         result = self.processor.get_proportion_threshold_min()
@@ -136,6 +141,11 @@ class PValsProcessorTest(unittest.TestCase):
         threshold = 0.0000003
         diff = math.fabs(result - expected)
         self.assertTrue(diff < threshold, 'Expected: ' + str(expected) + ', but got: ' + str(result))
+
+    def test_proportions_threshold_max_zero_sample_size(self):
+        self.processor.sample_size = 0
+        result = self.processor.get_proportion_threshold_max()
+        self.assertAlmostEqual(0.0, result, 6)
 
     def test_proportions_threshold_max(self):
         self.processor.sample_size = 10
