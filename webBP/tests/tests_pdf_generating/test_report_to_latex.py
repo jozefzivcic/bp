@@ -230,6 +230,58 @@ class TestReportToLatex(TestCase):
         self.assertEqual('0.9890', groups[12])
         self.assertEqual('Frequency', groups[13])
 
+    def test_parse_line_dashes(self):
+        line = '  3   2   2   0   0   0   0   0   1   1     ----        0.456789    1.0000    Frequency'
+        groups = parse_line(line)
+        self.assertEqual(3, int(groups[0]))
+        self.assertEqual(2, int(groups[1]))
+        self.assertEqual(2, int(groups[2]))
+        self.assertEqual(0, int(groups[3]))
+        self.assertEqual(0, int(groups[4]))
+        self.assertEqual(0, int(groups[5]))
+        self.assertEqual(0, int(groups[6]))
+        self.assertEqual(0, int(groups[7]))
+        self.assertEqual(1, int(groups[8]))
+        self.assertEqual(1, int(groups[9]))
+        self.assertEqual('----', groups[10])
+        self.assertEqual('0.456789', groups[11])
+        self.assertEqual('1.0000', groups[12])
+        self.assertEqual('Frequency', groups[13])
+
+        line = '  3   2   2   0   0   0   0   0   1   1     ----        ----    1.0000    Frequency'
+        groups = parse_line(line)
+        self.assertEqual(3, int(groups[0]))
+        self.assertEqual(2, int(groups[1]))
+        self.assertEqual(2, int(groups[2]))
+        self.assertEqual(0, int(groups[3]))
+        self.assertEqual(0, int(groups[4]))
+        self.assertEqual(0, int(groups[5]))
+        self.assertEqual(0, int(groups[6]))
+        self.assertEqual(0, int(groups[7]))
+        self.assertEqual(1, int(groups[8]))
+        self.assertEqual(1, int(groups[9]))
+        self.assertEqual('----', groups[10])
+        self.assertEqual('----', groups[11])
+        self.assertEqual('1.0000', groups[12])
+        self.assertEqual('Frequency', groups[13])
+
+        line = '  0   0   0   0   0   0   0   0   0   0     ----        ----     ----     Frequency'
+        groups = parse_line(line)
+        self.assertEqual(0, int(groups[0]))
+        self.assertEqual(0, int(groups[1]))
+        self.assertEqual(0, int(groups[2]))
+        self.assertEqual(0, int(groups[3]))
+        self.assertEqual(0, int(groups[4]))
+        self.assertEqual(0, int(groups[5]))
+        self.assertEqual(0, int(groups[6]))
+        self.assertEqual(0, int(groups[7]))
+        self.assertEqual(0, int(groups[8]))
+        self.assertEqual(0, int(groups[9]))
+        self.assertEqual('----', groups[10])
+        self.assertEqual('----', groups[11])
+        self.assertEqual('----', groups[12])
+        self.assertEqual('Frequency', groups[13])
+
     def test_parse_lines_ret_none(self):
         line = '  1   9   12   125 45a   505   11   6   456   87456  0.437274    0.675978   0.785465    BlockFrequency'
         groups = parse_line(line)
