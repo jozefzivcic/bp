@@ -1,6 +1,6 @@
 from os import makedirs
 
-from os.path import join, exists
+from os.path import join, exists, abspath
 from urllib.parse import urlparse, parse_qs
 
 from controllers.common_controller import not_found
@@ -33,5 +33,8 @@ def compute_stats(handler: MyRequestHandler):
     if not exists(directory):
         makedirs(directory)
     stat_creator = StatisticsCreator(handler.pool, handler.config_storage)
+    handler.logger.log_info('User: "{}" computing stats for gid: "{}" in directory: "{}"'
+                            .format(user_id, group_id, abspath(directory)))
     stat_creator.compute_statistics(group_id, directory)
+    handler.logger.log_info('User: "{}" stats computed successfully'.format(user_id))
     return

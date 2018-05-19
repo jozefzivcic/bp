@@ -5,13 +5,14 @@ import re
 import zipfile
 from os import listdir
 
-from os.path import isfile, join, isdir
+from os.path import isfile, join, isdir, abspath
 from urllib.parse import urlparse, parse_qs
 
 from controllers.common_controller import not_found
 from models.group import Group
 from helpers import zip_folders, get_param_for_test, set_response_redirect
 from models.test import Test
+from myrequesthandler import MyRequestHandler
 
 
 def get_groups(handler):
@@ -99,7 +100,7 @@ def get_group_ids(form):
     return ids
 
 
-def get_download_report(handler):
+def get_download_report(handler: MyRequestHandler):
     user_id = handler.sessions[handler.read_cookie()]
     parsed_path = urlparse(handler.path)
     queries = parse_qs(parsed_path.query)
@@ -121,6 +122,8 @@ def get_download_report(handler):
             handler.group_manager.set_statistics_not_computed(group_id)
         return
 
+    handler.logger.log_info('user: "{}" downloads report(s) for gid: "{}" located at: "{}"'
+                            .format(user_id, group_id, abspath(res_dir)))
     ok = False
     files = listdir(res_dir)
     try:
@@ -140,6 +143,8 @@ def get_download_report(handler):
         handler.send_header('Content-Disposition',
                             'attachment; filename="{0}"'.format(handler.texts[lang]['summary_report']))
         handler.end_headers()
+        handler.logger.log_info('user: "{}" downloaded report(s) for gid: "{}" located at: "{}" successfully'
+                                .format(user_id, group_id, abspath(res_dir)))
     finally:
         zip.close()
         if ok:
