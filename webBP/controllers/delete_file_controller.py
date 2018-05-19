@@ -1,6 +1,6 @@
 import cgi
 import os
-from os.path import isfile, isdir
+from os.path import isfile, isdir, realpath, dirname, abspath, join, exists
 from urllib.parse import urlparse, parse_qs
 
 import shutil
@@ -72,8 +72,23 @@ def delete_file_post(handler):
                     shutil.rmtree(path)
         if test.test_table == handler.config_storage.nist:
             handler.nist_manager.delete_nist_param_by_id(test.id)
+        group_id = handler.group_manager.get_group_id_by_test(test)
         handler.group_manager.delete_test_from_group(test)
         handler.test_manager.delete_test(test)
+        this_dir = dirname(realpath(__file__))
+        res_dir = abspath(join(this_dir, '..', handler.config_storage.path_to_users_dir, str(user_id),
+                               handler.config_storage.groups, str(group_id)))
+        tests_in_group = handler.group_manager.get_tests_for_group(group_id)
+        if not tests_in_group:
+            if exists(res_dir):
+                shutil.rmtree(res_dir)
+        elif exists(res_dir) and len([name for name in os.listdir(res_dir) if os.path.isfile(join(res_dir, name))]) > 1:
+            prefix = 'report_for_file_id_{}_and_first_test_id_'.format(file.id)
+            for f in os.listdir(res_dir):
+                file_path = join(res_dir, f)
+                if os.path.isfile(file_path) and prefix in f:
+                    os.remove(file_path)
+
     handler.file_manager.delete_file(file)
     if (file.file_system_path is not None) and isfile(file.file_system_path):
         os.remove(file.file_system_path)
