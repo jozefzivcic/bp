@@ -113,7 +113,7 @@ class StatisticsCreator:
                 to_write += 'The minimum pass rate for each statistical test with the exception of the\n'
                 to_write += 'random excursion (variant) test is undefined.\n\n'
             else:
-                pass_rate = 0.99 - 3.0 * math.sqrt(0.01 * (1.0 - alpha) / float(self.general_sample_size))
+                pass_rate = (1.0 - alpha) - 3.0 * math.sqrt((alpha * (1.0 - alpha)) / float(self.general_sample_size))
                 to_write += 'The minimum pass rate for each statistical test with the exception of the\n'
                 to_write += 'random excursion (variant) test is approximately = {0:.6f} for a\n' \
                     .format(pass_rate if self.general_sample_size else 0.0)
@@ -122,7 +122,8 @@ class StatisticsCreator:
             if self.random_excursion_sample_size == 0:
                 to_write += 'The minimum pass rate for the random excursion (variant) test is undefined.\n\n'
             else:
-                pass_rate = 0.99 - 3.0 * math.sqrt(0.01 * (1.0 - alpha) / float(self.random_excursion_sample_size))
+                pass_rate = (1.0 - alpha) - 3.0 * math.sqrt((alpha * (1.0 - alpha)) /
+                                                            float(self.random_excursion_sample_size))
                 to_write += 'The minimum pass rate for the random excursion (variant) test\n'
                 to_write += 'is approximately {0:.6f} for a sample size = {1:d} binary sequences.\n\n' \
                     .format(pass_rate, self.random_excursion_sample_size)
