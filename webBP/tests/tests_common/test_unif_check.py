@@ -1,3 +1,4 @@
+from itertools import repeat
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -124,6 +125,29 @@ class TestUnifCheck(TestCase):
         p_values2 = dict_for_test_43['results']
         p_value = self.unif_check.compute_chisq_p_value(p_values1, p_values2)
         self.assertLessEqual(abs(p_value - 0.4057607), threshold)
+
+    @patch('common.unif_check.chisquare', return_value=(4.456789, np.float64(0.123456)))
+    @patch('common.unif_check.UnifCheck.verify_approximation', return_value=True)
+    @patch('common.unif_check.insert_into_2d_array')
+    def test_compute_p_value_mocked(self, f_insert, f_verify, f_chisquare):
+        computed_arr = np.array([[1, 0, 0, 1, 1],
+                                 [0, 3, 0, 0, 1],
+                                 [0, 6, 0, 1, 0],
+                                 [1, 2, 0, 0, 0],
+                                 [0, 0, 0, 2, 1]],
+                                dtype=np.uint64)
+        f_insert.return_value = computed_arr
+        p_values1 = dict_for_test_42['results']
+        p_values2 = dict_for_test_43['results']
+        p_value = self.unif_check.compute_chisq_p_value(p_values1, p_values2)
+        self.assertAlmostEqual(0.123456, p_value, 6)
+
+        f_insert.assert_called_once_with(p_values1, p_values2, 5)
+        exp_freq = list(repeat(20 / 25, 25))
+        f_verify.assert_called_once_with(exp_freq)
+
+        flatten_arr = list(computed_arr.flatten().tolist())
+        f_chisquare.assert_called_once_with(f_obs=flatten_arr, f_exp=exp_freq)
 
     def test_check_for_uniformity_raises_exception(self):
         with self.assertRaises(RuntimeError) as ex:

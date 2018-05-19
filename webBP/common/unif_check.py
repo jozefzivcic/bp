@@ -21,24 +21,24 @@ class UnifCheck:
             raise RuntimeError('p-value must be computed at first')
         return self._p_value
 
-    def verify_condition(self, categories: list, q: float) -> bool:
+    def verify_condition(self, exp_frequencies: list, q: float) -> bool:
         num = 5 * q
-        for item in categories:
+        for item in exp_frequencies:
             if item < num:
                 return False
         return True
 
-    def verify_yarnold(self, categories: list) -> bool:
-        k = len(categories)
-        q = sum(1 for i in categories if i < 5) / k
-        return self.verify_condition(categories, q)
+    def verify_yarnold(self, exp_frequencies: list) -> bool:
+        k = len(exp_frequencies)
+        q = sum(1 for i in exp_frequencies if i < 5) / k
+        return self.verify_condition(exp_frequencies, q)
 
-    def verify_approximation(self, categories: list):
-        ret = self.verify_condition(categories, 1)
+    def verify_approximation(self, exp_frequencies: list):
+        ret = self.verify_condition(exp_frequencies, 1)
         if ret:
             self._approx_condition = True
             return
-        self._approx_condition = self.verify_yarnold(categories)
+        self._approx_condition = self.verify_yarnold(exp_frequencies)
 
     def compute_chisq_p_value(self, p_values1: list, p_values2: list) -> float:
         if len(p_values1) != len(p_values2):
@@ -46,9 +46,9 @@ class UnifCheck:
         arr = insert_into_2d_array(p_values1, p_values2, self._size)
         flatten_arr = list(arr.flatten().tolist())
         n = sum(flatten_arr)
-        self.verify_approximation(flatten_arr)
         expected_multiplicity = (1 / (self._size * self._size)) * n
         expected = list(repeat(expected_multiplicity, self._size * self._size))
+        self.verify_approximation(expected)
         chisq, p_value = chisquare(f_obs=flatten_arr, f_exp=expected)
         self._p_value = p_value.item()  # return built-in float instead of float64
         return self._p_value
