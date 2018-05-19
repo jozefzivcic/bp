@@ -78,13 +78,16 @@ def show_pdf_post(handler: MyRequestHandler):
         dto = get_pdf_generating_dto(form, test_ids, lang, file_name)
         if dto is None:
             not_found(handler)
+            handler.logger.log_warning('User: {} PdfGeneratingDto None'.format(user_id))
             return
+        handler.logger.log_info('User: {} PdfGeneratingDto: "{}"'.format(user_id, repr(dto)))
         generator = PdfGenerator(handler.pool, handler.config_storage)
         generator.generate_pdf(dto)
         with open(file_name, 'rb') as f:
             content = f.read()
         set_response_ok(handler, 'application/pdf')
         handler.wfile.write(content)
+        handler.logger.log_info('User: {}, generating successful'.format(user_id))
     except PdfGeneratingError as ex:
         handler.logger.log_error('Error in show_pdf_post', ex)
         error_occurred(handler)
