@@ -305,14 +305,14 @@ class TestReportToLatex(TestCase):
         f_escape.assert_has_calls(calls)
 
     def test_get_begin_of_table(self):
-        expected = r'\hskip-0.7cm\begin{tabular}{llllllllllllll}' + '\n' \
+        expected = r'\hskip-0.7cm\begin{longtable}{llllllllllllll}' + '\n' \
                    + r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline' \
                    + '\n'
         ret = get_begin_of_table()
         self.assertEqual(expected, ret)
 
     def test_get_end_of_table(self):
-        expected = r'\end{tabular}' + '\n'
+        expected = r'\end{longtable}' + '\n'
         ret = get_end_of_table()
         self.assertEqual(expected, ret)
 
@@ -365,12 +365,12 @@ class TestReportToLatex(TestCase):
               r'------------------------------------------------------------------------------\\' + '\n'  \
               r'   generator is \textless data.sha1\textgreater \\' + '\n'  \
               r'------------------------------------------------------------------------------\\' + '\n'  \
-              r'\hskip-0.7cm\begin{tabular}{llllllllllllll}' + '\n'  \
+              r'\hskip-0.7cm\begin{longtable}{llllllllllllll}' + '\n'  \
               r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline' + '\n' \
               r'98 & 94 & 88 & 111 & 108 & 70 & 93 & 87 & 150 & 77 & 0.000001 * & 0.206107 & 0.9826 & FrequencyT\\' + '\n' \
               r'95 & 82 & 100 & 116 & 83 & 93 & 75 & 135 & 78 & 119 & 0.000027 * & 0.028351 & 0.9857 & Cumulative SumsT\\' + '\n' \
               r'99 & 91 & 101 & 87 & 100 & 97 & 97 & 127 & 84 & 93 & 0.167805 & 0.129834 & 0.9836 & Cumulative SumsT\\' + '\n' \
-              r'\end{tabular}' + '\n\n\n'  \
+              r'\end{longtable}' + '\n\n\n'  \
               r'- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\\' + '\n' \
               r'The minimum pass rate for each statistical test with the exception of the\\' + '\n' \
               r'random excursion (variant) test is approximately = 0.980561 for a\\' + '\n' \

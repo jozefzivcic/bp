@@ -99,13 +99,13 @@ def get_header(content_lines: list) -> str:
 
 
 def get_begin_of_table() -> str:
-    begin = r'\hskip-0.7cm\begin{tabular}{llllllllllllll}' + '\n' \
+    begin = r'\hskip-0.7cm\begin{longtable}{llllllllllllll}' + '\n' \
             + r'C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & p-value & p (KS) & prop & test\\ \hline' + '\n'
     return begin
 
 
 def get_end_of_table() -> str:
-    end = r'\end{tabular}' + '\n'
+    end = r'\end{longtable}' + '\n'
     return end
 
 
