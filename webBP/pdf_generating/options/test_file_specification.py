@@ -6,3 +6,6 @@ class TestFileSpecification:
         self.test_id = test_id
         self.file_spec = file_spec
         self.file_num = file_num
+
+    def __repr__(self) -> str:
+        return '<tid: "{}", file type: "{}", num: "{}">'.format(self.test_id, repr(self.file_spec), self.file_num)
