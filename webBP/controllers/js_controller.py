@@ -23,11 +23,3 @@ def get_js_create_tests(handler):
     """
     generic_get_js(handler, '../views/create_tests.js')
     return
-
-
-def get_js_base_chart(handler: MyRequestHandler):
-    generic_get_js(handler, '../views/js/base_chart.js')
-    return
-
-def get_js_barplot(handler: MyRequestHandler):
-    generic_get_js(handler, '../views/js/barplot.js')
