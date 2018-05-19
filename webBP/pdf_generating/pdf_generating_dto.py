@@ -22,3 +22,11 @@ class PdfGeneratingDto:
         self.boxplot_pt_options = boxplot_pt_options
         self.prop_options = prop_options
         self.create_nist_report = create_nist_report
+
+    def __repr__(self) -> str:
+        ret = '<alpha: "{:0.6f}", test ids: "{}", chart types: "{}", language: "{}", o filename: "{}", ' \
+              'hist opt: "{}", td opt: "{}", ecdf opt: "{}", bpt opt: "{}", prop opt: "{}", create_report: "{}">'\
+            .format(self.alpha, repr(self.test_ids), repr(self.chart_types), self.language, self.output_filename,
+                    repr(self.hist_options), repr(self.test_dependency_options), repr(self.ecdf_options),
+                    repr(self.boxplot_pt_options), repr(self.prop_options), self.create_nist_report)
+        return ret
