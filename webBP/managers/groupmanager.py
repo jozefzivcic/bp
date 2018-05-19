@@ -286,3 +286,52 @@ class GroupManager:
             if cur:
                 cur.close()
             self.pool.release_connection(connection)
+
+    def get_group_id_by_test(self, test: Test):
+        """
+        Returns group id which contains test test.
+        :param test: Based on this argument group is looked for.
+        :return: If an error occurs None is returned. None is returned also, when group which should contain test
+        does not exist. Otherwise group id is returned.
+        """
+        connection = None
+        cur = None
+        try:
+            connection = self.pool.get_connection_from_pool()
+            while connection is None:
+                connection = self.pool.get_connection_from_pool()
+            cur = connection.cursor()
+            cur.execute(
+                """SELECT groups.id, id_user, time_of_add, total_tests, finished_tests, stats, id_test
+                   FROM groups INNER JOIN groups_tests ON groups.id = groups_tests.id
+                   WHERE groups_tests.id_test = %s;""", test.id)
+            connection.commit()
+            group = Group()
+            group.id = None
+            i = 0
+            for row in cur:
+                i += 1
+                group_id = row[0]
+                if group.id is None:
+                    group.id = group_id
+                    group.user_id = row[1]
+                    group.time_of_add = row[2]
+                    group.total_tests = row[3]
+                    group.finished_tests = row[4]
+                    group.stats = row[5]
+                    group.test_id_arr.append(row[6])
+                elif group.id == group_id:
+                    group.test_id_arr.append(row[6])
+                else:
+                    return None
+            if i == 1:
+                return group.id
+            else:
+                return None
+        except pymysql.MySQLError as ex:
+            self.logger.log_error('GroupManager.get_group_by_test', ex)
+            return None
+        finally:
+            if cur:
+                cur.close()
+            self.pool.release_connection(connection)
