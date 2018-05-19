@@ -60,9 +60,14 @@ def delete_file_post(handler):
         handler.send_header('Location', '/not_found')
         handler.end_headers()
         return
+    tests = handler.test_manager.get_tests_for_file(file)
+    num_of_ended_tests = sum(1 for t in tests if t.ended == 1)
+    if num_of_ended_tests != len(tests):
+        handler.send_header('Location', '/not_found')
+        handler.end_headers()
+        return
     handler.send_header('Location', '/')
     handler.end_headers()
-    tests = handler.test_manager.get_tests_for_file(file)
     for test in tests:
         if test.ended:
             path = handler.results_manager.get_path_for_test(test)
