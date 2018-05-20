@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS `change_table`;
 DROP TRIGGER IF EXISTS `test_update`;
 DROP TABLE IF EXISTS `groups`;
 DROP TABLE IF EXISTS `groups_tests`;
+DROP TABLE IF EXISTS `sid_cookies`;
 
 -- creating tables
 CREATE TABLE `users` (
