@@ -55,7 +55,7 @@ class SidCookiesManager(object):
             connection.commit()
             return sid
         except pymysql.MySQLError as ex:
-            self.logger.log_error('GroupManager.delete_test_from_group', ex)
+            self.logger.log_error('SidCookiesManager.add_new_cookies_for_user', ex)
             return None
         finally:
             if cur:
@@ -74,7 +74,7 @@ class SidCookiesManager(object):
             connection.commit()
             return True
         except pymysql.MySQLError as ex:
-            self.logger.log_error('SidCookiesManager.get_all_cookies', ex)
+            self.logger.log_error('SidCookiesManager.remove_from_cookies', ex)
             return False
         finally:
             if cur:
