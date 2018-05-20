@@ -1,3 +1,4 @@
+import re
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
@@ -7,6 +8,7 @@ from os.path import dirname, abspath, join
 
 from controllers.index_controller import index_get
 from logger import Logger
+from managers.connectionpool import ConnectionPool
 from managers.currently_running_manager import CurrentlyRunningManager
 from managers.dbtestmanager import DBTestManager
 from managers.filemanager import FileManager
@@ -17,15 +19,11 @@ from managers.resultsmanager import ResultsManager
 from managers.sid_cookies_manager import SidCookiesManager
 from managers.usermanager import UserManager
 
-this_dir = dirname(abspath(__file__))
-cookies_file = join(this_dir, 'cookies_file')
-
 
 class MyRequestHandler(BaseHTTPRequestHandler):
     config_storage = None
     router = None
     texts = None
-    pool = None
     path_to_users_dir = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
                             '/sign_up_passwords_are_not_the_same', '/bootstrap/css/bootstrap.min.css',
@@ -36,27 +34,33 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         Handles HTTP GET request.
         :return: None.
         """
+        self.pool = ConnectionPool(self.extract_values_for_pool(self.config_storage),
+                                   self.config_storage.pooled_connections)
         self.prepare_objects()
-        self.sessions = self.get_cookies_dict()
-        path = urlparse(self.path).path
-        ckie = self.read_cookie()
-        controller = None
-        if (ckie is None) or (self.sessions.get(ckie) is None):
-            if path == '/':
-                controller = index_get
-            elif path in self.not_authorised_paths:
-                controller = self.router.get_controller(path)
-            else:
-                controller = self.router.get_login_controller()
-            controller(self)
-            return
-        controller = self.router.get_controller(path)
         try:
-            controller(self)
-        except (FileNotFoundError, ValueError, KeyError) as e:
-            self.logger.log_error('do_GET', e)
-            controller = self.router.get_error_controller()
-            controller(self)
+            self.pool.initialize_pool()
+            self.sessions = self.get_cookies_dict()
+            path = urlparse(self.path).path
+            ckie = self.read_cookie()
+            controller = None
+            if (ckie is None) or (self.sessions.get(ckie) is None):
+                if path == '/':
+                    controller = index_get
+                elif path in self.not_authorised_paths:
+                    controller = self.router.get_controller(path)
+                else:
+                    controller = self.router.get_login_controller()
+                controller(self)
+                return
+            controller = self.router.get_controller(path)
+            try:
+                controller(self)
+            except (FileNotFoundError, ValueError, KeyError) as e:
+                self.logger.log_error('do_GET', e)
+                controller = self.router.get_error_controller()
+                controller(self)
+        finally:
+            self.pool.destroy_pool()
         return
 
     def do_POST(self):
@@ -64,16 +68,22 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         Handles HTTP POST request.
         :return: None.
         """
+        self.pool = ConnectionPool(self.extract_values_for_pool(self.config_storage),
+                                   self.config_storage.pooled_connections)
         self.prepare_objects()
-        self.sessions = self.get_cookies_dict()
-        path = urlparse(self.path).path
-        controller = self.router.get_controller(path)
         try:
-            controller(self)
-        except (FileNotFoundError, ValueError, KeyError) as e:
-            self.logger.log_error('do_POST', e)
-            controller = self.router.get_error_controller()
-            controller(self)
+            self.pool.initialize_pool()
+            self.sessions = self.get_cookies_dict()
+            path = urlparse(self.path).path
+            controller = self.router.get_controller(path)
+            try:
+                controller(self)
+            except (FileNotFoundError, ValueError, KeyError) as e:
+                self.logger.log_error('do_POST', e)
+                controller = self.router.get_error_controller()
+                controller(self)
+        finally:
+            self.pool.destroy_pool()
         return
 
     def read_cookie(self):
@@ -129,3 +139,18 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         self.pid_manager = PIDTableManager(self.pool)
         self.cookie_manager = SidCookiesManager(self.pool)
         self.logger = Logger()
+
+    def extract_values_for_pool(self, config_storage):
+        """
+        Extracts values from config, that are needed for connection pool creation.
+        :param config_storage: Object of type ConfigStorage().
+        :return: Dictionary with values needed for ConnectionPool() creation.
+        """
+        res = re.search(r'^([a-zA-Z]+://)?([0-9\.]+|[a-zA-Z]+)[:]([0-9]+)?$', config_storage.database).groups()
+        db = res[1]
+        db_port = res[2]
+        temp_dict = {'DATABASE': db,
+                     'PORT': int(db_port),
+                     'USERNAME': config_storage.user_name, 'USER_PASSWORD': config_storage.user_password,
+                     'SCHEMA': config_storage.schema}
+        return temp_dict

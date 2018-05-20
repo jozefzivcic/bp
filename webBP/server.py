@@ -26,7 +26,6 @@ from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up
     post_sign_up
 from controllers.test_controller import test_controller
 from helpers import create_dir_if_not_exists
-from managers.connectionpool import ConnectionPool
 from myconfigparser import MyConfigParser
 from myrequesthandler import MyRequestHandler
 from router import Router
@@ -94,22 +93,6 @@ def load_texts():
     return ret
 
 
-def extract_values_for_pool(config_storage):
-    """
-    Extracts values from config, that are needed for connection pool creation.
-    :param config_storage: Object of type ConfigStorage().
-    :return: Dictionary with values needed for ConnectionPool() creation.
-    """
-    res = re.search(r'^([a-zA-Z]+://)?([0-9\.]+|[a-zA-Z]+)[:]([0-9]+)?$', config_storage.database).groups()
-    db = res[1]
-    db_port = res[2]
-    temp_dict = {'DATABASE': db,
-                 'PORT': int(db_port),
-                 'USERNAME': config_storage.user_name, 'USER_PASSWORD': config_storage.user_password,
-                 'SCHEMA': config_storage.schema}
-    return temp_dict
-
-
 def prepare_handler(config_storage):
     """
     Initializes MyRequestHandler with used objects inside this class.
@@ -120,9 +103,6 @@ def prepare_handler(config_storage):
     register_pages_into_router(router)
     MyRequestHandler.router = router
     MyRequestHandler.texts = load_texts()
-    pool = ConnectionPool(extract_values_for_pool(config_storage), config_storage.pooled_connections)
-    pool.initialize_pool()
-    MyRequestHandler.pool = pool
     MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
 
 
@@ -134,8 +114,8 @@ def prepare_environment(config_storage):
     create_dir_if_not_exists(config_storage.path_to_users_dir)
 
 
-class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
-    """Class for handling requests in a separate threads."""
+class ForkHTTPServer(ForkingMixIn, HTTPServer):
+    """Class for handling requests in a separate processes."""
 
 
 if __name__ == '__main__':
@@ -147,7 +127,7 @@ if __name__ == '__main__':
     ip_address = config_storage.ip_address
     port = config_storage.port
     prepare_handler(config_storage)
-    server_class = ThreadedHTTPServer
+    server_class = ForkHTTPServer
     httpd = server_class((ip_address, port), MyRequestHandler)
     if ((config_storage.server_key != 'no') and
             (config_storage.server_cert != 'no') and (config_storage.ca_certs != 'no')):
@@ -159,4 +139,3 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         pass
     httpd.server_close()
-    MyRequestHandler.pool.destroy_pool()
