@@ -53,3 +53,4 @@ Makefile*
 /webBP/nist_statistics/__pycache__/
 /webBP/*__pycache__*
 *__pycache__*
+/webBP/cookies_file

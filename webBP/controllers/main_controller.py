@@ -28,7 +28,7 @@ def logout(handler):
     :return: None.
     """
     ckie = handler.read_cookie()
-    del handler.sessions[ckie]
+    handler.remove_from_cookies(ckie)
     handler.send_response(303)
     handler.send_header('Content-type', 'text/html')
     handler.send_header('Location', '/')

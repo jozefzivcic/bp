@@ -75,5 +75,5 @@ def post_sign_up(handler):
     sid = handler.write_cookie()
     handler.end_headers()
     str_sid = str(sid)
-    handler.sessions[str_sid] = user.id
+    handler.add_to_cookies(str_sid, user.id)
     return

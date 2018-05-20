@@ -75,5 +75,5 @@ def post_login(handler):
     sid = handler.write_cookie()
     handler.end_headers()
     str_sid = str(sid)
-    handler.sessions[str_sid] = users[0].id
+    handler.add_to_cookies(str_sid, users[0].id)
     return

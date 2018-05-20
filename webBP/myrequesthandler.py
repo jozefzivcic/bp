@@ -1,9 +1,15 @@
+import pickle
 from http.server import BaseHTTPRequestHandler
 from http.cookies import SimpleCookie
+from os.path import dirname, abspath, join, exists
 from urllib.parse import urlparse
 import uuid
 
 from controllers.index_controller import index_get
+
+
+this_dir = dirname(abspath(__file__))
+cookies_file = join(this_dir, 'cookies_file')
 
 
 class MyRequestHandler(BaseHTTPRequestHandler):
@@ -32,6 +38,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         Handles HTTP GET request.
         :return: None.
         """
+        self.sessions = self.get_cookies_dict()
         path = urlparse(self.path).path
         ckie = self.read_cookie()
         controller = None
@@ -58,6 +65,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         Handles HTTP POST request.
         :return: None.
         """
+        self.sessions = self.get_cookies_dict()
         path = urlparse(self.path).path
         controller = self.router.get_controller(path)
         try:
@@ -110,3 +118,22 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         :return: String with language that is preferred by the user.
         """
         return 'en'
+
+    def get_cookies_dict(self) -> dict:
+        if not exists(cookies_file):
+            return {}
+        with open(cookies_file, 'rb') as f:
+            cookies = pickle.load(f)
+        return cookies
+
+    def add_to_cookies(self, sid: str, user_id: int):
+        cookies = self.get_cookies_dict()
+        cookies[sid] = user_id
+        with open(cookies_file, 'wb') as f:
+            pickle.dump(cookies, f, pickle.HIGHEST_PROTOCOL)
+
+    def remove_from_cookies(self, sid: str):
+        cookies = self.get_cookies_dict()
+        del cookies[sid]
+        with open(cookies_file, 'wb') as f:
+            pickle.dump(cookies, f, pickle.HIGHEST_PROTOCOL)

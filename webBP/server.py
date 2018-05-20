@@ -4,7 +4,7 @@ import re
 import ssl
 import signal
 from http.server import HTTPServer
-from socketserver import ThreadingMixIn
+from socketserver import ThreadingMixIn, ForkingMixIn
 
 from jinja2 import FileSystemLoader, Environment
 
@@ -156,7 +156,7 @@ def prepare_environment(config_storage):
     create_dir_if_not_exists(config_storage.path_to_users_dir)
 
 
-class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+class ThreadedHTTPServer(ForkingMixIn, HTTPServer):
     """Class for handling requests in a separate threads."""
 
 
