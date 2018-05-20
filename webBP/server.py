@@ -6,8 +6,6 @@ import ssl
 from http.server import HTTPServer
 from socketserver import ForkingMixIn
 
-from jinja2 import FileSystemLoader, Environment
-
 from configstorage import ConfigStorage
 from controllers.common_controller import error_occurred
 from controllers.compute_stats import compute_stats
@@ -28,17 +26,7 @@ from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up
     post_sign_up
 from controllers.test_controller import test_controller
 from helpers import create_dir_if_not_exists
-from logger import Logger
 from managers.connectionpool import ConnectionPool
-from managers.currently_running_manager import CurrentlyRunningManager
-from managers.dbtestmanager import DBTestManager
-from managers.filemanager import FileManager
-from managers.groupmanager import GroupManager
-from managers.nisttestmanager import NistTestManager
-from managers.pid_table_manager import PIDTableManager
-from managers.resultsmanager import ResultsManager
-from managers.sid_cookies_manager import SidCookiesManager
-from managers.usermanager import UserManager
 from myconfigparser import MyConfigParser
 from myrequesthandler import MyRequestHandler
 from router import Router
@@ -131,23 +119,11 @@ def prepare_handler(config_storage):
     router = Router()
     register_pages_into_router(router)
     MyRequestHandler.router = router
-    env = Environment(loader=FileSystemLoader('views'))
-    MyRequestHandler.environment = env
     MyRequestHandler.texts = load_texts()
     pool = ConnectionPool(extract_values_for_pool(config_storage), config_storage.pooled_connections)
     pool.initialize_pool()
     MyRequestHandler.pool = pool
-    MyRequestHandler.user_manager = UserManager(pool)
-    MyRequestHandler.test_manager = DBTestManager(pool)
-    MyRequestHandler.nist_manager = NistTestManager(pool)
-    MyRequestHandler.file_manager = FileManager(pool)
-    MyRequestHandler.results_manager = ResultsManager(pool)
-    MyRequestHandler.currently_running_manager = CurrentlyRunningManager(pool)
-    MyRequestHandler.group_manager = GroupManager(pool)
-    MyRequestHandler.pid_manager = PIDTableManager(pool)
-    MyRequestHandler.cookie_manager = SidCookiesManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
-    MyRequestHandler.logger = Logger()
 
 
 def prepare_environment(config_storage):

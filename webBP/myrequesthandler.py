@@ -2,10 +2,20 @@ from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
+from jinja2 import FileSystemLoader, Environment
 from os.path import dirname, abspath, join
 
 from controllers.index_controller import index_get
+from logger import Logger
+from managers.currently_running_manager import CurrentlyRunningManager
+from managers.dbtestmanager import DBTestManager
+from managers.filemanager import FileManager
+from managers.groupmanager import GroupManager
+from managers.nisttestmanager import NistTestManager
+from managers.pid_table_manager import PIDTableManager
+from managers.resultsmanager import ResultsManager
 from managers.sid_cookies_manager import SidCookiesManager
+from managers.usermanager import UserManager
 
 this_dir = dirname(abspath(__file__))
 cookies_file = join(this_dir, 'cookies_file')
@@ -14,21 +24,9 @@ cookies_file = join(this_dir, 'cookies_file')
 class MyRequestHandler(BaseHTTPRequestHandler):
     config_storage = None
     router = None
-    environment = None
     texts = None
-    sessions = {}
     pool = None
-    user_manager = None
-    test_manager = None
-    nist_manager = None
-    file_manager = None
-    results_manager = None
-    currently_running_manager = None
-    group_manager = None
-    pid_manager = None
-    cookie_manager = None  # type: SidCookiesManager
     path_to_users_dir = None
-    logger = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
                             '/sign_up_passwords_are_not_the_same', '/bootstrap/css/bootstrap.min.css',
                             '/styles.css', '/login', '/index.css', '/create_tests.js']
@@ -38,6 +36,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         Handles HTTP GET request.
         :return: None.
         """
+        self.prepare_objects()
         self.sessions = self.get_cookies_dict()
         path = urlparse(self.path).path
         ckie = self.read_cookie()
@@ -65,6 +64,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         Handles HTTP POST request.
         :return: None.
         """
+        self.prepare_objects()
         self.sessions = self.get_cookies_dict()
         path = urlparse(self.path).path
         controller = self.router.get_controller(path)
@@ -115,3 +115,17 @@ class MyRequestHandler(BaseHTTPRequestHandler):
 
     def remove_from_cookies(self, sid: str):
         self.cookie_manager.remove_from_cookies(sid)
+
+    def prepare_objects(self):
+        env = Environment(loader=FileSystemLoader('views'))
+        self.environment = env
+        self.user_manager = UserManager(self.pool)
+        self.test_manager = DBTestManager(self.pool)
+        self.nist_manager = NistTestManager(self.pool)
+        self.file_manager = FileManager(self.pool)
+        self.results_manager = ResultsManager(self.pool)
+        self.currently_running_manager = CurrentlyRunningManager(self.pool)
+        self.group_manager = GroupManager(self.pool)
+        self.pid_manager = PIDTableManager(self.pool)
+        self.cookie_manager = SidCookiesManager(self.pool)
+        self.logger = Logger()
