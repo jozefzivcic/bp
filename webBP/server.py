@@ -1,27 +1,26 @@
 #!/usr/bin/python3.5
 import os
 import re
-import ssl
 import signal
+import ssl
 from http.server import HTTPServer
-from socketserver import ThreadingMixIn, ForkingMixIn
+from socketserver import ForkingMixIn
 
 from jinja2 import FileSystemLoader, Environment
 
-from controllers.compute_stats import compute_stats
-from controllers.group_tests_controller import get_tests_in_group, show_pdf_post
-from controllers.js_controller import get_js_create_tests
-from myconfigparser import MyConfigParser
 from configstorage import ConfigStorage
-from controllers.css_controller import get_bootstrap, get_own_styles, get_index
 from controllers.common_controller import error_occurred
+from controllers.compute_stats import compute_stats
 from controllers.create_tests_controller import create_tests, create_tests_post
+from controllers.css_controller import get_bootstrap, get_own_styles, get_index
 from controllers.currently_running_controller import currently_running
 from controllers.delete_file_controller import delete_file, delete_file_post
 from controllers.delete_path_controller import delete_path, delete_path_post
 from controllers.delete_test_controller import delete_test, delete_test_post
 from controllers.file_controller import upload_file_post, upload_file
+from controllers.group_tests_controller import get_tests_in_group, show_pdf_post
 from controllers.groups_controller import get_groups, groups_download_post, get_download_report
+from controllers.js_controller import get_js_create_tests
 from controllers.login_controller import post_login, wrong_user_name, wrong_password, login
 from controllers.main_controller import main_page, logout
 from controllers.results_controller import results_controller, view_file_content
@@ -29,6 +28,7 @@ from controllers.sign_up_controller import sign_up, sign_up_user_exists, sign_up
     post_sign_up
 from controllers.test_controller import test_controller
 from helpers import create_dir_if_not_exists
+from logger import Logger
 from managers.connectionpool import ConnectionPool
 from managers.currently_running_manager import CurrentlyRunningManager
 from managers.dbtestmanager import DBTestManager
@@ -37,10 +37,11 @@ from managers.groupmanager import GroupManager
 from managers.nisttestmanager import NistTestManager
 from managers.pid_table_manager import PIDTableManager
 from managers.resultsmanager import ResultsManager
+from managers.sid_cookies_manager import SidCookiesManager
 from managers.usermanager import UserManager
+from myconfigparser import MyConfigParser
 from myrequesthandler import MyRequestHandler
 from router import Router
-from logger import Logger
 
 
 def register_pages_into_router(router):
@@ -144,6 +145,7 @@ def prepare_handler(config_storage):
     MyRequestHandler.currently_running_manager = CurrentlyRunningManager(pool)
     MyRequestHandler.group_manager = GroupManager(pool)
     MyRequestHandler.pid_manager = PIDTableManager(pool)
+    MyRequestHandler.cookie_manager = SidCookiesManager(pool)
     MyRequestHandler.path_to_users_dir = os.path.abspath(config_storage.path_to_users_dir)
     MyRequestHandler.logger = Logger()
 

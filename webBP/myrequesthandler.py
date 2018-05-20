@@ -1,12 +1,11 @@
-import pickle
-from http.server import BaseHTTPRequestHandler
 from http.cookies import SimpleCookie
-from os.path import dirname, abspath, join, exists
+from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
-import uuid
+
+from os.path import dirname, abspath, join
 
 from controllers.index_controller import index_get
-
+from managers.sid_cookies_manager import SidCookiesManager
 
 this_dir = dirname(abspath(__file__))
 cookies_file = join(this_dir, 'cookies_file')
@@ -27,6 +26,7 @@ class MyRequestHandler(BaseHTTPRequestHandler):
     currently_running_manager = None
     group_manager = None
     pid_manager = None
+    cookie_manager = None  # type: SidCookiesManager
     path_to_users_dir = None
     logger = None
     not_authorised_paths = ['/wrong_user_name', '/wrong_password', '/sign_up', '/sign_up_user_exists',
@@ -99,14 +99,6 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         c['sid'] = sid
         self.send_header('Set-Cookie', c.output(header=''))
 
-    def generate_sid(self):
-        """
-        Generates session identifier UUID.
-        :return: Session identifier.
-        """
-        sid = uuid.uuid4()
-        return sid
-
     def get_user_language(self, user_id):
         """
         Returns user preferred language according to user_id.
@@ -116,24 +108,10 @@ class MyRequestHandler(BaseHTTPRequestHandler):
         return 'en'
 
     def get_cookies_dict(self) -> dict:
-        if not exists(cookies_file):
-            return {}
-        with open(cookies_file, 'rb') as f:
-            cookies = pickle.load(f)
-        return cookies
+        return self.cookie_manager.get_all_cookies()
 
     def add_new_cookies_for_user(self, user_id: int):
-        cookies = self.get_cookies_dict()
-        sid = str(self.generate_sid())
-        while sid in cookies:
-            sid = str(self.generate_sid())
-        cookies[sid] = user_id
-        with open(cookies_file, 'wb') as f:
-            pickle.dump(cookies, f, pickle.HIGHEST_PROTOCOL)
-        return sid
+        return self.cookie_manager.add_new_cookies_for_user(user_id)
 
     def remove_from_cookies(self, sid: str):
-        cookies = self.get_cookies_dict()
-        del cookies[sid]
-        with open(cookies_file, 'wb') as f:
-            pickle.dump(cookies, f, pickle.HIGHEST_PROTOCOL)
+        self.cookie_manager.remove_from_cookies(sid)
