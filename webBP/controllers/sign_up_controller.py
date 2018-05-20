@@ -72,8 +72,7 @@ def post_sign_up(handler):
     user = User(user_name, hash_password)
     handler.user_manager.save_user(user)
     handler.send_header('Location', '/')
-    sid = handler.write_cookie()
+    sid = handler.add_new_cookies_for_user(user.id)
+    handler.write_cookie(sid)
     handler.end_headers()
-    str_sid = str(sid)
-    handler.add_to_cookies(str_sid, user.id)
     return

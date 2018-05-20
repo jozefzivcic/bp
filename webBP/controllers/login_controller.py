@@ -72,8 +72,7 @@ def post_login(handler):
     handler.send_response(303)
     handler.send_header('Content-type', 'text/html')
     handler.send_header('Location', location)
-    sid = handler.write_cookie()
+    sid = handler.add_new_cookies_for_user(users[0].id)
+    handler.write_cookie(sid)
     handler.end_headers()
-    str_sid = str(sid)
-    handler.add_to_cookies(str_sid, users[0].id)
     return

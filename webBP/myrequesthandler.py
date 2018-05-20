@@ -90,18 +90,14 @@ class MyRequestHandler(BaseHTTPRequestHandler):
                 return value
         return None
 
-    def write_cookie(self):
+    def write_cookie(self, sid):
         """
         Generates and writes sid - session identifier into HTTP headers and returns value of sid.
         :return: Session identifier.
         """
         c = SimpleCookie()
-        sid = self.generate_sid()
-        while sid in self.sessions:
-            sid = self.generate_sid()
         c['sid'] = sid
         self.send_header('Set-Cookie', c.output(header=''))
-        return sid
 
     def generate_sid(self):
         """
@@ -126,11 +122,15 @@ class MyRequestHandler(BaseHTTPRequestHandler):
             cookies = pickle.load(f)
         return cookies
 
-    def add_to_cookies(self, sid: str, user_id: int):
+    def add_new_cookies_for_user(self, user_id: int):
         cookies = self.get_cookies_dict()
+        sid = str(self.generate_sid())
+        while sid in cookies:
+            sid = str(self.generate_sid())
         cookies[sid] = user_id
         with open(cookies_file, 'wb') as f:
             pickle.dump(cookies, f, pickle.HIGHEST_PROTOCOL)
+        return sid
 
     def remove_from_cookies(self, sid: str):
         cookies = self.get_cookies_dict()
