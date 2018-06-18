@@ -11,14 +11,6 @@
 \usepackage{float}
 \usepackage{tcolorbox}
 \usepackage{longtable}
-\newtcolorbox{mybox}[3][]
-{
-  colframe = #2!25,
-  colback  = #2!10,
-  coltitle = #2!20!black,
-  title    = #3,
-  #1,
-}
 \pagestyle{fancy}
 \fancyhf{}
 \pagenumbering{arabic}
@@ -71,13 +63,11 @@
 \newline
 
 	\BLOCK{ for key, val in vars['charts']['infos'].items() }
-		\begin{mybox}{green}{\VAR{ key }}
+		\begin{tcolorbox}[colback=green!5!white,colframe=green!75!black,title=\VAR{ key }]
 			\BLOCK{ for msg in val }
-				\VAR{msg}
-
-
+				\VAR{msg} \\
 			\BLOCK{ endfor }
-		\end{mybox}
+		\end{tcolorbox}
 	\BLOCK{ endfor }
 \BLOCK{ endif }
 
@@ -87,13 +77,11 @@
 \newline
 
 	\BLOCK{ for key, val in vars['charts']['errors'].items() }
-		\begin{mybox}{red}{\VAR{ key }}
+		\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=\VAR{ key }]
 			\BLOCK{ for msg in val }
-				\VAR{msg}
-
-
+				\VAR{msg} \\
 			\BLOCK{ endfor }
-		\end{mybox}
+		\end{tcolorbox}
 	\BLOCK{ endfor }
 \BLOCK{ endif }
 
