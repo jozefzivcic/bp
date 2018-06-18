@@ -27,9 +27,13 @@ class TestHistogramDrawer(TestCase):
         data.x_label = 'interval'
         data.y_label = 'number of p-values'
         data.title = 'histogram'
-        data.json_data_string = '[["[0.0, 0.1)", 0], ["[0.1, 0.2)", 1], ["[0.2, 0.3)", 1], ["[0.3, 0.4)", 1],' \
-                                '["[0.4, 0.5)", 4], ["[0.5, 0.6)", 5], ["[0.6, 0.7)", 3], ["[0.7, 0.8)", 3],' \
-                                '["[0.8, 0.9)", 2], ["[0.9, 1.0]", 0]]'
+        temp = '{"columns": ["interval", "value"], ' \
+               '"index": ["[0.0, 0.1)", "[0.1, 0.2)", "[0.2, 0.3)", "[0.3, 0.4)", "[0.4, 0.5)", "[0.5, 0.6)", ' \
+               '"[0.6, 0.7)", "[0.7, 0.8)", "[0.8, 0.9)", "[0.9, 1.0]"], ' \
+               '"data": [["[0.0, 0.1)", 0], ["[0.1, 0.2)", 1], ["[0.2, 0.3)", 1], ["[0.3, 0.4)", 1], ' \
+               '["[0.4, 0.5)", 4], ["[0.5, 0.6)", 5], ["[0.6, 0.7)", 3], ["[0.7, 0.8)", 3], ' \
+               '["[0.8, 0.9)", 2], ["[0.9, 1.0]", 0]]}'
+        data.json_data_string = temp
         file = join(working_dir, 'histogram.png')
         self.drawer.draw_chart(data, file)
         self.assertTrue(exists(file))

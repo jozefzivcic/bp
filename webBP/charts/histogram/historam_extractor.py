@@ -32,7 +32,7 @@ class HistogramExtractor:
             return ex_data
         ds_info = DataSourceInfo(TestsInChart.MULTIPLE_TESTS, all_seqcs)
         intervals_quantities = self.add_intervals_to_quantities(acc_quantities)
-        intervals_quantities_str = json.dumps(intervals_quantities)
+        intervals_quantities_str = self.get_json_data(intervals_quantities)
         data = DataForHistogramDrawer(intervals_quantities_str, dto.x_label, dto.y_label, dto.title)
         ex_data.add_data(ds_info, data)
         return ex_data
@@ -74,3 +74,10 @@ class HistogramExtractor:
             raise RuntimeError('Quantities do not have the same length ({}, {})'.format(len(q1), len(q2)))
         for i, quantity in enumerate(q2):
             q1[i] += quantity
+
+    def get_json_data(self, intervals_quantities: list) -> str:
+        q_str = json.dumps(intervals_quantities)
+        intervals_str = str(HistogramExtractor.intervals)
+        ret = '{"columns": ["interval", "value"], ' + '"index": {}, '.format(intervals_str).replace('\'', '"')\
+              + '"data": {}'.format(q_str) + '}'
+        return ret

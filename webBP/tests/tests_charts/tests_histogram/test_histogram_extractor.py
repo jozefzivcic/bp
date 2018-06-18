@@ -22,7 +22,7 @@ intervals = ['[0.0, 0.1)', '[0.1, 0.2)', '[0.2, 0.3)', '[0.3, 0.4)', '[0.4, 0.5)
 
 
 def mock_add_data(ex_data: ExtractedData, global_quantities: list, all_seqcs: list, p_values: list,
-                 dto: HistogramDto, test_id: int, data_num: int=None):
+                  dto: HistogramDto, test_id: int, data_num: int = None):
     if data_num is None:
         seq = PValueSequence(test_id, PValuesFileType.RESULTS)
     else:
@@ -234,3 +234,16 @@ class TestHistogramExtractor(TestCase):
         expected = [4, 10, 54, 13, 83, 101, 168, 123, 187, 59]
         self.extractor.sum_quantities(q1, q2)
         self.assertEqual(expected, q1)
+
+    def test_get_json_data(self):
+        exp = '{"columns": ["interval", "value"], ' \
+               '"index": ["[0.0, 0.1)", "[0.1, 0.2)", "[0.2, 0.3)", "[0.3, 0.4)", "[0.4, 0.5)", "[0.5, 0.6)", ' \
+               '"[0.6, 0.7)", "[0.7, 0.8)", "[0.8, 0.9)", "[0.9, 1.0]"], ' \
+               '"data": [["[0.0, 0.1)", 0], ["[0.1, 0.2)", 1], ["[0.2, 0.3)", 1], ["[0.3, 0.4)", 1], ' \
+               '["[0.4, 0.5)", 4], ["[0.5, 0.6)", 5], ["[0.6, 0.7)", 3], ["[0.7, 0.8)", 3], ' \
+               '["[0.8, 0.9)", 2], ["[0.9, 1.0]", 0]]}'
+        input_arr = [['[0.0, 0.1)', 0], ['[0.1, 0.2)', 1], ['[0.2, 0.3)', 1], ['[0.3, 0.4)', 1],
+                     ['[0.4, 0.5)', 4], ['[0.5, 0.6)', 5], ['[0.6, 0.7)', 3], ['[0.7, 0.8)', 3],
+                     ['[0.8, 0.9)', 2], ['[0.9, 1.0]', 0]]
+        ret = self.extractor.get_json_data(input_arr)
+        self.assertEqual(exp, ret)
