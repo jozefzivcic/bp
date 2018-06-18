@@ -39,11 +39,11 @@ class TestHistogramExtractor(TestCase):
                                 0.746548, 0.558648]
         self.expected_quantities = [0, 1, 0, 1, 3, 2, 1, 2, 0, 0]
 
-    @patch('json.dumps', return_value='dumps_ret')
+    @patch('charts.histogram.historam_extractor.HistogramExtractor.get_json_data', return_value='get_json_data')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.add_intervals_to_quantities',
            return_value='add_intervals_ret')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.add_data', side_effect=mock_add_data)
-    def test_get_data_from_accumulator(self, f_add_data, f_add_intervals, f_dumps):
+    def test_get_data_from_accumulator(self, f_add_data, f_add_intervals, get_json_data):
         dto1 = PValuesDto(dict_for_test_13)
         dto2 = PValuesDto(dict_for_test_14)
         acc = PValuesAccumulator()
@@ -62,21 +62,21 @@ class TestHistogramExtractor(TestCase):
 
         self.assertEqual(TestsInChart.MULTIPLE_TESTS, ds_info.tests_in_chart)
         self.assertEqual(seqcs, ds_info.p_value_sequence)
-        self.assertEqual('dumps_ret', data_drawer.json_data_string)
+        self.assertEqual('get_json_data', data_drawer.json_data_string)
         self.assertEqual('x_label_str', data_drawer.x_label)
         self.assertEqual('y_label_str', data_drawer.y_label)
         self.assertEqual('title_str', data_drawer.title)
 
         self.assertEqual(3, f_add_data.call_count)
         f_add_intervals.assert_called_once_with([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-        f_dumps.assert_called_once_with('add_intervals_ret')
+        get_json_data.assert_called_once_with('add_intervals_ret')
 
-    @patch('json.dumps', return_value='dumps_ret')
+    @patch('charts.histogram.historam_extractor.HistogramExtractor.get_json_data', return_value='get_json_data')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.add_intervals_to_quantities',
            return_value='add_i_ret')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.sum_quantities')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.add_p_values_to_interval')
-    def test_add_data_complete_results(self, f_add_p_values, f_sum, f_add_intervals, f_dumps):
+    def test_add_data_complete_results(self, f_add_p_values, f_sum, f_add_intervals, get_json_data):
         ex_data = ExtractedData()
         global_quantities = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0]
         p_values = [1, 2, 3]
@@ -90,7 +90,7 @@ class TestHistogramExtractor(TestCase):
         f_add_p_values.assert_called_once_with([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], p_values)
         f_sum.assert_called_once_with([1, 2, 3, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         f_add_intervals.assert_called_once_with([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-        f_dumps.assert_called_once_with('add_i_ret')
+        get_json_data.assert_called_once_with('add_i_ret')
         ex_data_list = ex_data.get_all_data()
 
         self.assertEqual(1, len(ex_data_list))
@@ -99,17 +99,17 @@ class TestHistogramExtractor(TestCase):
         seq = PValueSequence(test_id, PValuesFileType.RESULTS)
         self.assertEqual(seq, ds_info.p_value_sequence)
         self.assertEqual([seq], all_seqcs)
-        self.assertEqual('dumps_ret', data_drawer.json_data_string)
+        self.assertEqual('get_json_data', data_drawer.json_data_string)
         self.assertEqual('x_label_str', data_drawer.x_label)
         self.assertEqual('y_label_str', data_drawer.y_label)
         self.assertEqual('title_str', data_drawer.title)
 
-    @patch('json.dumps', return_value='dumps_ret')
+    @patch('charts.histogram.historam_extractor.HistogramExtractor.get_json_data', return_value='get_json_data')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.add_intervals_to_quantities',
            return_value='add_i_ret')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.sum_quantities')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.add_p_values_to_interval')
-    def test_add_data_complete_data(self, f_add_p_values, f_sum, f_add_intervals, f_dumps):
+    def test_add_data_complete_data(self, f_add_p_values, f_sum, f_add_intervals, get_json_data):
         ex_data = ExtractedData()
         global_quantities = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0]
         p_values = [1, 2, 3]
@@ -123,7 +123,7 @@ class TestHistogramExtractor(TestCase):
         f_add_p_values.assert_called_once_with([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], p_values)
         f_sum.assert_called_once_with([1, 2, 3, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         f_add_intervals.assert_called_once_with([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-        f_dumps.assert_called_once_with('add_i_ret')
+        get_json_data.assert_called_once_with('add_i_ret')
         ex_data_list = ex_data.get_all_data()
 
         self.assertEqual(1, len(ex_data_list))
@@ -133,7 +133,7 @@ class TestHistogramExtractor(TestCase):
         seq = PValueSequence(test_id, PValuesFileType.DATA, data_num)
         self.assertEqual(seq, ds_info.p_value_sequence)
         self.assertEqual([seq], all_seqcs)
-        self.assertEqual('dumps_ret', data_drawer.json_data_string)
+        self.assertEqual('get_json_data', data_drawer.json_data_string)
         self.assertEqual('x_label_str', data_drawer.x_label)
         self.assertEqual('y_label_str', data_drawer.y_label)
         self.assertEqual('title_str', data_drawer.title)
@@ -160,12 +160,12 @@ class TestHistogramExtractor(TestCase):
         seq = PValueSequence(test_id, PValuesFileType.RESULTS)
         self.assertEqual([seq], all_seqcs)
 
-    @patch('json.dumps', return_value='dumps_ret')
+    @patch('charts.histogram.historam_extractor.HistogramExtractor.get_json_data', return_value='get_json_data')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.add_intervals_to_quantities',
            return_value='add_i_ret')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.sum_quantities')
     @patch('charts.histogram.historam_extractor.HistogramExtractor.add_p_values_to_interval')
-    def test_add_data_only_individual(self, f_add_p_values, f_sum, f_add_intervals, f_dumps):
+    def test_add_data_only_individual(self, f_add_p_values, f_sum, f_add_intervals, get_json_data):
         ex_data = ExtractedData()
         global_quantities = [1, 2, 3, 0, 0, 0, 0, 0, 0, 0]
         p_values = [1, 2, 3]
@@ -180,14 +180,14 @@ class TestHistogramExtractor(TestCase):
         f_add_p_values.assert_called_once_with([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], p_values)
         self.assertEqual(0, f_sum.call_count)
         f_add_intervals.assert_called_once_with([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-        f_dumps.assert_called_once_with('add_i_ret')
+        get_json_data.assert_called_once_with('add_i_ret')
         ex_data_list = ex_data.get_all_data()
 
         self.assertEqual(1, len(ex_data_list))
         ds_info, data_drawer, info, err = ex_data_list[0]  # type: (DataSourceInfo, DataForHistogramDrawer, Info, Err)
         self.assertEqual(TestsInChart.SINGLE_TEST, ds_info.tests_in_chart)
         self.assertEqual(PValueSequence(test_id, PValuesFileType.DATA, data_num), ds_info.p_value_sequence)
-        self.assertEqual('dumps_ret', data_drawer.json_data_string)
+        self.assertEqual('get_json_data', data_drawer.json_data_string)
         self.assertEqual('x_label_str', data_drawer.x_label)
         self.assertEqual('y_label_str', data_drawer.y_label)
         self.assertEqual('title_str', data_drawer.title)

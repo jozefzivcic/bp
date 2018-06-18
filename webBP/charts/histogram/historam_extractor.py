@@ -52,7 +52,7 @@ class HistogramExtractor:
             return
         ds_info = DataSourceInfo(TestsInChart.SINGLE_TEST, seq)
         intervals_quantities = self.add_intervals_to_quantities(quantities)
-        intervals_quantities_str = json.dumps(intervals_quantities)
+        intervals_quantities_str = self.get_json_data(intervals_quantities)
         data = DataForHistogramDrawer(intervals_quantities_str, dto.x_label, dto.y_label, dto.title)
         ex_data.add_data(ds_info, data)
 

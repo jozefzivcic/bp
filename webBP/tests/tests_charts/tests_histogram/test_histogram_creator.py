@@ -42,7 +42,7 @@ class TestHistogramCreator(TestCase):
         if exists(working_dir):
             rmtree(working_dir)
 
-    def test_create_p_values_chart(self):
+    def test_create_histogram_chart(self):
         ch_storage = self.creator.create_histogram(self.data_for_creator)
         cs_items = ch_storage.get_all_items()
         self.assertEqual(3, len(cs_items))
